@@ -18,8 +18,11 @@ class Connection:
     def receive(self) -> str | None:
         raise NotImplementedError("interface does not implement 'receive'")
 
-    def exchange(self, messages: list[str]) -> list[str]:
+    def exchange(self, cmds: list[str]) -> list[str]:
         raise NotImplementedError("interface does not implement 'exchange'")
+
+    def exchange1(self, cmd: str) -> str:
+        raise NotImplementedError("interface does not implement 'exchange1'")
 
 
 class SerialConnection(Connection):
@@ -84,10 +87,14 @@ class SerialConnection(Connection):
 
         return answer.decode("ascii").removesuffix(self.eoa)
     
-    def exchange(self, messages: list[str]) -> list[str]:
+    def exchange(self, cmds: list[str]) -> list[str]:
         answers: list[str] = []
-        for item in messages:
+        for item in cmds:
             if self.send(item):
                 answers.append(self.receive())
 
         return answers
+    
+    def exchange1(self, cmd: str) -> str:
+        self.send(cmd)
+        return self.receive()
