@@ -12,21 +12,21 @@ class GeoComReturnCode(Enum):
 
 class GeoComResponse:
     def __init__(
-            self,
-            cmd: str,
-            response: str,
-            comcode: GeoComReturnCode,
-            rpccode: GeoComReturnCode,
-            trans: int,
-            params: dict
-        ):
+        self,
+        cmd: str,
+        response: str,
+        comcode: GeoComReturnCode,
+        rpccode: GeoComReturnCode,
+        trans: int,
+        params: dict
+    ):
         self.cmd: str = cmd
         self.response: str = response
         self.comcode: GeoComReturnCode = comcode
         self.rpccode: GeoComReturnCode = rpccode
         self.trans: int = trans
         self.params: dict = params
-    
+
     def __str__(self) -> str:
         return (
             f"GeoComResponse com: {self.comcode.name:s}, "
@@ -35,7 +35,7 @@ class GeoComResponse:
             f"params: {self.params}, "
             f"(cmd: '{self.cmd}', response: '{self.response}')"
         )
-    
+
     def __bool__(self) -> bool:
         return bool(self.comcode) and bool(self.rpccode)
 
@@ -48,14 +48,14 @@ class GeoComSubsystem:
 class GeoComProtocol:
     def __init__(self, connection: Connection):
         self._conn: Connection = connection
-    
+
     def exec1(
-            self,
-            cmd: str,
-            args: dict[str, Callable[[str], Any]] | None = None
-        ) -> GeoComResponse:
+        self,
+        cmd: str,
+        args: dict[str, Callable[[str], Any]] | None = None
+    ) -> GeoComResponse:
         raise NotImplementedError()
-    
+
     def parse_reply(
         cls,
         cmd: str,
