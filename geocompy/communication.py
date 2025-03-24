@@ -5,6 +5,22 @@ from types import TracebackType
 from serial import Serial, SerialException, SerialTimeoutException
 
 
+def parsestr(value: str) -> str:
+    return value[1:-1]
+
+
+def parsebyte(value: str) -> int:
+    return int(value[1:-1], base=16)
+
+
+def tostr(value: str) -> str:
+    return f"\"{value:s}\""
+
+
+def tobyte(value: int) -> str:
+    return f"'{value:02X}'"
+
+
 class Connection:
     def __init__(self, name: str = ""):
         self.name: str = name
@@ -12,10 +28,10 @@ class Connection:
     def is_open(self) -> bool:
         raise NotImplementedError("interface does not implement 'is_open'")
     
-    def send(self, message: str) -> bool:
+    def send(self, message: str):
         raise NotImplementedError("interface does not implement 'send'")
     
-    def receive(self) -> str | None:
+    def receive(self) -> str:
         raise NotImplementedError("interface does not implement 'receive'")
 
     def exchange(self, cmds: list[str]) -> list[str]:
@@ -90,8 +106,8 @@ class SerialConnection(Connection):
     def exchange(self, cmds: list[str]) -> list[str]:
         answers: list[str] = []
         for item in cmds:
-            if self.send(item):
-                answers.append(self.receive())
+            self.send(item)
+            answers.append(self.receive())
 
         return answers
     
