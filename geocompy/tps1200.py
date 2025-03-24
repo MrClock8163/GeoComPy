@@ -1067,6 +1067,74 @@ class TPS1200SUP(TPS1200Subsystem):
         )
 
 
+class TPS1200TMC(TPS1200Subsystem):
+    class ONOFF(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200TMC.ONOFF:
+            return cls(int(value))
+
+        OFF = 0
+        ON = 1
+
+    class INCLINEPRG(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200TMC.INCLINEPRG:
+            return cls(int(value))
+
+        MEA = 0
+        AUTO = 1
+        PLANE = 2
+
+    class MEASUREPRG(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200TMC.MEASUREPRG:
+            return cls(int(value))
+
+        STOP = 0
+        DEFDIST = 1
+        CLEAR = 3
+        SIGNAL = 4
+        DOMEASURE = 6
+        RTRKDIST = 8
+        REDTRKDIST = 10
+        FREQUENCY = 11
+
+    class EMDMODE(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200TMC.EMDMODE:
+            return cls(int(value))
+
+        NOTUSED = 0
+        SINGLE_TAPE = 1
+        SINGLE_STANDARD = 2
+        SINGLE_FAST = 3
+        SINGLE_LRANGE = 4
+        SINGLE_SRANGE = 5
+        CONT_STANDARD = 6
+        CONT_DYNAMIC = 7
+        CONT_REFLESS = 8
+        CONT_FAST = 9
+        AVERAGE_IR = 10
+        AVERAGE_SR = 11
+        AVERAGE_LR = 12
+
+    class FACEDEF(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200TMC.FACEDEF:
+            return cls(int(value))
+
+        NORMAL = 0
+        TURN = 1
+
+    class FACE(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200TMC.FACE:
+            return cls(int(value))
+
+        FACE1 = 0
+        FACE2 = 1
+
+
 class TPS1200(GeoComProtocol):
     RESPPAT: re.Pattern = re.compile(
         r"^%R1P,"
@@ -1085,6 +1153,7 @@ class TPS1200(GeoComProtocol):
         self.com = TPS1200COM(self)
         self.csv = TPS1200CSV(self)
         self.edm = TPS1200EDM(self)
+        self.tmc = TPS1200TMC(self)
 
     def get_double_precision(self) -> GeoComResponse:
         return self.exec1(
