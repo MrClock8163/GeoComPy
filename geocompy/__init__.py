@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import Callable, Any
+from logging import Logger, NullHandler
 
 from .communication import Connection
 
@@ -46,8 +47,16 @@ class GeoComSubsystem:
 
 
 class GeoComProtocol:
-    def __init__(self, connection: Connection):
+    def __init__(
+        self,
+        connection: Connection,
+        logger: Logger | None = None
+    ):
         self._conn: Connection = connection
+        if logger is None:
+            logger = Logger("/dev/null")
+            logger.addHandler(NullHandler())
+        self.logger: Logger = logger
 
     def exec1(
         self,

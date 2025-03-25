@@ -4,6 +4,7 @@ import re
 from typing import Callable, Any
 from types import TracebackType
 from enum import Enum
+import logging
 
 from serial import Serial, SerialException, SerialTimeoutException
 
@@ -1144,8 +1145,12 @@ class TPS1200(GeoComProtocol):
         r"(?:,(?P<params>.*))?$"
     )
 
-    def __init__(self, connection: Connection):
-        super().__init__(connection)
+    def __init__(
+        self,
+        connection: Connection,
+        logger: logging.Logger | None = None
+    ):
+        super().__init__(connection, logger)
         self.aus = TPS1200AUS(self)
         self.aut = TPS1200AUT(self)
         self.bap = TPS1200BAP(self)
@@ -1189,12 +1194,13 @@ class TPS1200(GeoComProtocol):
                 f"%R1P,{TPS1200GRC.FATAL.value:d},"
                 f"0:{TPS1200GRC.UNDEFINED.value}"
             )
-
-        return self.parse_reply(
+        response = self.parse_reply(
             cmd,
             reply,
             args if args is not None else {}
         )
+        self.logger.debug(response)
+        return response
 
     def parse_reply(
         cls,
