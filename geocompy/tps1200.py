@@ -1138,6 +1138,63 @@ class TPS1200TMC(TPS1200Subsystem):
         FACE2 = 1
 
 
+class TPS1200FTR(TPS1200Subsystem):
+    class DEVICETYPE(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200FTR.DEVICETYPE:
+            return cls(int(value))
+
+        INTERNAL = 0
+        PCPARD = 1
+        SDCARD = 4
+        USE_MEMORY = 5
+        VOLATILERAM = 6
+
+    class FILETYPE(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200FTR.FILETYPE:
+            return cls(int(value))
+
+        UNKNOWN = 0
+        IMAGE = 170
+
+    def setup_list(
+        self,
+        device: DEVICETYPE | str = DEVICETYPE.PCPARD,
+        filetype: FILETYPE | str = FILETYPE.UNKNOWN,
+        path: str = "/root"
+    ) -> GeoComResponse:
+        _device = toenum(TPS1200FTR.DEVICETYPE, device)
+        _filetype = toenum(TPS1200FTR.FILETYPE, filetype)
+        return self._parent.exec1(
+            f"%R1Q,23306:{_device.value:d},{_filetype.value:d},"
+            f"{tostr(path)}"
+        )
+
+    def abort_list(self) -> GeoComResponse:
+        return self._parent.exec1("%R1Q,23308:")
+
+    def list(
+        self,
+        next: bool = False
+    ) -> GeoComResponse:
+        return self._parent.exec1(
+            f"%R1Q,23307:{next:d}",
+            {
+                "last": bool,
+                "filename": parsestr,
+                "size": int,
+                "hour": parsebyte,
+                "minute": parsebyte,
+                "second": parsebyte,
+                "centisec": parsebyte,
+                "day": parsebyte,
+                "month": parsebyte,
+                "years": parsebyte
+            }
+        )
+
+
 class TPS1200(GeoComProtocol):
     RESPPAT: re.Pattern = re.compile(
         r"^%R1P,"
@@ -1162,6 +1219,7 @@ class TPS1200(GeoComProtocol):
         self.csv = TPS1200CSV(self)
         self.edm = TPS1200EDM(self)
         self.tmc = TPS1200TMC(self)
+        self.ftr = TPS1200FTR(self)
 
         for i in range(retry):
             self._conn.send("\n")
