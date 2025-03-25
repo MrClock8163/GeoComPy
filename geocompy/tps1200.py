@@ -1137,6 +1137,365 @@ class TPS1200TMC(TPS1200Subsystem):
         FACE1 = 0
         FACE2 = 1
 
+    def get_coordinate(
+        self,
+        wait: int = 1000,
+        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+    ) -> GeoComResponse:
+        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        return self._parent.exec1(
+            f"%R1Q,2082:{wait:d},{_mode.value:d}",
+            {
+                "east": float,
+                "north": float,
+                "height": float,
+                "time": int,
+                "east_cont": float,
+                "north_cont": float,
+                "height_cont": float,
+                "time_cont": int
+            }
+        )
+
+    def get_simple_mea(
+        self,
+        wait: int = 1000,
+        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+    ) -> GeoComResponse:
+        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        return self._parent.exec1(
+            f"%R1Q,2108:{wait:d},{_mode.value:d}",
+            {
+                "hz": float,
+                "v": float,
+                "dist": float
+            }
+        )
+
+    def get_angle_incline(
+        self,
+        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+    ) -> GeoComResponse:
+        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        return self._parent.exec1(
+            f"%R1Q,2003:{_mode.value:d}",
+            {
+                "hz": float,
+                "v": float,
+                "angleaccuracy": float,
+                "angletime": int,
+                "crossincline": float,
+                "lengthincline": float,
+                "inclineaccuracy": float,
+                "inclinetime": int,
+                "face": TPS1200TMC.FACEDEF.parse
+            }
+        )
+
+    def get_angle(
+        self,
+        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+    ) -> GeoComResponse:
+        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        return self._parent.exec1(
+            f"%R1Q,2107:{_mode.value:d}",
+            {
+                "hz": float,
+                "v": float
+            }
+        )
+
+    def quick_dist(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2117:",
+            {
+                "hz": float,
+                "v": float,
+                "dist": float
+            }
+        )
+
+    def get_full_meas(
+        self,
+        wait: int = 1000,
+        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+    ) -> GeoComResponse:
+        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        return self._parent.exec1(
+            f"%R1Q,2167:{wait:d},{_mode.value:d}",
+            {
+                "hz": float,
+                "v": float,
+                "angleaccuracy": float,
+                "crossincline": float,
+                "lengthincline": float,
+                "inclineaccuracy": float,
+                "dist": float,
+                "disttime": float
+            }
+        )
+
+    def do_measure(
+        self,
+        command: MEASUREPRG | str = MEASUREPRG.DEFDIST,
+        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+    ) -> GeoComResponse:
+        _cmd = toenum(TPS1200TMC.MEASUREPRG, command)
+        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        return self._parent.exec1(f"%R1Q,2008:{_cmd.value:d},{_mode.value:d}")
+
+    def set_hand_dist(
+        self,
+        distance: float,
+        offset: float,
+        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+    ) -> GeoComResponse:
+        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        return self._parent.exec1(
+            f"%R1Q,2019:{distance:f},{offset:f},{_mode.value:d}"
+        )
+
+    def get_height(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2011:",
+            {"height": float}
+        )
+
+    def set_height(
+        self,
+        height: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(f"%R1Q,2012:{height:f}")
+
+    def get_atm_corr(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2029:",
+            {
+                "wavelength": float,
+                "pressure": float,
+                "drytemp": float,
+                "wettemp": float
+            }
+        )
+
+    def set_atm_corr(
+        self,
+        wavelength: float,
+        pressure: float,
+        drytemp: float,
+        wettemp: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(
+            f"%R1Q,2028:{wavelength:f},{pressure:f},{drytemp:f},{wettemp:f}"
+        )
+
+    def set_orientation(
+        self,
+        orientation: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(f"%R1Q,2113:{orientation:f}")
+
+    def get_prism_corr(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2023:",
+            {"const": float}
+        )
+
+    def get_refractive_corr(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2031:",
+            {
+                "enabled": bool,
+                "earthradius": float,
+                "scale": float
+            }
+        )
+
+    def set_refractive_corr(
+        self,
+        enabled: bool,
+        earthradius: float,
+        scale: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(
+            f"%R1Q,2030:{enabled:d},{earthradius:f},{scale:f}"
+        )
+
+    def get_refractive_method(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2091:",
+            {"method": int}
+        )
+
+    def set_refractive_method(
+        self,
+        method: int
+    ) -> GeoComResponse:
+        return self._parent.exec1(f"%R1Q,2090:{method:d}")
+
+    def get_station(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2009:",
+            {
+                "east": float,
+                "north": float,
+                "height": float,
+                "instrumentheight": float
+            }
+        )
+
+    def set_station(
+        self,
+        east: float,
+        north: float,
+        height: float,
+        instrumentheight: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(
+            f"%R1Q,2010:{east:f},{north:f},{height:f},{instrumentheight:f}"
+        )
+
+    def get_atm_ppm(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2151:",
+            {"ppm": float}
+        )
+
+    def set_atm_ppm(
+        self,
+        ppm: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(f"%R1Q,2148:{ppm:f}")
+
+    def get_geo_ppm(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2154:",
+            {
+                "automatic": bool,
+                "meridianscale": float,
+                "meridianoffset": float,
+                "heightreduction": float,
+                "individual": float
+            }
+        )
+
+    def set_geo_ppm(
+        self,
+        automatic: bool,
+        meridianscale: float,
+        meridianoffset: float,
+        heightreduction: float,
+        individual: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(
+            (
+                f"%R1Q,2153:{automatic:d},{meridianscale:f},"
+                f"{meridianoffset:f},{heightreduction:f},{individual:f}"
+            )
+        )
+
+    def get_face(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2026:",
+            {"face": TPS1200TMC.FACE.parse}
+        )
+
+    def get_signal(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2022:",
+            {
+                "intensity": float,
+                "time": int
+            }
+        )
+
+    def get_ang_switch(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2014:",
+            {
+                "inclinecorr": bool,
+                "stdaxiscorr": bool,
+                "collimcorr": bool,
+                "tiltaxiscorr": bool
+            }
+        )
+
+    def get_incline_switch(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2007:",
+            {"correction": self.ONOFF.parse}
+        )
+
+    def set_incline_switch(
+        self,
+        correction: ONOFF | str
+    ) -> GeoComResponse:
+        _corr = toenum(self.ONOFF, correction)
+        return self._parent.exec1(f"%R1Q,2006:{_corr.value:d}")
+
+    def get_edm_mode(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2021:",
+            {"mode": self.EMDMODE.parse}
+        )
+
+    def set_edm_mode(
+        self,
+        mode: EMDMODE | str
+    ) -> GeoComResponse:
+        _mode = toenum(self.EMDMODE, mode)
+        return self._parent.exec1(
+            f"%R1Q,2020:{_mode.value:d}"
+        )
+
+    def get_simple_coord(
+        self,
+        wait: int = 1000,
+        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+    ) -> GeoComResponse:
+        _mode = toenum(self.INCLINEPRG, mode)
+        return self._parent.exec1(
+            f"%R1Q,2116:{wait:d},{_mode.value:d}",
+            {
+                "east": float,
+                "north": float,
+                "height": float
+            }
+        )
+
+    def if_data_atr_corr_error(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2114:",
+            {"atrerror": bool}
+        )
+
+    def if_data_inc_corr_error(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2115:",
+            {"inclineerror": bool}
+        )
+
+    def set_ang_switch(
+        self,
+        inclinecorr: bool,
+        stdaxiscorr: bool,
+        collimcorr: bool,
+        tiltaxiscorr: bool
+    ) -> GeoComResponse:
+        return self._parent.exec1(
+            f"%R1Q,2016:{inclinecorr:d},{stdaxiscorr:d},"
+            f"{collimcorr:d},{tiltaxiscorr:d}"
+        )
+
+    def get_slope_dist_corr(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,2126:",
+            {
+                "ppmcorr": float,
+                "prismcorr": float
+            }
+        )
+
 
 class TPS1200FTR(TPS1200Subsystem):
     class DEVICETYPE(Enum):
