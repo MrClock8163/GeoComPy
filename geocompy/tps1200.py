@@ -5,6 +5,8 @@ from typing import Callable, Any
 from types import TracebackType
 from enum import Enum
 import logging
+from time import sleep
+from traceback import format_exc
 
 from serial import Serial, SerialException, SerialTimeoutException
 
@@ -1148,7 +1150,8 @@ class TPS1200(GeoComProtocol):
     def __init__(
         self,
         connection: Connection,
-        logger: logging.Logger | None = None
+        logger: logging.Logger | None = None,
+        retry: int = 2
     ):
         super().__init__(connection, logger)
         self.aus = TPS1200AUS(self)
@@ -1159,6 +1162,18 @@ class TPS1200(GeoComProtocol):
         self.csv = TPS1200CSV(self)
         self.edm = TPS1200EDM(self)
         self.tmc = TPS1200TMC(self)
+
+        for i in range(retry):
+            self._conn.send("\n")
+            response = self.com.nullproc()
+            if response.comcode and response.rpccode:
+                break
+
+            sleep(1)
+        else:
+            raise ConnectionError(
+                "could not establish connection to instrument"
+            )
 
     def get_double_precision(self) -> GeoComResponse:
         return self.exec1(
@@ -1179,20 +1194,23 @@ class TPS1200(GeoComProtocol):
     ) -> GeoComResponse:
         try:
             reply = self._conn.exchange1(cmd)
-        except SerialException as e:
-            reply = (
-                f"%R1P,{TPS1200GRC.COM_PORT_NOT_OPEN.value:d},"
-                f"0:{TPS1200GRC.UNDEFINED.value}"
-            )
         except SerialTimeoutException as e:
+            self.logger.error(format_exc())
             reply = (
                 f"%R1P,{TPS1200GRC.COM_TIMEOUT.value:d},"
-                f"0:{TPS1200GRC.UNDEFINED.value}"
+                f"0:{TPS1200GRC.FATAL.value:d}"
+            )
+        except SerialException as e:
+            self.logger.error(format_exc())
+            reply = (
+                f"%R1P,{TPS1200GRC.COM_CANT_SEND.value:d},"
+                f"0:{TPS1200GRC.FATAL.value:d}"
             )
         except Exception as e:
+            self.logger.error(format_exc())
             reply = (
                 f"%R1P,{TPS1200GRC.FATAL.value:d},"
-                f"0:{TPS1200GRC.UNDEFINED.value}"
+                f"0:{TPS1200GRC.FATAL.value:d}"
             )
         response = self.parse_reply(
             cmd,
@@ -1224,8 +1242,18 @@ class TPS1200(GeoComProtocol):
         if values is None:
             values = ""
         params: dict = {}
-        for (name, func), value in zip(args.items(), values.split(",")):
-            params[name] = func(value)
+        try:
+            for (name, func), value in zip(args.items(), values.split(",")):
+                params[name] = func(value)
+        except:
+            return GeoComResponse(
+                cmd,
+                reply,
+                TPS1200GRC.COM_CANT_DECODE,
+                TPS1200GRC.UNDEFINED,
+                0,
+                {}
+            )
 
         comrc = TPS1200GRC(int(groups["comrc"]))
         rc = TPS1200GRC(int(groups["rc"]))
