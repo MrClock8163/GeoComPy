@@ -1014,6 +1014,174 @@ class TPS1200EDM(TPS1200Subsystem):
         )
 
 
+class TPS1200FTR(TPS1200Subsystem):
+    class DEVICETYPE(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200FTR.DEVICETYPE:
+            return cls(int(value))
+
+        INTERNAL = 0
+        PCPARD = 1
+
+    class FILETYPE(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200FTR.FILETYPE:
+            return cls(int(value))
+
+        UNKNOWN = 0  # ?
+        IMAGE = 170
+
+    def setup_list(
+        self,
+        device: DEVICETYPE | str = DEVICETYPE.PCPARD,
+        filetype: FILETYPE | str = FILETYPE.UNKNOWN,
+        path: str = "/root"
+    ) -> GeoComResponse:
+        _device = toenum(self.DEVICETYPE, device)
+        _filetype = toenum(self.FILETYPE, filetype)
+        return self._parent.exec1(
+            f"%R1Q,23306:{_device.value:d},{_filetype.value:d},"
+            f"{tostr(path)}"
+        )
+
+    def list(
+        self,
+        next: bool = False
+    ) -> GeoComResponse:
+        return self._parent.exec1(
+            f"%R1Q,23307:{next:d}",
+            {
+                "last": bool,
+                "filename": parsestr,
+                "size": int,
+                "hour": parsebyte,
+                "minute": parsebyte,
+                "second": parsebyte,
+                "centisec": parsebyte,
+                "day": parsebyte,
+                "month": parsebyte,
+                "years": parsebyte
+            }
+        )
+
+    def abort_list(self) -> GeoComResponse:
+        return self._parent.exec1("%R1Q,23308:")
+
+    def setup_download(
+        self,
+        filename: str,
+        blocksize: int,
+        device: DEVICETYPE | str = DEVICETYPE.PCPARD,
+        filetype: FILETYPE | str = FILETYPE.UNKNOWN,
+    ) -> GeoComResponse:
+        _device = toenum(self.DEVICETYPE, device)
+        _filetype = toenum(self.FILETYPE, filetype)
+        return self._parent.exec1(
+            (
+                f"%R1Q,23303:{_device.value:d},{_filetype.value:d},"
+                f"{tostr(filename):s},{blocksize:d}"
+            ),
+            {"blockcount": int}
+        )
+
+    def download(
+        self,
+        block: int
+    ) -> GeoComResponse:
+        return self._parent.exec1(
+            f"%R1Q,23304:{block:d}",
+            {
+                "value": parsestr,
+                "length": int
+            }
+        )
+
+    def abort_download(self) -> GeoComResponse:
+        return self._parent.exec1("%R1Q,23305:")
+
+    def delete(
+        self,
+        day: int,
+        month: int,
+        year: int,
+        filename: str,
+        device: DEVICETYPE | str = DEVICETYPE.PCPARD,
+        filetype: FILETYPE | str = FILETYPE.UNKNOWN
+    ) -> GeoComResponse:
+        _device = toenum(self.DEVICETYPE, device)
+        _filetype = toenum(self.FILETYPE, filetype)
+        return self._parent.exec1(
+            (
+                f"%R1Q,23309:{_device.value:d},{_filetype.value:d},"
+                f"{tobyte(day):s},{tobyte(month):s},{tobyte(year)},"
+                f"{filename:s}"
+            ),
+            {"filesdeleted": int}
+        )
+
+
+class TPS1200IMG(TPS1200Subsystem):
+    class MEMTYPE(Enum):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200IMG.MEMTYPE:
+            return cls(int(value))
+
+        INTERNAL = 0x0
+        PCCARD = 0x1
+
+    class SUBFUNC(Flag):
+        @classmethod
+        def parse(cls, value: str) -> TPS1200IMG.SUBFUNC:
+            return cls(int(value))
+
+        TESTIMG = 1
+        AUTOEXPTIME = 2
+        SS2 = 4
+        SS4 = 8
+
+    def get_tcc_config(
+        self,
+        memtype: MEMTYPE | str = MEMTYPE.PCCARD
+    ) -> GeoComResponse:
+        _memtype = toenum(self.MEMTYPE, memtype)
+        return self._parent.exec1(
+            f"%R1Q,23400:{_memtype.value:d}",
+            {
+                "imgnumber": int,
+                "quality": int,
+                "subfunc": lambda x: self.SUBFUNC(int(x)),
+                "prefix": str
+            }
+        )
+
+    def set_tcc_config(
+        self,
+        imgnumber: int,
+        quality: int,
+        subfunc: SUBFUNC | int,
+        memtype: MEMTYPE | str = MEMTYPE.PCCARD,
+    ) -> GeoComResponse:
+        _memtype = toenum(self.MEMTYPE, memtype)
+        if type(subfunc) is self.SUBFUNC:
+            subfunc = subfunc.value
+        return self._parent.exec1(
+            (
+                f"%R1Q,23401:{_memtype.value:d},{imgnumber:d},"
+                f"{quality:d},{subfunc:d}"
+            )
+        )
+
+    def take_tcc_img(
+        self,
+        memtype: MEMTYPE | str = MEMTYPE.PCCARD
+    ) -> GeoComResponse:
+        _memtype = toenum(self.MEMTYPE, memtype)
+        return self._parent.exec1(
+            f"%R1Q,23402:{_memtype.value:d}",
+            {"imgnumber": int}
+        )
+
+
 class TPS1200MOT(TPS1200Subsystem):
     class LOCKSTATUS(Enum):
         @classmethod
@@ -1543,63 +1711,6 @@ class TPS1200TMC(TPS1200Subsystem):
             {
                 "ppmcorr": float,
                 "prismcorr": float
-            }
-        )
-
-
-class TPS1200FTR(TPS1200Subsystem):
-    class DEVICETYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200FTR.DEVICETYPE:
-            return cls(int(value))
-
-        INTERNAL = 0
-        PCPARD = 1
-        SDCARD = 4
-        USE_MEMORY = 5
-        VOLATILERAM = 6
-
-    class FILETYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200FTR.FILETYPE:
-            return cls(int(value))
-
-        UNKNOWN = 0
-        IMAGE = 170
-
-    def setup_list(
-        self,
-        device: DEVICETYPE | str = DEVICETYPE.PCPARD,
-        filetype: FILETYPE | str = FILETYPE.UNKNOWN,
-        path: str = "/root"
-    ) -> GeoComResponse:
-        _device = toenum(TPS1200FTR.DEVICETYPE, device)
-        _filetype = toenum(TPS1200FTR.FILETYPE, filetype)
-        return self._parent.exec1(
-            f"%R1Q,23306:{_device.value:d},{_filetype.value:d},"
-            f"{tostr(path)}"
-        )
-
-    def abort_list(self) -> GeoComResponse:
-        return self._parent.exec1("%R1Q,23308:")
-
-    def list(
-        self,
-        next: bool = False
-    ) -> GeoComResponse:
-        return self._parent.exec1(
-            f"%R1Q,23307:{next:d}",
-            {
-                "last": bool,
-                "filename": parsestr,
-                "size": int,
-                "hour": parsebyte,
-                "minute": parsebyte,
-                "second": parsebyte,
-                "centisec": parsebyte,
-                "day": parsebyte,
-                "month": parsebyte,
-                "years": parsebyte
             }
         )
 
