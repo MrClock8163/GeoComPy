@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Callable, Any
 from types import TracebackType
-from enum import Enum
+from enum import Enum, Flag
 import logging
 from time import sleep
 from traceback import format_exc
@@ -285,27 +285,29 @@ class TPS1200AUS(TPS1200Subsystem):
         ON = 1
 
     def get_user_atr_state(self) -> GeoComResponse:
-        cmd = "%R1Q,18006:"
         return self._parent.exec1(
-            cmd,
-            {"state": TPS1200AUS.ONOFF.parse}
+            "%R1Q,18006:",
+            {"state": self.ONOFF.parse}
         )
 
-    def set_user_atr_state(self, state: ONOFF | str) -> GeoComResponse:
+    def set_user_atr_state(
+        self,
+        state: ONOFF | str
+    ) -> GeoComResponse:
         _state = toenum(TPS1200AUS.ONOFF, state)
-        cmd = f"%R1Q,18005:{_state.value:d}"
-        return self._parent.exec1(cmd)
+        return self._parent.exec1(f"%R1Q,18005:{_state.value:d}")
 
     def get_user_lock_state(self) -> GeoComResponse:
-        cmd = "%R1Q,18008:"
         return self._parent.exec1(
-            cmd,
-            {"state": TPS1200AUS.ONOFF.parse}
+            "%R1Q,18008:",
+            {"state": self.ONOFF.parse}
         )
 
-    def set_user_lock_state(self, state: ONOFF) -> GeoComResponse:
-        cmd = f"%R1Q,18007:{state.value:d}"
-        return self._parent.exec1(cmd)
+    def set_user_lock_state(
+        self,
+        state: ONOFF
+    ) -> GeoComResponse:
+        return self._parent.exec1(f"%R1Q,18007:{state.value:d}")
 
 
 class TPS1200AUT(GeoComSubsystem):
@@ -316,14 +318,16 @@ class TPS1200AUT(GeoComSubsystem):
 
         NORMAL = 0
         PRECISE = 1
+        FAST = 2  # TS30 / MS30
 
     class ADJMODE(Enum):
         @classmethod
         def parse(cls, value: str) -> TPS1200AUT.ADJMODE:
             return cls(int(value))
 
-        NORMAL_MODE = 0
-        POINT_MODE = 1
+        NORMAL = 0
+        POINT = 1
+        DEFINE = 2
 
     class ATRMODE(Enum):
         @classmethod
@@ -341,46 +345,47 @@ class TPS1200AUT(GeoComSubsystem):
         CLOCKWISE = 1
         ANTICLOCKWISE = -1
 
-    def __init__(self, parent: TPS1200):
-        self._parent: TPS1200 = parent
-
     def read_tol(self) -> GeoComResponse:
-        cmd = "%R1Q,9008:"
         return self._parent.exec1(
-            cmd,
+            "%R1Q,9008:",
             {
                 "tol_hz": float,
                 "tol_v": float
             }
         )
 
-    def set_tol(self, tol_hz: float, tol_v: float) -> GeoComResponse:
-        cmd = f"%R1Q,9007:{tol_hz:f},{tol_v:f}"
-        return self._parent.exec1(cmd)
+    def set_tol(
+        self,
+        tol_hz: float,
+        tol_v: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(f"%R1Q,9007:{tol_hz:f},{tol_v:f}")
 
     def read_timeout(self) -> GeoComResponse:
-        cmd = "%R1Q,9012:"
         return self._parent.exec1(
-            cmd,
+            "%R1Q,9012:",
             {
                 "to_hz": float,
                 "to_v": float
             }
         )
 
-    def set_timeout(self, to_hz: float, to_v: float) -> GeoComResponse:
-        cmd = f"%R1Q,9011:{to_hz:f},{to_v:f}"
-        return self._parent.exec1(cmd)
+    def set_timeout(
+        self,
+        to_hz: float,
+        to_v: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(f"%R1Q,9011:{to_hz:f},{to_v:f}")
 
     def make_positioning(
         self,
         hz: float,
         v: float,
-        posmode: TPS1200AUT.POSMODE | str = POSMODE.NORMAL,
-        atrmode: TPS1200AUT.ATRMODE | str = ATRMODE.POSITION
+        posmode: POSMODE | str = POSMODE.NORMAL,
+        atrmode: ATRMODE | str = ATRMODE.POSITION
     ) -> GeoComResponse:
-        _posmode = toenum(TPS1200AUT.POSMODE, posmode)
-        _atrmode = toenum(TPS1200AUT.ATRMODE, atrmode)
+        _posmode = toenum(self.POSMODE, posmode)
+        _atrmode = toenum(self.ATRMODE, atrmode)
         cmd = (
             f"%R1Q,9027:{hz:f},{v:f},"
             f"{_posmode.value:d},{_atrmode.value},0"
@@ -389,33 +394,41 @@ class TPS1200AUT(GeoComSubsystem):
 
     def change_face(
         self,
-        posmode: TPS1200AUT.POSMODE | str = POSMODE.NORMAL,
-        atrmode: TPS1200AUT.ATRMODE | str = ATRMODE.POSITION
+        posmode: POSMODE | str = POSMODE.NORMAL,
+        atrmode: ATRMODE | str = ATRMODE.POSITION
     ) -> GeoComResponse:
-        _posmode = toenum(TPS1200AUT.POSMODE, posmode)
-        _atrmode = toenum(TPS1200AUT.ATRMODE, atrmode)
-        cmd = f"%R1Q,9028:{_posmode.value:d},{_atrmode.value},0"
-        return self._parent.exec1(cmd)
+        _posmode = toenum(self.POSMODE, posmode)
+        _atrmode = toenum(self.ATRMODE, atrmode)
+        return self._parent.exec1(
+            f"%R1Q,9028:{_posmode.value:d},{_atrmode.value},0"
+        )
 
-    def fine_adjust(self, width: float, height: float) -> GeoComResponse:
-        cmd = f"%R1Q,9037:{width:f},{height:f},0"
-        return self._parent.exec1(cmd)
+    def fine_adjust(
+        self,
+        width: float,
+        height: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(f"%R1Q,9037:{width:f},{height:f},0")
 
-    def search(self, width: float, height: float) -> GeoComResponse:
-        cmd = f"%R1Q,9029:{width:f},{height:f},0"
-        return self._parent.exec1(cmd)
+    def search(
+        self,
+        width: float,
+        height: float
+    ) -> GeoComResponse:
+        return self._parent.exec1(f"%R1Q,9029:{width:f},{height:f},0")
 
     def get_fine_adjust_mode(self) -> GeoComResponse:
-        cmd = "%R1Q,9030:"
-        return self._parent.exec1(cmd, {"adjmode": TPS1200AUT.ADJMODE.parse})
+        return self._parent.exec1(
+            "%R1Q,9030:",
+            {"adjmode": self.ADJMODE.parse}
+        )
 
     def set_fine_adjust_mode(
         self,
-        adjmode: TPS1200AUT.ADJMODE | str
+        adjmode: ADJMODE | str = ADJMODE.NORMAL
     ) -> GeoComResponse:
-        _adjmode = toenum(TPS1200AUT.ADJMODE, adjmode)
-        cmd = f"%R1Q,9031:{_adjmode.value:d}"
-        return self._parent.exec1(cmd)
+        _adjmode = toenum(self.ADJMODE, adjmode)
+        return self._parent.exec1(f"%R1Q,9031:{_adjmode.value:d}")
 
     def lock_in(self) -> GeoComResponse:
         return self._parent.exec1("%R1Q,9013:")
@@ -440,8 +453,9 @@ class TPS1200AUT(GeoComSubsystem):
         height: float,
         enabled: bool = True
     ) -> GeoComResponse:
-        cmd = f"%R1Q,9043:{hz:f},{v:f},{width:f},{height:f},{enabled:d}"
-        return self._parent.exec1(cmd)
+        return self._parent.exec1(
+            f"%R1Q,9043:{hz:f},{v:f},{width:f},{height:f},{enabled:d}"
+        )
 
     def get_user_spiral(self) -> GeoComResponse:
         return self._parent.exec1(
@@ -457,10 +471,12 @@ class TPS1200AUT(GeoComSubsystem):
         width: float,
         height: float
     ) -> GeoComResponse:
-        cmd = f"%R1Q,9041:{width:f},{height:f}"
-        return self._parent.exec1(cmd)
+        return self._parent.exec1(f"%R1Q,9041:{width:f},{height:f}")
 
-    def ps_enable_range(self, enable: bool) -> GeoComResponse:
+    def ps_enable_range(
+        self,
+        enable: bool
+    ) -> GeoComResponse:
         return self._parent.exec1(f"%R1Q,9048:{enable:d}")
 
     def ps_set_range(
@@ -478,7 +494,7 @@ class TPS1200AUT(GeoComSubsystem):
         direction: DIRECTION | str,
         swing: bool
     ) -> GeoComResponse:
-        _direction = toenum(TPS1200AUT.DIRECTION, direction)
+        _direction = toenum(self.DIRECTION, direction)
         return self._parent.exec1(
             f"%R1Q,9051:{_direction.value:d},{swing:d}"
         )
@@ -490,11 +506,11 @@ class TPS1200BAP(TPS1200Subsystem):
         def parse(cls, value: str) -> TPS1200BAP.MEASUREPRG:
             return cls(int(value))
 
-        NO_MEAS = 0
-        NO_DIST = 1
-        DEF_DIST = 2
-        CLEAR_DIST = 5
-        STOP_TRK = 6
+        NOMEAS = 0
+        NODIST = 1
+        DEFDIST = 2
+        CLEARDIST = 5
+        STOPTRK = 6
 
     class USERMEASPRG(Enum):
         @classmethod
@@ -511,6 +527,8 @@ class TPS1200BAP(TPS1200Subsystem):
         AVG_REF_STANDARD = 7
         AVG_REF_VISIBLE = 8
         AVG_RLESS_VISIBLE = 9
+        CONT_REF_SYNCHRO = 10
+        SINGLE_REF_PRECISE = 11
 
     class PRISMTYPE(Enum):
         @classmethod
@@ -524,10 +542,12 @@ class TPS1200BAP(TPS1200Subsystem):
         USER1 = 4
         USER2 = 5
         USER3 = 6
-        MINI_360 = 7
-        MINI_ZERO = 8
+        MINI360 = 7
+        MINIZERO = 8
         USER = 9
-        NDS_TAPE = 10
+        NDSTAPE = 10
+        GRZ121 = 11
+        MAMPR122 = 12
 
     class REFLTYPE(Enum):
         @classmethod
@@ -551,11 +571,11 @@ class TPS1200BAP(TPS1200Subsystem):
         def parse(cls, value: str) -> TPS1200BAP.ATRSETTING:
             return cls(int(value))
 
-        LOWVIS_NORMAL = 0
-        LOWVIS_ON = 1
-        LOWVIS_ALWAYSON = 2
-        LOWVIS_BOBBYON = 3
-        LOWVIS_BOBBYALWAYSON = 4
+        NORMAL = 0
+        LOWVISON = 1
+        LOWVISAON = 2
+        SRANGEON = 3
+        SRANGEAON = 4
 
     class ONOFF(Enum):
         @classmethod
@@ -568,34 +588,34 @@ class TPS1200BAP(TPS1200Subsystem):
     def get_target_type(self) -> GeoComResponse:
         return self._parent.exec1(
             "%R1Q,17022:",
-            {"targettype": TPS1200BAP.TARGETTYPE.parse}
+            {"targettype": self.TARGETTYPE.parse}
         )
 
     def set_target_type(
         self,
         targettype: TARGETTYPE | str
     ) -> GeoComResponse:
-        _targettype = toenum(TPS1200BAP.TARGETTYPE, targettype)
+        _targettype = toenum(self.TARGETTYPE, targettype)
         return self._parent.exec1(f"%R1Q,17021:{_targettype.value:d}")
 
     def get_prism_type(self) -> GeoComResponse:
         return self._parent.exec1(
             "%R1Q,17009:",
-            {"prismtype": TPS1200BAP.PRISMTYPE.parse}
+            {"prismtype": self.PRISMTYPE.parse}
         )
 
     def set_prism_type(
         self,
         prismtype: PRISMTYPE | str
     ) -> GeoComResponse:
-        _prismtype = toenum(TPS1200BAP.PRISMTYPE, prismtype)
+        _prismtype = toenum(self.PRISMTYPE, prismtype)
         return self._parent.exec1(f"%R1Q,17008:{_prismtype.value:d}")
 
     def get_prism_type2(self) -> GeoComResponse:
         return self._parent.exec1(
             "%R1Q,17031:",
             {
-                "prismtype": TPS1200BAP.PRISMTYPE.parse,
+                "prismtype": self.PRISMTYPE.parse,
                 "name": parsestr
             }
         )
@@ -605,7 +625,7 @@ class TPS1200BAP(TPS1200Subsystem):
         prismtype: PRISMTYPE | str,
         name: str
     ) -> GeoComResponse:
-        _prismtype = toenum(TPS1200BAP.PRISMTYPE, prismtype)
+        _prismtype = toenum(self.PRISMTYPE, prismtype)
         return self._parent.exec1(
             f"%R1Q,17030:{_prismtype.value:d},{tostr(name):s}"
         )
@@ -614,13 +634,13 @@ class TPS1200BAP(TPS1200Subsystem):
         self,
         prismtype: PRISMTYPE | str
     ) -> GeoComResponse:
-        _prismtype = toenum(TPS1200BAP.PRISMTYPE, prismtype)
+        _prismtype = toenum(self.PRISMTYPE, prismtype)
         return self._parent.exec1(
             f"%R1Q,17023:{_prismtype.value:d}",
             {
                 "name": parsestr,
                 "const": float,
-                "refltype": TPS1200BAP.REFLTYPE.parse
+                "refltype": self.REFLTYPE.parse
             }
         )
 
@@ -644,7 +664,7 @@ class TPS1200BAP(TPS1200Subsystem):
         refltype: REFLTYPE | str,
         creator: str
     ) -> GeoComResponse:
-        _refltype = toenum(TPS1200BAP.REFLTYPE, refltype)
+        _refltype = toenum(self.REFLTYPE, refltype)
         return self._parent.exec1(
             (
                 f"%R1Q,17032:{tostr(name):s},{const:f},"
@@ -655,28 +675,28 @@ class TPS1200BAP(TPS1200Subsystem):
     def get_meas_prg(self) -> GeoComResponse:
         return self._parent.exec1(
             "%R1Q,17018:",
-            {"measprg": TPS1200BAP.MEASUREPRG.parse}
+            {"measprg": self.MEASUREPRG.parse}
         )
 
     def set_meas_prog(
         self,
         measprg: MEASUREPRG | str
     ) -> GeoComResponse:
-        _measprg = toenum(TPS1200BAP.MEASUREPRG, measprg)
+        _measprg = toenum(self.MEASUREPRG, measprg)
         return self._parent.exec1(f"%R1Q,17019:{_measprg.value:d}")
 
     def meas_distance_angle(
         self,
-        distmode: MEASUREPRG | str = MEASUREPRG.DEF_DIST
+        distmode: MEASUREPRG | str = MEASUREPRG.DEFDIST
     ) -> GeoComResponse:
-        _distmode = toenum(TPS1200BAP.MEASUREPRG, distmode)
+        _distmode = toenum(self.MEASUREPRG, distmode)
         return self._parent.exec1(
             f"%R1Q,17017:{_distmode.value:d}",
             {
                 "hz": float,
                 "v": float,
                 "dist": float,
-                "distmode": TPS1200BAP.MEASUREPRG.parse
+                "distmode": self.MEASUREPRG.parse
             }
         )
 
@@ -686,27 +706,27 @@ class TPS1200BAP(TPS1200Subsystem):
     def get_atr_setting(self) -> GeoComResponse:
         return self._parent.exec1(
             "%R1Q,17034:",
-            {"atrsetting": TPS1200BAP.ATRSETTING.parse}
+            {"atrsetting": self.ATRSETTING.parse}
         )
 
     def set_atr_setting(
         self,
         atrsetting: ATRSETTING | str
     ) -> GeoComResponse:
-        _atrsetting = toenum(TPS1200BAP.ATRSETTING, atrsetting)
+        _atrsetting = toenum(self.ATRSETTING, atrsetting)
         return self._parent.exec1(f"%R1Q,17035:{_atrsetting.value:d}")
 
     def get_red_atr_fov(self) -> GeoComResponse:
         return self._parent.exec1(
             f"%R1Q,17036:",
-            {"redfov": TPS1200BAP.ONOFF.parse}
+            {"redfov": self.ONOFF.parse}
         )
 
     def set_red_atr_fov(
         self,
         redfov: TPS1200BAP.ONOFF | str
     ) -> GeoComResponse:
-        _redfov = toenum(TPS1200BAP.ONOFF, redfov)
+        _redfov = toenum(self.ONOFF, redfov)
         return self._parent.exec1(f"%R1Q,17037:{_redfov.value:d}")
 
 
@@ -758,17 +778,15 @@ class TPS1200COM(TPS1200Subsystem):
         self,
         onmode: STARTUPMODE | str = STARTUPMODE.LOCAL
     ) -> GeoComResponse:
-        _onmode = toenum(TPS1200COM.STARTUPMODE, onmode)
+        _onmode = toenum(self.STARTUPMODE, onmode)
         return self._parent.exec1(f"%R1Q,111:{_onmode.value:d}")
 
     def switch_off(
         self,
         offmode: STOPMODE | str = STOPMODE.SHUTDOWN
     ) -> GeoComResponse:
-        _offmode = toenum(TPS1200COM.STOPMODE, offmode)
-        return self._parent.exec1(
-            f"%R1Q,112:{_offmode.value:d}"
-        )
+        _offmode = toenum(self.STOPMODE, offmode)
+        return self._parent.exec1(f"%R1Q,112:{_offmode.value:d}")
 
     def nullproc(self) -> GeoComResponse:
         return self._parent.exec1("%R1Q,0:")
@@ -783,9 +801,7 @@ class TPS1200COM(TPS1200Subsystem):
         self,
         available: bool
     ) -> GeoComResponse:
-        return self._parent.exec1(
-            f"%R1Q,114:{available:d}"
-        )
+        return self._parent.exec1(f"%R1Q,114:{available:d}")
 
 
 class TPS1200CSV(TPS1200Subsystem):
@@ -794,44 +810,46 @@ class TPS1200CSV(TPS1200Subsystem):
         def parse(cls, value: str) -> TPS1200CSV.DEVICECLASS:
             return cls(int(value))
 
-        CLASS_1100 = 0
-        CLASS_1700 = 1
-        CLASS_1800 = 2
-        CLASS_5000 = 3
-        CLASS_6000 = 4
-        CLASS_1500 = 5
-        CLASS_2003 = 6
-        CLASS_5005 = 7
-        CLASS_5100 = 8
-        CLASS_1102 = 100
-        CLASS_1103 = 101
-        CLASS_1105 = 102
-        CLASS_1101 = 103
-        CLASS_1202 = 200
-        CLASS_1203 = 201
-        CLASS_1205 = 202
-        CLASS_1201 = 203
+        CLASS_1100 = 0  # TPS1000 3"
+        CLASS_1700 = 1  # TPS1000 1.5"
+        CLASS_1800 = 2  # TPS1000 1"
+        CLASS_5000 = 3  # TPS2000
+        CLASS_6000 = 4  # TPS2000
+        CLASS_1500 = 5  # TPS1000
+        CLASS_2003 = 6  # TPS2000
+        CLASS_5005 = 7  # TPS5000
+        CLASS_5100 = 8  # TPS5000
+        CLASS_1102 = 100  # TPS1100 2"
+        CLASS_1103 = 101  # TPS1100 3"
+        CLASS_1105 = 102  # TPS1100 5"
+        CLASS_1101 = 103  # TPS1100 1"
+        CLASS_1202 = 200  # TPS1200 2"
+        CLASS_1203 = 201  # TPS1200 3"
+        CLASS_1205 = 202  # TPS1200 5"
+        CLASS_1201 = 203  # TPS1200 1"
+        CLASS_Tx30 = 300  # TS30, MS30 0.5"
+        CLASS_Tx31 = 301  # TS30, MS30 1"
 
-    class DEVICETYPE(Enum):
+    class DEVICETYPE(Flag):
         @classmethod
         def parse(cls, value: str) -> TPS1200CSV.DEVICETYPE:
             return cls(int(value))
 
-        T = 0x00000
-        MOT = 0x00004
-        ATR = 0x00008
-        EGL = 0x00010
-        DB = 0x00020
-        DL = 0x00040
-        LP = 0x00080
+        T = 0x00000  # Theodolites
+        MOT = 0x00004  # Motorized
+        ATR = 0x00008  # ATR
+        EGL = 0x00010  # Guide Light
+        DB = 0x00020  # Database
+        DL = 0x00040  # Diode laser
+        LP = 0x00080  # Laser plumbed
         # TC1 = 0x00001 # TPS1000
         # TC2 = 0x00002 # TPS1000
-        TC = 0x00001
-        TCR = 0x00002
-        ATC = 0x00100
-        LPNT = 0x00200
-        RL_EXT = 0x00400
-        PS = 0x00800
+        TC = 0x00001  # Tachymeter
+        TCR = 0x00002  # Tachymeter (red laser)
+        ATC = 0x00100  # Autocollimation lamp
+        LPNT = 0x00200  # Laserpointer
+        RLEXT = 0x00400  # Powersearch
+        PS = 0x00800  # Powersearch
         # SIM = 0x04000 # TPSSim
 
     class REFLESSCLASS(Enum):
@@ -842,7 +860,8 @@ class TPS1200CSV(TPS1200Subsystem):
         NONE = 0
         R100 = 1
         R300 = 2
-        R400 = 3  # not in the documentation?
+        R400 = 3
+        R1000 = 4
 
     class POWERSOURCE(Enum):
         @classmethod
@@ -868,15 +887,15 @@ class TPS1200CSV(TPS1200Subsystem):
         return self._parent.exec1(
             "%R1Q,5035:",
             {
-                "deviceclass": TPS1200CSV.DEVICECLASS.parse,
-                "devicetype": int
+                "deviceclass": self.DEVICECLASS.parse,
+                "devicetype": lambda x: self.DEVICETYPE(int(x))
             }
         )
 
     def get_reflectorless_class(self) -> GeoComResponse:
         return self._parent.exec1(
             "%R1Q,5100:",
-            {"reflessclass": TPS1200CSV.REFLESSCLASS.parse}
+            {"reflessclass": self.REFLESSCLASS.parse}
         )
 
     def get_date_time(self) -> GeoComResponse:
@@ -923,8 +942,8 @@ class TPS1200CSV(TPS1200Subsystem):
             "%R1Q,5039:",
             {
                 "capacity": int,
-                "source": TPS1200CSV.POWERSOURCE.parse,
-                "suggestion": TPS1200CSV.POWERSOURCE.parse
+                "source": self.POWERSOURCE.parse,
+                "suggestion": self.POWERSOURCE.parse
             }
         )
 
@@ -932,6 +951,20 @@ class TPS1200CSV(TPS1200Subsystem):
         return self._parent.exec1(
             "%R1Q,5011:",
             {"temp": int}
+        )
+
+    def get_date_time_centisec(self) -> GeoComResponse:
+        return self._parent.exec1(
+            "%R1Q,5117:",
+            {
+                "year": int,
+                "month": int,
+                "day": int,
+                "hour": int,
+                "minute": int,
+                "second": int,
+                "centisec": int
+            }
         )
 
 
@@ -958,7 +991,7 @@ class TPS1200EDM(TPS1200Subsystem):
         self,
         laser: ONOFF | str
     ) -> GeoComResponse:
-        _laser = toenum(TPS1200EDM.ONOFF, laser)
+        _laser = toenum(self.ONOFF, laser)
         return self._parent.exec1(
             f"%R1Q,1004:{_laser.value:d}"
         )
@@ -967,7 +1000,7 @@ class TPS1200EDM(TPS1200Subsystem):
         return self._parent.exec1(
             "%R1Q,1058",
             {
-                "intensity": TPS1200EDM.EGLINTENSITYTYPE.parse
+                "intensity": self.EGLINTENSITYTYPE.parse
             }
         )
 
@@ -975,7 +1008,7 @@ class TPS1200EDM(TPS1200Subsystem):
         self,
         intensity: EGLINTENSITYTYPE | str
     ) -> GeoComResponse:
-        _intesity = toenum(TPS1200EDM.EGLINTENSITYTYPE, intensity)
+        _intesity = toenum(self.EGLINTENSITYTYPE, intensity)
         return self._parent.exec1(
             f"%R1Q,1059:{_intesity.value:d}"
         )
@@ -989,7 +1022,7 @@ class TPS1200MOT(TPS1200Subsystem):
 
         LOCKEDOUT = 0
         LOCKEDIN = 1
-        PREDICTION = 23
+        PREDICTION = 2
 
     class STOPMODE(Enum):
         @classmethod
@@ -1015,14 +1048,14 @@ class TPS1200MOT(TPS1200Subsystem):
     def read_lock_status(self) -> GeoComResponse:
         return self._parent.exec1(
             "%R1Q,6021:",
-            {"status": TPS1200MOT.LOCKSTATUS.parse}
+            {"status": self.LOCKSTATUS.parse}
         )
 
     def start_controller(
         self,
         mode: MODE | str = MODE.MANUPOS
     ) -> GeoComResponse:
-        _mode = toenum(TPS1200MOT.MODE, mode)
+        _mode = toenum(self.MODE, mode)
         return self._parent.exec1(
             f"%R1Q,6001:{_mode.value:d}"
         )
@@ -1068,7 +1101,7 @@ class TPS1200SUP(TPS1200Subsystem):
             "%R1Q,14001:",
             {
                 "reserved": int,
-                "autopower": TPS1200SUP.AUTOPOWER.parse,
+                "autopower": self.AUTOPOWER.parse,
                 "timeout": int
             }
         )
@@ -1079,7 +1112,7 @@ class TPS1200SUP(TPS1200Subsystem):
         autopower: AUTOPOWER | str = AUTOPOWER.OFF,
         timeout: int = 3_600_000
     ) -> GeoComResponse:
-        _autopowerd = toenum(TPS1200SUP.AUTOPOWER, autopower)
+        _autopowerd = toenum(self.AUTOPOWER, autopower)
         return self._parent.exec1(
             f"%R1Q,14002:{reserved:d},{_autopowerd.value:d},{timeout:d}"
         )
@@ -1135,6 +1168,8 @@ class TPS1200TMC(TPS1200Subsystem):
         AVERAGE_IR = 10
         AVERAGE_SR = 11
         AVERAGE_LR = 12
+        PRECISE_IR = 13  # TS30, MS30
+        PRECISE_TAPE = 14  # TS30, MS30
 
     class FACEDEF(Enum):
         @classmethod
@@ -1157,7 +1192,7 @@ class TPS1200TMC(TPS1200Subsystem):
         wait: int = 1000,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
     ) -> GeoComResponse:
-        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        _mode = toenum(self.INCLINEPRG, mode)
         return self._parent.exec1(
             f"%R1Q,2082:{wait:d},{_mode.value:d}",
             {
@@ -1177,7 +1212,7 @@ class TPS1200TMC(TPS1200Subsystem):
         wait: int = 1000,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
     ) -> GeoComResponse:
-        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        _mode = toenum(self.INCLINEPRG, mode)
         return self._parent.exec1(
             f"%R1Q,2108:{wait:d},{_mode.value:d}",
             {
@@ -1191,7 +1226,7 @@ class TPS1200TMC(TPS1200Subsystem):
         self,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
     ) -> GeoComResponse:
-        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        _mode = toenum(self.INCLINEPRG, mode)
         return self._parent.exec1(
             f"%R1Q,2003:{_mode.value:d}",
             {
@@ -1203,7 +1238,7 @@ class TPS1200TMC(TPS1200Subsystem):
                 "lengthincline": float,
                 "inclineaccuracy": float,
                 "inclinetime": int,
-                "face": TPS1200TMC.FACEDEF.parse
+                "face": self.FACEDEF.parse
             }
         )
 
@@ -1211,7 +1246,7 @@ class TPS1200TMC(TPS1200Subsystem):
         self,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
     ) -> GeoComResponse:
-        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        _mode = toenum(self.INCLINEPRG, mode)
         return self._parent.exec1(
             f"%R1Q,2107:{_mode.value:d}",
             {
@@ -1235,7 +1270,7 @@ class TPS1200TMC(TPS1200Subsystem):
         wait: int = 1000,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
     ) -> GeoComResponse:
-        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        _mode = toenum(self.INCLINEPRG, mode)
         return self._parent.exec1(
             f"%R1Q,2167:{wait:d},{_mode.value:d}",
             {
@@ -1255,8 +1290,8 @@ class TPS1200TMC(TPS1200Subsystem):
         command: MEASUREPRG | str = MEASUREPRG.DEFDIST,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
     ) -> GeoComResponse:
-        _cmd = toenum(TPS1200TMC.MEASUREPRG, command)
-        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        _cmd = toenum(self.MEASUREPRG, command)
+        _mode = toenum(self.INCLINEPRG, mode)
         return self._parent.exec1(f"%R1Q,2008:{_cmd.value:d},{_mode.value:d}")
 
     def set_hand_dist(
@@ -1265,7 +1300,7 @@ class TPS1200TMC(TPS1200Subsystem):
         offset: float,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
     ) -> GeoComResponse:
-        _mode = toenum(TPS1200TMC.INCLINEPRG, mode)
+        _mode = toenum(self.INCLINEPRG, mode)
         return self._parent.exec1(
             f"%R1Q,2019:{distance:f},{offset:f},{_mode.value:d}"
         )
@@ -1355,7 +1390,7 @@ class TPS1200TMC(TPS1200Subsystem):
                 "east": float,
                 "north": float,
                 "height": float,
-                "instrumentheight": float
+                "hi": float
             }
         )
 
@@ -1592,8 +1627,10 @@ class TPS1200(GeoComProtocol):
         self.com = TPS1200COM(self)
         self.csv = TPS1200CSV(self)
         self.edm = TPS1200EDM(self)
-        self.tmc = TPS1200TMC(self)
         self.ftr = TPS1200FTR(self)
+        self.mot = TPS1200MOT(self)
+        self.sup = TPS1200SUP(self)
+        self.tmc = TPS1200TMC(self)
 
         for i in range(retry):
             self._conn.send("\n")
