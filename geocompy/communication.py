@@ -19,7 +19,7 @@ def tostr(value: str) -> str:
 
 
 def tobyte(value: int) -> str:
-    return f"'{value:02X}'"
+    return f"'{format(value, '02X')[-2:]}'"
 
 
 def toenum[T: type[Enum], R: Enum](typ: T, value: R | str):
