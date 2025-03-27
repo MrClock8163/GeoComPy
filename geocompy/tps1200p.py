@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import re
 from typing import Callable, Any, Iterable
-from types import TracebackType
 from enum import Enum, Flag
 import logging
 from time import sleep
 from traceback import format_exc
 from datetime import datetime
 
-from serial import Serial, SerialException, SerialTimeoutException
+from serial import SerialException, SerialTimeoutException
 
 from . import (
     GeoComProtocol,
@@ -2053,12 +2052,12 @@ class TPS1200P(GeoComProtocol):
         return response
 
     def parse_response(
-        cls,
+        self,
         cmd: str,
         reply: str,
         args: dict[str, Callable[[str], Any]]
     ) -> GeoComResponse:
-        m = cls.RESPPAT.match(reply)
+        m = self.RESPPAT.match(reply)
         if not m:
             return GeoComResponse(
                 cmd,

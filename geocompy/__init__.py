@@ -19,14 +19,14 @@ class GeoComResponse:
         comcode: GeoComReturnCode,
         rpccode: GeoComReturnCode,
         trans: int,
-        params: dict
+        params: dict[str, Any]
     ):
         self.cmd: str = cmd
         self.response: str = response
         self.comcode: GeoComReturnCode = comcode
         self.rpccode: GeoComReturnCode = rpccode
         self.trans: int = trans
-        self.params: dict = params
+        self.params: dict[str, Any] = params
 
     def __str__(self) -> str:
         return (
