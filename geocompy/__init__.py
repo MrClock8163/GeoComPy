@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Callable, Any, Iterable
 from logging import Logger, NullHandler
 
+from .data import Angle, Byte
 from .communication import Connection
 
 
@@ -44,6 +45,7 @@ class GeoComResponse:
 class GeoComSubsystem:
     def __init__(self, parent: GeoComProtocol):
         self._parent: GeoComProtocol = parent
+        self._request = self._parent.request
 
 
 class GeoComProtocol:
@@ -61,7 +63,7 @@ class GeoComProtocol:
     def request(
         self,
         rpc: int,
-        params: Iterable = [],
+        params: Iterable[int | float | bool | str | Angle | Byte] = [],
         parsers: dict[str, Callable[[str], Any]] | None = None
     ) -> GeoComResponse:
         raise NotImplementedError()
