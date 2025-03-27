@@ -15,6 +15,7 @@ class GeoComReturnCode(Enum):
 class GeoComResponse:
     def __init__(
         self,
+        rpcname: str,
         cmd: str,
         response: str,
         comcode: GeoComReturnCode,
@@ -22,6 +23,7 @@ class GeoComResponse:
         trans: int,
         params: dict[str, Any]
     ):
+        self.rpcname: str = rpcname
         self.cmd: str = cmd
         self.response: str = response
         self.comcode: GeoComReturnCode = comcode
@@ -31,7 +33,7 @@ class GeoComResponse:
 
     def __str__(self) -> str:
         return (
-            f"GeoComResponse com: {self.comcode.name:s}, "
+            f"GeoComResponse({self.rpcname}) com: {self.comcode.name:s}, "
             f"rpc: {self.rpccode.name:s}, "
             f"tr: {self.trans:d}, "
             f"params: {self.params}, "

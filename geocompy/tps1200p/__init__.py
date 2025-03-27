@@ -29,7 +29,7 @@ from .img import TPS1200PIMG
 from .mot import TPS1200PMOT
 from .sup import TPS1200PSUP
 from .tmc import TPS1200PTMC
-from .grc import TPS1200PGRC
+from .grc import TPS1200PGRC, rpcnames
 
 
 class TPS1200P(GeoComProtocol):
@@ -159,8 +159,10 @@ class TPS1200P(GeoComProtocol):
         args: dict[str, Callable[[str], Any]]
     ) -> GeoComResponse:
         m = self.RESPPAT.match(reply)
+        rpc = int(cmd.split(":")[0].split(",")[1])
         if not m:
             return GeoComResponse(
+                rpcnames[rpc],
                 cmd,
                 reply,
                 TPS1200PGRC.COM_CANT_DECODE,
@@ -179,6 +181,7 @@ class TPS1200P(GeoComProtocol):
                 params[name] = func(value)
         except:
             return GeoComResponse(
+                rpcnames[rpc],
                 cmd,
                 reply,
                 TPS1200PGRC.COM_CANT_DECODE,
@@ -190,6 +193,7 @@ class TPS1200P(GeoComProtocol):
         comrc = TPS1200PGRC(int(groups["comrc"]))
         rc = TPS1200PGRC(int(groups["rc"]))
         return GeoComResponse(
+            rpcnames[rpc],
             cmd,
             reply,
             comrc,
