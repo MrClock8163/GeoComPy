@@ -209,7 +209,7 @@ class Angle:
         return f"{self.asunit(AngleUnit.DEG):.4f} DEG"
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__:s}({self._value:f} RAD)"
+        return f"{type(self).__name__:s}({self.asunit(AngleUnit.DMS):s})"
 
     def __pos__(self) -> Angle:
         return Angle(self._value)
@@ -271,9 +271,9 @@ class Angle:
 
     def __abs__(self) -> Angle:
         return self.normalized()
-    
+
     def __float__(self) -> float:
-        return self._value
+        return float(self._value)
 
     def asunit(self, unit: _AngleUnitLike = AngleUnit.RAD) -> float | str:
         """Returns the value of the angle in the target unit.
@@ -310,16 +310,42 @@ class Byte:
             raise ValueError(
                 f"bytes must fall in the 0-255 range, got: {value}"
             )
-        
+
         self._value: int = value
-    
+
     def __str__(self) -> str:
         return f"'{format(self._value, '02X')[-2:]}'"
-    
+
+    def __int__(self) -> int:
+        return self._value
+
     @classmethod
     def parse(cls, string: str) -> Byte:
-        if string[0] == string[1] == "'":
+        if string[0] == string[-1] == "'":
             string = string[1:-1]
 
         value = int(string, base=16)
         return cls(value)
+
+
+class Coordinate:
+    def __init__(self, x: float, y: float, z: float):
+        self.x: float = x
+        self.y: float = y
+        self.z: float = z
+
+    def __str__(self) -> str:
+        return f"Coordinate({self.x}, {self.y}, {self.z})"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __iter__(self):
+        return iter([self.x, self.y, self.z])
+
+    def __getitem__(self, idx: int) -> float:
+        if idx < 0 or idx > 2:
+            raise ValueError(f"index out of valid 0-2 range, got: {idx}")
+
+        coords = (self.x, self.y, self.z)
+        return coords[idx]
