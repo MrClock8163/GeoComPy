@@ -10,18 +10,6 @@ def parsestr(value: str) -> str:
     return value[1:-1]
 
 
-def parsebyte(value: str) -> int:
-    return int(value[1:-1], base=16)
-
-
-def tostr(value: str) -> str:
-    return f"\"{value:s}\""
-
-
-def tobyte(value: int) -> str:
-    return f"'{format(value, '02X')[-2:]}'"
-
-
 def toenum[T: type[Enum], R: Enum](typ: T, value: R | str):
     if isinstance(value, str):
         return typ._member_map_[value]
