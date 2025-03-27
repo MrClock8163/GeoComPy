@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Callable, Any
+from typing import Callable, Any, Iterable
 from logging import Logger, NullHandler
 
 from .communication import Connection
@@ -58,14 +58,15 @@ class GeoComProtocol:
             logger.addHandler(NullHandler())
         self.logger: Logger = logger
 
-    def exec1(
+    def request(
         self,
-        cmd: str,
-        args: dict[str, Callable[[str], Any]] | None = None
+        rpc: int,
+        params: Iterable = [],
+        parsers: dict[str, Callable[[str], Any]] | None = None
     ) -> GeoComResponse:
         raise NotImplementedError()
 
-    def parse_reply(
+    def parse_response(
         cls,
         cmd: str,
         response: str,
