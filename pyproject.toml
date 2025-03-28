@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+dynamic = ["version"]
+name = "geocompy"
+# version = "0.0.1"
+authors = [
+  { name="MrClock", email="mrclock8163@gmail.com" },
+]
+description = "Python package for controlling Leica instruments through serial connection"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pyserial"
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed"
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICEN[CS]E*"]
+keywords = ["GeoCom", "surveying", "tps1200", "viva"]
+
+[project.urls]
+Homepage = "https://github.com/MrClock8163/geocompy"
+Issues = "https://github.com/MrClock8163/geocompy/issues"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "_version.py"
