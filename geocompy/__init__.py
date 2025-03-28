@@ -77,3 +77,31 @@ class GeoComProtocol:
         args: dict[str, Callable[[str], Any]]
     ) -> GeoComResponse:
         raise NotImplementedError()
+
+
+class GsiOnlineProtocol:
+    def __init__(
+        self,
+        connection: Connection,
+        logger: Logger | None = None
+    ):
+        self._conn: Connection = connection
+        if logger is None:
+            logger = Logger("/dev/null")
+            logger.addHandler(NullHandler())
+        self.logger: Logger = logger
+    
+    def set(
+        self,
+        spec: int,
+        param: int
+    ):  
+        cmd = f"SET/{spec:d}/{param:d}"
+        self._conn.exchange1(cmd)
+
+    def conf(
+        self,
+        spec: int
+    ):
+        cmd = f"CONF/{spec:d}"
+        response = self._conn.exchange1(cmd)
