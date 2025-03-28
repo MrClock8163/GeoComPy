@@ -6,6 +6,7 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
+from ..data import Angle
 from ..communication import toenum
 
 
@@ -70,12 +71,12 @@ class TPS1200PMOT(GeoComSubsystem):
 
     def set_velocity(
         self,
-        horizontal: float,
-        vertical: float
+        horizontal: Angle,
+        vertical: Angle
     ) -> GeoComResponse:
-        horizontal = min(0.79, max(-0.79, horizontal))
-        vertical = min(0.79, max(-0.79, vertical))
+        _horizontal = min(0.79, max(-0.79, float(horizontal)))
+        _vertical = min(0.79, max(-0.79, float(vertical)))
         return self._request(
             6004,
-            [horizontal, vertical]
+            [_horizontal, _vertical]
         )

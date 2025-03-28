@@ -467,6 +467,7 @@ class TPS1200PTMC(GeoComSubsystem):
         _mode = toenum(self.INCLINEPRG, mode)
         return self._request(
             2116,
+            [wait, _mode.value],
             parsers={
                 "east": float,
                 "north": float,

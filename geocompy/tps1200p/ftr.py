@@ -61,15 +61,21 @@ class TPS1200PFTR(GeoComSubsystem):
                 "year": Byte.parse
             }
         )
-        time = datetime(
-            int(response.params["year"]) + 2000,
-            int(response.params["month"]),
-            int(response.params["day"]),
-            int(response.params["hour"]),
-            int(response.params["minute"]),
-            int(response.params["second"]),
-            int(response.params["centisec"]) * 10000
-        )
+        time: datetime | None = None
+        if (
+            response.comcode
+            and response.rpccode
+            and response.params["filename"] != ""
+        ):
+            time = datetime(
+                int(response.params["year"]) + 2000,
+                int(response.params["month"]),
+                int(response.params["day"]),
+                int(response.params["hour"]),
+                int(response.params["minute"]),
+                int(response.params["second"]),
+                int(response.params["centisec"]) * 10000
+            )
         response.params = {
             "last": response.params["last"],
             "filename": response.params["filename"],

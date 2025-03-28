@@ -68,7 +68,6 @@ class TPS1200PCSV(GeoComSubsystem):
         R100 = 1
         R300 = 2
         R400 = 3
-        R1000 = 4
 
     class POWERSOURCE(Enum):
         @classmethod

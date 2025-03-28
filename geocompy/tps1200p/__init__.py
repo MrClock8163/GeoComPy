@@ -160,9 +160,10 @@ class TPS1200P(GeoComProtocol):
     ) -> GeoComResponse:
         m = self.RESPPAT.match(reply)
         rpc = int(cmd.split(":")[0].split(",")[1])
+        rpcname = rpcnames.get(rpc, str(rpc))
         if not m:
             return GeoComResponse(
-                rpcnames[rpc],
+                rpcname,
                 cmd,
                 reply,
                 TPS1200PGRC.COM_CANT_DECODE,
@@ -181,7 +182,7 @@ class TPS1200P(GeoComProtocol):
                 params[name] = func(value)
         except:
             return GeoComResponse(
-                rpcnames[rpc],
+                rpcname,
                 cmd,
                 reply,
                 TPS1200PGRC.COM_CANT_DECODE,
@@ -193,7 +194,7 @@ class TPS1200P(GeoComProtocol):
         comrc = TPS1200PGRC(int(groups["comrc"]))
         rc = TPS1200PGRC(int(groups["rc"]))
         return GeoComResponse(
-            rpcnames[rpc],
+            rpcname,
             cmd,
             reply,
             comrc,

@@ -300,6 +300,7 @@ rpcnames: dict[int, str] = {
     5100: "CSV_GetReflectorlessClass",
     5034: "CSV_GetSWVersion",
     5007: "CSV_SetDateTime",
+    5039: "CSV_CheckPower",
     1058: "EDM_GetEglIntensity",
     1004: "EDM_Laserpointer",
     1059: "EDM_SetEglIntensity",
