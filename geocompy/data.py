@@ -316,6 +316,9 @@ class Byte:
     def __str__(self) -> str:
         return f"'{format(self._value, '02X')[-2:]}'"
 
+    def __repr__(self) -> str:
+        return str(self)
+
     def __int__(self) -> int:
         return self._value
 
