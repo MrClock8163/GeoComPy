@@ -37,4 +37,4 @@ Issues = "https://github.com/MrClock8163/geocompy/issues"
 source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "_version.py"
+version-file = "src/geocompy/_version.py"
