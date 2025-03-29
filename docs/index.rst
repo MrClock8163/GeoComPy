@@ -23,4 +23,4 @@ API documentation
 .. toctree::
    :maxdepth: 2
 
-   source/geocompy
+   api/geocompy
