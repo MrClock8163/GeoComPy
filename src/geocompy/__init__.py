@@ -4,9 +4,13 @@ from enum import Enum
 from typing import Callable, Any, Iterable
 from logging import Logger, NullHandler
 
-from ._version import __version__
 from .data import Angle, Byte
 from .communication import Connection
+
+try:
+    from ._version import __version__
+except:
+    pass
 
 
 class GeoComReturnCode(Enum):
