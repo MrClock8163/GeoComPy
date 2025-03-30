@@ -1,5 +1,5 @@
 """
-``geocompy.tps1200p.aut``
+``geocompy.tps1200p.bap``
 =========================
 
 Definitions for the TPS1200+ Basic applications subsystem.
@@ -26,6 +26,14 @@ from ..data import (
 
 
 class TPS1200PBAP(GeoComSubsystem):
+    """
+    Basic applications subsystem of the TPS1200+ GeoCom protocol.
+
+    This subsystem contains high-level functions that are also accessible
+    through the user interface. The commands combine several subcommands
+    for ease of operation
+
+    """
     class MEASUREPRG(Enum):
         @classmethod
         def parse(cls, value: str) -> TPS1200PBAP.MEASUREPRG:
