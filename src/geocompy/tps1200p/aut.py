@@ -129,10 +129,8 @@ class TPS1200PAUT(GeoComSubsystem):
                 - ``NA``: GeoCom Robotic license not found.
 
             - Params:
-                - **hz** (`Angle`):
-                  Horizontal tolerance.
-                - **v** (`Angle`):
-                  Vertical tolerance.
+                - **hz** (`Angle`): Horizontal tolerance.
+                - **v** (`Angle`): Vertical tolerance.
 
         See Also
         --------
@@ -190,10 +188,8 @@ class TPS1200PAUT(GeoComSubsystem):
                 - ``NA``: GeoCom Robotic license not found.
 
             - Params:
-                - **hz** (`float`):
-                  Horizontal timeout [sec].
-                - **v** (`float`):
-                  Vertical timeout [sec].
+                - **hz** (`float`): Horizontal timeout [sec].
+                - **v** (`float`): Vertical timeout [sec].
 
         See Also
         --------
@@ -475,8 +471,7 @@ class TPS1200PAUT(GeoComSubsystem):
         -------
         GeoComResponse
             - Params:
-                - **adjmode** (`ADJMODE`): current fine adjustment
-                  mode
+                - **adjmode** (`ADJMODE`): current fine adjustment mode
             - Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
