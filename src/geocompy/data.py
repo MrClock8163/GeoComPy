@@ -1,6 +1,6 @@
 """
-geocompy.data
-=============
+``geocompy.data``
+=================
 
 The data module provides utility functions and classes for serializing
 and deserializing data in the serial communication.
@@ -8,16 +8,16 @@ and deserializing data in the serial communication.
 Functions
 ---------
 
-- :meth:`parsestr`
-- :meth:`toenum`
+- ``parsestr``
+- ``toenum``
 
 Types
 -----
 
-- :class:`AngleUnit`
-- :class:`Angle`
-- :class:`Byte`
-- :class:`Coordinate`
+- ``AngleUnit``
+- ``Angle``
+- ``Byte``
+- ``Coordinate``
 
 """
 from __future__ import annotations

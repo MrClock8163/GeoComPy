@@ -1,14 +1,14 @@
 """
-geocompy.communication
-======================
+``geocompy.communication``
+==========================
 
 Implementations of connection methods.
 
 Types
 -----
 
-- :class:`Connection` (generic base class)
-- :class:`SerialConnection`
+- ``Connection`` (generic base class)
+- ``SerialConnection``
 
 """
 from __future__ import annotations

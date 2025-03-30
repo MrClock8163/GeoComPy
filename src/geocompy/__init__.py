@@ -31,19 +31,19 @@ has been imported as ``gc``:
 Subpackages
 -----------
 
-:mod:`geocompy.tps1200p`
+``geocompy.tps1200p``
     Communication with instruments running TPS1200+ software.
 
-:mod:`geocompy.vivatps`
+``geocompy.vivatps``
     Communication with instruments running Viva(/Nova)TPS software.
 
 Submodules
 ----------
 
-:mod:`geocompy.data`
+``geocompy.data``
     Utilities for data handling.
 
-:mod:`geocompy.communication`
+``geocompy.communication``
     Communication methods.
 
 """

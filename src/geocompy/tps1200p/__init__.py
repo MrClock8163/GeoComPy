@@ -1,3 +1,33 @@
+"""
+``geocompy.tps1200p``
+=====================
+
+The ``tps1200p`` package provides wrapper methods for all GeoCom RPC
+functions available on an instrument running the TPS1200+ system software.
+
+Types
+-----
+
+- ``TPS1200P``
+
+Submodules
+----------
+
+- ``geocompy.tps1200p.grc``
+- ``geocompy.tps1200p.aus``
+- ``geocompy.tps1200p.aut``
+- ``geocompy.tps1200p.bap``
+- ``geocompy.tps1200p.bmm``
+- ``geocompy.tps1200p.com``
+- ``geocompy.tps1200p.csv``
+- ``geocompy.tps1200p.edm``
+- ``geocompy.tps1200p.ftr``
+- ``geocompy.tps1200p.img``
+- ``geocompy.tps1200p.mot``
+- ``geocompy.tps1200p.sup``
+- ``geocompy.tps1200p.tmc``
+
+"""
 from __future__ import annotations
 
 import re
@@ -33,7 +63,28 @@ from .grc import TPS1200PGRC, rpcnames
 
 
 class TPS1200P(GeoComProtocol):
-    RESPPAT: re.Pattern = re.compile(
+    """
+    TPS1200+ GeoCom protocol handler.
+
+    The individual commands are available through their respective
+    subsystems.
+
+    Examples
+    --------
+
+    >>> from serial import Serial
+    >>> from geocompy.communication import SerialConnection
+    >>> from geocompy.tps1200p import TPS1200P
+    >>> 
+    >>> port = Serial("COM4", timeout=15)
+    >>> with SerialConnection(port) as line:
+    ...     tps = TPS1200P(port)
+    ...     tps.com.nullproc()
+    ...
+    >>>
+
+    """
+    _RESPPAT: re.Pattern = re.compile(
         r"^%R1P,"
         r"(?P<comrc>\d+),"
         r"(?P<tr>\d+):"
@@ -47,19 +98,53 @@ class TPS1200P(GeoComProtocol):
         logger: logging.Logger | None = None,
         retry: int = 2
     ):
+        """
+        After the subsystems are initialized, the connection is tested by
+        sending an ``LF`` character to clear the receiver buffer, then the
+        ``COM_NullProc`` is executed. If the test fails, it is retried with
+        one second delay. The test is attempted `retry` number of times.
+
+        Parameters
+        ----------
+        connection : ~communication.Connection
+            Connection to the TPS1200+ instrument.
+            (usually :class:`~geocompy.communication.SerialConnection`).
+        logger : ~logging.Logger | None, optional
+            Logger to log all requests and responses, by default None
+        retry : int, optional
+            Number of retries at connection validation before giving up.
+        
+        Raises
+        ------
+        ConnectionError
+            If the connection could not be verified in the specified
+            number of retries.
+        """
         super().__init__(connection, logger)
-        self.aus = TPS1200PAUS(self)
-        self.aut = TPS1200PAUT(self)
-        self.bap = TPS1200PBAP(self)
-        self.bmm = TPS1200PBMM(self)
-        self.com = TPS1200PCOM(self)
-        self.csv = TPS1200PCSV(self)
-        self.edm = TPS1200PEDM(self)
-        self.ftr = TPS1200PFTR(self)
-        self.img = TPS1200PIMG(self)
-        self.mot = TPS1200PMOT(self)
-        self.sup = TPS1200PSUP(self)
-        self.tmc = TPS1200PTMC(self)
+        self.aus: TPS1200PAUS = TPS1200PAUS(self)
+        """Alt User subsystem."""
+        self.aut: TPS1200PAUT = TPS1200PAUT(self)
+        """Automation subsystem."""
+        self.bap: TPS1200PBAP = TPS1200PBAP(self)
+        """Basic applications subsystem."""
+        self.bmm: TPS1200PBMM = TPS1200PBMM(self)
+        """Basic man-machine interface subsystem."""
+        self.com: TPS1200PCOM = TPS1200PCOM(self)
+        """Communications subsystem."""
+        self.csv: TPS1200PCSV = TPS1200PCSV(self)
+        """Central services subsystem."""
+        self.edm: TPS1200PEDM = TPS1200PEDM(self)
+        """Electronic distance measurement subsystem."""
+        self.ftr: TPS1200PFTR = TPS1200PFTR(self)
+        """File transfer subsystem."""
+        self.img: TPS1200PIMG = TPS1200PIMG(self)
+        """Image processing subsystem."""
+        self.mot: TPS1200PMOT = TPS1200PMOT(self)
+        """Motorization subsytem."""
+        self.sup: TPS1200PSUP = TPS1200PSUP(self)
+        """Supervisor subsystem."""
+        self.tmc: TPS1200PTMC = TPS1200PTMC(self)
+        """Theodolite measurement and calculation subsystem."""
 
         for i in range(retry):
             self._conn.send("\n")
@@ -99,6 +184,50 @@ class TPS1200P(GeoComProtocol):
         params: Iterable[int | float | bool | str | Angle | Byte] = [],
         parsers: dict[str, Callable[[str], Any]] | None = None
     ) -> GeoComResponse:
+        """
+        Executes a TPS1200+ RPC request and returns the parsed GeoCom
+        response.
+
+        Constructs a request (from the given RPC code and parameters),
+        writes it to the serial line, then reads the response. The
+        response is then parsed using the provided parser functions.
+
+        Parameters
+        ----------
+        rpc : int
+            Number of the RPC to execute.
+        params : Iterable[int | float | bool | str | Angle | Byte], optional
+            Parameters for the request, by default []
+        parsers : dict[str, Callable[[str], Any]] | None, optional
+            Parser functions for the values in the RPC response
+            (Maps the parser functions to the names of the parameters),
+            by default None
+
+        Returns
+        -------
+        GeoComResponse
+            Parsed return codes and parameters from the RPC response.
+
+        Raises
+        ------
+        TypeError
+            If the passed parameters contained an unexpected type.
+            
+        Notes
+        -----
+        If a :class:`~serial.SerialTimeoutException` occurs during the
+        request, a response with :attr:`~grc.TPS1200PGRC.COM_TIMEDOUT`
+        and :attr:`~grc.TPS1200PGRC.FATAL` codes is returned.
+
+        If a :class:`~serial.SerialException` occurs during the requrest,
+        a response with :attr:`~grc.TPS1200PGRC.COM_CANT_SEND` and
+        :attr:`~grc.TPS1200PGRC.FATAL` codes is returned.
+
+        If an unknown :class:`Exception` occurs during the request, a
+        response with :attr:`~grc.TPS1200PGRC.FATAL` and
+        :attr:`~grc.TPS1200PGRC.FATAL` codes is returned.
+        
+        """
         strparams: list[str] = []
         for item in params:
             match item:
@@ -128,7 +257,7 @@ class TPS1200P(GeoComProtocol):
         except SerialTimeoutException as e:
             self._logger.error(format_exc())
             answer = (
-                f"%R1P,{TPS1200PGRC.COM_TIMEOUT.value:d},"
+                f"%R1P,{TPS1200PGRC.COM_TIMEDOUT.value:d},"
                 f"0:{TPS1200PGRC.FATAL.value:d}"
             )
         except SerialException as e:
@@ -158,7 +287,34 @@ class TPS1200P(GeoComProtocol):
         reply: str,
         parsers: dict[str, Callable[[str], Any]]
     ) -> GeoComResponse:
-        m = self.RESPPAT.match(reply)
+        """
+        Parses RPC response and constructs :class:`GeoComResponse`
+        instance.
+
+        Parameters
+        ----------
+        cmd : str
+            Full, serialized request, that invoked the response.
+        response : str
+            Full, received response.
+        parsers : dict[str, Callable[[str], Any]]
+            Parser functions for the values in the RPC response.
+            (Maps the parser functions to the names of the parameters.)
+
+        Returns
+        -------
+        GeoComResponse
+            Parsed return codes and parameters from the RPC response.
+        
+        Notes
+        -----
+        If the response does not match the expected pattern, or an
+        :class:`Exception` occurs during parsing, a response with
+        :attr:`~grc.TPS1200PGRC.COM_CANT_DECODE` and
+        :attr:`~grc.TPS1200PGRC.UNDEFINED` codes is returned.
+            
+        """
+        m = self._RESPPAT.match(reply)
         rpc = int(cmd.split(":")[0].split(",")[1])
         rpcname = rpcnames.get(rpc, str(rpc))
         if not m:
