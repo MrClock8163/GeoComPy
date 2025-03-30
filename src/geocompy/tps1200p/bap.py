@@ -31,7 +31,7 @@ class TPS1200PBAP(GeoComSubsystem):
 
     This subsystem contains high-level functions that are also accessible
     through the user interface. The commands combine several subcommands
-    for ease of operation
+    for ease of operation.
 
     """
     class MEASUREPRG(Enum):
