@@ -6,11 +6,11 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..communication import (
+from ..data import (
+    Angle,
     toenum,
     parsestr
 )
-from ..data import Angle
 
 
 class TPS1200PBAP(GeoComSubsystem):

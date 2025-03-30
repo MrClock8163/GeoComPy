@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 
 from .. import GeoComResponse
-from ..communication import toenum
+from ..data import toenum
 from ..tps1200p.csv import TPS1200PCSV
 
 

@@ -5,7 +5,7 @@ from enum import Enum
 from .. import (
     GeoComResponse
 )
-from ..communication import toenum
+from ..data import toenum
 from .cam import VivaTPSCAM
 from ..tps1200p.aut import TPS1200PAUT
 

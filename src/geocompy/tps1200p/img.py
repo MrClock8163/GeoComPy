@@ -6,7 +6,7 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..communication import toenum
+from ..data import toenum
 
 
 class TPS1200PIMG(GeoComSubsystem):

@@ -6,8 +6,11 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import Angle, Coordinate
-from ..communication import toenum
+from ..data import (
+    Angle,
+    Coordinate,
+    toenum
+)
 
 
 class TPS1200PTMC(GeoComSubsystem):

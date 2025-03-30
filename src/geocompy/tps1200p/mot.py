@@ -6,8 +6,7 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import Angle
-from ..communication import toenum
+from ..data import Angle, toenum
 
 
 class TPS1200PMOT(GeoComSubsystem):

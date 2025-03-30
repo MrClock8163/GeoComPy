@@ -4,8 +4,11 @@ from enum import Enum
 from datetime import datetime
 
 from .. import GeoComResponse
-from ..communication import toenum, parsestr
-from ..data import Byte
+from ..data import (
+    Byte,
+    parsestr,
+    toenum
+)
 from ..tps1200p.ftr import TPS1200PFTR
 
 

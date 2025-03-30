@@ -126,19 +126,19 @@ class TPS1200P(GeoComProtocol):
         try:
             answer = self._conn.exchange1(cmd)
         except SerialTimeoutException as e:
-            self.logger.error(format_exc())
+            self._logger.error(format_exc())
             answer = (
                 f"%R1P,{TPS1200PGRC.COM_TIMEOUT.value:d},"
                 f"0:{TPS1200PGRC.FATAL.value:d}"
             )
         except SerialException as e:
-            self.logger.error(format_exc())
+            self._logger.error(format_exc())
             answer = (
                 f"%R1P,{TPS1200PGRC.COM_CANT_SEND.value:d},"
                 f"0:{TPS1200PGRC.FATAL.value:d}"
             )
         except Exception as e:
-            self.logger.error(format_exc())
+            self._logger.error(format_exc())
             answer = (
                 f"%R1P,{TPS1200PGRC.FATAL.value:d},"
                 f"0:{TPS1200PGRC.FATAL.value:d}"
@@ -149,14 +149,14 @@ class TPS1200P(GeoComProtocol):
             answer,
             parsers if parsers is not None else {}
         )
-        self.logger.debug(response)
+        self._logger.debug(response)
         return response
 
     def parse_response(
         self,
         cmd: str,
         reply: str,
-        args: dict[str, Callable[[str], Any]]
+        parsers: dict[str, Callable[[str], Any]]
     ) -> GeoComResponse:
         m = self.RESPPAT.match(reply)
         rpc = int(cmd.split(":")[0].split(",")[1])
@@ -178,7 +178,7 @@ class TPS1200P(GeoComProtocol):
             values = ""
         params: dict = {}
         try:
-            for (name, func), value in zip(args.items(), values.split(",")):
+            for (name, func), value in zip(parsers.items(), values.split(",")):
                 params[name] = func(value)
         except:
             return GeoComResponse(

@@ -8,9 +8,9 @@ from .. import (
 )
 from ..data import (
     Coordinate,
-    Angle
+    Angle,
+    toenum
 )
-from ..communication import toenum
 
 
 class VivaTPSCAM(GeoComSubsystem):

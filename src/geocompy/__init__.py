@@ -1,3 +1,52 @@
+"""
+GeoComPy
+========
+
+Python wrapper functions for communicating with surveying
+instruments over a serial connection.
+
+The implementations use the Leica GeoCom ASCII RPC procotoll
+primarily. For older instruments, that do not support it, the
+GSI Online commands are used instead.
+
+The package provides
+    1. Utility data types for handling instrument responses
+    2. Instrument software specific low level commands
+    3. Instrument-agnostic higher level functions for instrument types 
+
+Documentation
+-------------
+
+Public classes and methods are provided with proper docstrings, that can
+be viewed in the source code, through introspection tools or editor
+utilities. The docstrings follow the NumPy style conventions. In addition
+to the in-code documentation, a complete, rendered reference is avaialable
+on the `GeoComPy documentation <https://geocompy.readthedocs.io>`_ site.
+
+Some docstrings provide examples. These examples assume that `geocompy`
+has been imported as ``gc``:
+
+    >>> import geocompy as gc
+
+Subpackages
+-----------
+
+:mod:`geocompy.tps1200p`
+    Communication with instruments running TPS1200+ software.
+
+:mod:`geocompy.vivatps`
+    Communication with instruments running Viva(/Nova)TPS software.
+
+Submodules
+----------
+
+:mod:`geocompy.data`
+    Utilities for data handling.
+
+:mod:`geocompy.communication`
+    Communication methods.
+
+"""
 from __future__ import annotations
 
 from enum import Enum
@@ -10,14 +59,40 @@ from .communication import Connection
 try:
     from ._version import __version__
 except:
-    pass
+    __version__ = "0.1.0-alpha"
 
 
 class GeoComReturnCode(Enum):
-    pass
+    """Base class for all GeoCom return code enums."""
 
 
 class GeoComResponse:
+    """
+    Container class for parsed GeoCom responses.
+
+    Parameters
+    ----------
+    rpcname : str
+        Name of the GeoCom function, that corresponds to the RPC,
+        that invoked this response.
+    cmd : str
+        Full, serialized request, that invoked this response.
+    response : str
+        Full, received response.
+    comcode : GeoComReturnCode
+        Parsed COM return code indicating the success/failure of
+        communication.
+    rpccode : GeoComReturnCode
+        Parsed RPC return code indicating the success/failure of
+        the command.
+    trans : int
+        Parsed transaction ID.
+    params : dict[str, Any]
+        Collection of parsed response parameters. The content
+        is dependent on the executed function.
+
+    """
+
     def __init__(
         self,
         rpcname: str,
@@ -28,13 +103,48 @@ class GeoComResponse:
         trans: int,
         params: dict[str, Any]
     ):
+        """
+        Initializes a new `GeoComResponse`.
+
+        Parameters
+        ----------
+        rpcname : str
+            Name of the GeoCom function, that corresponds to the RPC,
+            that invoked this response.
+        cmd : str
+            Full, serialized request, that invoked this response.
+        response : str
+            Full, received response.
+        comcode : GeoComReturnCode
+            Parsed COM return code indicating the success/failure of
+            communication.
+        rpccode : GeoComReturnCode
+            Parsed RPC return code indicating the success/failure of
+            the command.
+        trans : int
+            Parsed transaction ID.
+        params : dict[str, Any]
+            Collection of parsed response parameters. The content
+            is dependent on the executed function.
+        """
         self.rpcname: str = rpcname
+        """Name of the GeoCom function, that correspondes to the RPC,
+            that invoked this response."""
         self.cmd: str = cmd
+        """Full, serialized request, that invoked this response."""
         self.response: str = response
+        """Full, received response."""
         self.comcode: GeoComReturnCode = comcode
+        """Parsed COM return code indicating the success/failure of
+            communication."""
         self.rpccode: GeoComReturnCode = rpccode
+        """Parsed RPC return code indicating the success/failure of
+            the command."""
         self.trans: int = trans
+        """Parsed transaction ID."""
         self.params: dict[str, Any] = params
+        """Collection of parsed response parameters. The content
+            is dependent on the executed function."""
 
     def __str__(self) -> str:
         return (
@@ -50,22 +160,65 @@ class GeoComResponse:
 
 
 class GeoComSubsystem:
+    """
+    Base class for GeoCom subsystems.
+
+    Parameters
+    ----------
+    parent : GeoComProtocol
+        The parent protocol instance of this subsystem.
+    """
+
     def __init__(self, parent: GeoComProtocol):
+        """
+        Initializes a new `GeoComSubsystem`.
+
+        Parameters
+        ----------
+        parent : GeoComProtocol
+            The parent protocol instance of this subsystem.
+        """
         self._parent: GeoComProtocol = parent
+        """Parent protocol instance"""
         self._request = self._parent.request
+        """Shortcut to the `request` method of the parent protocol."""
 
 
 class GeoComProtocol:
+    """
+    Base class for GeoCom protocol versions.
+
+    Parameters
+    ----------
+    connection : Connection
+        Connection to use for communication
+        (usually :class:`~communication.SerialConnection`).
+    logger : ~logging.Logger | None, optional
+        Logger to log all requests and responses, by default None
+
+    """
     def __init__(
         self,
         connection: Connection,
         logger: Logger | None = None
     ):
+        """
+        Initializes new `GeoComProtocol` instance.
+
+        Parameters
+        ----------
+        connection : Connection
+            Connection to use for communication
+            (usually :class:`~communication.SerialConnection`).
+        logger : ~logging.Logger | None, optional
+            Logger to log all requests and responses, by default None
+        
+        """
         self._conn: Connection = connection
         if logger is None:
             logger = Logger("/dev/null")
             logger.addHandler(NullHandler())
-        self.logger: Logger = logger
+        self._logger: Logger = logger
 
     def request(
         self,
@@ -73,14 +226,68 @@ class GeoComProtocol:
         params: Iterable[int | float | bool | str | Angle | Byte] = [],
         parsers: dict[str, Callable[[str], Any]] | None = None
     ) -> GeoComResponse:
+        """
+        Executes an RPC request and returns the parsed GeoCom response.
+
+        Constructs a request (from the given RPC code and parameters),
+        writes it to the serial line, then reads the response. The
+        response is then parsed using the provided parser functions.
+
+        Parameters
+        ----------
+        rpc : int
+            Number of the RPC to execute.
+        params : Iterable[int | float | bool | str | Angle | Byte], optional
+            Parameters for the request, by default []
+        parsers : dict[str, Callable[[str], Any]] | None, optional
+            Parser functions for the values in the RPC response
+            (Maps the parser functions to the names of the parameters),
+            by default None
+
+        Returns
+        -------
+        GeoComResponse
+            Parsed return codes and parameters from the RPC response.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the child class.
+        
+        """
         raise NotImplementedError()
 
     def parse_response(
         cls,
         cmd: str,
         response: str,
-        args: dict[str, Callable[[str], Any]]
+        parsers: dict[str, Callable[[str], Any]]
     ) -> GeoComResponse:
+        """
+        Parses RPC response and constructs :class:`GeoComResponse`
+        instance.
+
+        Parameters
+        ----------
+        cmd : str
+            Full, serialized request, that invoked the response.
+        response : str
+            Full, received response.
+        parsers : dict[str, Callable[[str], Any]]
+            Parser functions for the values in the RPC response.
+            (Maps the parser functions to the names of the parameters.)
+
+        Returns
+        -------
+        GeoComResponse
+            Parsed return codes and parameters from the RPC response.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the child class.
+            
+        """
         raise NotImplementedError()
 
 
@@ -94,7 +301,7 @@ class GsiOnlineProtocol:
         if logger is None:
             logger = Logger("/dev/null")
             logger.addHandler(NullHandler())
-        self.logger: Logger = logger
+        self._logger: Logger = logger
     
     def set(
         self,

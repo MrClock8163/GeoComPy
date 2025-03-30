@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from ..communication import toenum
+from ..data import toenum
 from .. import GeoComResponse
 from ..tps1200p.bap import TPS1200PBAP
 

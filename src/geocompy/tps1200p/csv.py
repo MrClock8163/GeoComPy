@@ -7,8 +7,7 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import Byte
-from ..communication import parsestr
+from ..data import Byte, parsestr
 
 
 class TPS1200PCSV(GeoComSubsystem):

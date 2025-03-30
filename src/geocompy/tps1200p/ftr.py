@@ -7,8 +7,11 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import Byte
-from ..communication import toenum, parsestr
+from ..data import (
+    Byte,
+    parsestr,
+    toenum
+)
 
 
 class TPS1200PFTR(GeoComSubsystem):
