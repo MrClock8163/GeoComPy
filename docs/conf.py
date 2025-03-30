@@ -22,7 +22,7 @@ author = 'MrClock8163'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "sphinx.ext.apidoc",
+    # "sphinx.ext.apidoc",
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.doctest",
@@ -36,12 +36,14 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
+# html_theme = 'furo'
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+    "serial": ("https://pyserial.readthedocs.io/en/latest/", None)
 }
 
 apidoc_modules = [
@@ -52,10 +54,16 @@ apidoc_modules = [
         "module_first": True,
         "follow_links": True,
         # "separate_modules": True,
-        # "automodule_options": {"no-undoc-members"},
+        "automodule_options": {"no-undoc-members", "no-show-inheritance"},
         "no_headings": True
     }
 ]
+
+# autodoc_member_order = "groupwise"
+autodoc_default_options = {
+    "member-order": "groupwise",
+    "no-show-inheritance": True
+}
 
 def linkcode_resolve(domain, info):
     if domain != 'py':
