@@ -27,7 +27,9 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.doctest",
     "sphinx.ext.linkcode",
-    "sphinx.ext.napoleon"
+    "sphinx.ext.napoleon",
+    "sphinx_copybutton",
+    "notfound.extension"
 ]
 
 templates_path = ['_templates']

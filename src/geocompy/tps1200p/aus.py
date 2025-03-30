@@ -59,12 +59,11 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
-                - :class:`~geocompy.tps1200p.grc.TPS1200PGRC.NOT_IMPL`:
-                  ATR is not available
-
             - Params:
-                - **state** (:class:`ONOFF`): current ATR state
+                - **state** (`ONOFF`): current ATR state
+
+            - Error codes:
+                - ``NOT_IMPL``: ATR is not available.
 
         Notes
         -----
@@ -73,8 +72,6 @@ class TPS1200PAUS(GeoComSubsystem):
         See Also
         --------
         set_user_atr_state
-        get_user_lock_state
-        set_user_lock_state
         """
         return self._request(
             18006,
@@ -101,8 +98,7 @@ class TPS1200PAUS(GeoComSubsystem):
         -------
         GeoComResponse
             - Error codes:
-                - :class:`~geocompy.tps1200p.grc.TPS1200PGRC.NOT_IMPL`:
-                  ATR is not available
+                - ``NOT_IMPL``: ATR is not available.
 
         Notes
         -----
@@ -134,14 +130,16 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
+            - Params:
+                - **state** (`ONOFF`): current ATR state
+
             - Error codes:
-                - :class:`~geocompy.tps1200p.grc.TPS1200PGRC.NOT_IMPL`:
-                  ATR is not available
+                - ``NOT_IMPL``: ATR is not available.
 
         See Also
         --------
         set_user_lock_state
-        ..mot.read_lock_status
+        mot.read_lock_status
         """
         return self._request(
             18008,
@@ -168,8 +166,7 @@ class TPS1200PAUS(GeoComSubsystem):
         -------
         GeoComResponse
             - Error codes:
-                - :class:`~geocompy.tps1200p.grc.TPS1200PGRC.NOT_IMPL`:
-                  ATR is not available
+                - ``NOT_IMPL``: ATR is not available.
 
         Notes
         -----
@@ -179,7 +176,8 @@ class TPS1200PAUS(GeoComSubsystem):
         See Also
         --------
         get_user_lock_state
-        ..aut.lock_in
+        get_user_atr_state
+        aut.lock_in
         """
         _state = toenum(self.ONOFF, state)
         return self._request(

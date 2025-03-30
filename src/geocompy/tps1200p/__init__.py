@@ -72,16 +72,37 @@ class TPS1200P(GeoComProtocol):
     Examples
     --------
 
+    Opening a simple serial connection:
+
     >>> from serial import Serial
     >>> from geocompy.communication import SerialConnection
     >>> from geocompy.tps1200p import TPS1200P
     >>> 
     >>> port = Serial("COM4", timeout=15)
     >>> with SerialConnection(port) as line:
-    ...     tps = TPS1200P(port)
+    ...     tps = TPS1200P(line)
     ...     tps.com.nullproc()
     ...
     >>>
+
+    Passing a logger:
+
+    >>> from logging import Logger, StreamHandler, DEBUG
+    >>> from serial import Serial
+    >>> from geocompy.communication import SerialConnection
+    >>> from geocompy.tps1200p import TPS1200P
+    >>> 
+    >>> log = Logger("stdout", DEBUG)
+    >>> log.addHandler(StreamHandler())
+    >>> port = Serial("COM4", timeout=15)
+    >>> with SerialConnection(port) as line:
+    ...     tps = TPS1200P(line, log)
+    ...     tps.com.nullproc()
+    ...
+    >>>
+    GeoComResponse(COM_NullProc) ... # Startup connection test
+    GeoComResponse(COM_GetDoublePrecision) ... # Precision sync
+    GeoComResponse(COM_NullProc) ... # First executed command
 
     """
     _RESPPAT: re.Pattern = re.compile(
@@ -226,7 +247,36 @@ class TPS1200P(GeoComProtocol):
         If an unknown :class:`Exception` occurs during the request, a
         response with :attr:`~grc.TPS1200PGRC.FATAL` and
         :attr:`~grc.TPS1200PGRC.FATAL` codes is returned.
-        
+
+        Examples
+        --------
+
+        Executing a command without input or output parameters:
+
+        >>> ts # Instantiated TPS1200P
+        >>> ts.request(9013) # AUT_LockIn
+
+        Query command with output:
+
+        >>> ts.request(
+        ...     9030, # AUT_GetFineAdjustMode
+        ...     parsers={
+        ...         "adjmode": ts.aut.ADJMODE.parse
+        ...     }
+        ... )
+
+        Execute command with both input and output parameters:
+
+        >>> ts.request(
+        ...     2108, # TMC_GetSimpleMea
+        ...     [5000, ts.tmc.INCLINEPRG.AUTO.value],
+        ...     {
+        ...         "hz": Angle.parse,
+        ...         "v": Angle.parse,
+        ...         "dist": float
+        ...     }
+        ... )
+
         """
         strparams: list[str] = []
         for item in params:

@@ -1,0 +1,1 @@
+sphinx-autobuild --watch src/geocompy --ignore *__pycache__*  docs docs/_build/html

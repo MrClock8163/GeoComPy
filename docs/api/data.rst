@@ -9,15 +9,16 @@ geocompy.data
 
 .. autoclass:: AngleUnit
     :members:
+    :class-doc-from: both
 
 .. autoclass:: Angle
     :members:
+    :class-doc-from: both
 
 .. autoclass:: Byte
     :members:
+    :class-doc-from: both
 
 .. autoclass:: Coordinate
     :members:
-
-.. .. automodule:: geocompy.data
-..     :members:
+    :class-doc-from: both

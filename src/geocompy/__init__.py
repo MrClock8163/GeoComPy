@@ -70,27 +70,6 @@ class GeoComResponse:
     """
     Container class for parsed GeoCom responses.
 
-    Parameters
-    ----------
-    rpcname : str
-        Name of the GeoCom function, that corresponds to the RPC,
-        that invoked this response.
-    cmd : str
-        Full, serialized request, that invoked this response.
-    response : str
-        Full, received response.
-    comcode : GeoComReturnCode
-        Parsed COM return code indicating the success/failure of
-        communication.
-    rpccode : GeoComReturnCode
-        Parsed RPC return code indicating the success/failure of
-        the command.
-    trans : int
-        Parsed transaction ID.
-    params : dict[str, Any]
-        Collection of parsed response parameters. The content
-        is dependent on the executed function.
-
     """
 
     def __init__(
@@ -104,8 +83,6 @@ class GeoComResponse:
         params: dict[str, Any]
     ):
         """
-        Initializes a new `GeoComResponse`.
-
         Parameters
         ----------
         rpcname : str
@@ -163,16 +140,10 @@ class GeoComSubsystem:
     """
     Base class for GeoCom subsystems.
 
-    Parameters
-    ----------
-    parent : GeoComProtocol
-        The parent protocol instance of this subsystem.
     """
 
     def __init__(self, parent: GeoComProtocol):
         """
-        Initializes a new `GeoComSubsystem`.
-
         Parameters
         ----------
         parent : GeoComProtocol
@@ -188,14 +159,6 @@ class GeoComProtocol:
     """
     Base class for GeoCom protocol versions.
 
-    Parameters
-    ----------
-    connection : Connection
-        Connection to use for communication
-        (usually :class:`~communication.SerialConnection`).
-    logger : ~logging.Logger | None, optional
-        Logger to log all requests and responses, by default None
-
     """
     def __init__(
         self,
@@ -203,8 +166,6 @@ class GeoComProtocol:
         logger: Logger | None = None
     ):
         """
-        Initializes new `GeoComProtocol` instance.
-
         Parameters
         ----------
         connection : Connection

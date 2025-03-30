@@ -25,17 +25,10 @@ class Connection:
     methods of all connection implementations, to serve as a generic
     interface.
 
-    Parameters
-    ----------
-    name : str, optional
-        Descriptive name, by default ""
-
     """
 
     def __init__(self, name: str = ""):
         """
-        Inizializes a new `Connection` with the given name.
-
         Parameters
         ----------
         name : str, optional
@@ -153,20 +146,6 @@ class SerialConnection(Connection):
     (A too short timeout may result in unexpected errors when waiting for
     a slower, motorized function.)
 
-    Parameters
-    ----------
-    port : ~serial.Serial
-        Serial port to communicate on.
-    eom : str, optional
-        EndOfMessage sequence, by default ``"\\r\\n"``
-    eoa : str, optional
-        EndOfAnswer sequence, by default ``"\\r\\n"``
-
-    Notes
-    -----
-    If the serial port is not already open, the initializer will attempt
-    to open it. This might raise an exception if the port cannot be opened.
-
     Examples
     --------
 
@@ -199,8 +178,6 @@ class SerialConnection(Connection):
         eoa: str = "\r\n"
     ):
         """
-        Initializes new `SerialConnection` with the passed serial port.
-
         Parameters
         ----------
         port : ~serial.Serial

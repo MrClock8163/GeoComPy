@@ -149,22 +149,6 @@ class Angle:
         - `Angle` * number (:class:`int` | :class:`float`)
         - `Angle` / number (:class:`int` | :class:`float`)
 
-    Parameters
-    ----------
-    value : float | str
-        Angular value to represent.
-    unit : AngleUnit | str, optional
-        Unit of the source value, by default :class:`AngleUnit.RAD`
-    normalize : bool, optional
-        Normalize angle to +/- full angle, by default False
-    positive : bool, optional
-        Normalize angle only to positive, by default False
-
-    Raises
-    ------
-    ValueError
-        If an unknown `unit` was passed.
-
     Notes
     -----
     An `Angle` can be instantiated from a number of units,
@@ -336,14 +320,12 @@ class Angle:
         positive: bool = False
     ):
         """
-        Initialize new `Angle` from value and unit.
-
         Parameters
         ----------
         value : float | str
             Angular value to represent.
         unit : AngleUnit | str, optional
-            Unit of the source value, by default :member:`AngleUnit.RAD`
+            Unit of the source value, by default AngleUnit.RAD
         normalize : bool, optional
             Normalize angle to +/- full angle, by default False
         positive : bool, optional
@@ -456,7 +438,7 @@ class Angle:
         Parameters
         ----------
         unit : AngleUnit | str, optional
-            Target unit, by default :class:`AngleUnit.RAD`
+            Target unit, by default AngleUnit.RAD
 
         Returns
         -------
@@ -512,19 +494,9 @@ class Byte:
     The main purpose of this class is to help the parsing and formatting
     of byte values during the handling of serial communication.
 
-    Parameters
-    ----------
-    value : int
-        Number to represent.
-
-    Raises
-    ------
-    ValueError
-        If the passed value is outside the [0; 255] range.
-
-
     Examples
     --------
+
     Creating, then "serializing" a `Byte`:
 
     >>> b = gc.data.Byte(17)
@@ -540,8 +512,6 @@ class Byte:
 
     def __init__(self, value: int):
         """
-        Initializes new `Byte` from integer value.
-
         Parameters
         ----------
         value : int
@@ -551,6 +521,7 @@ class Byte:
         ------
         ValueError
             If the passed value is outside the [0; 255] range.
+
         """
         if not (0 <= value <= 255):
             raise ValueError(
@@ -601,15 +572,6 @@ class Coordinate:
     """
     Utility type to represent a position with 3D cartesian coordinates.
 
-    Parameters
-    ----------
-    x : float
-        X component (often easting)
-    y : float
-        Y component (often northing)
-    z : float
-        Z component (often height/up)
-
     Examples
     --------
 
@@ -630,8 +592,6 @@ class Coordinate:
 
     def __init__(self, x: float, y: float, z: float):
         """
-        Initializes new `Coordinate` from components.
-
         Parameters
         ----------
         x : float
