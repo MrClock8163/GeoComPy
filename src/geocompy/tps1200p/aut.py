@@ -276,9 +276,9 @@ class TPS1200PAUT(GeoComSubsystem):
                 - ``AUT_BAD_ENVIRONMENT``: Inadequate environmental
                   conditions.
                 - ``AUT_ACCURACY``: Position is not within tolerances.
-                  Repeat positioning.
+                  Repeat positioning!
                 - ``AUT_DEV_ERROR``: Angle deviation calculation error.
-                  Repeat positioning.
+                  Repeat positioning!
                 - ``AUT_NOT_ENABLED``: ATR mode is not active.
         
         See Also
@@ -336,9 +336,9 @@ class TPS1200PAUT(GeoComSubsystem):
                 - ``AUT_BAD_ENVIRONMENT``: Inadequate environmental
                   conditions.
                 - ``AUT_ACCURACY``: Position is not within tolerances.
-                  Repeat positioning.
+                  Repeat positioning!
                 - ``AUT_DEV_ERROR``: Angle deviation calculation error.
-                  Repeat positioning.
+                  Repeat positioning!
                 - ``AUT_NOT_ENABLED``: ATR mode is not active.
         
         See Also
@@ -398,7 +398,7 @@ class TPS1200PAUT(GeoComSubsystem):
                 - ``AUT_BAD_ENVIRONMENT``: Inadequate environmental
                   conditions.
                 - ``AUT_DEV_ERROR``: Angle deviation calculation error.
-                  Repeat positioning.
+                  Repeat positioning!
                 - ``AUT_DETECTOR_ERROR``: Error in target acquisition.
         
         See Also
