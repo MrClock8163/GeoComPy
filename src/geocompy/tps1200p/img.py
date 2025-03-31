@@ -1,3 +1,15 @@
+"""
+``geocompy.tps1200p.img``
+=========================
+
+Definitions for the TPS1200+ Imaging subsystem.
+
+Types
+-----
+
+- ``TPS1200PIMG``
+
+"""
 from __future__ import annotations
 
 from enum import Enum, Flag
@@ -10,9 +22,29 @@ from ..data import toenum
 
 
 class TPS1200PIMG(GeoComSubsystem):
+    """
+    Imaging subsystem of the TPS1200+ GeoCom protocol.
+
+    This subsystem provides access to the telescoping camera functions
+    for instruments that possess such functionality.
+
+    """
     class MEMTYPE(Enum):
         @classmethod
         def parse(cls, value: str) -> TPS1200PIMG.MEMTYPE:
+            """
+            Parses enum member from serialized enum value.
+
+            Parameters
+            ----------
+            value : str
+                Serialized enum value.
+
+            Returns
+            -------
+            ~TPS1200PIMG.MEMTYPE
+                Parsed enum member.
+            """
             return cls(int(value))
 
         INTERNAL = 0x0
@@ -21,20 +53,65 @@ class TPS1200PIMG(GeoComSubsystem):
     class SUBFUNC(Flag):
         @classmethod
         def parse(cls, value: str) -> TPS1200PIMG.SUBFUNC:
+            """
+            Parses enum member from serialized enum value.
+
+            Parameters
+            ----------
+            value : str
+                Serialized enum value.
+
+            Returns
+            -------
+            ~TPS1200PIMG.SUBFUNC
+                Parsed enum member.
+            """
             return cls(int(value))
 
-        TESTIMG = 1
-        AUTOEXPTIME = 2
-        SS2 = 4
-        SS4 = 8
+        TESTIMG = 1 #: Test image.
+        AUTOEXPTIME = 2 #: Automatic exposure time.
+        SS2 = 4 #: x2 subsampling
+        SS4 = 8 #: x4 subsampling
 
     def get_tcc_config(
         self,
         memtype: MEMTYPE | str = MEMTYPE.PCCARD
     ) -> GeoComResponse:
+        """
+        RPC 23400, ``IMG_GetTccConfig``
+
+        Gets the current telescopic camera settings on the specified
+        memory device.
+
+        Parameters
+        ----------
+        memtype : MEMTYPe | str, optional
+            Memory device, by default PCCARD
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **imgnumber** (`int`): Current image number.
+                - **quality** (`int`): JPEG compression quality [0; 100]%
+                - **subfunc** (`SUBFUNC`): Current function combination.
+                - **prefix** (`str`): File name prefix.
+            - Error codes:
+                - ``FATAL``: CF card is not available, or config file does
+                  not exist.
+                - ``IVVERSION``: Config file version differs from system
+                  software.
+                - ``NA``: Imaging license not found.
+        
+        See Also
+        --------
+        set_tcc_config
+
+        """
         _memtype = toenum(self.MEMTYPE, memtype)
         return self._request(
             23400,
+            [_memtype.value],
             parsers={
                 "imgnumber": int,
                 "quality": int,
@@ -50,6 +127,36 @@ class TPS1200PIMG(GeoComSubsystem):
         subfunc: SUBFUNC | int,
         memtype: MEMTYPE | str = MEMTYPE.PCCARD,
     ) -> GeoComResponse:
+        """
+        RPC 23401, ``IMG_SetTccConfig``
+
+        Sets the telescopic camera settings on the specified memory device.
+
+        Parameters
+        ----------
+        imgnumber : int
+            Image number.
+        quality : int
+            JPEG compression quality [0; 100]%.
+        subfunc : SUBFUNC | int
+            Subfunction combination.
+        memtype : MEMTYPE | str, optional
+            Memory device, by default PCCARD
+
+        Returns
+        -------
+        GeoComResponse
+            - Error codes:
+                - ``FATAL``: CF card is not available or full, or any
+                  parameter is out of valid range.
+                - ``NA``: Imaging license not found.
+        
+        See Also
+        --------
+        get_tcc_config
+        take_tcc_image
+
+        """
         _memtype = toenum(self.MEMTYPE, memtype)
         if isinstance(subfunc, self.SUBFUNC):
             subfunc = subfunc.value
@@ -62,6 +169,31 @@ class TPS1200PIMG(GeoComSubsystem):
         self,
         memtype: MEMTYPE | str = MEMTYPE.PCCARD
     ) -> GeoComResponse:
+        """
+        RPC 23401, ``IMG_SetTccConfig``
+
+        Takes image with the telescopic camera, on the specified memory
+        device.
+
+        Parameters
+        ----------
+        memtype : MEMTYPE | str, optional
+            Memory device, by default PCCARD
+
+        Returns
+        -------
+        GeoComResponse
+            - Error codes:
+                - ``IVRESULT``: Not supported by telescope firmware.
+                - ``FATAL``: CF card is not available or is full.
+                - ``NA``: Imaging license not found.
+        
+        See Also
+        --------
+        get_tcc_config
+        set_tcc_config
+
+        """
         _memtype = toenum(self.MEMTYPE, memtype)
         return self._request(
             23402,
