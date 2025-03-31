@@ -185,6 +185,23 @@ class TPS1200P(GeoComProtocol):
             self._precision = resp.params["digits"]
 
     def get_double_precision(self) -> GeoComResponse:
+        """
+        RPC 108, ``COM_GetDoublePrecision``
+
+        Gets the current ASCII communication floating point precision of
+        the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **digits** (`int`): Floating point decimal places.
+        
+        See Also
+        --------
+        set_double_precision
+
+        """
         return self.request(
             108,
             parsers={"digits": int}
@@ -194,6 +211,26 @@ class TPS1200P(GeoComProtocol):
         self,
         digits: int
     ) -> GeoComResponse:
+        """
+        RPC 107, ``COM_SetDoublePrecision``
+
+        Sets the ASCII communication floating point precision of the
+        instrument.
+
+        Parameters
+        ----------
+        digits : int
+            Floating points decimal places.
+
+        Returns
+        -------
+        GeoComResponse
+        
+        See Also
+        --------
+        get_double_precision
+
+        """
         response = self.request(107, [digits])
         if response.comcode and response.rpccode:
             self._precision = digits
