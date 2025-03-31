@@ -1,3 +1,15 @@
+"""
+``geocompy.vivatps.ftr``
+=========================
+
+Definitions for the VivaTPS File transfer subsystem.
+
+Types
+-----
+
+- ``VivaTPSFTR``
+
+"""
 from __future__ import annotations
 
 from enum import Enum
@@ -13,9 +25,29 @@ from ..tps1200p.ftr import TPS1200PFTR
 
 
 class VivaTPSFTR(TPS1200PFTR):
+    """
+    File transfer subsystem of the VivaTPS GeoCom protocol.
+
+    This subsystem provides access to the internal file system of the
+    instrument, and provides methods to list or download files.
+
+    """
     class DEVICETYPE(Enum):
         @classmethod
         def parse(cls, value: str) -> VivaTPSFTR.DEVICETYPE:
+            """
+            Parses enum member from serialized enum value.
+
+            Parameters
+            ----------
+            value : str
+                Serialized enum value.
+
+            Returns
+            -------
+            ~VivaTPSFTR.DEVICETYPE
+                Parsed enum member.
+            """
             return cls(int(value))
 
         INTERNAL = 0
@@ -27,6 +59,19 @@ class VivaTPSFTR(TPS1200PFTR):
     class FILETYPE(Enum):
         @classmethod
         def parse(cls, value: str) -> VivaTPSFTR.FILETYPE:
+            """
+            Parses enum member from serialized enum value.
+
+            Parameters
+            ----------
+            value : str
+                Serialized enum value.
+
+            Returns
+            -------
+            ~VivaTPSFTR.FILETYPE
+                Parsed enum member.
+            """
             return cls(int(value))
 
         POINTRELATEDDB = 103
@@ -45,6 +90,36 @@ class VivaTPSFTR(TPS1200PFTR):
         time: datetime | None = None,
         device: DEVICETYPE | str = DEVICETYPE.INTERNAL
     ) -> GeoComResponse:
+        """
+        RPC 23315, ``FTR_DeleteDir``
+
+        Deletes one or more directories. Wildcards can be used to delete
+        multiple items. If a date is given, only directories older than
+        that date are deleted.
+
+        Parameters
+        ----------
+        dirname : str
+            Directory name.
+        time : datetime | None, optional
+            Deletion limit date, by default None
+        device : DEVICETYPE | str, optional
+            Memory device, by default PCPARD
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **deleted** (`int`): Number of directories deleted.
+            - Error codes:
+                - ``IVPARAM``: Memory device unavailable, or cannot find
+                  file path.
+        
+        See Also
+        --------
+        list
+
+        """
         _device = toenum(self.DEVICETYPE, device)
         _filetype = self.FILETYPE.POINTRELATEDDB
 
@@ -61,7 +136,7 @@ class VivaTPSFTR(TPS1200PFTR):
                 dirname
             ]
         return self._request(
-            23309,
+            23315,
             params,
             {
                 "deleted": int
@@ -75,6 +150,42 @@ class VivaTPSFTR(TPS1200PFTR):
         device: DEVICETYPE | str = DEVICETYPE.INTERNAL,
         filetype: FILETYPE | str = FILETYPE.UNKNOWN
     ) -> GeoComResponse:
+        """
+        RPC 23313, ``FTR_SetupDownloadLarge``
+
+        Prepares download of the specified large file of the specified
+        type, on the selected memory device.
+
+        Parameters
+        ----------
+        filename : str
+            File name (or full path if type is unknown).
+        blocksize : int
+            Download data block size.
+        device : DEVICETYPE | str, optional
+            Memory device, by default PCPARD
+        filetype : FILETYPE | str, optional
+            File type, by default UNKNOWN
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **blockcount** (`int`): Number of download blocks needed.
+            - Error codes:
+                - ``IVPARAM``: Memory device unavailable, or cannot find
+                  file path.
+                - ``NOTOK``: Setup already exists, previous setup was not
+                  aborted.
+                - ``FTR_INVALIDINPUT``: Block size too big.
+                - ``FTR_FILEACCESS``: File access error.
+        
+        See Also
+        --------
+        download_xl
+        abort_download
+
+        """
         _device = toenum(self.DEVICETYPE, device)
         _filetype = toenum(self.FILETYPE, filetype)
         return self._request(
@@ -89,6 +200,34 @@ class VivaTPSFTR(TPS1200PFTR):
         self,
         block: int
     ) -> GeoComResponse:
+        """
+        RPC 23314, ``FTR_DownloadXL``
+
+        Downloads a single data block of a previously defined large file
+        download sequence.
+
+        Parameters
+        ----------
+        block : int
+            Number of data block to download.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **value** (`str`): Data block as serialized bytes.
+                - **length** (`int`): Length of data block.
+            - Error codes:
+                - ``FTR_MISSINGSETUP``: No active download setup.
+                - ``FTR_INVALIDINPUT``: First block is missing.
+                - ``FTR_FILEACCESS``: File access error.
+        
+        See Also
+        --------
+        setup_download_large
+        abort_download
+
+        """
         return self._request(
             23314,
             [block],
