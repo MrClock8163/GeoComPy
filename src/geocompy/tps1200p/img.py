@@ -85,7 +85,7 @@ class TPS1200PIMG(GeoComSubsystem):
 
         Parameters
         ----------
-        memtype : MEMTYPe | str, optional
+        memtype : MEMTYPE | str, optional
             Memory device, by default PCCARD
 
         Returns
