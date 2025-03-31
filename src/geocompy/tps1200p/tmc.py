@@ -920,7 +920,7 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         RPC 2023, ``TMC_GetPrismCorr``
 
-        Gets current prism constant.
+        Gets the current prism constant.
 
         Returns
         -------
@@ -939,6 +939,31 @@ class TPS1200PTMC(GeoComSubsystem):
                 "const": float
             }
         )
+    
+    def set_prism_corr(
+        self,
+        const: float
+    ) -> GeoComResponse:
+        """
+        RPC 2024, ``TMC_SetPrismCorr``
+
+        Sets the prism constant.
+
+        Parameters
+        ----------
+        const : float
+            Prism constant.
+
+        See Also
+        --------
+        get_prism_corr
+
+        """
+        return self._request(
+            2024,
+            [const]
+        )
+
 
     def get_refractive_corr(self) -> GeoComResponse:
         """
