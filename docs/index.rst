@@ -19,3 +19,4 @@ API documentation
    api/data
    api/communication
    api/tps1200p/index
+   api/vivatps/index
