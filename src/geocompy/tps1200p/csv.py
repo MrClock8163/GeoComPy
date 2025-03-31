@@ -2,7 +2,7 @@
 ``geocompy.tps1200p.csv``
 =========================
 
-Definitions for the TPS1200+ Communication subsystem.
+Definitions for the TPS1200+ Central services subsystem.
 
 Types
 -----
