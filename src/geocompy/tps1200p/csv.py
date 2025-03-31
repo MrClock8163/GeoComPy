@@ -1,3 +1,15 @@
+"""
+``geocompy.tps1200p.csv``
+=========================
+
+Definitions for the TPS1200+ Communication subsystem.
+
+Types
+-----
+
+- ``TPS1200PCSV``
+
+"""
 from __future__ import annotations
 
 from enum import Enum, Flag
@@ -11,56 +23,102 @@ from ..data import Byte, parsestr
 
 
 class TPS1200PCSV(GeoComSubsystem):
+    """
+    Central services subsystem of the TPS1200+ GeoCom protocol.
+
+    This subsystem contains functions to maintain centralised data
+    and configuration of the instruments.
+
+    """
     class DEVICECLASS(Enum):
         @classmethod
         def parse(cls, value: str) -> TPS1200PCSV.DEVICECLASS:
+            """
+            Parses enum member from serialized enum value.
+
+            Parameters
+            ----------
+            value : str
+                Serialized enum value.
+
+            Returns
+            -------
+            ~TPS1200PCSV.DEVICECLASS
+                Parsed enum member.
+            """
             return cls(int(value))
 
-        CLASS_1100 = 0  # TPS1000 3"
-        CLASS_1700 = 1  # TPS1000 1.5"
-        CLASS_1800 = 2  # TPS1000 1"
-        CLASS_5000 = 3  # TPS2000
-        CLASS_6000 = 4  # TPS2000
-        CLASS_1500 = 5  # TPS1000
-        CLASS_2003 = 6  # TPS2000
-        CLASS_5005 = 7  # TPS5000
-        CLASS_5100 = 8  # TPS5000
-        CLASS_1102 = 100  # TPS1100 2"
-        CLASS_1103 = 101  # TPS1100 3"
-        CLASS_1105 = 102  # TPS1100 5"
-        CLASS_1101 = 103  # TPS1100 1"
-        CLASS_1202 = 200  # TPS1200 2"
-        CLASS_1203 = 201  # TPS1200 3"
-        CLASS_1205 = 202  # TPS1200 5"
-        CLASS_1201 = 203  # TPS1200 1"
-        CLASS_Tx30 = 300  # TS30, MS30 0.5"
-        CLASS_Tx31 = 301  # TS30, MS30 1"
+        CLASS_1100 = 0  #: TPS1000 3"
+        CLASS_1700 = 1  #: TPS1000 1.5"
+        CLASS_1800 = 2  #: TPS1000 1"
+        CLASS_5000 = 3  #: TPS2000
+        CLASS_6000 = 4  #: TPS2000
+        CLASS_1500 = 5  #: TPS1000
+        CLASS_2003 = 6  #: TPS2000
+        CLASS_5005 = 7  #: TPS5000
+        CLASS_5100 = 8  #: TPS5000
+        CLASS_1102 = 100  #: TPS1100 2"
+        CLASS_1103 = 101  #: TPS1100 3"
+        CLASS_1105 = 102  #: TPS1100 5"
+        CLASS_1101 = 103  #: TPS1100 1"
+        CLASS_1202 = 200  #: TPS1200 2"
+        CLASS_1203 = 201  #: TPS1200 3"
+        CLASS_1205 = 202  #: TPS1200 5"
+        CLASS_1201 = 203  #: TPS1200 1"
+        CLASS_Tx30 = 300  #: TS30, MS30 0.5"
+        CLASS_Tx31 = 301  #: TS30, MS30 1"
 
     class DEVICETYPE(Flag):
         @classmethod
         def parse(cls, value: str) -> TPS1200PCSV.DEVICETYPE:
+            """
+            Parses enum member from serialized enum value.
+
+            Parameters
+            ----------
+            value : str
+                Serialized enum value.
+
+            Returns
+            -------
+            ~TPS1200PCSV.DEVICETYPE
+                Parsed enum member.
+            """
             return cls(int(value))
 
-        T = 0x00000  # Theodolites
-        MOT = 0x00004  # Motorized
-        ATR = 0x00008  # ATR
-        EGL = 0x00010  # Guide Light
-        DB = 0x00020  # Database
-        DL = 0x00040  # Diode laser
-        LP = 0x00080  # Laser plumbed
+        T = 0x00000  #: Theodolite
+        MOT = 0x00004  #: Motorized
+        ATR = 0x00008  #: ATR
+        EGL = 0x00010  #: Guide Light
+        DB = 0x00020  #: Database
+        DL = 0x00040  #: Diode laser
+        LP = 0x00080  #: Laser plumb
         # TC1 = 0x00001 # TPS1000
         # TC2 = 0x00002 # TPS1000
-        TC = 0x00001  # Tachymeter
-        TCR = 0x00002  # Tachymeter (red laser)
-        ATC = 0x00100  # Autocollimation lamp
-        LPNT = 0x00200  # Laserpointer
-        RLEXT = 0x00400  # Powersearch
+        TC = 0x00001  #: Tachymeter
+        TCR = 0x00002  #: Tachymeter (red laser)
+        ATC = 0x00100  #: Autocollimation lamp
+        LPNT = 0x00200  #: Laserpointer
+        RLEXT = 0x00400  #: Reflectorless EDM
         PS = 0x00800  # Powersearch
         # SIM = 0x04000 # TPSSim
 
     class REFLESSCLASS(Enum):
         @classmethod
         def parse(cls, value: str) -> TPS1200PCSV.REFLESSCLASS:
+            """
+            Parses enum member from serialized enum value.
+
+            Parameters
+            ----------
+            value : str
+                Serialized enum value.
+
+            Returns
+            -------
+            ~TPS1200PCSV.REFLESSCLASS
+                Parsed enum member.
+            """
             return cls(int(value))
 
         NONE = 0
@@ -71,6 +129,19 @@ class TPS1200PCSV(GeoComSubsystem):
     class POWERSOURCE(Enum):
         @classmethod
         def parse(cls, value: str) -> TPS1200PCSV.POWERSOURCE:
+            """
+            Parses enum member from serialized enum value.
+
+            Parameters
+            ----------
+            value : str
+                Serialized enum value.
+
+            Returns
+            -------
+            ~TPS1200PCSV.POWERSOURCE
+                Parsed enum member.
+            """
             return cls(int(value))
 
         CURRENT = 0
@@ -78,6 +149,18 @@ class TPS1200PCSV(GeoComSubsystem):
         INTERNAL = 2
 
     def get_instrument_no(self) -> GeoComResponse:
+        """
+        RPC 5003, ``CSV_GetInstrumentNo``
+
+        Gets the serial number of the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **serial** (`int`): Serial number.
+
+        """
         return self._request(
             5003,
             parsers={
@@ -86,6 +169,18 @@ class TPS1200PCSV(GeoComSubsystem):
         )
 
     def get_instrument_name(self) -> GeoComResponse:
+        """
+        RPC 5004, ``CSV_GetInstrumentName``
+
+        Gets the name of the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **name** (`str`): Instrument name.
+
+        """
         return self._request(
             5004,
             parsers={
@@ -94,6 +189,21 @@ class TPS1200PCSV(GeoComSubsystem):
         )
 
     def get_device_config(self) -> GeoComResponse:
+        """
+        RPC 5035, ``CSV_GetDeviceConfig``
+
+        Gets class of the instrument, as well as information about
+        the capatilities of the configuration.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **deviceclass** (`DEVICECLASS`): Class of the instrument.
+                - **devicetype** (`DEVICETYPE`): Configurations of the
+                  components.
+
+        """
         return self._request(
             5035,
             parsers={
@@ -103,6 +213,20 @@ class TPS1200PCSV(GeoComSubsystem):
         )
 
     def get_reflectorless_class(self) -> GeoComResponse:
+        """
+        RPC 5100, ``CSV_GetReflectorlessClass``
+
+        Gets the class of the reflectorless EDM module, if the instrument
+        is equipped with one.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **reflessclass** (`REFLESSCLASS`): Class of the
+                  reflectorless EDM module.
+
+        """
         return self._request(
             5100,
             parsers={
@@ -111,6 +235,23 @@ class TPS1200PCSV(GeoComSubsystem):
         )
 
     def get_date_time(self) -> GeoComResponse:
+        """
+        RPC 5008, ``CSV_GetDateTime``
+
+        Gets the current date and time set on the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **time** (`datetime`): Current date and time.
+        
+        See Also
+        --------
+        set_date_time
+        get_date_time_centisec
+
+        """
         response = self._request(
             5008,
             parsers={
@@ -137,6 +278,25 @@ class TPS1200PCSV(GeoComSubsystem):
         self,
         time: datetime
     ) -> GeoComResponse:
+        """
+        RPC 5007, ``CSV_SetDateTime``
+
+        Sets the date and time on the instrument.
+
+        Parameters
+        ----------
+        time : datetime
+            New date and time to set.
+
+        Returns
+        -------
+        GeoComResponse
+        
+        See Also
+        --------
+        get_date_time
+
+        """
         return self._request(
             5007,
             [
@@ -146,6 +306,20 @@ class TPS1200PCSV(GeoComSubsystem):
         )
 
     def get_sw_version(self) -> GeoComResponse:
+        """
+        RPC 5034, ``CSV_GetSWVersion``
+
+        Gets the system software version running on the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **release** (`int`): Release number.
+                - **version** (`int`): Version number.
+                - **subversion** (`int`): Subversion number.
+
+        """
         return self._request(
             5034,
             parsers={
@@ -156,6 +330,20 @@ class TPS1200PCSV(GeoComSubsystem):
         )
 
     def check_power(self) -> GeoComResponse:
+        """
+        RPC 5039, ``CSV_CheckPower``
+
+        Gets the remaining capacity of the active power source.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **capacity** (`int`): Remaining capacity [%].
+                - **source** (`POWERSOURCE`): Active power source.
+                - **suggested** (`POWERSOURCE`): Suggested power source.
+
+        """
         return self._request(
             5039,
             parsers={
@@ -166,6 +354,19 @@ class TPS1200PCSV(GeoComSubsystem):
         )
 
     def get_int_temp(self) -> GeoComResponse:
+        """
+        RPC 5011, ``CSV_GetIntTemp``
+
+        Gets internal temperature of the instrument, measured on the
+        main board.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **temp** (`int`): Internal temperature [°C].
+
+        """
         return self._request(
             5011,
             parsers={
@@ -174,6 +375,24 @@ class TPS1200PCSV(GeoComSubsystem):
         )
 
     def get_date_time_centisec(self) -> GeoComResponse:
+        """
+        RPC 5117, ``CSV_GetDateTimeCentiSec``
+
+        Gets the current date and time set on the instrument in
+        centiseconds resolution.
+
+        Returns
+        -------
+        GeoComResponse
+            - Params:
+                - **time** (`datetime`): Current date and time.
+        
+        See Also
+        --------
+        get_date_time
+        set_date_time
+
+        """
         response = self._request(
             5117,
             parsers={
