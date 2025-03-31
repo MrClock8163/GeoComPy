@@ -1,3 +1,15 @@
+"""
+``geocompy.vivatps.img``
+=========================
+
+Definitions for the VivaTPS Imaging subsystem.
+
+Types
+-----
+
+- ``VivaTPSIMG``
+
+"""
 from __future__ import annotations
 
 from enum import Enum
@@ -7,9 +19,29 @@ from ..tps1200p.img import TPS1200PIMG
 
 
 class VivaTPSIMG(TPS1200PIMG):
+    """
+    Imaging subsystem of the VivaTPS GeoCom protocol.
+
+    This subsystem provides access to the telescoping camera functions
+    for instruments that possess such functionality.
+
+    """
     class MEMTYPE(Enum):
         @classmethod
         def parse(cls, value: str) -> VivaTPSIMG.MEMTYPE:
+            """
+            Parses enum member from serialized enum value.
+
+            Parameters
+            ----------
+            value : str
+                Serialized enum value.
+
+            Returns
+            -------
+            ~VivaTPSIMG.MEMTYPE
+                Parsed enum member.
+            """
             return cls(int(value))
 
         INTERNAL = 0x0
@@ -20,6 +52,21 @@ class VivaTPSIMG(TPS1200PIMG):
         self,
         time: int
     ) -> GeoComResponse:
+        """
+        RPC 23403, ``IMG_SetTCCExposureTime``
+
+        Sets the exposure time for the telescopic camera.
+
+        Parameters
+        ----------
+        time : int
+            Exposure time [ms].
+
+        Returns
+        -------
+        GeoComResponse
+        
+        """
         return self._request(
             23403,
             [time]
