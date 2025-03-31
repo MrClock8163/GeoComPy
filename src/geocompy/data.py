@@ -59,7 +59,7 @@ def parsestr(value: str) -> str:
     return value[1:-1]
 
 
-def toenum[T: type[Enum], R: Enum](e: T, value: R | str):
+def toenum[T: Enum](e: type[T], value: T | str) -> T:
     """
     Returns the member of an :class:`~enum.Enum` with the given name.
 
@@ -92,8 +92,14 @@ def toenum[T: type[Enum], R: Enum](e: T, value: R | str):
     <MyEnum.TWO: 2>
     """
     if isinstance(value, str):
-        return e._member_map_[value]
-
+        return e[value]
+    
+    if value not in e:
+        raise ValueError(
+            f"given member ({value}) is not a member "
+            f"of the target enum: {e}"
+        )
+    
     return value
 
 
