@@ -18,7 +18,11 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import Angle, toenum
+from ..data import (
+    Angle,
+    toenum,
+    enumparser
+)
 
 
 class TPS1200PAUT(GeoComSubsystem):
@@ -31,88 +35,20 @@ class TPS1200PAUT(GeoComSubsystem):
 
     """
     class POSMODE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PAUT.POSMODE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PAUT.POSMODE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         NORMAL = 0
         PRECISE = 1
         FAST = 2  # TS30 / MS30
 
     class ADJMODE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PAUT.ADJMODE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PAUT.ADJMODE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         NORMAL = 0
         POINT = 1
         DEFINE = 2
 
     class ATRMODE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PAUT.ATRMODE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PAUT.ATRMODE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         POSITION = 0
         TARGET = 1
 
     class DIRECTION(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PAUT.DIRECTION:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PAUT.DIRECTION
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         CLOCKWISE = 1
         ANTICLOCKWISE = -1
 
@@ -482,7 +418,7 @@ class TPS1200PAUT(GeoComSubsystem):
         return self._request(
             9030,
             parsers={
-                "adjmode": self.ADJMODE.parse
+                "adjmode": enumparser(self.ADJMODE)
             }
         )
 

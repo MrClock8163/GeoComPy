@@ -30,44 +30,10 @@ class TPS1200PIMG(GeoComSubsystem):
 
     """
     class MEMTYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PIMG.MEMTYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PIMG.MEMTYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
-        INTERNAL = 0x0
-        PCCARD = 0x1
+        INTERNAL = 0
+        PCCARD = 1
 
     class SUBFUNC(Flag):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PIMG.SUBFUNC:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PIMG.SUBFUNC
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         TESTIMG = 1 #: Test image.
         AUTOEXPTIME = 2 #: Automatic exposure time.
         SS2 = 4 #: x2 subsampling

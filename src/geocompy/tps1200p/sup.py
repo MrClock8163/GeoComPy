@@ -18,7 +18,10 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import toenum
+from ..data import (
+    toenum,
+    enumparser
+)
 
 
 class TPS1200PSUP(GeoComSubsystem):
@@ -30,44 +33,10 @@ class TPS1200PSUP(GeoComSubsystem):
 
     """
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PSUP.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PSUP.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
 
     class AUTOPOWER(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PSUP.AUTOPOWER:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PSUP.AUTOPOWER
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         DISABLED = 0 #: Automatic poweroff disabled.
         OFF = 2 #: Poweroff instrument.
 
@@ -93,8 +62,8 @@ class TPS1200PSUP(GeoComSubsystem):
         return self._request(
             14001,
             parsers={
-                "reserved": self.ONOFF.parse,
-                "autopower": self.AUTOPOWER.parse,
+                "reserved": enumparser(self.ONOFF),
+                "autopower": enumparser(self.AUTOPOWER),
                 "timeout": int
             }
         )

@@ -35,44 +35,10 @@ class TPS1200PFTR(GeoComSubsystem):
 
     """
     class DEVICETYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PFTR.DEVICETYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PFTR.DEVICETYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         INTERNAL = 0
         PCPARD = 1
 
     class FILETYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PFTR.FILETYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PFTR.FILETYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         UNKNOWN = 0  # ?
         IMAGE = 170
 

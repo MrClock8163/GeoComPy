@@ -21,7 +21,8 @@ from .. import (
 from ..data import (
     Coordinate,
     Angle,
-    toenum
+    toenum,
+    enumparser
 )
 
 
@@ -36,154 +37,35 @@ class VivaTPSCAM(GeoComSubsystem):
 
     """
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCAM.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCAM.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
 
     class CAMTYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCAM.CAMTYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCAM.CAMTYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-        
         OVC = 0 #: Overview camera.
         OAC = 1 #: Telescope camera.
 
     class ZOOM(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCAM.ZOOM:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCAM.ZOOM
-                Parsed enum member.
-            """
-            return cls(int(value))
-        
         X1 = 1
         X2 = 2
         X4 = 4
         X8 = 8
 
     class RESOLUTION(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCAM.RESOLUTION:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCAM.RESOLUTION
-                Parsed enum member.
-            """
-            return cls(int(value))
-        
         P2560X1920 = 0
         P1280X960 = 3
         P640X480 = 4
         P720X240 = 5
 
     class COMPRESSION(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCAM.COMPRESSION:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCAM.COMPRESSION
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         JPEG = 0
         RAW = 1
 
     class WHITEBALANCE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCAM.WHITEBALANCE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCAM.WHITEBALANCE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         AUTO = 0
         INDOOR = 1
         OUTDOOR = 2
 
     class JPEGQUALITY(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCAM.JPEGQUALITY:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCAM.JPEGQUALITY
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         STANDARD = 0
         BEST = 1
         IGNORE = 2
@@ -247,7 +129,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23609,
             [_camtype.value],
             {
-                "zoom": self.ZOOM.parse
+                "zoom": enumparser(self.ZOOM)
             }
         )
 
@@ -459,7 +341,7 @@ class VivaTPSCAM(GeoComSubsystem):
         _camtype = toenum(self.CAMTYPE, camtype)
         return self._request(
             23623,
-            [_camtype]
+            [_camtype.value]
         )
     
     def ovc_get_act_camera_center(self) -> GeoComResponse:
@@ -670,7 +552,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23636,
             [_camtype.value],
             {
-                "state": self.ONOFF.parse
+                "state": enumparser(self.ONOFF)
             }
         )
     

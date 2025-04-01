@@ -30,44 +30,10 @@ class TPS1200PCOM(GeoComSubsystem):
 
     """
     class STOPMODE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PCOM.STOPMODE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PCOM.STOPMODE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         SHUTDOWN = 0
         SLEEP = 1
 
     class STARTUPMODE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PCOM.STARTUPMODE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PCOM.STARTUPMODE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         LOCAL = 0
         REMOTE = 1
 

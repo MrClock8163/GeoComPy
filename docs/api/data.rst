@@ -7,6 +7,8 @@ geocompy.data
 
 .. autofunction:: toenum
 
+.. autofunction:: enumparser
+
 .. autoclass:: AngleUnit
     :members:
     :class-doc-from: both

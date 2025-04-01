@@ -22,7 +22,8 @@ from .. import (
 from ..data import (
     Angle,
     Coordinate,
-    toenum
+    toenum,
+    enumparser
 )
 
 
@@ -53,66 +54,15 @@ class TPS1200PTMC(GeoComSubsystem):
 
     """
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PTMC.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PTMC.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
 
     class INCLINEPRG(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PTMC.INCLINEPRG:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PTMC.INCLINEPRG
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         MEA = 0 #: Measure inclination.
         AUTO = 1 #: Automatic inclination handling.
         PLANE = 2 #: Model inclination from previous measurements.
 
     class MEASUREPRG(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PTMC.MEASUREPRG:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PTMC.MEASUREPRG
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         STOP = 0 #: Stop measurement program.
         DEFDIST = 1 #: Default distance measurement.
         CLEAR = 3 #: Clear current measurement data.
@@ -123,23 +73,6 @@ class TPS1200PTMC(GeoComSubsystem):
         FREQUENCY = 11 #: Frequency measurement.
 
     class EDMMODE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PTMC.EDMMODE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PTMC.EDMMODE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         NOTUSED = 0 #: Initialization mode.
         SINGLE_TAPE = 1 #: IR standard with reflector tape.
         SINGLE_STANDARD = 2 #: IR standard.
@@ -157,44 +90,10 @@ class TPS1200PTMC(GeoComSubsystem):
         PRECISE_TAPE = 14  #: IR precise with reflector tape (TS30, MS30).
 
     class FACEDEF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PTMC.FACEDEF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PTMC.FACEDEF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         NORMAL = 0
         TURN = 1
 
     class FACE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PTMC.FACE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PTMC.FACE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         FACE1 = 0
         FACE2 = 1
 
@@ -433,7 +332,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 "lengthincline": Angle.parse,
                 "inclineaccuracy": Angle.parse,
                 "inclinetime": int,
-                "face": self.FACEDEF.parse
+                "face": enumparser(self.FACEDEF)
             }
         )
 
@@ -1321,7 +1220,7 @@ class TPS1200PTMC(GeoComSubsystem):
         return self._request(
             2026,
             parsers={
-                "face": self.FACE.parse
+                "face": enumparser(self.FACE)
             }
         )
 
@@ -1407,7 +1306,7 @@ class TPS1200PTMC(GeoComSubsystem):
         return self._request(
             2007,
             parsers={
-                "compensator": self.ONOFF.parse
+                "compensator": enumparser(self.ONOFF)
             }
         )
 
@@ -1460,7 +1359,7 @@ class TPS1200PTMC(GeoComSubsystem):
         return self._request(
             2021,
             parsers={
-                "mode": self.EDMMODE.parse
+                "mode": enumparser(self.EDMMODE)
             }
         )
 

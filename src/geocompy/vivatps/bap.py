@@ -14,7 +14,10 @@ from __future__ import annotations
 
 from enum import Enum
 
-from ..data import toenum
+from ..data import (
+    toenum,
+    enumparser
+)
 from .. import GeoComResponse
 from ..tps1200p.bap import TPS1200PBAP
 
@@ -29,23 +32,6 @@ class VivaTPSBAP(TPS1200PBAP):
 
     """
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSBAP.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSBAP.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
     
@@ -68,7 +54,7 @@ class VivaTPSBAP(TPS1200PBAP):
         return self._request(
             17039,
             parsers={
-                "state": self.ONOFF.parse
+                "state": enumparser(self.ONOFF)
             }
         )
 

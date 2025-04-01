@@ -25,7 +25,11 @@ from __future__ import annotations
 import re
 import math
 from enum import Enum
-from typing import TypeAlias, Literal
+from typing import (
+    TypeAlias,
+    Literal,
+    Callable
+)
 
 
 _RO = 180 * 60 * 60 / math.pi
@@ -37,7 +41,8 @@ _PI2 = 2 * math.pi
 
 def parsestr(value: str) -> str:
     """
-    Returns a string value with the inclosing quote marks (``"..."``) removed.
+    Returns a string value with the inclosing quote marks (``"..."``)
+    removed.
 
     Parameters
     ----------
@@ -86,9 +91,9 @@ def toenum[T: Enum](e: type[T], value: T | str) -> T:
     ...     ONE = 1
     ...     TWO = 2
     >>>
-    >>> gc.toenum(MyEnum, 'ONE')
+    >>> gc.data.toenum(MyEnum, 'ONE')
     <MyEnum.ONE: 1>
-    >>> gc.toenum(MyEnum, MyEnum.TWO)
+    >>> gc.data.toenum(MyEnum, MyEnum.TWO)
     <MyEnum.TWO: 2>
     """
     if isinstance(value, str):
@@ -103,9 +108,46 @@ def toenum[T: Enum](e: type[T], value: T | str) -> T:
     return value
 
 
+def enumparser[T: Enum](e: type[T]) -> Callable[[str], T]:
+    """
+    Returns a parser function that can parse the target enum from the
+    serialized enum value.
+
+    Parameters
+    ----------
+    e: ~enum.Enum
+        Target enum type.
+    
+    Returns
+    -------
+    Callable[[str], ~enum.Enum]
+        Parser function, that takes a string as input, and returns an
+        enum member.
+    
+    Examples
+    --------
+
+    >>> from enum import Enum
+    >>> 
+    >>> class MyEnum(Enum):
+    ...     ONE = 1
+    ...     TWO = 2
+    >>>
+    >>> parser = gc.data.enumparser(MyEnum)
+    >>> parser('1')
+    <MyEnum.ONE: 1>
+
+    """
+    def parseenum(value: str) -> T:
+        return e(int(value))
+    
+    return parseenum
+
+
 class AngleUnit(Enum):
     """
-    Angle measurement units to indicate the unit of an :class:`Angle` instance.
+    Angle measurement units to indicate the unit of an :class:`Angle`
+    instance.
 
     See Also
     --------

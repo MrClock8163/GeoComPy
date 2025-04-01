@@ -33,23 +33,6 @@ class VivaTPSFTR(TPS1200PFTR):
 
     """
     class DEVICETYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSFTR.DEVICETYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSFTR.DEVICETYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         INTERNAL = 0
         PCPARD = 1
         SDCARD = 4
@@ -57,23 +40,6 @@ class VivaTPSFTR(TPS1200PFTR):
         RAM = 6
         
     class FILETYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSFTR.FILETYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSFTR.FILETYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         POINTRELATEDDB = 103
         IMAGES = 170
         IMAGES_OVC_JPG = 171

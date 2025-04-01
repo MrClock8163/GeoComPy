@@ -19,7 +19,11 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import Byte, parsestr
+from ..data import (
+    Byte,
+    parsestr,
+    enumparser
+)
 
 
 class TPS1200PCSV(GeoComSubsystem):
@@ -31,23 +35,6 @@ class TPS1200PCSV(GeoComSubsystem):
 
     """
     class DEVICECLASS(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PCSV.DEVICECLASS:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PCSV.DEVICECLASS
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         CLASS_1100 = 0  #: TPS1000 3"
         CLASS_1700 = 1  #: TPS1000 1.5"
         CLASS_1800 = 2  #: TPS1000 1"
@@ -69,23 +56,6 @@ class TPS1200PCSV(GeoComSubsystem):
         CLASS_Tx31 = 301  #: TS30, MS30 1"
 
     class DEVICETYPE(Flag):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PCSV.DEVICETYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PCSV.DEVICETYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         T = 0x00000  #: Theodolite
         MOT = 0x00004  #: Motorized
         ATR = 0x00008  #: ATR
@@ -104,46 +74,12 @@ class TPS1200PCSV(GeoComSubsystem):
         # SIM = 0x04000 # TPSSim
 
     class REFLESSCLASS(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PCSV.REFLESSCLASS:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PCSV.REFLESSCLASS
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         NONE = 0
         R100 = 1
         R300 = 2
         R400 = 3
 
     class POWERSOURCE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PCSV.POWERSOURCE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PCSV.POWERSOURCE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         CURRENT = 0
         EXTERNAL = 1
         INTERNAL = 2
@@ -207,8 +143,8 @@ class TPS1200PCSV(GeoComSubsystem):
         return self._request(
             5035,
             parsers={
-                "deviceclass": self.DEVICECLASS.parse,
-                "devicetype": lambda x: self.DEVICETYPE(int(x))
+                "deviceclass": enumparser(self.DEVICECLASS),
+                "devicetype": enumparser(self.DEVICETYPE)
             }
         )
 
@@ -230,7 +166,7 @@ class TPS1200PCSV(GeoComSubsystem):
         return self._request(
             5100,
             parsers={
-                "reflessclass": self.REFLESSCLASS.parse
+                "reflessclass": enumparser(self.REFLESSCLASS)
             }
         )
 
@@ -348,8 +284,8 @@ class TPS1200PCSV(GeoComSubsystem):
             5039,
             parsers={
                 "capacity": int,
-                "source": self.POWERSOURCE.parse,
-                "suggested": self.POWERSOURCE.parse
+                "source": enumparser(self.POWERSOURCE),
+                "suggested": enumparser(self.POWERSOURCE)
             }
         )
 

@@ -18,7 +18,10 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import toenum
+from ..data import (
+    toenum,
+    enumparser
+)
 
 
 class TPS1200PAUS(GeoComSubsystem):
@@ -30,23 +33,6 @@ class TPS1200PAUS(GeoComSubsystem):
 
     """
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PAUS.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PAUS.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
 
@@ -76,7 +62,7 @@ class TPS1200PAUS(GeoComSubsystem):
         return self._request(
             18006,
             parsers={
-                "state": self.ONOFF.parse
+                "state": enumparser(self.ONOFF)
             }
         )
 
@@ -144,7 +130,7 @@ class TPS1200PAUS(GeoComSubsystem):
         return self._request(
             18008,
             parsers={
-                "state": self.ONOFF.parse
+                "state": enumparser(self.ONOFF)
             }
         )
 

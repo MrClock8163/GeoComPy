@@ -17,7 +17,10 @@ from enum import Enum
 from .. import (
     GeoComResponse
 )
-from ..data import toenum
+from ..data import (
+    toenum,
+    enumparser
+)
 from .cam import VivaTPSCAM
 from ..tps1200p.aut import TPS1200PAUT
 
@@ -32,23 +35,6 @@ class VivaTPSAUT(TPS1200PAUT):
 
     """
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSAUT.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSAUT.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
     
@@ -99,7 +85,7 @@ class VivaTPSAUT(TPS1200PAUT):
         return self._request(
             9102,
             parsers={
-                "state": self.ONOFF.parse
+                "state": enumparser(self.ONOFF)
             }
         )
     

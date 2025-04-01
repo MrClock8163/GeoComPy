@@ -18,7 +18,11 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import Angle, toenum
+from ..data import (
+    Angle,
+    toenum,
+    enumparser
+)
 
 
 class TPS1200PMOT(GeoComSubsystem):
@@ -29,66 +33,15 @@ class TPS1200PMOT(GeoComSubsystem):
 
     """
     class LOCKSTATUS(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PMOT.LOCKSTATUS:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PMOT.LOCKSTATUS
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         LOCKEDOUT = 0
         LOCKEDIN = 1
         PREDICTION = 2
 
     class STOPMODE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PMOT.STOPMODE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PMOT.STOPMODE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         NORMAL = 0 #: Slow down with current acceleration.
         SHUTDOWN = 1 #: Slow down by motor power termination.
 
     class MODE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PMOT.MODE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PMOT.MODE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         POSIT = 0 #: Relative positioning.
         OCONST = 1 #: Constant speed.
         MANUPOS = 2 #: Manual positioning.
@@ -119,7 +72,7 @@ class TPS1200PMOT(GeoComSubsystem):
         return self._request(
             6021,
             parsers={
-                "status": self.LOCKSTATUS.parse
+                "status": enumparser(self.LOCKSTATUS)
             }
         )
 

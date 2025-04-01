@@ -21,6 +21,7 @@ from .. import (
 from ..data import (
     Angle,
     toenum,
+    enumparser,
     parsestr
 )
 
@@ -35,23 +36,6 @@ class TPS1200PBAP(GeoComSubsystem):
 
     """
     class MEASUREPRG(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PBAP.MEASUREPRG:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PBAP.MEASUREPRG
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         NOMEAS = 0 #: No measurement, take last value.
         NODIST = 1 #: No distance measurement, angles only.
         DEFDIST = 2 #: Default distance measurement.
@@ -59,23 +43,6 @@ class TPS1200PBAP(GeoComSubsystem):
         STOPTRK = 6 #: Stop tracking.
 
     class USERMEASPRG(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PBAP.USERMEASPRG:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PBAP.USERMEASPRG
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         SINGLE_REF_STANDARD = 0 #: IR standard.
         SINGLE_REF_FAST = 1 #: IR fast.
         SINGLE_REF_VISIBLE = 2 #: LO standard.
@@ -90,23 +57,6 @@ class TPS1200PBAP(GeoComSubsystem):
         SINGLE_REF_PRECISE = 11 #: IR precise (TS30, MS30)
 
     class PRISMTYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PBAP.PRISMTYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PBAP.PRISMTYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         ROUND = 0 #: Leica Circular Prism
         MINI = 1 #: Leica Mini Prism
         TAPE = 2 #: Leica Reflector Tape
@@ -122,66 +72,15 @@ class TPS1200PBAP(GeoComSubsystem):
         MAMPR122 = 12 #: Leica MPR122 360° Prism.
 
     class REFLTYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PBAP.REFLTYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PBAP.REFLTYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         UNDEF = 0 #: Reflector not defined.
         PRISM = 1 #: Reflector prism.
         TAPE = 2 #: Reflector tape.
 
     class TARGETTYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PBAP.TARGETTYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PBAP.TARGETTYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         REFL_USE = 0 #: Reflector.
         REFL_LESS = 1 #: Not reflector.
 
     class ATRSETTING(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PBAP.ATRSETTING:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PBAP.ATRSETTING
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         NORMAL = 0 #: Normal mode.
         LOWVISON = 1 #: Low visibility on.
         LOWVISAON = 2 #: Low visibility always on.
@@ -189,23 +88,6 @@ class TPS1200PBAP(GeoComSubsystem):
         SRANGEAON = 4 #: Hight reflectivity always on.
 
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PBAP.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PBAP.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
 
@@ -229,7 +111,7 @@ class TPS1200PBAP(GeoComSubsystem):
         return self._request(
             17022,
             parsers={
-                "targettype": self.TARGETTYPE.parse
+                "targettype": enumparser(self.TARGETTYPE)
             }
         )
 
@@ -286,7 +168,7 @@ class TPS1200PBAP(GeoComSubsystem):
         return self._request(
             17009,
             parsers={
-                "prismtype": self.PRISMTYPE.parse
+                "prismtype": enumparser(self.PRISMTYPE)
             }
         )
 
@@ -343,7 +225,7 @@ class TPS1200PBAP(GeoComSubsystem):
         return self._request(
             17031,
             parsers={
-                "prismtype": self.PRISMTYPE.parse,
+                "prismtype": enumparser(self.PRISMTYPE),
                 "name": parsestr
             }
         )
@@ -418,7 +300,7 @@ class TPS1200PBAP(GeoComSubsystem):
             {
                 "name": parsestr,
                 "const": float,
-                "refltype": self.REFLTYPE.parse
+                "refltype": enumparser(self.REFLTYPE)
             }
         )
 
@@ -458,7 +340,7 @@ class TPS1200PBAP(GeoComSubsystem):
             [name],
             {
                 "const": float,
-                "refltype": self.REFLTYPE.parse,
+                "refltype": enumparser(self.REFLTYPE),
                 "creator": parsestr
             }
         )
@@ -524,7 +406,7 @@ class TPS1200PBAP(GeoComSubsystem):
         return self._request(
             17018,
             parsers={
-                "measprg": self.MEASUREPRG.parse
+                "measprg": enumparser(self.MEASUREPRG)
             }
         )
 
@@ -625,7 +507,7 @@ class TPS1200PBAP(GeoComSubsystem):
                 "hz": Angle.parse,
                 "v": Angle.parse,
                 "dist": float,
-                "distmode": self.MEASUREPRG.parse
+                "distmode": enumparser(self.MEASUREPRG)
             }
         )
 
@@ -679,7 +561,7 @@ class TPS1200PBAP(GeoComSubsystem):
         return self._request(
             17034,
             parsers={
-                "atrsetting": self.ATRSETTING.parse
+                "atrsetting": enumparser(self.ATRSETTING)
             }
         )
 
@@ -726,7 +608,7 @@ class TPS1200PBAP(GeoComSubsystem):
         return self._request(
             17036,
             parsers={
-                "redfov": self.ONOFF.parse
+                "redfov": enumparser(self.ONOFF)
             }
         )
 

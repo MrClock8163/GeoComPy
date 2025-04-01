@@ -29,44 +29,10 @@ class VivaTPSEDM(TPS1200PEDM):
 
     """
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSEDM.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSEDM.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
     
     class MEASUREMENTTYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSEDM.MEASUREMENTTYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSEDM.MEASUREMENTTYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-    
         SIGNAL = 1
         FREQ = 2
         DIST = 3

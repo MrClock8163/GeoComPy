@@ -15,7 +15,10 @@ from __future__ import annotations
 from enum import Enum
 
 from .. import GeoComResponse
-from ..data import toenum
+from ..data import (
+    toenum,
+    enumparser
+)
 from ..tps1200p.csv import TPS1200PCSV
 
 
@@ -28,44 +31,10 @@ class VivaTPSCSV(TPS1200PCSV):
 
     """
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCSV.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCSV.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
     
     class DEVICECLASS(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCSV.DEVICECLASS:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCSV.DEVICECLASS
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         CLASS_1100 = 0  #: TPS1000 3"
         CLASS_1700 = 1  #: TPS1000 1.5"
         CLASS_1800 = 2  #: TPS1000 1"
@@ -102,23 +71,6 @@ class VivaTPSCSV(TPS1200PCSV):
         CLASS_TS50_1 = 651  #: TPS1300 TS50/TM50, 1"
     
     class REFLESSCLASS(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCSV.REFLESSCLASS:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCSV.REFLESSCLASS
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         NONE = 0
         R100 = 1
         R300 = 2
@@ -127,45 +79,11 @@ class VivaTPSCSV(TPS1200PCSV):
         R30 = 5
 
     class POWERSOURCE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCSV.POWERSOURCE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCSV.POWERSOURCE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         CURRENT = 0
         EXTERNAL = 1
         INTERNAL = 2
     
     class PROPERTY(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSCSV.PROPERTY:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSCSV.PROPERTY
-                Parsed enum member.
-            """
-            return cls(int(value))
-        
         PURCHASE_MODE_NORMAL = 0
         PURCHASE_MODE_PREPAY = 1
         RTK_RANGE_5000 = 2
@@ -286,7 +204,7 @@ class VivaTPSCSV(TPS1200PCSV):
         return self._request(
             5042,
             parsers={
-                "state": self.ONOFF.parse
+                "state": enumparser(self.ONOFF)
             }
         )
     
@@ -425,7 +343,7 @@ class VivaTPSCSV(TPS1200PCSV):
         return self._request(
             5162,
             parsers={
-                "state": self.ONOFF.parse
+                "state": enumparser(self.ONOFF)
             }
         )
     
@@ -466,6 +384,6 @@ class VivaTPSCSV(TPS1200PCSV):
         return self._request(
             5164, # Mistyped as 5163 in the GeoCom reference
             parsers={
-                "source": self.POWERSOURCE.parse
+                "source": enumparser(self.POWERSOURCE)
             }
         )

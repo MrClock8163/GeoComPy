@@ -18,7 +18,10 @@ from .. import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import toenum
+from ..data import (
+    toenum,
+    enumparser
+)
 
 
 class TPS1200PEDM(GeoComSubsystem):
@@ -31,44 +34,10 @@ class TPS1200PEDM(GeoComSubsystem):
 
     """
     class ONOFF(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PEDM.ONOFF:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PEDM.ONOFF
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         ON = 1
 
     class EGLINTENSITYTYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> TPS1200PEDM.EGLINTENSITYTYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~TPS1200PEDM.EGLINTENSITYTYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         OFF = 0
         LOW = 1
         MID = 2
@@ -122,7 +91,7 @@ class TPS1200PEDM(GeoComSubsystem):
         return self._request(
             1058,
             parsers={
-                "intensity": self.EGLINTENSITYTYPE.parse
+                "intensity": enumparser(self.EGLINTENSITYTYPE)
             }
         )
 

@@ -27,23 +27,6 @@ class VivaTPSIMG(TPS1200PIMG):
 
     """
     class MEMTYPE(Enum):
-        @classmethod
-        def parse(cls, value: str) -> VivaTPSIMG.MEMTYPE:
-            """
-            Parses enum member from serialized enum value.
-
-            Parameters
-            ----------
-            value : str
-                Serialized enum value.
-
-            Returns
-            -------
-            ~VivaTPSIMG.MEMTYPE
-                Parsed enum member.
-            """
-            return cls(int(value))
-
         INTERNAL = 0x0
         PCCARD = 0x1
         SDCARD = 0x2
