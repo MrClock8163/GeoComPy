@@ -148,8 +148,8 @@ class TPS1200PMOT(GeoComSubsystem):
 
     def set_velocity(
         self,
-        horizontal: Angle,
-        vertical: Angle
+        hz: Angle,
+        v: Angle
     ) -> GeoComResponse:
         """
         RPC 6004, ``MOT_SetVelocity``
@@ -182,8 +182,8 @@ class TPS1200PMOT(GeoComSubsystem):
         aus.set_user_lock_state
 
         """
-        _horizontal = min(0.79, max(-0.79, float(horizontal)))
-        _vertical = min(0.79, max(-0.79, float(vertical)))
+        _horizontal = min(0.79, max(-0.79, float(hz)))
+        _vertical = min(0.79, max(-0.79, float(v)))
         return self._request(
             6004,
             [_horizontal, _vertical]

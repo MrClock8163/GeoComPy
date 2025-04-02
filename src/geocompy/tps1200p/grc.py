@@ -319,29 +319,29 @@ class TPS1200PGRC(GeoComReturnCode):
     """Measured distance is to big (not allowed)."""
 
     TMC_NO_FULL_CORRECTION = 1283
-    """Warning: measurement without full correction."""
+    """Warning measurement without full correction."""
     TMC_ACCURACY_GUARANTEE = 1284
-    """Info: accuracy can not be guarantee."""
+    """Info accuracy can not be guarantee."""
     TMC_ANGLE_OK = 1285
-    """Warning: only angle measurement valid."""
+    """Warning only angle measurement valid."""
     TMC_ANGLE_NOT_FULL_CORR = 1288
     """
-    Warning: only angle measurement valid but without full correction.
+    Warning only angle measurement valid but without full correction.
     """
     TMC_ANGLE_NO_ACC_GUARANTY = 1289
     """
-    Info: only angle measurement valid but accuracy can not be guarantee.
+    Info only angle measurement valid but accuracy can not be guarantee.
     """
     TMC_ANGLE_ERROR = 1290
-    """Error: no angle measurement."""
+    """Error no angle measurement."""
     TMC_DIST_PPM = 1291
-    """Error: wrong setting of PPM or MM on EDM."""
+    """Error wrong setting of PPM or MM on EDM."""
     TMC_DIST_ERROR = 1292
-    """Error: distance measurement not done (no aim, etc.)."""
+    """Error distance measurement not done (no aim, etc.)."""
     TMC_BUSY = 1293
-    """Error: system is busy (no measurement done)."""
+    """Error system is busy (no measurement done)."""
     TMC_SIGNAL_ERROR = 1294
-    """Error: no signal on EDM (only in signal mode)."""
+    """Error no signal on EDM (only in signal mode)."""
 
     MOT_UNREADY = 1792
     """Motorization is not ready."""
@@ -446,7 +446,7 @@ class TPS1200PGRC(GeoComReturnCode):
     COM_ERO_END = 3099
     """ERO is terminating."""
     COM_OVERRUN = 3100
-    """Internal error: data buffer overflow."""
+    """Internal error data buffer overflow."""
     COM_SRVR_RX_CHECKSUM_ERRR = 3101
     """Invalid checksum on server side received."""
     COM_CLNT_RX_CHECKSUM_ERRR = 3102
@@ -495,7 +495,7 @@ class TPS1200PGRC(GeoComReturnCode):
     AUT_ACCURACY = 8716
     """Target position not exactly reached."""
     AUT_DIST_STARTED = 8717
-    """Info: dist. measurement has been started."""
+    """Info dist. measurement has been started."""
     AUT_SUPPLY_TOO_HIGH = 8718
     """External Supply voltage is too high."""
     AUT_SUPPLY_TOO_LOW = 8719

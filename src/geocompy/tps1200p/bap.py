@@ -410,7 +410,7 @@ class TPS1200PBAP(GeoComSubsystem):
             }
         )
 
-    def set_meas_prog(
+    def set_meas_prg(
         self,
         measprg: MEASUREPRG | str
     ) -> GeoComResponse:

@@ -108,11 +108,6 @@ class TPS1200PAUS(GeoComSubsystem):
 
         Gets the current state of the LOCK mode.
 
-        Parameters
-        ----------
-        state : ONOFF | str
-            ATR state to set
-
         Returns
         -------
         GeoComResponse

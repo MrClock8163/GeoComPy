@@ -383,11 +383,11 @@ class VivaTPS(GeoComProtocol):
     def parse_response(
         self,
         cmd: str,
-        reply: str,
+        response: str,
         parsers: dict[str, Callable[[str], Any]]
     ) -> GeoComResponse:
         """
-        Parses RPC response and constructs :class:`GeoComResponse`
+        Parses RPC response and constructs GeoComResponse
         instance.
 
         Parameters
@@ -413,14 +413,14 @@ class VivaTPS(GeoComProtocol):
         :attr:`~grc.VivaTPSGRC.UNDEFINED` codes is returned.
             
         """
-        m = self._RESPPAT.match(reply)
+        m = self._RESPPAT.match(response)
         rpc = int(cmd.split(":")[0].split(",")[1])
         rpcname = rpcnames.get(rpc, str(rpc))
         if not m:
             return GeoComResponse(
                 rpcname,
                 cmd,
-                reply,
+                response,
                 VivaTPSGRC.COM_CANT_DECODE,
                 VivaTPSGRC.UNDEFINED,
                 0,
@@ -439,7 +439,7 @@ class VivaTPS(GeoComProtocol):
             return GeoComResponse(
                 rpcname,
                 cmd,
-                reply,
+                response,
                 VivaTPSGRC.COM_CANT_DECODE,
                 VivaTPSGRC.UNDEFINED,
                 0,
@@ -451,7 +451,7 @@ class VivaTPS(GeoComProtocol):
         return GeoComResponse(
             rpcname,
             cmd,
-            reply,
+            response,
             comrc,
             rc,
             int(groups["tr"]),

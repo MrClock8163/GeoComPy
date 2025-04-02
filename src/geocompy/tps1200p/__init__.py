@@ -371,11 +371,11 @@ class TPS1200P(GeoComProtocol):
     def parse_response(
         self,
         cmd: str,
-        reply: str,
+        response: str,
         parsers: dict[str, Callable[[str], Any]]
     ) -> GeoComResponse:
         """
-        Parses RPC response and constructs :class:`GeoComResponse`
+        Parses RPC response and constructs GeoComResponse
         instance.
 
         Parameters
@@ -401,14 +401,14 @@ class TPS1200P(GeoComProtocol):
         :attr:`~grc.TPS1200PGRC.UNDEFINED` codes is returned.
             
         """
-        m = self._RESPPAT.match(reply)
+        m = self._RESPPAT.match(response)
         rpc = int(cmd.split(":")[0].split(",")[1])
         rpcname = rpcnames.get(rpc, str(rpc))
         if not m:
             return GeoComResponse(
                 rpcname,
                 cmd,
-                reply,
+                response,
                 TPS1200PGRC.COM_CANT_DECODE,
                 TPS1200PGRC.UNDEFINED,
                 0,
@@ -427,7 +427,7 @@ class TPS1200P(GeoComProtocol):
             return GeoComResponse(
                 rpcname,
                 cmd,
-                reply,
+                response,
                 TPS1200PGRC.COM_CANT_DECODE,
                 TPS1200PGRC.UNDEFINED,
                 0,
@@ -439,7 +439,7 @@ class TPS1200P(GeoComProtocol):
         return GeoComResponse(
             rpcname,
             cmd,
-            reply,
+            response,
             comrc,
             rc,
             int(groups["tr"]),

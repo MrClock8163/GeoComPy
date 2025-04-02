@@ -404,11 +404,6 @@ class TPS1200PTMC(GeoComSubsystem):
         Starts an EDM tracking measurement and waits until a distance is
         measured.
 
-        Parameters
-        ----------
-        mode : INCLINEPRG | str, optional
-            Inclination correction mode, by default INCLINEPRG.AUTO
-
         Returns
         -------
         GeoComResponse
@@ -1256,7 +1251,7 @@ class TPS1200PTMC(GeoComSubsystem):
             }
         )
 
-    def get_ang_switch(self) -> GeoComResponse:
+    def get_angle_switch(self) -> GeoComResponse:
         """
         RPC 2014, ``TMC_GetAngSwitch``
 

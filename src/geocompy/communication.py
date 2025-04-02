@@ -100,7 +100,7 @@ class Connection:
 
         Returns
         -------
-        list[str]
+        list
             Responses to the sent messages.
 
         Raises
@@ -180,7 +180,7 @@ class SerialConnection(Connection):
         """
         Parameters
         ----------
-        port : ~serial.Serial
+        port : Serial
             Serial port to communicate on.
         eom : str, optional
             EndOfMessage sequence, by default ``"\\r\\n"``
@@ -303,7 +303,7 @@ class SerialConnection(Connection):
 
         Returns
         -------
-        list[str]
+        list
             Responses to the sent messages.
 
         Raises

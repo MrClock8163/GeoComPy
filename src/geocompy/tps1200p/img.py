@@ -120,7 +120,7 @@ class TPS1200PIMG(GeoComSubsystem):
         See Also
         --------
         get_tcc_config
-        take_tcc_image
+        take_tcc_img
 
         """
         _memtype = toenum(self.MEMTYPE, memtype)

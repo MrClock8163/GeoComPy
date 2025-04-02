@@ -28,20 +28,23 @@ from enum import Enum
 from typing import (
     TypeAlias,
     Literal,
-    Callable
+    Callable,
+    TypeVar
 )
 
 
-_RO = 180 * 60 * 60 / math.pi
+RO = 180 * 60 * 60 / math.pi
 """RAD-SEC conversion coefficient"""
 
-_PI2 = 2 * math.pi
+PI2 = 2 * math.pi
 """Full angle in RAD"""
+
+_E = TypeVar("_E", bound=Enum)
 
 
 def parsestr(value: str) -> str:
     """
-    Returns a string value with the inclosing quote marks (``"..."``)
+    Returns a string value with the enclosing quote marks (``"..."``)
     removed.
 
     Parameters
@@ -64,7 +67,7 @@ def parsestr(value: str) -> str:
     return value[1:-1]
 
 
-def toenum[T: Enum](e: type[T], value: T | str) -> T:
+def toenum(e: type[_E], value: _E | str) -> _E:
     """
     Returns the member of an :class:`~enum.Enum` with the given name.
 
@@ -108,19 +111,19 @@ def toenum[T: Enum](e: type[T], value: T | str) -> T:
     return value
 
 
-def enumparser[T: Enum](e: type[T]) -> Callable[[str], T]:
+def enumparser(e: type[_E]) -> Callable[[str], _E]:
     """
     Returns a parser function that can parse the target enum from the
     serialized enum value.
 
     Parameters
     ----------
-    e: ~enum.Enum
+    e: Enum
         Target enum type.
     
     Returns
     -------
-    Callable[[str], ~enum.Enum]
+    Callable
         Parser function, that takes a string as input, and returns an
         enum member.
     
@@ -138,7 +141,7 @@ def enumparser[T: Enum](e: type[T]) -> Callable[[str], T]:
     <MyEnum.ONE: 1>
 
     """
-    def parseenum(value: str) -> T:
+    def parseenum(value: str) -> _E:
         return e(int(value))
     
     return parseenum
@@ -259,7 +262,7 @@ class Angle:
     def sec2rad(angle: float) -> float:
         """Converts arcseconds to radians.
         """
-        return angle / _RO
+        return angle / RO
 
     @staticmethod
     def mil2rad(angle: float) -> float:
@@ -277,7 +280,7 @@ class Angle:
     def rad2sec(angle: float) -> float:
         """Converts radians to arcseconds.
         """
-        return angle * _RO
+        return angle * RO
 
     @staticmethod
     def rad2deg(angle: float) -> float:
@@ -290,7 +293,7 @@ class Angle:
         """Converts radians to DDD-MM-SS.
         """
         signum = "-" if angle < 0 else ""
-        secs = round(abs(angle) * _RO)
+        secs = round(abs(angle) * RO)
         mi, sec = divmod(secs, 60)
         deg, mi = divmod(mi, 60)
         deg = int(deg)
@@ -308,7 +311,7 @@ class Angle:
     def rad2pdeg(angle: float) -> float:
         """Converts radians to DDD.MMSS.
         """
-        secs = round(angle * _RO)
+        secs = round(angle * RO)
         mi, sec = divmod(secs, 60)
         deg, mi = divmod(mi, 60)
         deg = int(deg)
@@ -336,10 +339,10 @@ class Angle:
         float
             Normalized angular value.
         """
-        norm = angle % _PI2
+        norm = angle % PI2
 
         if not positive and angle < 0:
-            norm -= _PI2
+            norm -= PI2
 
         return norm
 
