@@ -1,72 +1,142 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-
 import os
 import sys
 sys.path.insert(0, os.path.abspath("../src"))
-
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'GeoComPy'
 copyright = '2025, MrClock8163'
 author = 'MrClock8163'
 
 # from geocompy._version import __version__
-# release = __version__
-
-
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+# release = version = "0.0.1"
 
 extensions = [
-    # "sphinx.ext.apidoc",
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.doctest",
     "sphinx.ext.linkcode",
     "sphinx.ext.napoleon",
-    "sphinx_copybutton",
-    "notfound.extension"
+    "notfound.extension",
+    "sphinx_last_updated_by_git",
+    "sphinx_immaterial"
 ]
-
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
-# html_theme = 'furo'
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
-
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "serial": ("https://pyserial.readthedocs.io/en/latest/", None)
 }
 
-apidoc_modules = [
-    {
-        "path": "../src/geocompy",
-        "destination": "api",
-        "max_depth": 2,
-        "module_first": True,
-        "follow_links": True,
-        # "separate_modules": True,
-        "automodule_options": {"no-undoc-members", "no-show-inheritance"},
-        "no_headings": True
-    }
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ['_templates']
+
+html_static_path = ['_static']
+html_css_files = [
+    'css/custom.css',
+]
+html_last_updated_fmt = "%d %b %Y"
+html_copy_source = False
+html_use_opensearch = "https://geocompy.readthedocs.io"
+html_theme = 'sphinx_immaterial'
+html_theme_options = {
+    "icon": {
+        "repo": "fontawesome/brands/github",
+        "edit": "material/file-edit-outline",
+    },
+    "features": [
+        "content.code.copy",
+        "navigation.top",
+        "navigation.path",
+        "toc.follow"
+    ],
+    "site_url": "https://geocompy.readthedocs.io",
+    "repo_url": "https://github.com/MrClock8163/geocompy",
+    "repo_name": "GeoComPy",
+    "palette": [
+        {
+            "media": "(prefers-color-scheme)",
+            "toggle": {
+                "icon": "material/brightness-auto",
+                "name": "Switch to light mode",
+            },
+        },
+        {
+            "media": "(prefers-color-scheme: light)",
+            "scheme": "default",
+            "primary": "custom",
+            "accent": "custom",
+            "toggle": {
+                "icon": "material/weather-sunny",
+                "name": "Switch to dark mode",
+            },
+        },
+        {
+            "media": "(prefers-color-scheme: dark)",
+            "scheme": "slate",
+            "primary": "custom",
+            "accent": "custom",
+            "toggle": {
+                "icon": "material/weather-night",
+                "name": "Switch to system preference",
+            },
+        },
+    ],
+    "social": [
+        {
+            "icon": "fontawesome/brands/github",
+            "link": "https://github.com/MrClock8163/geocompy",
+            "name": "Project on GitHub"
+        },
+        {
+            "icon": "fontawesome/brands/python",
+            "link": "https://pypi.org/project/geocompy/",
+        }
+    ],
+    "version_dropdown": True,
+}
+
+# Immaterial toc adjustments
+object_description_options = [
+    ("py:.*", 
+        {
+            "include_fields_in_toc": False,
+            "include_rubrics_in_toc": False
+        }
+    ),
+    ("py:parameter",
+        {
+            "include_in_toc": False
+        }
+    )
 ]
 
-# autodoc_member_order = "groupwise"
 autodoc_default_options = {
     "member-order": "groupwise",
     "no-show-inheritance": True
 }
 
+napoleon_use_admonition_for_notes = True
+napoleon_preprocess_types = True
+napoleon_google_docstring = False
+napoleon_use_ivar = True
+napoleon_type_aliases = {
+    "GeoComResponse": "~geocompy.GeoComResponse"
+}
+
+python_display_short_literal_types = True
+python_type_aliases = {
+    "serial.serialwin32.Serial": "serial.Serial"
+}
+
+# Error checking
+nitpicky = True
+nitpick_ignore = {
+    ("py:class", "optional"),
+    ("py:param", "_E"),
+}
+nitpick_ignore_regex = {
+    ("py:obj", r"[a-zA-Z]{3}\.\w+")
+}
+
+# GitHub source linking
 def linkcode_resolve(domain, info):
     if domain != 'py':
         return None

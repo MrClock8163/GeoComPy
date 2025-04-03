@@ -20,3 +20,10 @@ API documentation
    api/communication
    api/tps1200p/index
    api/vivatps/index
+
+
+Indices
+=======
+
+* :ref:`genindex`
+* :ref:`modindex`
