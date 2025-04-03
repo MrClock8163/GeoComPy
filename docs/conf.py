@@ -32,8 +32,8 @@ html_static_path = ['_static']
 html_css_files = [
     'css/custom.css',
 ]
-html_logo = "logo.png"
-html_favicon = "favicon.ico"
+html_logo = "_static/logo.svg"
+html_favicon = "_static/favicon.svg"
 html_last_updated_fmt = "%d %b %Y"
 html_copy_source = False
 html_use_opensearch = "https://geocompy.readthedocs.io"
