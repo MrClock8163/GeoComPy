@@ -11,9 +11,7 @@ Welcome to the **GeoComPy** documentation
 =========================================
 
 The GeoComPy package provides Python wrapper functions for controlling
-various surveying instruments for automated tasks. The primary way of
-remote communication is through serial connection. GeoComPy mainly
-implements the GeoCom and GSI Online command system of Leica products.
+various surveying instruments in automated tasks.
 
 Links
 -----
