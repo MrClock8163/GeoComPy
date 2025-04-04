@@ -36,6 +36,7 @@ html_logo = "_static/logo.svg"
 html_favicon = "_static/favicon.svg"
 html_last_updated_fmt = "%d %b %Y"
 html_copy_source = False
+html_scaled_image_link = False
 html_use_opensearch = "https://geocompy.readthedocs.io"
 html_theme = 'sphinx_immaterial'
 html_theme_options = {

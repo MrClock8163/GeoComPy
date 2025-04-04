@@ -1,19 +1,38 @@
-GeoComPy documentation
-======================
+.. image:: geocompy_logo.png
+   :width: 600
+   :align: center
+   :alt: GeoComPy logo
+
+|
+|
+|
+
+Welcome to the **GeoComPy** documentation
+=========================================
+
+The GeoComPy package provides Python wrapper functions for controlling
+various surveying instruments for automated tasks. The primary way of
+remote communication is through serial connection. GeoComPy mainly
+implements the GeoCom and GSI Online command system of Leica products.
+
+Links
+-----
+
+- :si-icon:`material/text-box-multiple` `Documentation <https://geocompy.readthedocs.io>`_
+- :si-icon:`material/download` `Download <https://pypi.org/project/geocompy/>`_
+- :si-icon:`material/github` `GitHub <https://github.com/MrClock8163/GeoComPy>`_
+
+Content
+-------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents
 
-   installation
-
-API documentation
-=================
+   overview
 
 .. toctree::
-   :hidden:
-   :maxdepth: 2
-   :caption: API
+   :maxdepth: 1
+   :caption: API documentation
 
    api/index
    api/data
@@ -23,7 +42,7 @@ API documentation
 
 
 Indices
-=======
+-------
 
 * :ref:`genindex`
 * :ref:`modindex`
