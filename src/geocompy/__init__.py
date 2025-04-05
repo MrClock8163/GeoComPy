@@ -59,7 +59,7 @@ from .communication import Connection
 try:
     from ._version import __version__
 except:
-    __version__ = "0.1.0-alpha"
+    __version__ = "0.0.0" # Placeholder value for source installs
 
 
 class GeoComReturnCode(Enum):
