@@ -1,5 +1,5 @@
 geocompy
-=================
+========
 
 .. module:: geocompy
 

@@ -7,24 +7,25 @@
 |
 |
 
+*****************************************
 Welcome to the **GeoComPy** documentation
-=========================================
+*****************************************
 
 The GeoComPy package provides Python wrapper functions for controlling
 various surveying instruments in automated tasks.
 
 Links
------
+=====
 
 - :si-icon:`material/text-box-multiple` `Documentation <https://geocompy.readthedocs.io>`_
 - :si-icon:`material/download` `Download <https://pypi.org/project/geocompy/>`_
 - :si-icon:`material/github` `GitHub <https://github.com/MrClock8163/GeoComPy>`_
 
 Content
--------
+=======
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    overview
 
@@ -38,9 +39,7 @@ Content
    api/tps1200p/index
    api/vivatps/index
 
-
 Indices
--------
 
 * :ref:`genindex`
 * :ref:`modindex`

@@ -2,9 +2,9 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath("../src"))
 
-project = 'GeoComPy'
-copyright = '2025, MrClock8163'
-author = 'MrClock8163'
+project = "GeoComPy"
+copyright = "2025, MrClock8163"
+author = "MrClock8163"
 
 # from geocompy._version import __version__
 # release = version = "0.0.1"
@@ -25,12 +25,12 @@ intersphinx_mapping = {
     "serial": ("https://pyserial.readthedocs.io/en/latest/", None)
 }
 
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-templates_path = ['_templates']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+templates_path = ["_templates"]
 
-html_static_path = ['_static']
+html_static_path = ["_static"]
 html_css_files = [
-    'css/custom.css',
+    "css/custom.css",
 ]
 html_logo = "_static/logo.svg"
 html_favicon = "_static/favicon.svg"
@@ -47,6 +47,8 @@ html_theme_options = {
     "features": [
         "content.code.copy",
         "navigation.top",
+        "navigation.sections",
+        "navigation.expand",
         "navigation.path",
         "toc.follow"
     ],
@@ -146,4 +148,33 @@ def linkcode_resolve(domain, info):
     if not info['module']:
         return None
     filename = info['module'].replace('.', '/')
-    return "https://github.com/MrClock8163/geocompy/tree/main/src/%s.py" % filename
+    return (
+        "https://github.com/MrClock8163/"
+        f"geocompy/tree/main/src/{filename:s}.py"
+    )
+
+latex_documents = [
+    (
+        "latexindex", "geocompy.tex",
+        "GeoComPy documentation", "MrClock8163",
+        "manual", False
+    )
+]
+latex_logo = "geocompy_logo.png"
+latex_elements = {
+    "papersize": "a4paper",
+    "extraclassoptions": "oneside",
+    "makeindex": (
+        r"\usepackage[columns=1]{idxlayout}"
+        r"\makeindex"
+    ),
+    "preamble": (
+        r"\usepackage{titlesec}"
+        r"\newcommand{\sectionbreak}{\clearpage}"
+    ),
+    "fontpkg": (
+        r"\usepackage{lmodern}"
+        r"\renewcommand*{\familydefault}{\rmdefault}"
+        r"\renewcommand{\ttdefault}{lmtt}"
+    )
+}
