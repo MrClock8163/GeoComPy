@@ -150,33 +150,33 @@ class VivaTPS(GeoComProtocol):
         """
         super().__init__(connection, logger)
         
-        self.aus = VivaTPSAUS(self)
+        self.aus: VivaTPSAUS = VivaTPSAUS(self)
         """Alt User subsystem."""
-        self.aut = VivaTPSAUT(self)
+        self.aut: VivaTPSAUT = VivaTPSAUT(self)
         """Automation subsystem."""
-        self.bap = VivaTPSBAP(self)
+        self.bap: VivaTPSBAP = VivaTPSBAP(self)
         """Basic applications subsystem."""
-        self.bmm = VivaTPSBMM(self)
+        self.bmm: VivaTPSBMM = VivaTPSBMM(self)
         """Basic man-machine interface subsystem."""
-        self.kdm = VivaTPSKDM(self)
+        self.kdm: VivaTPSKDM = VivaTPSKDM(self)
         """Keyboard display unit subsystem."""
-        self.cam = VivaTPSCAM(self)
+        self.cam: VivaTPSCAM = VivaTPSCAM(self)
         """Camera subsystem."""
-        self.com = VivaTPSCOM(self)
+        self.com: VivaTPSCOM = VivaTPSCOM(self)
         """Communications subsystem."""
-        self.csv = VivaTPSCSV(self)
+        self.csv: VivaTPSCSV = VivaTPSCSV(self)
         """Central services subsystem."""
-        self.edm = VivaTPSEDM(self)
+        self.edm: VivaTPSEDM = VivaTPSEDM(self)
         """Electronic distance measurement subsystem."""
-        self.ftr = VivaTPSFTR(self)
+        self.ftr: VivaTPSFTR = VivaTPSFTR(self)
         """File transfer subsystem."""
-        self.img = VivaTPSIMG(self)
+        self.img: VivaTPSIMG = VivaTPSIMG(self)
         """Image processing subsystem."""
-        self.mot = VivaTPSMOT(self)
+        self.mot: VivaTPSMOT = VivaTPSMOT(self)
         """Motorization subsytem."""
-        self.sup = VivaTPSSUP(self)
+        self.sup: VivaTPSSUP = VivaTPSSUP(self)
         """Supervisor subsystem."""
-        self.tmc = VivaTPSTMC(self)
+        self.tmc: VivaTPSTMC = VivaTPSTMC(self)
         """Theodolite measurement and calculation subsystem."""
         
         for i in range(retry):

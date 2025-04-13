@@ -50,7 +50,7 @@ Submodules
 from __future__ import annotations
 
 from enum import Enum
-from typing import Callable, Any, Iterable, Generic, TypeVar
+from typing import Callable, Any, Iterable, Generic, TypeVar, Literal
 from logging import Logger, NullHandler
 
 from .data import Angle, Byte
@@ -312,11 +312,23 @@ class GsiOnlineResponse(Generic[_T]):
 
 
 class GsiOnlineProtocol:
+    """
+    Base class for GSI Online protocol versions.
+    """
     def __init__(
         self,
         connection: Connection,
         logger: Logger | None = None
     ):
+        """
+        Parameters
+        ----------
+        connection : Connection
+            Connection to use for communication
+            (usually :class:`~communication.SerialConnection`).
+        logger : ~logging.Logger | None, optional
+            Logger to log all requests and responses, by default None
+        """
         self._conn: Connection = connection
         if logger is None:
             logger = Logger("/dev/null")
@@ -328,6 +340,27 @@ class GsiOnlineProtocol:
         param: int,
         value: int
     ) -> GsiOnlineResponse[bool | None]:
+        """
+        Executes a GSI Online SET command and returns the success
+        of the operation.
+
+        Parameters
+        ----------
+        param : int
+            Index of the parameter to set.
+        value : int
+            Value to set the parameter to.
+
+        Returns
+        -------
+        GsiOnlineResponse
+            Response information.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the child class.
+        """
         raise NotImplementedError()
 
     def confrequest(
@@ -335,6 +368,27 @@ class GsiOnlineProtocol:
         param: int,
         parser: Callable[[str], _T]
     ) -> GsiOnlineResponse[_T | None]:
+        """
+        Executes a GSI Online CONF command and returns the result
+        of the parameter query.
+
+        Parameters
+        ----------
+        param : int
+            Index of the parameter to query.
+        parser : Callable[[str], _T]
+            Parser function to process the result of the query.
+
+        Returns
+        -------
+        GsiOnlineResponse
+            Parsed parameter value.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the child class.
+        """
         raise NotImplementedError()
 
     def putrequest(
@@ -342,12 +396,57 @@ class GsiOnlineProtocol:
         wordindex: int,
         word: str
     ) -> GsiOnlineResponse[bool | None]:
+        """
+        Executes a GSI Online PUT command and returns the success
+        of the operation.
+
+        Parameters
+        ----------
+        wordindex : int
+            Index of the GSI word to set.
+        word : str
+            Complete GSI word to set.
+
+        Returns
+        -------
+        GsiOnlineResponse
+            Response information.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the child class.
+        """
         raise NotImplementedError()
     
     def getrequest(
         self,
-        mode: str,
+        mode: Literal['I', 'M', 'C'],
         wordindex: int,
         parser: Callable[[str], _T]
     ) -> GsiOnlineResponse[_T | None]:
+        """
+        Executes a GSI Online GET command and returns the result
+        of the GSI word query.
+
+        Parameters
+        ----------
+        mode : Literal['I', 'M', 'C']
+            Request mode. ``I``: internal/instant, ``M``: measure,
+            ``C``: continuous.
+        wordindex : int
+            Index of the GSI word to get.
+        parser : Callable[[str], _T]
+            Parser function to process the result of the query.
+
+        Returns
+        -------
+        GsiOnlineResponse
+            Parsed value.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the child class.
+        """
         raise NotImplementedError()
