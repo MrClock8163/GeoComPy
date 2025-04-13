@@ -21,6 +21,10 @@ geocompy.data
     :members:
     :class-doc-from: both
 
+.. autoclass:: Vector
+    :members:
+    :class-doc-from: both
+
 .. autoclass:: Coordinate
     :members:
     :class-doc-from: both

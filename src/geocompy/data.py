@@ -10,6 +10,7 @@ Functions
 
 - ``parsestr``
 - ``toenum``
+- ``enumparser``
 
 Types
 -----
@@ -17,6 +18,7 @@ Types
 - ``AngleUnit``
 - ``Angle``
 - ``Byte``
+- ``Vector``
 - ``Coordinate``
 
 """
@@ -29,7 +31,8 @@ from typing import (
     TypeAlias,
     Literal,
     Callable,
-    TypeVar
+    TypeVar,
+    Self
 )
 
 
@@ -64,7 +67,10 @@ def parsestr(value: str) -> str:
     string is enclosed quotes to indicated the data type. This is a
     simple convenience function to strip them.
     """
-    return value[1:-1]
+    if value[0] == value[-1] == "\"":
+        return value[1:-1]
+    
+    return value
 
 
 def toenum(e: type[_E], value: _E | str) -> _E:
@@ -407,7 +413,10 @@ class Angle:
             case AngleUnit.NMEA | 'NMEA', float() | int():
                 self._value = self.dm2rad(value)
             case _:
-                raise ValueError(f"unknown source unit and value type pair: {unit} - {type(value).__name__}")
+                raise ValueError(
+                    f"unknown source unit and value type pair: "
+                    f"{unit} - {type(value).__name__}"
+                )
 
         if normalize:
             self._value = self.normalize_rad(self._value, positive)
@@ -417,6 +426,12 @@ class Angle:
 
     def __repr__(self) -> str:
         return f"{type(self).__name__:s}({self.asunit(AngleUnit.DMS):s})"
+    
+    def __eq__(self, other: object) -> bool:
+        if type(other) is not Angle:
+            return False
+        
+        return math.isclose(self._value, other._value)
 
     def __pos__(self) -> Angle:
         return Angle(self._value)
@@ -426,55 +441,39 @@ class Angle:
 
     def __add__(self, other: Angle) -> Angle:
         if type(other) is not Angle:
-            raise TypeError(f"unsupported operand type(s) for +: 'Angle' and '{type(other).__name__}'")
+            raise TypeError(
+                f"unsupported operand type(s) for +: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
 
         return Angle(self._value + other._value)
 
-    def __iadd__(self, other: Angle) -> Angle:
-        if type(other) is not Angle:
-            raise TypeError(f"unsupported operand type(s) for +=: 'Angle' and '{type(other).__name__}'")
-
-        self._value += other._value
-        return self
-
     def __sub__(self, other: Angle) -> Angle:
         if type(other) is not Angle:
-            raise TypeError(f"unsupported operand type(s) for -: 'Angle' and '{type(other).__name__}'")
+            raise TypeError(
+                f"unsupported operand type(s) for -: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
 
         return Angle(self._value - other._value)
 
-    def __isub__(self, other: Angle) -> Angle:
-        if type(other) is not Angle:
-            raise TypeError(f"unsupported operand type(s) for -=: 'Angle' and '{type(other).__name__}'")
-
-        self._value -= other._value
-        return self
-
     def __mul__(self, other: int | float) -> Angle:
         if type(other) not in (int, float):
-            raise TypeError(f"unsupported operand type(s) for *: 'Angle' and '{type(other).__name__}'")
+            raise TypeError(
+                f"unsupported operand type(s) for *: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
 
         return Angle(self._value * other)
 
-    def __imul__(self, other: int | float) -> Angle:
-        if type(other) not in (int, float):
-            raise TypeError(f"unsupported operand type(s) for *=: 'Angle' and '{type(other).__name__}'")
-
-        self._value *= other
-        return self
-
     def __truediv__(self, other: int | float) -> Angle:
         if type(other) not in (int, float):
-            raise TypeError(f"unsupported operand type(s) for /: 'Angle' and '{type(other).__name__}'")
+            raise TypeError(
+                f"unsupported operand type(s) for /: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
 
         return Angle(self._value / other)
-
-    def __itruediv__(self, other: int | float) -> Angle:
-        if type(other) not in (int, float):
-            raise TypeError(f"unsupported operand type(s) for /=: 'Angle' and '{type(other).__name__}'")
-
-        self._value /= other
-        return self
 
     def __abs__(self) -> Angle:
         return self.normalized()
@@ -619,9 +618,194 @@ class Byte:
         return cls(value)
 
 
-class Coordinate:
+class Vector:
     """
     Utility type to represent a position with 3D cartesian coordinates.
+    
+    Supported arithmetic operations:
+        - \\+ `Vector`
+        - \\- `Vector`
+        - `Vector` + `Vector`
+        - `Vector` - `Vector`
+        - `Vector` * number (`int` | `float`)
+        - `Vector` / number (`int` | `float`)
+
+    Examples
+    --------
+
+    Creating new vector and accessing components:
+
+    >>> c = gc.data.Vector(1, 2, 3)
+    >>> print(c)
+    Vector(1.0, 2.0, 3.0)
+    >>> c.x
+    1.0
+    >>> c[1]
+    2.0
+    >>> x, y, z = c
+    >>> z
+    3.0
+
+    """
+
+    def __init__(self, x: float, y: float, z: float):
+        """
+        Parameters
+        ----------
+        x : float
+            X component
+        y : float
+            Y component
+        z : float
+            Z component
+
+        """
+        self.x: float = x
+        self.y: float = y
+        self.z: float = z
+
+    def __str__(self) -> str:
+        return f"{type(self).__name__}({self.x:f}, {self.y:f}, {self.z:f})"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __iter__(self):
+        return iter([self.x, self.y, self.z])
+
+    def __getitem__(self, idx: int) -> float:
+        if idx < 0 or idx > 2:
+            raise ValueError(f"index out of valid 0-2 range, got: {idx}")
+
+        coords = (self.x, self.y, self.z)
+        return coords[idx]
+    
+    def __eq__(self, other) -> bool:
+        if type(other) is not type(self):
+            return False
+
+        return (
+            math.isclose(self.x, other.x)
+            and math.isclose(self.y, other.y)
+            and math.isclose(self.z, other.z)
+        )
+    
+    def __pos__(self) -> Self:
+        return type(self)(
+            self.x,
+            self.y,
+            self.z
+        )
+    
+    def __neg__(self) -> Self:
+        return type(self)(
+            -self.x,
+            -self.y,
+            -self.z
+        )
+    
+    def __add__(self, other: Self) -> Self:
+        if type(other) is not type(self):
+            raise TypeError(
+                f"unsupported operand type(s) for +: "
+                f"'{type(self).__name__}' and "
+                f"'{type(other).__name__}'"
+            )
+        
+        return type(self)(
+            self.x + other.x,
+            self.y + other.y,
+            self.z + other.z
+        )
+    
+    def __sub__(self, other: Self) -> Self:
+        if type(other) is not type(self):
+            raise TypeError(
+                f"unsupported operand type(s) for -: "
+                f"'{type(self).__name__}' and "
+                f"'{type(other).__name__}'"
+            )
+        
+        return type(self)(
+            self.x - other.x,
+            self.y - other.y,
+            self.z - other.z
+        )
+    
+    def __mul__(self, other: int | float) -> Self:
+        if type(other) not in (int, float):
+            raise TypeError(
+                f"unsupported operand type(s) for *: "
+                f"'{type(self).__name__}' and "
+                f"'{type(other).__name__}'"
+            )
+        
+        return type(self)(
+            self.x * other,
+            self.y * other,
+            self.z * other
+        )
+    
+    def __truediv__(self, other: int | float) -> Self:
+        if type(other) not in (int, float):
+            raise TypeError(
+                f"unsupported operand type(s) for /: "
+                f"'{type(self).__name__}' and "
+                f"'{type(other).__name__}'"
+            )
+        
+        return type(self)(
+            self.x / other,
+            self.y / other,
+            self.z / other
+        )
+    
+    def length(self) -> float:
+        """
+        Calculates the length of the vector.
+
+        Returns
+        -------
+        float
+            Length of the vector.
+        """
+        return math.sqrt(
+            math.fsum(
+                (
+                    self.x**2,
+                    self.y**2,
+                    self.z**2
+                )
+            )
+        )
+    
+    def normalized(self) -> Self:
+        """
+        Returns a copy of the vector, normalized to unit length.
+
+        Returns
+        -------
+        Self
+            Normalized vector.
+        """
+        l = self.length()
+        if l == 0:
+            return +self
+        
+        return self / l
+
+
+class Coordinate(Vector):
+    """
+    Utility type to represent a position with 3D cartesian coordinates.
+    
+    Supported arithmetic operations:
+        - \\+ `Coordinate`
+        - \\- `Coordinate`
+        - `Coordinate` + `Coordinate`
+        - `Coordinate` - `Coordinate`
+        - `Coordinate` * number (`int` | `float`)
+        - `Coordinate` / number (`int` | `float`)
 
     Examples
     --------
@@ -640,35 +824,3 @@ class Coordinate:
     3.0
 
     """
-
-    def __init__(self, x: float, y: float, z: float):
-        """
-        Parameters
-        ----------
-        x : float
-            X component (often easting)
-        y : float
-            Y component (often northing)
-        z : float
-            Z component (often height/up)
-
-        """
-        self.x: float = x
-        self.y: float = y
-        self.z: float = z
-
-    def __str__(self) -> str:
-        return f"Coordinate({self.x:f}, {self.y:f}, {self.z:f})"
-
-    def __repr__(self) -> str:
-        return str(self)
-
-    def __iter__(self):
-        return iter([self.x, self.y, self.z])
-
-    def __getitem__(self, idx: int) -> float:
-        if idx < 0 or idx > 2:
-            raise ValueError(f"index out of valid 0-2 range, got: {idx}")
-
-        coords = (self.x, self.y, self.z)
-        return coords[idx]
