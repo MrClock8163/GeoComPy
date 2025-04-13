@@ -50,7 +50,7 @@ Submodules
 from __future__ import annotations
 
 from enum import Enum
-from typing import Callable, Any, Iterable
+from typing import Callable, Any, Iterable, Generic, TypeVar
 from logging import Logger, NullHandler
 
 from .data import Angle, Byte
@@ -60,6 +60,9 @@ try:
     from ._version import __version__
 except:
     __version__ = "0.0.0" # Placeholder value for source installs
+
+
+_T = TypeVar("_T")
 
 
 class GeoComReturnCode(Enum):
@@ -252,6 +255,62 @@ class GeoComProtocol:
         raise NotImplementedError()
 
 
+class GsiOnlineResponse(Generic[_T]):
+    """Container class for parsed GSI Online responses."""
+    def __init__(
+        self,
+        desc: str,
+        cmd: str,
+        response: str,
+        value: _T,
+        comment: str = ""
+    ):
+        """
+        Parameters
+        ----------
+        desc : str
+            Description of the GSI Online command, that invoked this
+            response.
+        cmd : str
+            Full, serialized command, that invoked this response.
+        response : str
+            Full, received response.
+        value
+            Parsed response value. The content is dependent on the
+            executed command.
+        comment : str
+            Additional comment (e.g. explanation of an error).
+        """
+        self.desc: str = desc
+        """Description of the GSI Online command, that invoked this
+        response."""
+        self.cmd: str = cmd
+        """Full, serialized command, that invoked this response."""
+        self.response: str = response
+        """Full, received response."""
+        self.value: _T = value
+        """Parsed response value. The content is dependent on the
+        executed command."""
+        self.comment: str = comment
+        """Additional comment (e.g. explanation of an error)."""
+    
+    def __str__(self) -> str:
+        success = (
+            "success"
+            if self.value is not None
+            else f"fail ({self.comment})"
+        )
+        return (
+            f"GsiOnlineResponse({self.desc}) "
+            f"{success}, "
+            f"value: {self.value}, "
+            f"(cmd: '{self.cmd}', response: '{self.response}')"
+        )
+    
+    def __bool__(self) -> bool:
+        return self.value is not None
+
+
 class GsiOnlineProtocol:
     def __init__(
         self,
@@ -264,17 +323,31 @@ class GsiOnlineProtocol:
             logger.addHandler(NullHandler())
         self._logger: Logger = logger
     
-    def set(
+    def setrequest(
         self,
-        spec: int,
-        param: int
-    ):  
-        cmd = f"SET/{spec:d}/{param:d}"
-        self._conn.exchange1(cmd)
+        param: int,
+        value: int
+    ) -> GsiOnlineResponse[bool | None]:
+        raise NotImplementedError()
 
-    def conf(
+    def confrequest(
         self,
-        spec: int
-    ):
-        cmd = f"CONF/{spec:d}"
-        response = self._conn.exchange1(cmd)
+        param: int,
+        parser: Callable[[str], _T]
+    ) -> GsiOnlineResponse[_T | None]:
+        raise NotImplementedError()
+
+    def putrequest(
+        self,
+        wordindex: int,
+        word: str
+    ) -> GsiOnlineResponse[bool | None]:
+        raise NotImplementedError()
+    
+    def getrequest(
+        self,
+        mode: str,
+        wordindex: int,
+        parser: Callable[[str], _T]
+    ) -> GsiOnlineResponse[_T | None]:
+        raise NotImplementedError()
