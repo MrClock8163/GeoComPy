@@ -18,3 +18,11 @@ geocompy
 .. autoclass:: GeoComReturnCode
     :members:
     :class-doc-from: both
+
+.. autoclass:: GsiOnlineProtocol
+    :members:
+    :class-doc-from: both
+
+.. autoclass:: GsiOnlineResponse
+    :members:
+    :class-doc-from: both
