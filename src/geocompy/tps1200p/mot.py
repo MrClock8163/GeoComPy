@@ -38,17 +38,17 @@ class TPS1200PMOT(GeoComSubsystem):
         PREDICTION = 2
 
     class STOPMODE(Enum):
-        NORMAL = 0 #: Slow down with current acceleration.
-        SHUTDOWN = 1 #: Slow down by motor power termination.
+        NORMAL = 0  # : Slow down with current acceleration.
+        SHUTDOWN = 1  # : Slow down by motor power termination.
 
     class MODE(Enum):
-        POSIT = 0 #: Relative positioning.
-        OCONST = 1 #: Constant speed.
-        MANUPOS = 2 #: Manual positioning.
-        LOCK = 3 #: Lock-in controller.
-        BREAK = 4 #: Break controller.
+        POSIT = 0  # : Relative positioning.
+        OCONST = 1  # : Constant speed.
+        MANUPOS = 2  # : Manual positioning.
+        LOCK = 3  # : Lock-in controller.
+        BREAK = 4  # : Break controller.
         # 5, 6 do not use (why?)
-        TERM = 7 #: Terminate current task.
+        TERM = 7  # : Terminate current task.
 
     def read_lock_status(self) -> GeoComResponse:
         """
@@ -63,7 +63,7 @@ class TPS1200PMOT(GeoComSubsystem):
                 - **status** (`LOCKSTATUS`): ATR lock status.
             - Error codes:
                 - ``NOT_IMPL``: Motorization not available.
-        
+
         See Also
         --------
         aut.lock_in
@@ -100,7 +100,7 @@ class TPS1200PMOT(GeoComSubsystem):
                 - ``MOT_BUSY``: Subsystem is busy, controller already
                   started.
                 - ``MOT_UNREADY``: Subsystem is not initialized.
-        
+
         See Also
         --------
         set_velocity

@@ -38,7 +38,7 @@ class VivaTPSFTR(TPS1200PFTR):
         SDCARD = 4
         USB = 5
         RAM = 6
-        
+
     class FILETYPE(Enum):
         POINTRELATEDDB = 103
         IMAGES = 170
@@ -49,7 +49,7 @@ class VivaTPSFTR(TPS1200PFTR):
         SCANS = 175,
         UNKNOWN = 200
         LAST = 201
-    
+
     def delete_dir(
         self,
         dirname: str,
@@ -80,7 +80,7 @@ class VivaTPSFTR(TPS1200PFTR):
             - Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
-        
+
         See Also
         --------
         list
@@ -145,7 +145,7 @@ class VivaTPSFTR(TPS1200PFTR):
                   aborted.
                 - ``FTR_INVALIDINPUT``: Block size too big.
                 - ``FTR_FILEACCESS``: File access error.
-        
+
         See Also
         --------
         download_xl
@@ -187,7 +187,7 @@ class VivaTPSFTR(TPS1200PFTR):
                 - ``FTR_MISSINGSETUP``: No active download setup.
                 - ``FTR_INVALIDINPUT``: First block is missing.
                 - ``FTR_FILEACCESS``: File access error.
-        
+
         See Also
         --------
         setup_download_large

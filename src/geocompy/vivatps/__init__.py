@@ -83,7 +83,7 @@ class VivaTPS(GeoComProtocol):
     >>> from serial import Serial
     >>> from geocompy.communication import SerialConnection
     >>> from geocompy.vivatps import VivaTPS
-    >>> 
+    >>>
     >>> port = Serial("COM4", timeout=15)
     >>> with SerialConnection(port) as line:
     ...     tps = VivaTPS(line)
@@ -97,7 +97,7 @@ class VivaTPS(GeoComProtocol):
     >>> from serial import Serial
     >>> from geocompy.communication import SerialConnection
     >>> from geocompy.vivatps import VivaTPS
-    >>> 
+    >>>
     >>> log = Logger("stdout", DEBUG)
     >>> log.addHandler(StreamHandler())
     >>> port = Serial("COM4", timeout=15)
@@ -121,11 +121,11 @@ class VivaTPS(GeoComProtocol):
     )
 
     def __init__(
-            self,
-            connection: Connection,
-            logger: logging.Logger | None = None,
-            retry: int = 2
-        ):
+        self,
+        connection: Connection,
+        logger: logging.Logger | None = None,
+        retry: int = 2
+    ):
         """
         After the subsystems are initialized, the connection is tested by
         sending an ``LF`` character to clear the receiver buffer, then the
@@ -141,7 +141,7 @@ class VivaTPS(GeoComProtocol):
             Logger to log all requests and responses, by default None
         retry : int, optional
             Number of retries at connection validation before giving up.
-        
+
         Raises
         ------
         ConnectionError
@@ -149,7 +149,7 @@ class VivaTPS(GeoComProtocol):
             number of retries.
         """
         super().__init__(connection, logger)
-        
+
         self.aus: VivaTPSAUS = VivaTPSAUS(self)
         """Alt User subsystem."""
         self.aut: VivaTPSAUT = VivaTPSAUT(self)
@@ -178,7 +178,7 @@ class VivaTPS(GeoComProtocol):
         """Supervisor subsystem."""
         self.tmc: VivaTPSTMC = VivaTPSTMC(self)
         """Theodolite measurement and calculation subsystem."""
-        
+
         for i in range(retry):
             self._conn.send("\n")
             response = self.com.nullproc()
@@ -208,7 +208,7 @@ class VivaTPS(GeoComProtocol):
         GeoComResponse
             - Params:
                 - **digits** (`int`): Floating point decimal places.
-        
+
         See Also
         --------
         set_double_precision
@@ -237,7 +237,7 @@ class VivaTPS(GeoComProtocol):
         Returns
         -------
         GeoComResponse
-        
+
         See Also
         --------
         get_double_precision
@@ -247,7 +247,7 @@ class VivaTPS(GeoComProtocol):
         if response.comcode and response.rpccode:
             self._precision = digits
         return response
-    
+
     def request(
         self,
         rpc: int,
@@ -282,7 +282,7 @@ class VivaTPS(GeoComProtocol):
         ------
         TypeError
             If the passed parameters contained an unexpected type.
-            
+
         Notes
         -----
         If a :class:`~serial.SerialTimeoutException` occurs during the
@@ -353,19 +353,19 @@ class VivaTPS(GeoComProtocol):
         cmd = f"%R1Q,{rpc}:{','.join(strparams)}"
         try:
             answer = self._conn.exchange1(cmd)
-        except SerialTimeoutException as e:
+        except SerialTimeoutException:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{VivaTPSGRC.COM_TIMEDOUT.value:d},"
                 f"0:{VivaTPSGRC.FATAL.value:d}"
             )
-        except SerialException as e:
+        except SerialException:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{VivaTPSGRC.COM_CANT_SEND.value:d},"
                 f"0:{VivaTPSGRC.FATAL.value:d}"
             )
-        except Exception as e:
+        except Exception:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{VivaTPSGRC.FATAL.value:d},"
@@ -404,14 +404,14 @@ class VivaTPS(GeoComProtocol):
         -------
         GeoComResponse
             Parsed return codes and parameters from the RPC response.
-        
+
         Notes
         -----
         If the response does not match the expected pattern, or an
         :class:`Exception` occurs during parsing, a response with
         :attr:`~grc.VivaTPSGRC.COM_CANT_DECODE` and
         :attr:`~grc.VivaTPSGRC.UNDEFINED` codes is returned.
-            
+
         """
         m = self._RESPPAT.match(response)
         rpc = int(cmd.split(":")[0].split(",")[1])
@@ -435,7 +435,7 @@ class VivaTPS(GeoComProtocol):
         try:
             for (name, func), value in zip(parsers.items(), values.split(",")):
                 params[name] = func(value)
-        except:
+        except Exception:
             return GeoComResponse(
                 rpcname,
                 cmd,

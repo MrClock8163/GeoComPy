@@ -83,7 +83,7 @@ class TPS1200PCOM(GeoComSubsystem):
         GeoComResponse
             - Error codes:
                 - ``NOT_IMPL``: Instrument is already on.
-        
+
         Notes
         -----
         The instrument can be switched on with any command, or even just

@@ -31,7 +31,7 @@ class VivaTPSEDM(TPS1200PEDM):
     class ONOFF(Enum):
         OFF = 0
         ON = 1
-    
+
     class MEASUREMENTTYPE(Enum):
         SIGNAL = 1
         FREQ = 2
@@ -68,7 +68,7 @@ class VivaTPSEDM(TPS1200PEDM):
                 "active": bool
             }
         )
-    
+
     def set_boomerang_filter(
         self,
         state: ONOFF | str

@@ -216,7 +216,7 @@ class TPS1200PAUT(GeoComSubsystem):
                 - ``AUT_DEV_ERROR``: Angle deviation calculation error.
                   Repeat positioning!
                 - ``AUT_NOT_ENABLED``: ATR mode is not active.
-        
+
         See Also
         --------
         aus.get_user_atr_state
@@ -276,7 +276,7 @@ class TPS1200PAUT(GeoComSubsystem):
                 - ``AUT_DEV_ERROR``: Angle deviation calculation error.
                   Repeat positioning!
                 - ``AUT_NOT_ENABLED``: ATR mode is not active.
-        
+
         See Also
         --------
         aus.get_user_atr_state
@@ -336,7 +336,7 @@ class TPS1200PAUT(GeoComSubsystem):
                 - ``AUT_DEV_ERROR``: Angle deviation calculation error.
                   Repeat positioning!
                 - ``AUT_DETECTOR_ERROR``: Error in target acquisition.
-        
+
         See Also
         --------
         aus.get_user_atr_state
@@ -385,7 +385,7 @@ class TPS1200PAUT(GeoComSubsystem):
                 - ``AUT_BAD_ENVIRONMENT``: Inadequate environmental
                   conditions.
                 - ``AUT_DETECTOR_ERROR``: Error in target acquisition.
-        
+
         See Also
         --------
         aus.get_user_atr_state

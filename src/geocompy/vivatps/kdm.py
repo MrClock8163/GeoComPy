@@ -25,6 +25,7 @@ class VivaTPSKDM(GeoComSubsystem):
     This subsystem controls the keyboard and display functions.
 
     """
+
     def set_lcd_power(
         self,
         alwayson: bool
@@ -48,7 +49,7 @@ class VivaTPSKDM(GeoComSubsystem):
             23107,
             [alwayson]
         )
-    
+
     def get_lcd_power(self) -> GeoComResponse:
         """
         RPC 23108, ``KDM_GetLcdPower``

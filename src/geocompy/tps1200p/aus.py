@@ -91,7 +91,7 @@ class TPS1200PAUS(GeoComSubsystem):
         If LOCK mode is active when the ATR is activated, then LOCK mode
         changes to ATR mode.
 
-        If the ATR is deactivated, the LOCK mode does not change.        
+        If the ATR is deactivated, the LOCK mode does not change.
 
         See Also
         --------

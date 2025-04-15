@@ -34,10 +34,10 @@ class TPS1200PIMG(GeoComSubsystem):
         PCCARD = 1
 
     class SUBFUNC(Flag):
-        TESTIMG = 1 #: Test image.
-        AUTOEXPTIME = 2 #: Automatic exposure time.
-        SS2 = 4 #: x2 subsampling
-        SS4 = 8 #: x4 subsampling
+        TESTIMG = 1  # : Test image.
+        AUTOEXPTIME = 2  # : Automatic exposure time.
+        SS2 = 4  # : x2 subsampling
+        SS4 = 8  # : x4 subsampling
 
     def get_tcc_config(
         self,
@@ -68,7 +68,7 @@ class TPS1200PIMG(GeoComSubsystem):
                 - ``IVVERSION``: Config file version differs from system
                   software.
                 - ``NA``: Imaging license not found.
-        
+
         See Also
         --------
         set_tcc_config
@@ -116,7 +116,7 @@ class TPS1200PIMG(GeoComSubsystem):
                 - ``FATAL``: CF card is not available or full, or any
                   parameter is out of valid range.
                 - ``NA``: Imaging license not found.
-        
+
         See Also
         --------
         get_tcc_config
@@ -153,7 +153,7 @@ class TPS1200PIMG(GeoComSubsystem):
                 - ``IVRESULT``: Not supported by telescope firmware.
                 - ``FATAL``: CF card is not available or is full.
                 - ``NA``: Imaging license not found.
-        
+
         See Also
         --------
         get_tcc_config

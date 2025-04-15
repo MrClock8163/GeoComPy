@@ -44,7 +44,10 @@ class VivaTPSGRC(GeoComReturnCode):
     SHUT_DOWN = 12
     """Subsystem is down."""
     SYSBUSY = 13
-    """System busy/already in use of another process. Cannot execute function."""
+    """
+    System busy/already in use of another process. Cannot execute
+    function.
+    """
     HWFAILURE = 14
     """Fatal error - hardware failure."""
     ABORT_APPL = 15
@@ -207,19 +210,28 @@ class VivaTPSGRC(GeoComReturnCode):
     """ATR system error."""
 
     EDM_SYSTEM_ERR = 769
-    """Fatal EDM sensor error. See for the exact reason the original EDM sensor error number. In the most cases a service problem."""
+    """
+    Fatal EDM sensor error. See for the exact reason the original EDM
+    sensor error number. In the most cases a service problem.
+    """
     EDM_INVALID_COMMAND = 770
     """Invalid command or unknown command, see command syntax."""
     EDM_BOOM_ERR = 771
     """Boomerang error."""
     EDM_SIGN_LOW_ERR = 772
-    """Received signal to low, prism to far away, or natural barrier, bad environment, etc."""
+    """
+    Received signal to low, prism to far away, or natural barrier, bad
+    environment, etc.
+    """
     EDM_DIL_ERR = 773
     """obsolete."""
     EDM_SIGN_HIGH_ERR = 774
     """Received signal to strong, prism to near, stranger light effect."""
     EDM_TIMEOUT = 775
-    """Timeout, measuring time exceeded (signal too weak, beam interrupted,..)."""
+    """
+    Timeout, measuring time exceeded
+    (signal too weak, beam interrupted,..).
+    """
     EDM_FLUKT_ERR = 776
     """to much turbulences or distractions."""
     EDM_FMOT_ERR = 777
@@ -227,7 +239,10 @@ class VivaTPSGRC(GeoComReturnCode):
     EDM_DEV_NOT_INSTALLED = 778
     """Device like EGL, DL is not installed."""
     EDM_NOT_FOUND = 779
-    """Search result invalid. For the exact explanation, see in the description of the called function."""
+    """
+    Search result invalid. For the exact explanation, see in the
+    description of the called function.
+    """
     EDM_ERROR_RECEIVED = 780
     """Communication ok, but an error reported from the EDM sensor."""
     EDM_MISSING_SRVPWD = 781
@@ -245,13 +260,21 @@ class VivaTPSGRC(GeoComReturnCode):
     EDM_NO_MEASACTIVITY = 787
     """No measurement activity started."""
     EDM_CHKSUM_ERR = 788
-    """Calculated checksum, resp. received data wrong (only in binary communication mode possible)."""
+    """
+    Calculated checksum, resp. received data wrong (only in binary
+    communication mode possible).
+    """
     EDM_INIT_OR_STOP_ERR = 789
-    """During start up or shut down phase an error occured. It is saved in the DEL buffer."""
+    """
+    During start up or shut down phase an error occured. It is saved in
+    the DEL buffer.
+    """
     EDM_SRL_NOT_AVAILABLE = 790
     """Red laser not available on this sensor HW."""
     EDM_MEAS_ABORTED = 791
-    """Measurement will be aborted (will be used for the laser security)."""
+    """
+    Measurement will be aborted (will be used for the laser security).
+    """
     EDM_SLDR_TRANSFER_PENDING = 798
     """Multiple OpenTransfer calls."""
     EDM_SLDR_TRANSFER_ILLEGAL = 799
@@ -277,7 +300,10 @@ class VivaTPSGRC(GeoComReturnCode):
     EDM_PWD_NOTSET = 821
     """Password is not set."""
     EDM_ACTION_NO_MORE_VALID = 822
-    """Elapsed time between prepare und start fast measurement for ATR to long."""
+    """
+    Elapsed time between prepare und start fast measurement for ATR to
+    long.
+    """
     EDM_MULTRG_ERR = 823
     """Possibly more than one target (also a sensor error)."""
     EDM_MISSING_EE_CONSTS = 824
@@ -471,7 +497,10 @@ class VivaTPSGRC(GeoComReturnCode):
     AUT_SIDECOVER_ERR = 8723
     """motion cannot be executed because of sidecover."""
     AUT_OUT_OF_SYNC = 8724
-    """angle requested for time not in collection (probably telescope out of sync)."""
+    """
+    angle requested for time not in collection (probably telescope out of
+    sync).
+    """
     AUT_NO_LOCK = 8725
     """lock mode not allowed."""
 

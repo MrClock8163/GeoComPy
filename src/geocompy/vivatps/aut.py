@@ -37,7 +37,7 @@ class VivaTPSAUT(TPS1200PAUT):
     class ONOFF(Enum):
         OFF = 0
         ON = 1
-    
+
     def set_lock_fly_mode(
         self,
         state: ONOFF | str
@@ -65,7 +65,7 @@ class VivaTPSAUT(TPS1200PAUT):
             9103,
             [_state.value]
         )
-    
+
     def get_lock_fly_mode(self) -> GeoComResponse:
         """
         RPC 9102, ``AUT_GetLockFlyMode``
@@ -88,7 +88,7 @@ class VivaTPSAUT(TPS1200PAUT):
                 "state": enumparser(self.ONOFF)
             }
         )
-    
+
     def cam_posit_to_pixel_coord(
         self,
         x: int,

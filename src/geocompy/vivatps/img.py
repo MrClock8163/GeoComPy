@@ -30,7 +30,7 @@ class VivaTPSIMG(TPS1200PIMG):
         INTERNAL = 0x0
         PCCARD = 0x1
         SDCARD = 0x2
-    
+
     def set_tcc_exposure_time(
         self,
         time: int
@@ -48,7 +48,7 @@ class VivaTPSIMG(TPS1200PIMG):
         Returns
         -------
         GeoComResponse
-        
+
         """
         return self._request(
             23403,

@@ -8,7 +8,6 @@ Types
 -----
 
 - ``TPS1200PBMM``
-
 """
 from __future__ import annotations
 
@@ -24,8 +23,8 @@ class TPS1200PBMM(GeoComSubsystem):
 
     This subsystem contains functions related to the operation of the
     keyboard, character sets and singalling devices.
-
     """
+
     def beep_alarm(self) -> GeoComResponse:
         """
         RPC 11804, ``BMM_BeepAlarm``

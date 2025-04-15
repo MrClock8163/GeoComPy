@@ -37,8 +37,8 @@ class TPS1200PSUP(GeoComSubsystem):
         ON = 1
 
     class AUTOPOWER(Enum):
-        DISABLED = 0 #: Automatic poweroff disabled.
-        OFF = 2 #: Poweroff instrument.
+        DISABLED = 0  # : Automatic poweroff disabled.
+        OFF = 2  # : Poweroff instrument.
 
     def get_config(self) -> GeoComResponse:
         """
@@ -53,7 +53,7 @@ class TPS1200PSUP(GeoComSubsystem):
                 - **reserved** (`ONOFF`): Reserved.
                 - **autopower** (`AUTOPOWER`): Current showdown mechanism.
                 - **timeout** (`int`): Idling timeout [ms].
-        
+
         See Also
         --------
         set_config
@@ -91,7 +91,7 @@ class TPS1200PSUP(GeoComSubsystem):
         GeoComResponse
             - Error codes:
                 - ``IVPARAM``: Invalid timeout parameter.
-        
+
         See Also
         --------
         get_config

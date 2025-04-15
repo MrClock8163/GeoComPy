@@ -33,7 +33,7 @@ class VivaTPSCSV(TPS1200PCSV):
     class ONOFF(Enum):
         OFF = 0
         ON = 1
-    
+
     class DEVICECLASS(Enum):
         CLASS_1100 = 0  #: TPS1000 3"
         CLASS_1700 = 1  #: TPS1000 1.5"
@@ -69,7 +69,7 @@ class VivaTPSCSV(TPS1200PCSV):
         CLASS_TS1X_5 = 604  #: Viva 5"
         CLASS_TS50_05 = 650  #: TPS1300 TS50/TM50, 0.5"
         CLASS_TS50_1 = 651  #: TPS1300 TS50/TM50, 1"
-    
+
     class REFLESSCLASS(Enum):
         NONE = 0
         R100 = 1
@@ -82,7 +82,7 @@ class VivaTPSCSV(TPS1200PCSV):
         CURRENT = 0
         EXTERNAL = 1
         INTERNAL = 2
-    
+
     class PROPERTY(Enum):
         PURCHASE_MODE_NORMAL = 0
         PURCHASE_MODE_PREPAY = 1
@@ -117,7 +117,7 @@ class VivaTPSCSV(TPS1200PCSV):
         SERIAL_NUMBER = 30
         PRODUCTION_FLAG = 31
         SYSTEMTIME_VALID = 32
-    
+
     def set_startup_message_mode(
         self,
         enabled: bool
@@ -141,7 +141,7 @@ class VivaTPSCSV(TPS1200PCSV):
             5155,
             [enabled]
         )
-    
+
     def get_startup_message_mode(self) -> GeoComResponse:
         """
         RPC 5156, ``CSV_GetStartupMessageMode``
@@ -187,7 +187,7 @@ class VivaTPSCSV(TPS1200PCSV):
             5043,
             [_state.value]
         )
-    
+
     def get_laserlot_status(self) -> GeoComResponse:
         """
         RPC 5042, ``CSV_GetLaserlotStatus``
@@ -207,7 +207,7 @@ class VivaTPSCSV(TPS1200PCSV):
                 "state": enumparser(self.ONOFF)
             }
         )
-    
+
     def set_laserlot_intensity(
         self,
         intensity: int
@@ -231,7 +231,7 @@ class VivaTPSCSV(TPS1200PCSV):
             5040,
             [intensity]
         )
-    
+
     def get_laserlot_intensity(self) -> GeoComResponse:
         """
         RPC 5041, ``CSV_GetLaserlotIntens``
@@ -251,7 +251,7 @@ class VivaTPSCSV(TPS1200PCSV):
                 "intensity": int
             }
         )
-    
+
     def check_property(
         self,
         property: PROPERTY | str
@@ -281,7 +281,7 @@ class VivaTPSCSV(TPS1200PCSV):
                 "available": bool
             }
         )
-    
+
     def get_voltage(self) -> GeoComResponse:
         """
         RPC 5165, ``CSV_GetVoltage``
@@ -301,7 +301,7 @@ class VivaTPSCSV(TPS1200PCSV):
                 "voltage": int
             }
         )
-    
+
     def set_charging(
         self,
         state: ONOFF | str
@@ -346,7 +346,7 @@ class VivaTPSCSV(TPS1200PCSV):
                 "state": enumparser(self.ONOFF)
             }
         )
-    
+
     def set_preferred_powersource(
         self,
         source: POWERSOURCE | str
@@ -382,7 +382,7 @@ class VivaTPSCSV(TPS1200PCSV):
 
         """
         return self._request(
-            5164, # Mistyped as 5163 in the GeoCom reference
+            5164,  # Mistyped as 5163 in the GeoCom reference
             parsers={
                 "source": enumparser(self.POWERSOURCE)
             }

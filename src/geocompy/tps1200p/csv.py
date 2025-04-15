@@ -181,7 +181,7 @@ class TPS1200PCSV(GeoComSubsystem):
         GeoComResponse
             - Params:
                 - **time** (`datetime`): Current date and time.
-        
+
         See Also
         --------
         set_date_time
@@ -227,7 +227,7 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-        
+
         See Also
         --------
         get_date_time
@@ -322,7 +322,7 @@ class TPS1200PCSV(GeoComSubsystem):
         GeoComResponse
             - Params:
                 - **time** (`datetime`): Current date and time.
-        
+
         See Also
         --------
         get_date_time

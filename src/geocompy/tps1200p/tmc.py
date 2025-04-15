@@ -41,7 +41,7 @@ class TPS1200PTMC(GeoComSubsystem):
         - data setup functions
         - information functions
         - configuration functions
-    
+
     Possible return codes:
         System
             General use codes.
@@ -58,34 +58,34 @@ class TPS1200PTMC(GeoComSubsystem):
         ON = 1
 
     class INCLINEPRG(Enum):
-        MEA = 0 #: Measure inclination.
-        AUTO = 1 #: Automatic inclination handling.
-        PLANE = 2 #: Model inclination from previous measurements.
+        MEA = 0  # : Measure inclination.
+        AUTO = 1  # : Automatic inclination handling.
+        PLANE = 2  # : Model inclination from previous measurements.
 
     class MEASUREPRG(Enum):
-        STOP = 0 #: Stop measurement program.
-        DEFDIST = 1 #: Default distance measurement.
-        CLEAR = 3 #: Clear current measurement data.
-        SIGNAL = 4 #: Signal intensity measurement.
-        DOMEASURE = 6 #: Start/Restart measurement.
-        RTRKDIST = 8 #: Track distance.
-        REDTRKDIST = 10 #: Reflectorless tracking.
-        FREQUENCY = 11 #: Frequency measurement.
+        STOP = 0  # : Stop measurement program.
+        DEFDIST = 1  # : Default distance measurement.
+        CLEAR = 3  # : Clear current measurement data.
+        SIGNAL = 4  # : Signal intensity measurement.
+        DOMEASURE = 6  # : Start/Restart measurement.
+        RTRKDIST = 8  # : Track distance.
+        REDTRKDIST = 10  # : Reflectorless tracking.
+        FREQUENCY = 11  # : Frequency measurement.
 
     class EDMMODE(Enum):
-        NOTUSED = 0 #: Initialization mode.
-        SINGLE_TAPE = 1 #: IR standard with reflector tape.
-        SINGLE_STANDARD = 2 #: IR standard.
-        SINGLE_FAST = 3 #: IR fast.
-        SINGLE_LRANGE = 4 #: LO standard.
-        SINGLE_SRANGE = 5 #: RL standard.
-        CONT_STANDARD = 6 #: Continuous standard.
-        CONT_DYNAMIC = 7 #: IR tracking.
-        CONT_REFLESS = 8 #: RL tracking.
-        CONT_FAST = 9 #: Continuous fast.
-        AVERAGE_IR = 10 #: IR average.
-        AVERAGE_SR = 11 #: RL average.
-        AVERAGE_LR = 12 #: LO average.
+        NOTUSED = 0  # : Initialization mode.
+        SINGLE_TAPE = 1  # : IR standard with reflector tape.
+        SINGLE_STANDARD = 2  # : IR standard.
+        SINGLE_FAST = 3  # : IR fast.
+        SINGLE_LRANGE = 4  # : LO standard.
+        SINGLE_SRANGE = 5  # : RL standard.
+        CONT_STANDARD = 6  # : Continuous standard.
+        CONT_DYNAMIC = 7  # : IR tracking.
+        CONT_REFLESS = 8  # : RL tracking.
+        CONT_FAST = 9  # : Continuous fast.
+        AVERAGE_IR = 10  # : IR average.
+        AVERAGE_SR = 11  # : RL average.
+        AVERAGE_LR = 12  # : LO average.
         PRECISE_IR = 13  #: IR precise (TS30, MS30).
         PRECISE_TAPE = 14  #: IR precise with reflector tape (TS30, MS30).
 
@@ -150,7 +150,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 - ``TMC_BUSY``: TMC is currently busy. Repeat measurement!
                 - ``ABORT``: Measurement aborted.
                 - ``SHUT_DOWN``: System shutdown.
-        
+
         See Also
         --------
         do_measure
@@ -243,7 +243,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 - ``TMC_BUSY``: TMC is currently busy. Repeat measurement!
                 - ``ABORT``: Measurement aborted.
                 - ``SHUT_DOWN``: System shutdown.
-        
+
         See Also
         --------
         do_measure
@@ -312,7 +312,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 - ``TMC_BUSY``: TMC is currently busy. Repeat measurement!
                 - ``ABORT``: Measurement aborted.
                 - ``SHUT_DOWN``: System shutdown.
-        
+
         See Also
         --------
         get_angle
@@ -380,7 +380,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 - ``TMC_BUSY``: TMC is currently busy. Repeat measurement!
                 - ``ABORT``: Measurement aborted.
                 - ``SHUT_DOWN``: System shutdown.
-        
+
         See Also
         --------
         do_measure
@@ -434,7 +434,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 - ``TMC_BUSY``: TMC is currently busy. Repeat measurement!
                 - ``ABORT``: Measurement aborted.
                 - ``SHUT_DOWN``: System shutdown.
-        
+
         See Also
         --------
         get_angle_incline,
@@ -509,7 +509,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 - ``TMC_BUSY``: TMC is currently busy. Repeat measurement!
                 - ``ABORT``: Measurement aborted.
                 - ``SHUT_DOWN``: System shutdown.
-        
+
         See Also
         --------
         get_angle
@@ -740,7 +740,7 @@ class TPS1200PTMC(GeoComSubsystem):
             Dry temperature [°C],
         wettemp : float
             Wet temperature [°C],
-        
+
         Returns
         -------
         GeoComResponse
@@ -833,7 +833,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 "const": float
             }
         )
-    
+
     def set_prism_corr(
         self,
         const: float
@@ -857,7 +857,6 @@ class TPS1200PTMC(GeoComSubsystem):
             2024,
             [const]
         )
-
 
     def get_refractive_corr(self) -> GeoComResponse:
         """
@@ -1435,7 +1434,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 - ``TMC_BUSY``: TMC is currently busy. Repeat measurement!
                 - ``ABORT``: Measurement aborted.
                 - ``SHUT_DOWN``: System shutdown.
-        
+
         See Also
         --------
         get_coordinate

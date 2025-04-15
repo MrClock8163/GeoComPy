@@ -12,7 +12,7 @@ GSI Online commands are used instead.
 The package provides
     1. Utility data types for handling instrument responses
     2. Instrument software specific low level commands
-    3. Instrument-agnostic higher level functions for instrument types 
+    3. Instrument-agnostic higher level functions for instrument types
 
 Documentation
 -------------
@@ -58,8 +58,8 @@ from .communication import Connection
 
 try:
     from ._version import __version__
-except:
-    __version__ = "0.0.0" # Placeholder value for source installs
+except Exception:
+    __version__ = "0.0.0"  # Placeholder value for source installs
 
 
 _T = TypeVar("_T")
@@ -163,6 +163,7 @@ class GeoComProtocol:
     Base class for GeoCom protocol versions.
 
     """
+
     def __init__(
         self,
         connection: Connection,
@@ -176,7 +177,7 @@ class GeoComProtocol:
             (usually :class:`~communication.SerialConnection`).
         logger : ~logging.Logger | None, optional
             Logger to log all requests and responses, by default None
-        
+
         """
         self._conn: Connection = connection
         if logger is None:
@@ -217,7 +218,7 @@ class GeoComProtocol:
         ------
         NotImplementedError
             If the method is not implemented on the child class.
-        
+
         """
         raise NotImplementedError()
 
@@ -250,13 +251,14 @@ class GeoComProtocol:
         ------
         NotImplementedError
             If the method is not implemented on the child class.
-            
+
         """
         raise NotImplementedError()
 
 
 class GsiOnlineResponse(Generic[_T]):
     """Container class for parsed GSI Online responses."""
+
     def __init__(
         self,
         desc: str,
@@ -293,7 +295,7 @@ class GsiOnlineResponse(Generic[_T]):
         executed command."""
         self.comment: str = comment
         """Additional comment (e.g. explanation of an error)."""
-    
+
     def __str__(self) -> str:
         success = (
             "success"
@@ -306,7 +308,7 @@ class GsiOnlineResponse(Generic[_T]):
             f"value: {self.value}, "
             f"(cmd: '{self.cmd}', response: '{self.response}')"
         )
-    
+
     def __bool__(self) -> bool:
         return self.value is not None
 
@@ -315,6 +317,7 @@ class GsiOnlineProtocol:
     """
     Base class for GSI Online protocol versions.
     """
+
     def __init__(
         self,
         connection: Connection,
@@ -334,7 +337,7 @@ class GsiOnlineProtocol:
             logger = Logger("/dev/null")
             logger.addHandler(NullHandler())
         self._logger: Logger = logger
-    
+
     def setrequest(
         self,
         param: int,
@@ -418,7 +421,7 @@ class GsiOnlineProtocol:
             If the method is not implemented on the child class.
         """
         raise NotImplementedError()
-    
+
     def getrequest(
         self,
         mode: Literal['I', 'M', 'C'],

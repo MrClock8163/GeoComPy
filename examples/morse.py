@@ -8,7 +8,7 @@ from geocompy.tps1200p import TPS1200P
 
 
 def morse_beep(tps: TPS1200P, message: str, intensity: int):
-    def letter_beep(tps: TPS1200P, l: str, intensity: int):
+    def letter_beep(tps: TPS1200P, letter: str, intensity: int):
         lookup = {
             "a": ".-",
             "b": "-...",
@@ -47,7 +47,7 @@ def morse_beep(tps: TPS1200P, message: str, intensity: int):
             "9": "----.",
             "0": "-----"
         }
-        code = lookup[l]
+        code = lookup[letter]
         for i, signal in enumerate(code):
             tps.bmm.beep_on(intensity)
             match signal:
@@ -58,7 +58,7 @@ def morse_beep(tps: TPS1200P, message: str, intensity: int):
             tps.bmm.beep_off()
             if i != len(code) - 1:
                 sleep(unit)
-        
+
     unit = 0.05
     words = message.lower().split(" ")
     for i, word in enumerate(words):
@@ -79,7 +79,7 @@ def cli():
     parser.add_argument("message", help="message to encode", type=str)
 
     args = parser.parse_args()
-    
+
     port = Serial(args.port)
     with SerialConnection(port) as conn:
         ts = TPS1200P(conn)

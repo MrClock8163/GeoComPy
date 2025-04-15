@@ -36,56 +36,56 @@ class TPS1200PBAP(GeoComSubsystem):
 
     """
     class MEASUREPRG(Enum):
-        NOMEAS = 0 #: No measurement, take last value.
-        NODIST = 1 #: No distance measurement, angles only.
-        DEFDIST = 2 #: Default distance measurement.
-        CLEARDIST = 5 #: Clear distances.
-        STOPTRK = 6 #: Stop tracking.
+        NOMEAS = 0  # : No measurement, take last value.
+        NODIST = 1  # : No distance measurement, angles only.
+        DEFDIST = 2  # : Default distance measurement.
+        CLEARDIST = 5  # : Clear distances.
+        STOPTRK = 6  # : Stop tracking.
 
     class USERMEASPRG(Enum):
-        SINGLE_REF_STANDARD = 0 #: IR standard.
-        SINGLE_REF_FAST = 1 #: IR fast.
-        SINGLE_REF_VISIBLE = 2 #: LO standard.
-        SINGLE_RLESS_VISIBLE = 3 #: RL standard.
-        CONT_REF_STANDARD = 4 #: IR tracking.
+        SINGLE_REF_STANDARD = 0  # : IR standard.
+        SINGLE_REF_FAST = 1  # : IR fast.
+        SINGLE_REF_VISIBLE = 2  # : LO standard.
+        SINGLE_RLESS_VISIBLE = 3  # : RL standard.
+        CONT_REF_STANDARD = 4  # : IR tracking.
         CONT_REF_FAST = 5
-        CONT_RLESS_VISIBLE = 6 #: RL fast tracking.
-        AVG_REF_STANDARD = 7 #: IR average.
-        AVG_REF_VISIBLE = 8 #: LO average.
-        AVG_RLESS_VISIBLE = 9 #: RL average.
-        CONT_REF_SYNCHRO = 10 #: IR synchro tracking.
-        SINGLE_REF_PRECISE = 11 #: IR precise (TS30, MS30)
+        CONT_RLESS_VISIBLE = 6  # : RL fast tracking.
+        AVG_REF_STANDARD = 7  # : IR average.
+        AVG_REF_VISIBLE = 8  # : LO average.
+        AVG_RLESS_VISIBLE = 9  # : RL average.
+        CONT_REF_SYNCHRO = 10  # : IR synchro tracking.
+        SINGLE_REF_PRECISE = 11  # : IR precise (TS30, MS30)
 
     class PRISMTYPE(Enum):
-        ROUND = 0 #: Leica Circular Prism
-        MINI = 1 #: Leica Mini Prism
-        TAPE = 2 #: Leica Reflector Tape
-        THREESIXTY = 3 #: Leica 360° Prism.
+        ROUND = 0  # : Leica Circular Prism
+        MINI = 1  # : Leica Mini Prism
+        TAPE = 2  # : Leica Reflector Tape
+        THREESIXTY = 3  # : Leica 360° Prism.
         USER1 = 4
         USER2 = 5
         USER3 = 6
-        MINI360 = 7 #: Leica Mini 360° Prism.
-        MINIZERO = 8 #: Leica Mini Zero Prism.
-        USER = 9 #: User defined prism.
-        NDSTAPE = 10 #: Leica HDS Target.
-        GRZ121 = 11 #: Leica GRZ121 360° Prism.
-        MAMPR122 = 12 #: Leica MPR122 360° Prism.
+        MINI360 = 7  # : Leica Mini 360° Prism.
+        MINIZERO = 8  # : Leica Mini Zero Prism.
+        USER = 9  # : User defined prism.
+        NDSTAPE = 10  # : Leica HDS Target.
+        GRZ121 = 11  # : Leica GRZ121 360° Prism.
+        MAMPR122 = 12  # : Leica MPR122 360° Prism.
 
     class REFLTYPE(Enum):
-        UNDEF = 0 #: Reflector not defined.
-        PRISM = 1 #: Reflector prism.
-        TAPE = 2 #: Reflector tape.
+        UNDEF = 0  # : Reflector not defined.
+        PRISM = 1  # : Reflector prism.
+        TAPE = 2  # : Reflector tape.
 
     class TARGETTYPE(Enum):
-        REFL_USE = 0 #: Reflector.
-        REFL_LESS = 1 #: Not reflector.
+        REFL_USE = 0  # : Reflector.
+        REFL_LESS = 1  # : Not reflector.
 
     class ATRSETTING(Enum):
-        NORMAL = 0 #: Normal mode.
-        LOWVISON = 1 #: Low visibility on.
-        LOWVISAON = 2 #: Low visibility always on.
-        SRANGEON = 3 #: High reflectivity on.
-        SRANGEAON = 4 #: Hight reflectivity always on.
+        NORMAL = 0  # : Normal mode.
+        LOWVISON = 1  # : Low visibility on.
+        LOWVISAON = 2  # : Low visibility always on.
+        SRANGEON = 3  # : High reflectivity on.
+        SRANGEAON = 4  # : Hight reflectivity always on.
 
     class ONOFF(Enum):
         OFF = 0

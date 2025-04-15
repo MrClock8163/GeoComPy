@@ -22,11 +22,11 @@ class TestFunctions:
     def test_toenum(self):
         assert toenum(A, "MEMBER") is A.MEMBER
         assert toenum(A, A.MEMBER) is A.MEMBER
-    
+
     def test_enumparser(self):
         assert callable(enumparser(A))
         assert enumparser(A)("1") is A.MEMBER
-    
+
     def test_parsestr(self):
         assert parsestr("value") == "value"
         assert parsestr("\"value") == "\"value"
@@ -40,11 +40,11 @@ class TestAngle:
 
         units = AngleUnit._member_names_.copy()
         units.remove("DMS")
-        
+
         for name in units:
             unit = AngleUnit[name]
             assert (
-                float(Angle(1, name)) # type: ignore
+                float(Angle(1, name))  # type: ignore
                 == approx(float(Angle(1, unit)))
             )
 
@@ -52,7 +52,7 @@ class TestAngle:
         value = Angle(180, 'DEG')
         assert value.asunit('DEG') == approx(180)
         assert value.asunit() == value.asunit('RAD')
-    
+
     def test_normalize(self):
         assert (
             Angle(
@@ -85,7 +85,7 @@ class TestAngle:
             Angle(370, 'DEG', normalize=True).asunit('DEG')
             == approx(Angle(370, 'DEG').normalized().asunit('DEG'))
         )
-    
+
     def test_arithmetic(self):
         a1 = Angle(90, 'DEG')
         a2 = Angle(90, 'DEG')
@@ -106,20 +106,20 @@ class TestAngle:
             == approx(float(Angle(45, 'DEG')))
         )
         with pytest.raises(TypeError):
-            a1 * "str" # type: ignore
-        
+            a1 * "str"  # type: ignore
+
         with pytest.raises(TypeError):
-            a1 / "str" # type: ignore
+            a1 / "str"  # type: ignore
 
 
 class TestByte:
     def test_init(self):
         with pytest.raises(ValueError):
             Byte(-1)
-        
+
         with pytest.raises(ValueError):
             Byte(256)
-    
+
     def test_str(self):
         value = Byte(12)
         assert int(value) == 12

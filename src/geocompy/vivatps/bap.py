@@ -34,7 +34,7 @@ class VivaTPSBAP(TPS1200PBAP):
     class ONOFF(Enum):
         OFF = 0
         ON = 1
-    
+
     def get_atr_precise(self) -> GeoComResponse:
         """
         RPC 17039, ``BAP_GetATRPrecise``

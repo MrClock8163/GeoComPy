@@ -41,8 +41,8 @@ class VivaTPSCAM(GeoComSubsystem):
         ON = 1
 
     class CAMTYPE(Enum):
-        OVC = 0 #: Overview camera.
-        OAC = 1 #: Telescope camera.
+        OVC = 0  # : Overview camera.
+        OAC = 1  # : Telescope camera.
 
     class ZOOM(Enum):
         X1 = 1
@@ -69,7 +69,7 @@ class VivaTPSCAM(GeoComSubsystem):
         STANDARD = 0
         BEST = 1
         IGNORE = 2
-    
+
     def set_zoom_factor(
         self,
         zoom: ZOOM | str,
@@ -182,7 +182,7 @@ class VivaTPSCAM(GeoComSubsystem):
         }
 
         return response
-    
+
     def get_cam_viewing_dir(
         self,
         dist: float,
@@ -273,7 +273,7 @@ class VivaTPSCAM(GeoComSubsystem):
                 "v": Angle.parse
             }
         )
-    
+
     def set_actual_image_name(
         self,
         name: str,
@@ -343,7 +343,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23623,
             [_camtype.value]
         )
-    
+
     def ovc_get_act_camera_center(self) -> GeoComResponse:
         """
         RPC 23624, ``CAM_GetActCameraCenter``
@@ -406,7 +406,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23625,
             [dist, isface1]
         )
-    
+
     def set_whitebalance_mode(
         self,
         whitebalance: WHITEBALANCE | str = WHITEBALANCE.AUTO,
@@ -440,7 +440,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23626,
             [_camtype.value, _wb.value]
         )
-    
+
     def is_camera_ready(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC
@@ -474,13 +474,13 @@ class VivaTPSCAM(GeoComSubsystem):
             23627,
             [_camtype.value]
         )
-    
+
     def set_camera_properties(
         self,
         resolution: RESOLUTION | str,
         compression: COMPRESSION | str,
         jpegquality: JPEGQUALITY | str,
-        camtype: CAMTYPE | str = CAMTYPE.OVC   
+        camtype: CAMTYPE | str = CAMTYPE.OVC
     ) -> GeoComResponse:
         """
         RPC 23633, ``CAM_SetCameraProperties``
@@ -518,7 +518,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23633,
             [_camtype.value, _res.value, _comp.value, _qual.value]
         )
-    
+
     def get_camera_power_switch(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC
@@ -555,7 +555,7 @@ class VivaTPSCAM(GeoComSubsystem):
                 "state": enumparser(self.ONOFF)
             }
         )
-    
+
     def set_camera_power_switch(
         self,
         state: ONOFF | str,
@@ -591,7 +591,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23637,
             [_camtype.value, _state.value]
         )
-    
+
     def wait_for_camera_ready(
         self,
         wait: int = 30_000,
@@ -657,7 +657,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23645,
             [position]
         )
-    
+
     def af_get_motor_position(self) -> GeoComResponse:
         """
         RPC 23644, ``CAM_AF_GetMotorPosition``
@@ -682,7 +682,7 @@ class VivaTPSCAM(GeoComSubsystem):
                 "position": int
             }
         )
-    
+
     def af_continuous_autofocus(
         self,
         start: bool
@@ -708,7 +708,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23669,
             [start]
         )
-    
+
     def af_posit_focus_motor_to_dist(
         self,
         dist: float
@@ -734,7 +734,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23652,
             [dist]
         )
-    
+
     def af_posit_focus_motor_to_infinity(self) -> GeoComResponse:
         """
         RPC 23677, ``CAM_AF_PositFocusMotorToInfinity``
@@ -749,7 +749,7 @@ class VivaTPSCAM(GeoComSubsystem):
 
         """
         return self._request(23677)
-    
+
     def at_singleshot_autofocus(self) -> GeoComResponse:
         """
         RPC 23677, ``CAM_AF_SingleShotAutofocus``
@@ -764,7 +764,7 @@ class VivaTPSCAM(GeoComSubsystem):
 
         """
         return self._request(23662)
-    
+
     def af_focus_contrast_around_current(
         self,
         steps: int
@@ -790,7 +790,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23663,
             [steps]
         )
-    
+
     def get_chip_window_size(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC
@@ -824,7 +824,7 @@ class VivaTPSCAM(GeoComSubsystem):
                 "height": float
             }
         )
-    
+
     def oac_get_crosshair_pos(self) -> GeoComResponse:
         """
         RPC 23671, ``CAM_OAC_GetCrossHairPos``
@@ -848,7 +848,7 @@ class VivaTPSCAM(GeoComSubsystem):
                 "y": int
             }
         )
-    
+
     def ovc_read_inter_orient(
         self,
         calibrated: bool = True
@@ -885,7 +885,7 @@ class VivaTPSCAM(GeoComSubsystem):
                 "p": float
             }
         )
-    
+
     def ovc_read_exter_orient(
         self,
         calibrated: bool = True
@@ -937,7 +937,7 @@ class VivaTPSCAM(GeoComSubsystem):
         }
 
         return response
-    
+
     def start_remote_video(
         self,
         fps: int,
@@ -972,7 +972,7 @@ class VivaTPSCAM(GeoComSubsystem):
             23675,
             [_camtype.value, fps, bitrate]
         )
-    
+
     def stop_remote_video(self) -> GeoComResponse:
         """
         RPC 23676, ``CAM_StopRemoteVideo``

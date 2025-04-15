@@ -287,7 +287,9 @@ class SerialConnection(Connection):
         eoabytes = self.eoa.encode("ascii")
         answer = self._port.read_until(eoabytes)
         if not answer.endswith(eoabytes):
-            raise SerialTimeoutException("serial connection timed out on 'receive'")
+            raise SerialTimeoutException(
+                "serial connection timed out on 'receive'"
+            )
 
         return answer.decode("ascii").removesuffix(self.eoa)
 

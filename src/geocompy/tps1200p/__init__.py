@@ -26,7 +26,6 @@ Submodules
 - ``geocompy.tps1200p.mot``
 - ``geocompy.tps1200p.sup``
 - ``geocompy.tps1200p.tmc``
-
 """
 from __future__ import annotations
 
@@ -77,7 +76,7 @@ class TPS1200P(GeoComProtocol):
     >>> from serial import Serial
     >>> from geocompy.communication import SerialConnection
     >>> from geocompy.tps1200p import TPS1200P
-    >>> 
+    >>>
     >>> port = Serial("COM4", timeout=15)
     >>> with SerialConnection(port) as line:
     ...     tps = TPS1200P(line)
@@ -91,7 +90,7 @@ class TPS1200P(GeoComProtocol):
     >>> from serial import Serial
     >>> from geocompy.communication import SerialConnection
     >>> from geocompy.tps1200p import TPS1200P
-    >>> 
+    >>>
     >>> log = Logger("stdout", DEBUG)
     >>> log.addHandler(StreamHandler())
     >>> port = Serial("COM4", timeout=15)
@@ -103,7 +102,6 @@ class TPS1200P(GeoComProtocol):
     GeoComResponse(COM_NullProc) ... # Startup connection test
     GeoComResponse(COM_GetDoublePrecision) ... # Precision sync
     GeoComResponse(COM_NullProc) ... # First executed command
-
     """
     _RESPPAT: re.Pattern = re.compile(
         r"^%R1P,"
@@ -134,7 +132,7 @@ class TPS1200P(GeoComProtocol):
             Logger to log all requests and responses, by default None
         retry : int, optional
             Number of retries at connection validation before giving up.
-        
+
         Raises
         ------
         ConnectionError
@@ -196,11 +194,10 @@ class TPS1200P(GeoComProtocol):
         GeoComResponse
             - Params:
                 - **digits** (`int`): Floating point decimal places.
-        
+
         See Also
         --------
         set_double_precision
-
         """
         return self.request(
             108,
@@ -225,11 +222,10 @@ class TPS1200P(GeoComProtocol):
         Returns
         -------
         GeoComResponse
-        
+
         See Also
         --------
         get_double_precision
-
         """
         response = self.request(107, [digits])
         if response.comcode and response.rpccode:
@@ -270,7 +266,7 @@ class TPS1200P(GeoComProtocol):
         ------
         TypeError
             If the passed parameters contained an unexpected type.
-            
+
         Notes
         -----
         If a :class:`~serial.SerialTimeoutException` occurs during the
@@ -313,7 +309,6 @@ class TPS1200P(GeoComProtocol):
         ...         "dist": float
         ...     }
         ... )
-
         """
         strparams: list[str] = []
         for item in params:
@@ -341,19 +336,19 @@ class TPS1200P(GeoComProtocol):
         cmd = f"%R1Q,{rpc}:{','.join(strparams)}"
         try:
             answer = self._conn.exchange1(cmd)
-        except SerialTimeoutException as e:
+        except SerialTimeoutException:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{TPS1200PGRC.COM_TIMEDOUT.value:d},"
                 f"0:{TPS1200PGRC.FATAL.value:d}"
             )
-        except SerialException as e:
+        except SerialException:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{TPS1200PGRC.COM_CANT_SEND.value:d},"
                 f"0:{TPS1200PGRC.FATAL.value:d}"
             )
-        except Exception as e:
+        except Exception:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{TPS1200PGRC.FATAL.value:d},"
@@ -392,14 +387,13 @@ class TPS1200P(GeoComProtocol):
         -------
         GeoComResponse
             Parsed return codes and parameters from the RPC response.
-        
+
         Notes
         -----
         If the response does not match the expected pattern, or an
         :class:`Exception` occurs during parsing, a response with
         :attr:`~grc.TPS1200PGRC.COM_CANT_DECODE` and
         :attr:`~grc.TPS1200PGRC.UNDEFINED` codes is returned.
-            
         """
         m = self._RESPPAT.match(response)
         rpc = int(cmd.split(":")[0].split(",")[1])
@@ -423,7 +417,7 @@ class TPS1200P(GeoComProtocol):
         try:
             for (name, func), value in zip(parsers.items(), values.split(",")):
                 params[name] = func(value)
-        except:
+        except Exception:
             return GeoComResponse(
                 rpcname,
                 cmd,

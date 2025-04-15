@@ -69,7 +69,7 @@ def parsestr(value: str) -> str:
     """
     if value[0] == value[-1] == "\"":
         return value[1:-1]
-    
+
     return value
 
 
@@ -95,7 +95,7 @@ def toenum(e: type[_E], value: _E | str) -> _E:
     Examples
     --------
     >>> from enum import Enum
-    >>> 
+    >>>
     >>> class MyEnum(Enum):
     ...     ONE = 1
     ...     TWO = 2
@@ -107,13 +107,13 @@ def toenum(e: type[_E], value: _E | str) -> _E:
     """
     if isinstance(value, str):
         return e[value]
-    
+
     if value not in e:
         raise ValueError(
             f"given member ({value}) is not a member "
             f"of the target enum: {e}"
         )
-    
+
     return value
 
 
@@ -126,18 +126,18 @@ def enumparser(e: type[_E]) -> Callable[[str], _E]:
     ----------
     e: Enum
         Target enum type.
-    
+
     Returns
     -------
     Callable
         Parser function, that takes a string as input, and returns an
         enum member.
-    
+
     Examples
     --------
 
     >>> from enum import Enum
-    >>> 
+    >>>
     >>> class MyEnum(Enum):
     ...     ONE = 1
     ...     TWO = 2
@@ -149,7 +149,7 @@ def enumparser(e: type[_E]) -> Callable[[str], _E]:
     """
     def parseenum(value: str) -> _E:
         return e(int(value))
-    
+
     return parseenum
 
 
@@ -426,11 +426,11 @@ class Angle:
 
     def __repr__(self) -> str:
         return f"{type(self).__name__:s}({self.asunit(AngleUnit.DMS):s})"
-    
+
     def __eq__(self, other: object) -> bool:
         if type(other) is not Angle:
             return False
-        
+
         return math.isclose(self._value, other._value)
 
     def __pos__(self) -> Angle:
@@ -621,7 +621,7 @@ class Byte:
 class Vector:
     """
     Utility type to represent a position with 3D cartesian coordinates.
-    
+
     Supported arithmetic operations:
         - \\+ `Vector`
         - \\- `Vector`
@@ -679,7 +679,7 @@ class Vector:
 
         coords = (self.x, self.y, self.z)
         return coords[idx]
-    
+
     def __eq__(self, other) -> bool:
         if type(other) is not type(self):
             return False
@@ -689,21 +689,21 @@ class Vector:
             and math.isclose(self.y, other.y)
             and math.isclose(self.z, other.z)
         )
-    
+
     def __pos__(self) -> Self:
         return type(self)(
             self.x,
             self.y,
             self.z
         )
-    
+
     def __neg__(self) -> Self:
         return type(self)(
             -self.x,
             -self.y,
             -self.z
         )
-    
+
     def __add__(self, other: Self) -> Self:
         if type(other) is not type(self):
             raise TypeError(
@@ -711,13 +711,13 @@ class Vector:
                 f"'{type(self).__name__}' and "
                 f"'{type(other).__name__}'"
             )
-        
+
         return type(self)(
             self.x + other.x,
             self.y + other.y,
             self.z + other.z
         )
-    
+
     def __sub__(self, other: Self) -> Self:
         if type(other) is not type(self):
             raise TypeError(
@@ -725,13 +725,13 @@ class Vector:
                 f"'{type(self).__name__}' and "
                 f"'{type(other).__name__}'"
             )
-        
+
         return type(self)(
             self.x - other.x,
             self.y - other.y,
             self.z - other.z
         )
-    
+
     def __mul__(self, other: int | float) -> Self:
         if type(other) not in (int, float):
             raise TypeError(
@@ -739,13 +739,13 @@ class Vector:
                 f"'{type(self).__name__}' and "
                 f"'{type(other).__name__}'"
             )
-        
+
         return type(self)(
             self.x * other,
             self.y * other,
             self.z * other
         )
-    
+
     def __truediv__(self, other: int | float) -> Self:
         if type(other) not in (int, float):
             raise TypeError(
@@ -753,13 +753,13 @@ class Vector:
                 f"'{type(self).__name__}' and "
                 f"'{type(other).__name__}'"
             )
-        
+
         return type(self)(
             self.x / other,
             self.y / other,
             self.z / other
         )
-    
+
     def length(self) -> float:
         """
         Calculates the length of the vector.
@@ -778,7 +778,7 @@ class Vector:
                 )
             )
         )
-    
+
     def normalized(self) -> Self:
         """
         Returns a copy of the vector, normalized to unit length.
@@ -788,17 +788,17 @@ class Vector:
         Self
             Normalized vector.
         """
-        l = self.length()
-        if l == 0:
+        length = self.length()
+        if length == 0:
             return +self
-        
-        return self / l
+
+        return self / length
 
 
 class Coordinate(Vector):
     """
     Utility type to represent a position with 3D cartesian coordinates.
-    
+
     Supported arithmetic operations:
         - \\+ `Coordinate`
         - \\- `Coordinate`

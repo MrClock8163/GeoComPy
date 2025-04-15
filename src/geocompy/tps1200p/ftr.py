@@ -72,7 +72,7 @@ class TPS1200PFTR(GeoComSubsystem):
                 - ``NOTOK``: Setup already exists, previous setup was not
                   aborted.
                 - ``FTR_FILEACCESS``: File access error.
-        
+
         See Also
         --------
         list
@@ -115,7 +115,7 @@ class TPS1200PFTR(GeoComSubsystem):
                 - ``FTR_MISSINGSETUP``: No active listing setup.
                 - ``FTR_INVALIDINPUT``: First item is missing, or last
                   call was already the last.
-        
+
         See Also
         --------
         setup_list
@@ -170,7 +170,7 @@ class TPS1200PFTR(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-        
+
         See Also
         --------
         setup_list
@@ -189,7 +189,7 @@ class TPS1200PFTR(GeoComSubsystem):
         """
         RPC 23303, ``FTR_SetupDownload``
 
-        Prepares download of the specified file of the specified type, on 
+        Prepares download of the specified file of the specified type, on
         the selected memory device.
 
         Parameters
@@ -215,7 +215,7 @@ class TPS1200PFTR(GeoComSubsystem):
                   aborted.
                 - ``FTR_INVALIDINPUT``: Block size too big.
                 - ``FTR_FILEACCESS``: File access error.
-        
+
         See Also
         --------
         download
@@ -257,7 +257,7 @@ class TPS1200PFTR(GeoComSubsystem):
                 - ``FTR_MISSINGSETUP``: No active download setup.
                 - ``FTR_INVALIDINPUT``: First block is missing.
                 - ``FTR_FILEACCESS``: File access error.
-        
+
         See Also
         --------
         setup_download
@@ -282,7 +282,7 @@ class TPS1200PFTR(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-        
+
         See Also
         --------
         setup_download
@@ -324,7 +324,7 @@ class TPS1200PFTR(GeoComSubsystem):
             - Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
-        
+
         See Also
         --------
         list

@@ -30,7 +30,7 @@ class VivaTPSTMC(TPS1200PTMC):
         - data setup functions
         - information functions
         - configuration functions
-    
+
     Possible return codes:
         System
             General use codes.
