@@ -1,5 +1,5 @@
 pyserial
 types-pyserial
 pytest
-pytest-mypy
-pytest-flake8
+mypy
+flake8
