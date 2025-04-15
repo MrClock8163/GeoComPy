@@ -338,7 +338,7 @@ class TPS1200P(GeoComProtocol):
 
             strparams.append(value)
 
-        cmd = f"%R1Q,{rpc}:{",".join(strparams)}"
+        cmd = f"%R1Q,{rpc}:{','.join(strparams)}"
         try:
             answer = self._conn.exchange1(cmd)
         except SerialTimeoutException as e:
