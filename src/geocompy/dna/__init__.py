@@ -20,6 +20,7 @@ from .meta import (
     DNAErrors
 )
 from .settings import DNASettings
+from .measurements import DNAMeasurements
 
 
 _T = TypeVar("_T")
@@ -49,6 +50,7 @@ class DNA(GsiOnlineProtocol):
     ):
         super().__init__(connection, logger)
         self.settings: DNASettings = DNASettings(self)
+        self.measurements: DNAMeasurements = DNAMeasurements(self)
 
     def setrequest(
         self,
@@ -109,7 +111,7 @@ class DNA(GsiOnlineProtocol):
         wordindex: int,
         word: str
     ) -> GsiOnlineResponse[bool]:
-        cmd = f"PUT/{word:s} "
+        cmd = f"PUT/{word:s}"
         comment = ""
         try:
             answer = self._conn.exchange1(cmd)

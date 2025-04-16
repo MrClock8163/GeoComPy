@@ -153,6 +153,25 @@ def enumparser(e: type[_E]) -> Callable[[str], _E]:
     return parseenum
 
 
+def gsiword(
+    wi: int,
+    data: str,
+    *,
+    info: str = "",
+    negative: bool = False,
+    gsi16: bool = False
+) -> str:
+    data = data.zfill(16 if gsi16 else 8)
+    sign = "-" if negative else "+"
+    info = f"{info:.4s}"
+    if len(info) < 4:
+        wistr = f"{str(wi):.3s}"
+    else:
+        wistr = f"{str(wi):.2s}"
+    padding = "." * (6 - len(wistr) - len(info))
+    return f"{wistr}{padding}{info}{sign}{data:.8s} "
+
+
 class AngleUnit(Enum):
     """
     Angle measurement units to indicate the unit of an :class:`Angle`
