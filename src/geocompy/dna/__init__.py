@@ -4,13 +4,14 @@ from enum import Enum
 import re
 from typing import Callable, TypeVar
 from traceback import format_exc
+import logging
 
 from .. import (
     GsiOnlineProtocol,
     GsiOnlineResponse
 )
+from ..communication import Connection
 from ..data import (
-    enumparser,
     toenum
 )
 from .meta import (
@@ -18,6 +19,7 @@ from .meta import (
     word_descriptions,
     DNAErrors
 )
+from .settings import DNASettings
 
 
 _T = TypeVar("_T")
@@ -25,32 +27,49 @@ _T = TypeVar("_T")
 
 class DNA(GsiOnlineProtocol):
     _CONFPAT = re.compile(
-        r"^(?P<conf>\d{4})/"
-        r"(?P<value>\d{4})$"
+        r"^(?:\d{4})/"
+        r"(?:\d{4})$"
+    )
+    _GSIPAT = re.compile(
+        r"^\*?"
+        r"(?:[0-9\.]{6})"
+        r"(?:\+|\-)"
+        r"(?:[a-zA-Z0-9]{8}|[a-zA-Z0-9]{16}) $"
     )
 
-    class BEEP(Enum):
-        OFF = 0
-        MEDIUM = 1
-        LOUD = 2
-    
+    class BEEPTYPE(Enum):
+        SHORT = 0
+        LONG = 1
+        ALARM = 2
+
+    def __init__(
+        self,
+        connection: Connection,
+        logger: logging.Logger | None = None
+    ):
+        super().__init__(connection, logger)
+        self.settings: DNASettings = DNASettings(self)
+
     def setrequest(
         self,
         param: int,
         value: int
-    ) -> GsiOnlineResponse[bool | None]:
+    ) -> GsiOnlineResponse[bool]:
         cmd = f"SET/{param:d}/{value:d}"
+        comment = ""
         try:
             answer = self._conn.exchange1(cmd)
-        except:
+        except Exception:
             self._logger.error(format_exc())
             answer = DNAErrors.E_UNKNOWN.value
-        
+            comment = "EXCHANGE"
+
         return GsiOnlineResponse(
             param_descriptions.get(param, ""),
             cmd,
             answer,
-            answer == "?"
+            answer == "?",
+            comment
         )
 
     def confrequest(
@@ -59,59 +78,105 @@ class DNA(GsiOnlineProtocol):
         parser: Callable[[str], _T]
     ) -> GsiOnlineResponse[_T | None]:
         cmd = f"CONF/{param:d}"
+        comment = ""
         try:
             answer = self._conn.exchange1(cmd)
-        except:
+        except Exception:
             self._logger.error(format_exc())
             answer = DNAErrors.E_UNKNOWN.value
-        
+            comment = "EXCHANGE"
+
         success = bool(self._CONFPAT.match(answer))
+        value = None
+        if success:
+            try:
+                value = parser(answer.split("/")[1])
+            except Exception:
+                comment = "PARSE"
+        else:
+            comment = "INSTRUMENT"
+
         return GsiOnlineResponse(
             param_descriptions.get(param, ""),
             cmd,
             answer,
-            parser(answer.split("/")[1]) if success else None
+            value,
+            comment
         )
 
     def putrequest(
         self,
         wordindex: int,
         word: str
-    ) -> GsiOnlineResponse[bool | None]:
+    ) -> GsiOnlineResponse[bool]:
         cmd = f"PUT/{word:s} "
-        answer = self._conn.exchange1(cmd)
+        comment = ""
+        try:
+            answer = self._conn.exchange1(cmd)
+        except Exception:
+            self._logger.error(format_exc())
+            answer = DNAErrors.E_UNKNOWN.value
+            comment = "failed to exchange messages"
+
         return GsiOnlineResponse(
-            param_descriptions.get(wordindex, ""),
+            word_descriptions.get(wordindex, ""),
             cmd,
             answer,
-            answer == "?"
+            answer == "?",
+            comment
         )
-    
+
     def getrequest(
         self,
         mode: str,
         wordindex: int,
         parser: Callable[[str], _T]
     ) -> GsiOnlineResponse[_T | None]:
-        cmd = f"GET/{mode:s}/WI{wordindex:d} "
-        answer = self._conn.exchange1(cmd)
-        success = bool(self._CONFPAT.match(answer))
+        cmd = f"GET/{mode:s}/WI{wordindex:d}"
+        comment = ""
+        try:
+            answer = self._conn.exchange1(cmd)
+        except Exception:
+            self._logger.error(format_exc())
+            answer = DNAErrors.E_UNKNOWN.value
+            comment = "EXCHANGE"
+
+        success = bool(self._GSIPAT.match(answer))
+        value = None
+        if success:
+            try:
+                value = parser(answer)
+            except Exception:
+                comment = "PARSE"
+        else:
+            comment = "INSTRUMENT"
+
         return GsiOnlineResponse(
-            param_descriptions.get(wordindex, ""),
+            word_descriptions.get(wordindex, ""),
             cmd,
             answer,
-            parser(answer) if success else None
+            value,
+            comment
         )
 
-    def set_beep(
+    def beep(
         self,
-        status: BEEP | str
-    ) -> GsiOnlineResponse[bool | None]:
-        _status = toenum(self.BEEP, status)
-        return self.setrequest(30, _status.value)
+        beeptype: BEEPTYPE | str
+    ) -> GsiOnlineResponse[bool]:
+        _beeptype = toenum(self.BEEPTYPE, beeptype)
+        cmd = f"BEEP/{_beeptype.value:d}"
+        comment = ""
+        try:
+            answer = self._conn.exchange1(cmd)
+        except Exception:
+            self._logger.error(format_exc())
+            answer = DNAErrors.E_UNKNOWN.value
+            comment = "EXCHANGE"
 
-    def conf_beep(self) -> GsiOnlineResponse[BEEP | None]:
-        return self.confrequest(
-            30,
-            enumparser(self.BEEP)
+        return GsiOnlineResponse(
+            "Beep",
+            cmd,
+            answer,
+            answer == "?",
+            comment
         )

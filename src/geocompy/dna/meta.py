@@ -4,7 +4,7 @@ from enum import StrEnum
 
 
 param_descriptions: dict[int, str] = {
-    30: "Beep",
+    30: "Beep intensity",
     31: "Display illumination",
     32: "Display constrast",
     41: "Distance unit",
