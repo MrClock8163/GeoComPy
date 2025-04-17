@@ -25,6 +25,7 @@ param_descriptions: dict[int, str] = {
     137: "GSI type",
     138: "Code recording mode"
 }
+"""Mapping of parameter indices to short descriptions."""
 
 
 word_descriptions: dict[int, str] = {
@@ -42,6 +43,7 @@ word_descriptions: dict[int, str] = {
     19: "Date and time",
     599: "Software version"
 }
+"""Mapping of GSI word indices to short descriptions."""
 
 
 class DNAErrors(StrEnum):

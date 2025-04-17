@@ -373,7 +373,7 @@ class GsiOnlineProtocol:
     ) -> GsiOnlineResponse[bool]:
         """
         Executes a GSI Online SET command and returns the success
-        of the operation.
+        of the operation in a GSI Online response.
 
         Parameters
         ----------
@@ -407,7 +407,7 @@ class GsiOnlineProtocol:
         ----------
         param : int
             Index of the parameter to query.
-        parser : Callable[[str], _T]
+        parser
             Parser function to process the result of the query.
 
         Returns
