@@ -364,7 +364,7 @@ class GsiOnlineProtocol:
             logger = Logger("/dev/null")
             logger.addHandler(NullHandler())
         self._logger: Logger = logger
-        self.gsi16 = False
+        self._gsi16 = False
 
     def setrequest(
         self,

@@ -18,11 +18,6 @@ class DNASettings(GsiOnlineSubsystem):
         MEDIUM = 1
         LOUD = 2
 
-    class BEEPTYPE(IntEnum):
-        SHORT = 0
-        LONG = 1
-        ALARM = 2
-
     class ILLUMINATION(IntEnum):
         OFF = 0
         LEVELONLY = 2
@@ -73,9 +68,9 @@ class DNASettings(GsiOnlineSubsystem):
 
     def set_beep(
         self,
-        status: BEEPINTENSITY | str
+        intensity: BEEPINTENSITY | str
     ) -> GsiOnlineResponse[bool]:
-        _status = toenum(self.BEEPINTENSITY, status)
+        _status = toenum(self.BEEPINTENSITY, intensity)
         return self._setrequest(30, _status.value)
 
     def get_beep(self) -> GsiOnlineResponse[BEEPINTENSITY | None]:
@@ -230,10 +225,10 @@ class DNASettings(GsiOnlineSubsystem):
 
     def set_autooff(
         self,
-        mode: AUTOOFF | str
+        status: AUTOOFF | str
     ) -> GsiOnlineResponse[bool]:
-        _mode = toenum(self.AUTOOFF, mode)
-        return self._setrequest(75, _mode.value)
+        _mode = toenum(self.AUTOOFF, status)
+        return self._setrequest(95, _mode.value)
 
     def get_autooff(self) -> GsiOnlineResponse[AUTOOFF | None]:
         return self._confrequest(
@@ -284,15 +279,18 @@ class DNASettings(GsiOnlineSubsystem):
         _format = toenum(self.FORMAT, format)
         response = self._setrequest(137, _format.value)
         if response.value:
-            self._parent.gsi16 = _format == self.FORMAT.GSI16
+            self._parent._gsi16 = _format == self.FORMAT.GSI16
 
         return response
 
     def get_format(self) -> GsiOnlineResponse[FORMAT | None]:
-        return self._confrequest(
+        response = self._confrequest(
             137,
             enumparser(self.FORMAT)
         )
+        if response.value:
+            self._parent._gsi16 = response.value == self.FORMAT.GSI16
+        return response
 
     def set_code_recording(
         self,

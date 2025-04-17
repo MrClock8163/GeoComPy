@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import IntEnum
 import re
 from typing import Callable, TypeVar
 from traceback import format_exc
@@ -39,7 +39,7 @@ class DNA(GsiOnlineProtocol):
         r"(?:[a-zA-Z0-9]{8}|[a-zA-Z0-9]{16}) $"
     )
 
-    class BEEPTYPE(Enum):
+    class BEEPTYPE(IntEnum):
         SHORT = 0
         LONG = 1
         ALARM = 2
@@ -68,9 +68,7 @@ class DNA(GsiOnlineProtocol):
                 "could not establish connection to instrument"
             )
 
-        response = self.settings.get_format()
-        if response.value is not None:
-            self.gsi16 = response.value == self.settings.FORMAT.GSI16
+        self.settings.get_format()  # Sync format setting
 
     def setrequest(
         self,
@@ -118,13 +116,15 @@ class DNA(GsiOnlineProtocol):
         else:
             comment = "INSTRUMENT"
 
-        return GsiOnlineResponse(
+        response = GsiOnlineResponse(
             param_descriptions.get(param, ""),
             cmd,
             answer,
             value,
             comment
         )
+        self._logger.debug(response)
+        return response
 
     def putrequest(
         self,
@@ -140,13 +140,15 @@ class DNA(GsiOnlineProtocol):
             answer = DNAErrors.E_UNKNOWN.value
             comment = "failed to exchange messages"
 
-        return GsiOnlineResponse(
+        response = GsiOnlineResponse(
             word_descriptions.get(wordindex, ""),
             cmd,
             answer,
             answer == "?",
             comment
         )
+        self._logger.debug(response)
+        return response
 
     def getrequest(
         self,
@@ -173,20 +175,20 @@ class DNA(GsiOnlineProtocol):
         else:
             comment = "INSTRUMENT"
 
-        return GsiOnlineResponse(
+        response = GsiOnlineResponse(
             word_descriptions.get(wordindex, ""),
             cmd,
             answer,
             value,
             comment
         )
+        self._logger.debug(response)
+        return response
 
-    def beep(
+    def request(
         self,
-        beeptype: BEEPTYPE | str
+        cmd: str
     ) -> GsiOnlineResponse[bool]:
-        _beeptype = toenum(self.BEEPTYPE, beeptype)
-        cmd = f"BEEP/{_beeptype.value:d}"
         comment = ""
         try:
             answer = self._conn.exchange1(cmd)
@@ -195,20 +197,38 @@ class DNA(GsiOnlineProtocol):
             answer = DNAErrors.E_UNKNOWN.value
             comment = "EXCHANGE"
 
-        return GsiOnlineResponse(
-            "Beep",
+        response = GsiOnlineResponse(
+            "",
             cmd,
             answer,
             answer == "?",
             comment
         )
+        self._logger.debug(response)
+        return response
 
-    def shutdown(self) -> bool:
-        cmd = "b"
-        try:
-            self._conn.send(cmd)
-        except Exception:
-            self._logger.error(format_exc())
-            return False
+    def beep(
+        self,
+        beeptype: BEEPTYPE | str
+    ) -> GsiOnlineResponse[bool]:
+        _beeptype = toenum(self.BEEPTYPE, beeptype)
+        cmd = f"BEEP/{_beeptype.value:d}"
+        response = self.request(cmd)
+        response.desc = "Beep"
+        return response
 
-        return True
+    def wakeup(self) -> GsiOnlineResponse[bool]:
+        response = self.request("a")
+        response.desc = "Wakeup"
+        return response
+
+    def shutdown(self) -> GsiOnlineResponse[bool]:
+        response = self.request("b")
+        response.desc = "Shutdown"
+        return response
+
+    def clear(self) -> GsiOnlineResponse[bool]:
+
+        response = self.request("c")
+        response.desc = "Clear"
+        return response

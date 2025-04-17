@@ -22,7 +22,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
         ptid: str
     ) -> GsiOnlineResponse[bool]:
         wi = 11
-        word = gsiword(wi, ptid, gsi16=self._parent.gsi16)
+        word = gsiword(wi, ptid, gsi16=self._parent._gsi16)
 
         return self._putrequest(
             wi,
@@ -41,7 +41,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
         note: str
     ) -> GsiOnlineResponse[bool]:
         wi = 71
-        word = gsiword(wi, note, gsi16=self._parent.gsi16)
+        word = gsiword(wi, note, gsi16=self._parent._gsi16)
 
         return self._putrequest(
             wi,
@@ -72,7 +72,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
             wi,
             f"{value.hour:02d}{value.minute:02d}{value.second:02d}",
             info="6",
-            gsi16=self._parent.gsi16
+            gsi16=self._parent._gsi16
         )
 
         return self._putrequest(
@@ -101,7 +101,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
             wi,
             f"{month:02d}{day:02d}00",
             info="6",
-            gsi16=self._parent.gsi16
+            gsi16=self._parent._gsi16
         )
 
         return self._putrequest(
@@ -124,7 +124,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
         word = gsiword(
             wi,
             str(year),
-            gsi16=self._parent.gsi16
+            gsi16=self._parent._gsi16
         )
 
         return self._putrequest(
