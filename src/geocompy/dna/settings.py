@@ -282,7 +282,11 @@ class DNASettings(GsiOnlineSubsystem):
         format: FORMAT | str
     ) -> GsiOnlineResponse[bool]:
         _format = toenum(self.FORMAT, format)
-        return self._setrequest(137, _format.value)
+        response = self._setrequest(137, _format.value)
+        if response.value:
+            self._parent.gsi16 = _format == self.FORMAT.GSI16
+
+        return response
 
     def get_format(self) -> GsiOnlineResponse[FORMAT | None]:
         return self._confrequest(

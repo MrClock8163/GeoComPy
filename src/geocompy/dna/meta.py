@@ -29,7 +29,7 @@ param_descriptions: dict[int, str] = {
 
 word_descriptions: dict[int, str] = {
     11: "Point ID",
-    71: "Remark",
+    71: "Note",
     560: "Time",
     561: "Date",
     562: "Year",

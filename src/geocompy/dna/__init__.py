@@ -5,6 +5,7 @@ import re
 from typing import Callable, TypeVar
 from traceback import format_exc
 import logging
+from time import sleep
 
 from .. import (
     GsiOnlineProtocol,
@@ -46,11 +47,30 @@ class DNA(GsiOnlineProtocol):
     def __init__(
         self,
         connection: Connection,
-        logger: logging.Logger | None = None
+        logger: logging.Logger | None = None,
+        retry: int = 2
     ):
         super().__init__(connection, logger)
         self.settings: DNASettings = DNASettings(self)
         self.measurements: DNAMeasurements = DNAMeasurements(self)
+
+        for i in range(retry):
+            try:
+                reply = self._conn.exchange1("a")
+                if reply == "?":
+                    break
+            except Exception:
+                pass
+
+            sleep(1)
+        else:
+            raise ConnectionError(
+                "could not establish connection to instrument"
+            )
+
+        response = self.settings.get_format()
+        if response.value is not None:
+            self.gsi16 = response.value == self.settings.FORMAT.GSI16
 
     def setrequest(
         self,

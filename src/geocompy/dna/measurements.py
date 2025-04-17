@@ -14,7 +14,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
         return self._getrequest(
             "M",
             11,
-            lambda v: v.strip().split("+")[1].lstrip("0")
+            lambda v: v.strip("* ")[7:].lstrip("0")
         )
 
     def set_point_id(
@@ -22,7 +22,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
         ptid: str
     ) -> GsiOnlineResponse[bool]:
         wi = 11
-        word = gsiword(wi, ptid)
+        word = gsiword(wi, ptid, gsi16=self._parent.gsi16)
 
         return self._putrequest(
             wi,
@@ -33,7 +33,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
         return self._getrequest(
             "M",
             71,
-            lambda v: v.strip().split("+")[1].lstrip("0")
+            lambda v: v.strip("* ")[7:].lstrip("0")
         )
 
     def set_note(
@@ -41,7 +41,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
         note: str
     ) -> GsiOnlineResponse[bool]:
         wi = 71
-        word = gsiword(wi, note)
+        word = gsiword(wi, note, gsi16=self._parent.gsi16)
 
         return self._putrequest(
             wi,
@@ -50,6 +50,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
 
     def get_time(self) -> GsiOnlineResponse[time | None]:
         def parsetime(value: str) -> time:
+            value = value.strip("* ")
             return time(
                 int(value[-6:-4]),
                 int(value[-4:-2]),
@@ -70,7 +71,8 @@ class DNAMeasurements(GsiOnlineSubsystem):
         word = gsiword(
             wi,
             f"{value.hour:02d}{value.minute:02d}{value.second:02d}",
-            info="6"
+            info="6",
+            gsi16=self._parent.gsi16
         )
 
         return self._putrequest(
@@ -80,6 +82,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
 
     def get_date(self) -> GsiOnlineResponse[tuple[int, int] | None]:
         def parsedate(value: str) -> tuple[int, int]:
+            value = value.strip("* ")
             return int(value[-6:-4]), int(value[-4:-2])
 
         return self._getrequest(
@@ -97,7 +100,8 @@ class DNAMeasurements(GsiOnlineSubsystem):
         word = gsiword(
             wi,
             f"{month:02d}{day:02d}00",
-            info="6"
+            info="6",
+            gsi16=self._parent.gsi16
         )
 
         return self._putrequest(
@@ -109,7 +113,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
         return self._getrequest(
             "I",
             562,
-            lambda v: int(v.lstrip("0"))
+            lambda v: int(v.strip("* ")[7:].lstrip("0"))
         )
 
     def set_year(
@@ -119,7 +123,8 @@ class DNAMeasurements(GsiOnlineSubsystem):
         wi = 562
         word = gsiword(
             wi,
-            str(year)
+            str(year),
+            gsi16=self._parent.gsi16
         )
 
         return self._putrequest(
@@ -129,14 +134,14 @@ class DNAMeasurements(GsiOnlineSubsystem):
 
     def get_distance(self) -> GsiOnlineResponse[float | None]:
         def parsedist(value: str) -> float:
-            data = float(value.strip()[6:])
-            unit = int(value[5])
-            match unit:
-                case 0 | 1:
+            value = value.strip("* ")
+            data = float(value[6:])
+            match value[5]:
+                case "0" | "1":
                     data /= 1000
-                case 6 | 7:
+                case "6" | "7":
                     data /= 10000
-                case 8:
+                case "8":
                     data /= 100000
 
             return data
@@ -149,14 +154,14 @@ class DNAMeasurements(GsiOnlineSubsystem):
 
     def get_reading(self) -> GsiOnlineResponse[float | None]:
         def parsereading(value: str) -> float:
-            data = float(value.strip()[6:])
-            unit = int(value[5])
-            match unit:
-                case 0 | 1:
+            value = value.strip("* ")
+            data = float(value[6:])
+            match value[5]:
+                case "0" | "1":
                     data /= 1000
-                case 6 | 7:
+                case "6" | "7":
                     data /= 10000
-                case 8:
+                case "8":
                     data /= 100000
 
             return data
@@ -167,30 +172,30 @@ class DNAMeasurements(GsiOnlineSubsystem):
             parsereading
         )
 
-    def get_temperature(self) -> GsiOnlineResponse[int | None]:
+    def get_temperature(self) -> GsiOnlineResponse[float | None]:
         return self._getrequest(
             "M",
             95,
-            lambda v: int(v.strip()[6:])
+            lambda v: int(v.strip("* ")[6:]) / 10000
         )
 
     def get_serialnumber(self) -> GsiOnlineResponse[str | None]:
         return self._getrequest(
             "I",
             12,
-            str
+            lambda v: v.strip("* ")[7:].lstrip("0")
         )
 
     def get_instrument_type(self) -> GsiOnlineResponse[str | None]:
         return self._getrequest(
             "I",
             13,
-            str
+            lambda v: v.strip("* ")[7:].lstrip("0")
         )
 
     def get_full_date(self) -> GsiOnlineResponse[datetime | None]:
         def parsedate(value: str) -> datetime:
-            value = value.strip()
+            value = value.strip("* ")
             return datetime(
                 int(value[-4:]),
                 int(value[-6:-4]),
@@ -205,7 +210,7 @@ class DNAMeasurements(GsiOnlineSubsystem):
 
     def get_day_time(self) -> GsiOnlineResponse[tuple[int, int, time] | None]:
         def parse(value: str) -> tuple[int, int, time]:
-            value = value.strip()
+            value = value.strip("* ")
             return (
                 int(value[-8:-6]),
                 int(value[-6:-4]),
@@ -225,5 +230,5 @@ class DNAMeasurements(GsiOnlineSubsystem):
         return self._getrequest(
             "I",
             599,
-            str
+            lambda v: v.strip("* ")[7:].lstrip("0")
         )
