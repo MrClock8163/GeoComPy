@@ -202,3 +202,13 @@ class DNA(GsiOnlineProtocol):
             answer == "?",
             comment
         )
+
+    def shutdown(self) -> bool:
+        cmd = "b"
+        try:
+            self._conn.send(cmd)
+        except Exception:
+            self._logger.error(format_exc())
+            return False
+
+        return True
