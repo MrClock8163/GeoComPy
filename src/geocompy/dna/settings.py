@@ -109,7 +109,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_beep(self) -> GsiOnlineResponse[BEEPINTENSITY | None]:
         """
-        ``GET 30``
+        ``CONF 30``
 
         Gets the current set intensity of the beep signals.
 
@@ -130,7 +130,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_illumination(self) -> GsiOnlineResponse[ILLUMINATION | None]:
         """
-        ``GET 31``
+        ``CONF 31``
 
         Gets the current status of the diplay and bubble illumination.
 
@@ -172,7 +172,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_contrast(self) -> GsiOnlineResponse[int | None]:
         """
-        ``GET 32``
+        ``CONF 32``
 
         Gets the current display contrast level.
 
@@ -215,7 +215,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_distance_unit(self) -> GsiOnlineResponse[DISTUNIT | None]:
         """
-        ``GET 41``
+        ``CONF 41``
 
         Gets the current distance measurement unit.
 
@@ -258,7 +258,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_temperature_unit(self) -> GsiOnlineResponse[TEMPUNIT | None]:
         """
-        ``GET 42``
+        ``CONF 42``
 
         Gets the current temperature measurement unit.
 
@@ -300,7 +300,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_decimals(self) -> GsiOnlineResponse[int | None]:
         """
-        ``GET 51``
+        ``CONF 51``
 
         Gets the current number of displayed decimals.
 
@@ -343,7 +343,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_baud(self) -> GsiOnlineResponse[BAUD | None]:
         """
-        ``GET 70``
+        ``CONF 70``
 
         Gets the current communication speed.
 
@@ -386,7 +386,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_parity(self) -> GsiOnlineResponse[PARITY | None]:
         """
-        ``GET 71``
+        ``CONF 71``
 
         Gets the current parity bit setting.
 
@@ -429,7 +429,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_terminator(self) -> GsiOnlineResponse[TERMINATOR | None]:
         """
-        ``GET 73``
+        ``CONF 73``
 
         Gets the current message terminator.
 
@@ -470,7 +470,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_protocol(self) -> GsiOnlineResponse[bool | None]:
         """
-        ``GET 75``
+        ``CONF 75``
 
         Gets the current status of the communication protocol.
 
@@ -513,7 +513,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_recorder(self) -> GsiOnlineResponse[RECORDER | None]:
         """
-        ``GET 76``
+        ``CONF 76``
 
         Gets the current measurement recording device.
 
@@ -556,7 +556,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_delay(self) -> GsiOnlineResponse[int | None]:
         """
-        ``GET 78``
+        ``CONF 78``
 
         Gets the current message delay.
 
@@ -577,7 +577,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_battery(self) -> GsiOnlineResponse[int | None]:
         """
-        ``GET 90``
+        ``CONF 90``
 
         Gets the current level of the battery.
 
@@ -598,7 +598,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_temperature(self) -> GsiOnlineResponse[int | None]:
         """
-        ``GET 91``
+        ``CONF 91``
 
         Gets the current internal temperature.
 
@@ -641,7 +641,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_autooff(self) -> GsiOnlineResponse[AUTOOFF | None]:
         """
-        ``GET 95``
+        ``CONF 95``
 
         Gets the current status of the automatic shutdown feature.
 
@@ -682,7 +682,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_display_heater(self) -> GsiOnlineResponse[bool | None]:
         """
-        ``GET 106``
+        ``CONF 106``
 
         Gets the current status of the display heater unit.
 
@@ -723,7 +723,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_curvature_correction(self) -> GsiOnlineResponse[bool | None]:
         """
-        ``GET 125``
+        ``CONF 125``
 
         Gets the current status of the Earth curvature correction.
 
@@ -765,7 +765,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_staff_mode(self) -> GsiOnlineResponse[bool | None]:
         """
-        ``GET 127``
+        ``CONF 127``
 
         Gets the current mode of the levelling staff.
 
@@ -818,7 +818,7 @@ class DNASettings(GsiOnlineSubsystem):
 
     def get_format(self) -> GsiOnlineResponse[FORMAT | None]:
         """
-        ``GET 137``
+        ``CONF 137``
 
         Gets the current GSI communication format of the instrument.
 
