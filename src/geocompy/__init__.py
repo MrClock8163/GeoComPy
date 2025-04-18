@@ -220,7 +220,7 @@ class GeoComProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
 
         """
         raise NotImplementedError()
@@ -253,7 +253,7 @@ class GeoComProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
 
         """
         raise NotImplementedError()
@@ -390,7 +390,7 @@ class GsiOnlineProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
         """
         raise NotImplementedError()
 
@@ -418,7 +418,7 @@ class GsiOnlineProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
         """
         raise NotImplementedError()
 
@@ -446,7 +446,7 @@ class GsiOnlineProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
         """
         raise NotImplementedError()
 
@@ -478,6 +478,31 @@ class GsiOnlineProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
+        """
+        raise NotImplementedError()
+
+    def request(
+        self,
+        cmd: str
+    ) -> GsiOnlineResponse[bool]:
+        """
+        Executes a low level GSI Online command and returns the success
+        of the execution.
+
+        Parameters
+        ----------
+        cmd : str
+            Command string to send to instrument.
+
+        Returns
+        -------
+        GsiOnlineResponse
+            Success of the execution.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the class.
         """
         raise NotImplementedError()

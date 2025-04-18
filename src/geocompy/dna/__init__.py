@@ -342,7 +342,7 @@ class DNA(GsiOnlineProtocol):
     ) -> GsiOnlineResponse[bool]:
         """
         Executes a low level GSI Online command and returns the success
-        of the execution in a GSI Online response.
+        of the execution.
 
         Parameters
         ----------
