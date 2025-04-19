@@ -161,6 +161,50 @@ def gsiword(
     negative: bool = False,
     gsi16: bool = False
 ) -> str:
+    """
+    Constructs a GSI data word from the given parameters.
+
+    Parameters
+    ----------
+    wi : int
+        GSI word index.
+    data : str
+        Data, max 8 characters (or 16 for GSI16).
+    info : str, optional
+        Data information, max 4 characters (or 3 if ``wi`` is 3), by default ""
+    negative : bool, optional
+        Negative numerical data, by default False
+    gsi16 : bool, optional
+        Construct GSI16 instead of GSI8, by default False
+
+    Returns
+    -------
+    str
+        Constructed GSI word.
+
+    Examples
+    --------
+
+    Simple point ID word:
+
+    >>> gsiword(
+    ...     11,
+    ...     "A1"
+    ... )
+    11....+000000A1
+
+    GSI16 inverted staff reading word:
+
+    >>> gsiword(
+    ...     330,
+    ...     "123456",
+    ...     info="08",
+    ...     negative=True,
+    ...     gsi16=True
+    ... )
+    *330.08-0000000000123456
+
+    """
     if gsi16:
         data = f"{data.zfill(16):.16s}"
     else:
