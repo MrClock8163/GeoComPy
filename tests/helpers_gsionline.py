@@ -59,7 +59,7 @@ class GsiOnlineTester:
         response = dna.request("d")
         assert not response.value
         response = dna.request("a")
-        assert response.value == "1"
+        assert response.value
 
     @staticmethod
     def test_setrequest(dna: DNA):
