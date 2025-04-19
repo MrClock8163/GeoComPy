@@ -42,3 +42,4 @@ version-file = "src/geocompy/_version.py"
 [tool.pytest.ini_options]
 addopts = ["-ra"]
 testpaths = ["tests", "src", "examples"]
+required_plugins = "pytest-mock"
