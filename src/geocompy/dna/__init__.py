@@ -161,7 +161,7 @@ class DNA(GsiOnlineProtocol):
     ) -> GsiOnlineResponse[bool]:
         """
         Executes a GSI Online SET command and returns the success
-        of the operation in a GSI Online response.
+        of the operation.
 
         Parameters
         ----------
@@ -183,12 +183,15 @@ class DNA(GsiOnlineProtocol):
             self._logger.error(format_exc())
             answer = DNAErrors.E_UNKNOWN.value
             comment = "EXCHANGE"
+        value = answer == "?"
+        if not value:
+            comment = "INSTRUMENT"
 
         return GsiOnlineResponse(
             param_descriptions.get(param, ""),
             cmd,
             answer,
-            answer == "?",
+            value,
             comment
         )
 
@@ -249,7 +252,7 @@ class DNA(GsiOnlineProtocol):
     ) -> GsiOnlineResponse[bool]:
         """
         Executes a GSI Online PUT command and returns the success
-        of the operation in a GSI Online response.
+        of the operation.
 
         Parameters
         ----------
@@ -270,13 +273,16 @@ class DNA(GsiOnlineProtocol):
         except Exception:
             self._logger.error(format_exc())
             answer = DNAErrors.E_UNKNOWN.value
-            comment = "failed to exchange messages"
+            comment = "EXCHANGE"
+        value = answer == "?"
+        if not value:
+            comment = "INSTRUMENT"
 
         response = GsiOnlineResponse(
             word_descriptions.get(wordindex, ""),
             cmd,
             answer,
-            answer == "?",
+            value,
             comment
         )
         self._logger.debug(response)
