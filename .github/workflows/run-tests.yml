@@ -2,6 +2,9 @@ name: Automated testing
 
 on: push
 
+env:
+  FORCE_COLOR: 1
+
 jobs:
   testing:
     name: Running tests
