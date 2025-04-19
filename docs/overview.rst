@@ -19,6 +19,8 @@ Features
     - GeoCom
         - TPS1200P
         - VivaTPS
+    - GSI Online
+        - DNA
 
 Requirements
 ------------

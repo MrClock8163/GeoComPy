@@ -100,13 +100,15 @@ html_theme_options = {
 
 # Immaterial toc adjustments
 object_description_options = [
-    ("py:.*", 
+    (
+        "py:.*",
         {
             "include_fields_in_toc": False,
             "include_rubrics_in_toc": False
         }
     ),
-    ("py:parameter",
+    (
+        "py:parameter",
         {
             "include_in_toc": False
         }
@@ -123,7 +125,9 @@ napoleon_preprocess_types = True
 napoleon_google_docstring = False
 napoleon_use_ivar = True
 napoleon_type_aliases = {
-    "GeoComResponse": "~geocompy.GeoComResponse"
+    "GeoComResponse": "~geocompy.GeoComResponse",
+    "GsiOnlineResponse": "~geocompy.GsiOnlineResponse",
+    "datetime": "~datetime.datetime"
 }
 
 python_display_short_literal_types = True
@@ -142,8 +146,8 @@ nitpick_ignore_regex = {
     ("py:obj", r"[a-zA-Z]{3}\.\w+")
 }
 
-# GitHub source linking
-def linkcode_resolve(domain, info):
+
+def linkcode_resolve(domain, info):  # GitHub source linking
     if domain != 'py':
         return None
     if not info['module']:
@@ -153,6 +157,7 @@ def linkcode_resolve(domain, info):
         "https://github.com/MrClock8163/"
         f"geocompy/tree/main/src/{filename:s}.py"
     )
+
 
 latex_documents = [
     (
