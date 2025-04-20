@@ -1,4 +1,4 @@
-name: Upload Python Package
+name: Publishing package
 
 on:
   release:
@@ -33,7 +33,7 @@ jobs:
   testpypi-publish:
     runs-on: ubuntu-latest
     needs:
-      - release-build
+      - build
     permissions:
       id-token: write
 
@@ -57,7 +57,7 @@ jobs:
   # pypi-publish:
   #   runs-on: ubuntu-latest
   #   needs:
-  #     - release-build
+  #     - build
   #   permissions:
   #     id-token: write
 
