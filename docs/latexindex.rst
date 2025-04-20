@@ -21,6 +21,6 @@ API documentation
    api/index
    api/data
    api/communication
+   api/dna/index
    api/tps1200p/index
    api/vivatps/index
-   api/dna/index

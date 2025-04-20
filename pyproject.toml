@@ -5,13 +5,12 @@ build-backend = "hatchling.build"
 [project]
 dynamic = ["version"]
 name = "geocompy"
-# version = "0.0.1"
 authors = [
   { name="MrClock", email="mrclock8163@gmail.com" },
 ]
 description = "Python package for controlling Leica instruments through serial connection"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "pyserial"
 ]

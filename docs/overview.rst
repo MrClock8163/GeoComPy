@@ -25,7 +25,7 @@ Features
 Requirements
 ------------
 
-- Python 3.10 or newer
+- Python 3.11 or newer
 - `pySerial <https://pyserial.readthedocs.io/>`_ package
 
 Installation
