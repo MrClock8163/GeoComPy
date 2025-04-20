@@ -7,6 +7,7 @@ from geocompy.data import (
     toenum,
     enumparser,
     parsestr,
+    gsiword,
     Angle,
     AngleUnit,
     Byte,
@@ -32,6 +33,16 @@ class TestFunctions:
         assert parsestr("\"value") == "\"value"
         assert parsestr("value\"") == "value\""
         assert parsestr("\"value\"") == "value"
+
+    def test_gsiword(self):
+        assert gsiword(11, "1") == "11....+00000001 "
+        assert gsiword(11, "1", gsi16=True) == "*11....+0000000000000001 "
+        assert gsiword(
+            330,
+            "123",
+            negative=True,
+            info="08"
+        ) == "330.08-00000123 "
 
 
 class TestAngle:

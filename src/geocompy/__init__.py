@@ -37,6 +37,9 @@ Subpackages
 ``geocompy.vivatps``
     Communication with instruments running Viva(/Nova)TPS software.
 
+``geocompy.dna``
+    Communication with DNA digital level instruments.
+
 Submodules
 ----------
 
@@ -217,7 +220,7 @@ class GeoComProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
 
         """
         raise NotImplementedError()
@@ -250,7 +253,7 @@ class GeoComProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
 
         """
         raise NotImplementedError()
@@ -313,6 +316,30 @@ class GsiOnlineResponse(Generic[_T]):
         return self.value is not None
 
 
+class GsiOnlineSubsystem:
+    """
+    Base class for GSI Online subsystems.
+    """
+
+    def __init__(self, parent: GsiOnlineProtocol):
+        """
+        Parameters
+        ----------
+        parent : GsiOnlineProtocol
+            The parent protocol instance of this subsystem.
+        """
+        self._parent: GsiOnlineProtocol = parent
+        """Parent protocol instance"""
+        self._setrequest = self._parent.setrequest
+        """Shortcut to the `setrequest` method of the parent protocol."""
+        self._confrequest = self._parent.confrequest
+        """Shortcut to the `confrequest` method of the parent protocol."""
+        self._putrequest = self._parent.putrequest
+        """Shortcut to the `putrequest` method of the parent protocol."""
+        self._getrequest = self._parent.getrequest
+        """Shortcut to the `getrequest` method of the parent protocol."""
+
+
 class GsiOnlineProtocol:
     """
     Base class for GSI Online protocol versions.
@@ -337,15 +364,16 @@ class GsiOnlineProtocol:
             logger = Logger("/dev/null")
             logger.addHandler(NullHandler())
         self._logger: Logger = logger
+        self._gsi16 = False
 
     def setrequest(
         self,
         param: int,
         value: int
-    ) -> GsiOnlineResponse[bool | None]:
+    ) -> GsiOnlineResponse[bool]:
         """
         Executes a GSI Online SET command and returns the success
-        of the operation.
+        of the operation in a GSI Online response.
 
         Parameters
         ----------
@@ -362,7 +390,7 @@ class GsiOnlineProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
         """
         raise NotImplementedError()
 
@@ -379,7 +407,7 @@ class GsiOnlineProtocol:
         ----------
         param : int
             Index of the parameter to query.
-        parser : Callable[[str], _T]
+        parser
             Parser function to process the result of the query.
 
         Returns
@@ -390,7 +418,7 @@ class GsiOnlineProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
         """
         raise NotImplementedError()
 
@@ -398,7 +426,7 @@ class GsiOnlineProtocol:
         self,
         wordindex: int,
         word: str
-    ) -> GsiOnlineResponse[bool | None]:
+    ) -> GsiOnlineResponse[bool]:
         """
         Executes a GSI Online PUT command and returns the success
         of the operation.
@@ -418,7 +446,7 @@ class GsiOnlineProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
         """
         raise NotImplementedError()
 
@@ -450,6 +478,31 @@ class GsiOnlineProtocol:
         Raises
         ------
         NotImplementedError
-            If the method is not implemented on the child class.
+            If the method is not implemented on the class.
+        """
+        raise NotImplementedError()
+
+    def request(
+        self,
+        cmd: str
+    ) -> GsiOnlineResponse[bool]:
+        """
+        Executes a low level GSI Online command and returns the success
+        of the execution.
+
+        Parameters
+        ----------
+        cmd : str
+            Command string to send to instrument.
+
+        Returns
+        -------
+        GsiOnlineResponse
+            Success of the execution.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the class.
         """
         raise NotImplementedError()

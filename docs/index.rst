@@ -38,6 +38,7 @@ Content
    api/communication
    api/tps1200p/index
    api/vivatps/index
+   api/dna/index
 
 Indices
 
