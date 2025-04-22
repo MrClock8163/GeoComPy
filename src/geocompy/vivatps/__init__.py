@@ -180,10 +180,13 @@ class VivaTPS(GeoComProtocol):
         """Theodolite measurement and calculation subsystem."""
 
         for i in range(retry):
-            self._conn.send("\n")
-            response = self.com.nullproc()
-            if response.comcode and response.rpccode:
-                break
+            try:
+                self._conn.send("\n")
+                response = self.com.nullproc()
+                if response.comcode and response.rpccode:
+                    break
+            except Exception:
+                pass
 
             sleep(1)
         else:
