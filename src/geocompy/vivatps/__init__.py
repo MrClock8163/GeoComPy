@@ -355,7 +355,7 @@ class VivaTPS(GeoComProtocol):
 
         cmd = f"%R1Q,{rpc}:{','.join(strparams)}"
         try:
-            answer = self._conn.exchange1(cmd)
+            answer = self._conn.exchange(cmd)
         except SerialTimeoutException:
             self._logger.error(format_exc())
             answer = (

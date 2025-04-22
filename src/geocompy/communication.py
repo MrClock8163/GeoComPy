@@ -14,7 +14,6 @@ Types
 from __future__ import annotations
 
 from types import TracebackType
-from typing import Iterable
 
 from serial import (
     Serial,
@@ -83,32 +82,9 @@ class Connection:
         """
         raise NotImplementedError("interface does not implement 'receive'")
 
-    def exchange(self, cmds: Iterable[str]) -> list[str]:
+    def exchange(self, cmd: str) -> str:
         """
-        Sends an arbitrary number of messages through the connection,
-        and receives the corresponding responses.
-
-        Parameters
-        ----------
-        cmds : Iterable[str]
-            Collection of messages to send.
-
-        Returns
-        -------
-        list
-            Responses to the sent messages.
-
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the child class.
-
-        """
-        raise NotImplementedError("interface does not implement 'exchange'")
-
-    def exchange1(self, cmd: str) -> str:
-        """
-        Sends a single message through the connection, and receives the
+        Sends a message through the connection, and receives the
         corresponding response.
 
         Parameters
@@ -160,9 +136,9 @@ def open_serial(
     timeout : int, optional
         Communication timeout threshold, by default 15
     eom : str, optional
-        EndOfMessage sequence, by default "\\r\\n"
+        EndOfMessage sequence, by default ``"\\r\\n"``
     eoa : str, optional
-        EndOfAnswer sequence, by default "\\r\\n"
+        EndOfAnswer sequence, by default ``"\\r\\n"``
 
     Returns
     -------
@@ -345,40 +321,9 @@ class SerialConnection(Connection):
 
         return answer.decode("ascii").removesuffix(self.eoa)
 
-    def exchange(self, cmds: Iterable[str]) -> list[str]:
+    def exchange(self, cmd: str) -> str:
         """
-        Writes an arbitrary number of messages to the serial line,
-        and receives the corresponding responses, one pair at a time.
-
-        Parameters
-        ----------
-        cmds : Iterable[str]
-            Collection of messages to send.
-
-        Returns
-        -------
-        list
-            Responses to the sent messages.
-
-        Raises
-        ------
-        ~serial.SerialException
-            If the serial port is not open.
-        ~serial.SerialTimeoutException
-            If the connection timed out before receiving the
-            EndOfAnswer sequence for one of the responses.
-
-        """
-        answers: list[str] = []
-        for item in cmds:
-            self.send(item)
-            answers.append(self.receive())
-
-        return answers
-
-    def exchange1(self, cmd: str) -> str:
-        """
-        Writes a single message to the serial line, and receives the
+        Writes a message to the serial line, and receives the
         corresponding response.
 
         Parameters
