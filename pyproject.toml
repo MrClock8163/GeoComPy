@@ -39,6 +39,6 @@ source = "vcs"
 version-file = "src/geocompy/_version.py"
 
 [tool.pytest.ini_options]
-addopts = ["-ra"]
+addopts = ["-ra", "-v"]
 testpaths = ["tests", "src", "examples"]
 required_plugins = "pytest-mock"
