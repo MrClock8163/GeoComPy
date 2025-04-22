@@ -26,7 +26,6 @@ class DummyGsiOnlineConnection(Connection):
     )
 
     def __init__(self, gsi16=False):
-        super().__init__("")
         self._gsi16 = gsi16
 
     def exchange1(self, cmd: str) -> str:

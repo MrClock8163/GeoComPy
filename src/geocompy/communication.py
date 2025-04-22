@@ -27,16 +27,6 @@ class Connection:
 
     """
 
-    def __init__(self, name: str = ""):
-        """
-        Parameters
-        ----------
-        name : str, optional
-            Descriptive name, by default ""
-
-        """
-        self.name: str = name
-
     def is_open(self) -> bool:
         """
         Checks if the communication channel is currently open.
@@ -194,7 +184,6 @@ class SerialConnection(Connection):
         be opened.
 
         """
-        super().__init__("")
 
         self._port: Serial = port
         self.eom: str = eom  # end of message
