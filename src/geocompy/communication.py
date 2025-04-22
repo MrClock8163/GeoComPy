@@ -16,7 +16,12 @@ from __future__ import annotations
 from types import TracebackType
 from typing import Iterable
 
-from serial import Serial, SerialException, SerialTimeoutException
+from serial import (
+    Serial,
+    SerialException,
+    SerialTimeoutException,
+    PARITY_NONE
+)
 
 
 class Connection:
@@ -123,6 +128,64 @@ class Connection:
 
         """
         raise NotImplementedError("interface does not implement 'exchange1'")
+
+
+def open_serial(
+    port: str,
+    *,
+    speed: int = 9600,
+    databits: int = 8,
+    stopbits: int = 1,
+    parity: str = PARITY_NONE,
+    timeout: int = 15,
+    eom: str = "\r\n",
+    eoa: str = "\r\n"
+) -> SerialConnection:
+    """
+    Constructs a SerialConnection with the given communication
+    parameters.
+
+    Parameters
+    ----------
+    port : str
+        Name of the port to use (e.g. ``COM1`` or ``/dev/ttyUSB0``).
+    speed : int, optional
+        Communication speed (baud), by default 9600
+    databits : int, optional
+        Number of data bits, by default 8
+    stopbits : int, optional
+        Number of stop bits, by default 1
+    parity : str, optional
+        Parity bit behavior, by default PARITY_NONE
+    timeout : int, optional
+        Communication timeout threshold, by default 15
+    eom : str, optional
+        EndOfMessage sequence, by default "\\r\\n"
+    eoa : str, optional
+        EndOfAnswer sequence, by default "\\r\\n"
+
+    Returns
+    -------
+    SerialConnection
+
+    Examples
+    --------
+
+    Opening a serial connection similar to a file:
+
+    >>> conn = open_serial("COM1", speed=19200, timeout=5)
+    >>> # do operations
+    >>> conn.close()
+
+    Using as a context manager:
+
+    >>> with open_serial("COM1", timeout=20) as conn:
+    ...     conn.send("test")
+
+    """
+    serialport = Serial(port, speed, databits, parity, stopbits, timeout)
+    wrapper = SerialConnection(serialport, eom=eom, eoa=eoa)
+    return wrapper
 
 
 class SerialConnection(Connection):
