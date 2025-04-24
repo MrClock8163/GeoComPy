@@ -58,12 +58,10 @@ class DNA(GsiOnlineProtocol):
 
     Opening a simple serial connection:
 
-    >>> from serial import Serial
-    >>> from geocompy.communication import SerialConnection
+    >>> from geocompy.communication import open_serial
     >>> from geocompy.dna import DNA
     >>>
-    >>> port = Serial("COM4", timeout=15)
-    >>> with SerialConnection(port) as line:
+    >>> with open_serial("COM1") as line:
     ...     dna = DNA(line)
     ...     dna.beep('SHORT')
     ...
@@ -71,15 +69,12 @@ class DNA(GsiOnlineProtocol):
 
     Passing a logger:
 
-    >>> from logging import Logger, StreamHandler, DEBUG
-    >>> from serial import Serial
-    >>> from geocompy.communication import SerialConnection
+    >>> from logging import DEBUG
+    >>> from geocompy.communication import open_serial, get_logger
     >>> from geocompy.dna import DNA
     >>>
-    >>> log = Logger("stdout", DEBUG)
-    >>> log.addHandler(StreamHandler())
-    >>> port = Serial("COM4", timeout=15)
-    >>> with SerialConnection(port) as line:
+    >>> log = get_logger("DNA", "stdout", DEBUG)
+    >>> with open_serial("COM1") as line:
     ...     dna = DNA(line, log)
     ...     dna.beep('SHORT')
     ...

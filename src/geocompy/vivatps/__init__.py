@@ -79,12 +79,10 @@ class VivaTPS(GeoComProtocol):
 
     Opening a simple serial connection:
 
-    >>> from serial import Serial
-    >>> from geocompy.communication import SerialConnection
+    >>> from geocompy.communication import open_serial
     >>> from geocompy.vivatps import VivaTPS
     >>>
-    >>> port = Serial("COM4", timeout=15)
-    >>> with SerialConnection(port) as line:
+    >>> with open_serial("COM1") as line:
     ...     tps = VivaTPS(line)
     ...     tps.com.nullproc()
     ...
@@ -92,15 +90,12 @@ class VivaTPS(GeoComProtocol):
 
     Passing a logger:
 
-    >>> from logging import Logger, StreamHandler, DEBUG
-    >>> from serial import Serial
-    >>> from geocompy.communication import SerialConnection
+    >>> from logging import DEBUG
+    >>> from geocompy.communication import open_serial, get_logger
     >>> from geocompy.vivatps import VivaTPS
     >>>
-    >>> log = Logger("stdout", DEBUG)
-    >>> log.addHandler(StreamHandler())
-    >>> port = Serial("COM4", timeout=15)
-    >>> with SerialConnection(port) as line:
+    >>> log = get_logger("Viva", "stdout", DEBUG)
+    >>> with open_serial("COM1") as line:
     ...     tps = VivaTPS(line, log)
     ...     tps.com.nullproc()
     ...

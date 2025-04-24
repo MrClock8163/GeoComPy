@@ -73,12 +73,10 @@ class TPS1200P(GeoComProtocol):
 
     Opening a simple serial connection:
 
-    >>> from serial import Serial
-    >>> from geocompy.communication import SerialConnection
+    >>> from geocompy.communication import open_serial
     >>> from geocompy.tps1200p import TPS1200P
     >>>
-    >>> port = Serial("COM4", timeout=15)
-    >>> with SerialConnection(port) as line:
+    >>> with open_serial("COM1") as line:
     ...     tps = TPS1200P(line)
     ...     tps.com.nullproc()
     ...
@@ -86,15 +84,12 @@ class TPS1200P(GeoComProtocol):
 
     Passing a logger:
 
-    >>> from logging import Logger, StreamHandler, DEBUG
-    >>> from serial import Serial
-    >>> from geocompy.communication import SerialConnection
+    >>> from logging import DEBUG
+    >>> from geocompy.communication import open_serial, get_logger
     >>> from geocompy.tps1200p import TPS1200P
     >>>
-    >>> log = Logger("stdout", DEBUG)
-    >>> log.addHandler(StreamHandler())
-    >>> port = Serial("COM4", timeout=15)
-    >>> with SerialConnection(port) as line:
+    >>> log = get_logger("Viva", "stdout", DEBUG)
+    >>> with open_serial("COM1") as line:
     ...     tps = TPS1200P(line, log)
     ...     tps.com.nullproc()
     ...
