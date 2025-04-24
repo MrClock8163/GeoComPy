@@ -1,4 +1,1 @@
-geocompy
-========
-
-.. module:: geocompy
+.. automodule:: geocompy
