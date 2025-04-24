@@ -484,7 +484,8 @@ class GsiOnlineProtocol:
 
     def request(
         self,
-        cmd: str
+        cmd: str,
+        desc: str = ""
     ) -> GsiOnlineResponse[bool]:
         """
         Executes a low level GSI Online command and returns the success
@@ -494,6 +495,8 @@ class GsiOnlineProtocol:
         ----------
         cmd : str
             Command string to send to instrument.
+        desc : str
+            Command description to show in response.
 
         Returns
         -------

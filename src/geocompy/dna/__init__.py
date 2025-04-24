@@ -142,6 +142,7 @@ class DNA(GsiOnlineProtocol):
             try:
                 reply = self._conn.exchange("a")
                 if reply == "?":
+                    sleep(1)
                     break
             except Exception:
                 pass
@@ -344,7 +345,8 @@ class DNA(GsiOnlineProtocol):
 
     def request(
         self,
-        cmd: str
+        cmd: str,
+        desc: str = ""
     ) -> GsiOnlineResponse[bool]:
         """
         Executes a low level GSI Online command and returns the success
@@ -354,6 +356,8 @@ class DNA(GsiOnlineProtocol):
         ----------
         cmd : str
             Command string to send to instrument.
+        desc : str
+            Command description to show in response.
 
         Returns
         -------
@@ -369,7 +373,7 @@ class DNA(GsiOnlineProtocol):
             comment = "EXCHANGE"
 
         response = GsiOnlineResponse(
-            "",
+            desc,
             cmd,
             answer,
             answer == "?",
@@ -397,8 +401,7 @@ class DNA(GsiOnlineProtocol):
         """
         _beeptype = toenum(self.BEEPTYPE, beeptype)
         cmd = f"BEEP/{_beeptype.value:d}"
-        response = self.request(cmd)
-        response.desc = "Beep"
+        response = self.request(cmd, "Beep")
         return response
 
     def wakeup(self) -> GsiOnlineResponse[bool]:
@@ -410,8 +413,11 @@ class DNA(GsiOnlineProtocol):
         GsiOnlineResponse
             Success of the execution.
         """
-        response = self.request("a")
-        response.desc = "Wakeup"
+        response = self.request("a", "Wakeup")
+        # It's better to wait one more second for the wakeup to finish,
+        # otherwise the instrument may freeze up if the next command is
+        # instantly executed.
+        sleep(1)
         return response
 
     def shutdown(self) -> GsiOnlineResponse[bool]:
@@ -423,8 +429,12 @@ class DNA(GsiOnlineProtocol):
         GsiOnlineResponse
             Success of the execution.
         """
-        response = self.request("b")
-        response.desc = "Shutdown"
+        # It's better to wait a second after the last command before starting
+        # the shutdown. Quick wakeup-cmd-shutdown cycles can freez up the
+        # instrument, which can only be solved by physically disconnecting
+        # the power.
+        sleep(1)
+        response = self.request("b", "Shutdown")
         return response
 
     def clear(self) -> GsiOnlineResponse[bool]:
