@@ -184,9 +184,10 @@ class VivaTPS(GeoComProtocol):
                 self._conn.send("\n")
                 response = self.com.nullproc()
                 if response.comcode and response.rpccode:
+                    sleep(1)
                     break
             except Exception:
-                pass
+                self._logger.exception("Exception during connection attempt")
 
             sleep(1)
         else:
@@ -198,6 +199,8 @@ class VivaTPS(GeoComProtocol):
         resp = self.get_double_precision()
         if resp.comcode and resp.rpccode:
             self._precision = resp.params["digits"]
+
+        self._logger.info("Connection initialized")
 
     def get_double_precision(self) -> GeoComResponse:
         """

@@ -54,10 +54,10 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import Callable, Any, Iterable, Generic, TypeVar, Literal
-from logging import Logger, NullHandler
+from logging import Logger
 
 from .data import Angle, Byte
-from .communication import Connection
+from .communication import Connection, get_logger
 
 try:
     from ._version import __version__
@@ -184,8 +184,7 @@ class GeoComProtocol:
         """
         self._conn: Connection = connection
         if logger is None:
-            logger = Logger("/dev/null")
-            logger.addHandler(NullHandler())
+            logger = get_logger("/dev/null")
         self._logger: Logger = logger
 
     def request(
@@ -361,8 +360,7 @@ class GsiOnlineProtocol:
         """
         self._conn: Connection = connection
         if logger is None:
-            logger = Logger("/dev/null")
-            logger.addHandler(NullHandler())
+            logger = get_logger("/dev/null")
         self._logger: Logger = logger
         self._gsi16 = False
 

@@ -140,12 +140,12 @@ class DNA(GsiOnlineProtocol):
 
         for i in range(retry):
             try:
-                reply = self._conn.exchange("a")
-                if reply == "?":
+                reply = self.wakeup()
+                if reply.value:
                     sleep(1)
                     break
             except Exception:
-                pass
+                self._logger.exception("Exception during wakeup attempt")
 
             sleep(1)
         else:
@@ -154,6 +154,8 @@ class DNA(GsiOnlineProtocol):
             )
 
         self.settings.get_format()  # Sync format setting
+
+        self._logger.info("Connection initialized")
 
     def setrequest(
         self,
@@ -188,13 +190,15 @@ class DNA(GsiOnlineProtocol):
         if not value:
             comment = "INSTRUMENT"
 
-        return GsiOnlineResponse(
+        response = GsiOnlineResponse(
             param_descriptions.get(param, ""),
             cmd,
             answer,
             value,
             comment
         )
+        self._logger.debug(response)
+        return response
 
     def confrequest(
         self,
@@ -418,6 +422,7 @@ class DNA(GsiOnlineProtocol):
         # otherwise the instrument may freeze up if the next command is
         # instantly executed.
         sleep(1)
+        self._logger.info("Attempting wakeup")
         return response
 
     def shutdown(self) -> GsiOnlineResponse[bool]:
@@ -434,6 +439,7 @@ class DNA(GsiOnlineProtocol):
         # instrument, which can only be solved by physically disconnecting
         # the power.
         sleep(1)
+        self._logger.info("Shutting down")
         response = self.request("b", "Shutdown")
         return response
 

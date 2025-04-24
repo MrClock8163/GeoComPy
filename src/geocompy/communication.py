@@ -13,7 +13,9 @@ Types
 """
 from __future__ import annotations
 
+import logging
 from types import TracebackType
+from typing import Literal
 
 from serial import (
     Serial,
@@ -21,6 +23,62 @@ from serial import (
     SerialTimeoutException,
     PARITY_NONE
 )
+
+
+def get_logger(
+    name: str,
+    target: Literal['null', 'file', 'stdout'] = 'null',
+    level: int = logging.NOTSET,
+    file: str = ""
+) -> logging.Logger:
+    """
+    Utility function that creates a logger instance with standard
+    formatting, logging to the specified target.
+
+    Parameters
+    ----------
+    name : str
+        Name of the logger.
+    target : Literal['null', 'file', 'stdout'], optional
+        Logging target, by default 'null'
+    level : int, optional
+        Logging level, by default logging.NOTSET
+    file : str, optional
+        Path to target log file (**must not be** ``""`` when target is
+        'file'), by default ""
+
+    Returns
+    -------
+    logging.Logger
+
+    Note
+    ----
+    If a logger with the specified name already exists, it will be
+    overwritten with the newly created handlers.
+    """
+    log = logging.getLogger(name)
+    log.handlers.clear()
+    log.setLevel(level)
+    fmt = logging.Formatter(
+        "%(asctime)s <%(name)s> [%(levelname)s] %(message)s",
+        "%Y-%m-%d %H:%M:%S"
+    )
+    match target:
+        case "null":
+            log.addHandler(logging.NullHandler())
+        case "file" if file != "":
+            fhandler = logging.FileHandler(
+                file,
+                encoding="utf8"
+            )
+            fhandler.setFormatter(fmt)
+            log.addHandler(fhandler)
+        case "stdout":
+            shandler = logging.StreamHandler()
+            shandler.setFormatter(fmt)
+            log.addHandler(shandler)
+
+    return log
 
 
 class Connection:
