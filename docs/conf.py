@@ -126,7 +126,7 @@ napoleon_google_docstring = False
 napoleon_use_ivar = True
 napoleon_type_aliases = {
     "GeoComResponse": "~geocompy.GeoComResponse",
-    "GsiOnlineResponse": "~geocompy.GsiOnlineResponse",
+    "GsiOnlineResponse": "~geocompy.protocols.GsiOnlineResponse",
     "datetime": "~datetime.datetime"
 }
 
@@ -140,7 +140,7 @@ nitpicky = True
 nitpick_ignore = {
     ("py:class", "optional"),
     ("py:param", "_E"),
-    ("py:param", "_T"),
+    ("py:param", "_T")
 }
 nitpick_ignore_regex = {
     ("py:obj", r"[a-zA-Z]{3}\.\w+")

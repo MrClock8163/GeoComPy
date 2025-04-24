@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from enum import IntEnum
 
-from .. import (
+from ..protocols import (
     GsiOnlineSubsystem,
     GsiOnlineResponse
 )

@@ -26,7 +26,7 @@ from traceback import format_exc
 import logging
 from time import sleep
 
-from .. import (
+from ..protocols import (
     GsiOnlineProtocol,
     GsiOnlineResponse
 )
@@ -142,7 +142,6 @@ class DNA(GsiOnlineProtocol):
             try:
                 reply = self.wakeup()
                 if reply.value:
-                    sleep(1)
                     break
             except Exception:
                 self._logger.exception("Exception during wakeup attempt")
