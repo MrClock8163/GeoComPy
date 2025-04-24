@@ -140,7 +140,7 @@ class DNA(GsiOnlineProtocol):
 
         for i in range(retry):
             try:
-                reply = self._conn.exchange1("a")
+                reply = self._conn.exchange("a")
                 if reply == "?":
                     break
             except Exception:
@@ -178,7 +178,7 @@ class DNA(GsiOnlineProtocol):
         cmd = f"SET/{param:d}/{value:d}"
         comment = ""
         try:
-            answer = self._conn.exchange1(cmd)
+            answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
             answer = DNAErrors.E_UNKNOWN.value
@@ -219,7 +219,7 @@ class DNA(GsiOnlineProtocol):
         cmd = f"CONF/{param:d}"
         comment = ""
         try:
-            answer = self._conn.exchange1(cmd)
+            answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
             answer = DNAErrors.E_UNKNOWN.value
@@ -269,7 +269,7 @@ class DNA(GsiOnlineProtocol):
         cmd = f"PUT/{word:s}"
         comment = ""
         try:
-            answer = self._conn.exchange1(cmd)
+            answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
             answer = DNAErrors.E_UNKNOWN.value
@@ -316,7 +316,7 @@ class DNA(GsiOnlineProtocol):
         cmd = f"GET/{mode:s}/WI{wordindex:d}"
         comment = ""
         try:
-            answer = self._conn.exchange1(cmd)
+            answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
             answer = DNAErrors.E_UNKNOWN.value
@@ -362,7 +362,7 @@ class DNA(GsiOnlineProtocol):
         """
         comment = ""
         try:
-            answer = self._conn.exchange1(cmd)
+            answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
             answer = DNAErrors.E_UNKNOWN.value

@@ -28,7 +28,7 @@ class DummyGeoComConnection(Connection):
     def send(self, message: str):
         return
 
-    def exchange1(self, cmd: str) -> str:
+    def exchange(self, cmd: str) -> str:
         if not self._CMD.match(cmd):
             return "%R1P,0,0:2"
 

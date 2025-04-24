@@ -26,10 +26,9 @@ class DummyGsiOnlineConnection(Connection):
     )
 
     def __init__(self, gsi16=False):
-        super().__init__("")
         self._gsi16 = gsi16
 
-    def exchange1(self, cmd: str) -> str:
+    def exchange(self, cmd: str) -> str:
         if self._CONF.match(cmd) and cmd != "CONF/0":
             if cmd == "CONF/137":
                 return f"0137/{self._gsi16:04d}"
