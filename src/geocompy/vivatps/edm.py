@@ -14,8 +14,8 @@ from __future__ import annotations
 
 from enum import Enum
 
-from .. import GeoComResponse
 from ..data import toenum
+from ..protocols import GeoComResponse
 from ..tps1200p.edm import TPS1200PEDM
 
 

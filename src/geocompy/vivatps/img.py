@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from .. import GeoComResponse
+from ..protocols import GeoComResponse
 from ..tps1200p.img import TPS1200PIMG
 
 

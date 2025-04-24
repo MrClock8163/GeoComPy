@@ -14,11 +14,11 @@ from __future__ import annotations
 
 from enum import Enum
 
-from .. import (
+from ..data import toenum
+from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
 )
-from ..data import toenum
 
 
 class TPS1200PCOM(GeoComSubsystem):

@@ -1,7 +1,7 @@
 from typing import Callable, Any
 import re
 
-from geocompy import GeoComProtocol
+from geocompy.protocols import GeoComProtocol
 from geocompy.communication import Connection
 from geocompy.data import (
     Byte

@@ -15,15 +15,15 @@ from __future__ import annotations
 
 from enum import Enum
 
-from .. import (
-    GeoComSubsystem,
-    GeoComResponse
-)
 from ..data import (
     Angle,
     Coordinate,
     toenum,
     enumparser
+)
+from ..protocols import (
+    GeoComSubsystem,
+    GeoComResponse
 )
 
 

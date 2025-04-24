@@ -15,14 +15,14 @@ from __future__ import annotations
 from enum import Enum, Flag
 from datetime import datetime
 
-from .. import (
-    GeoComSubsystem,
-    GeoComResponse
-)
 from ..data import (
     Byte,
     parsestr,
     enumparser
+)
+from ..protocols import (
+    GeoComSubsystem,
+    GeoComResponse
 )
 
 

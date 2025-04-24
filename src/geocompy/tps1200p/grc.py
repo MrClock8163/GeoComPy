@@ -12,7 +12,7 @@ Types
 - ``TPS1200PGRC``
 
 """
-from .. import GeoComReturnCode
+from ..protocols import GeoComReturnCode
 
 
 class TPS1200PGRC(GeoComReturnCode):

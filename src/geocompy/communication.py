@@ -4,6 +4,12 @@
 
 Implementations of connection methods.
 
+Functions
+---------
+
+- ``get_logger``
+- ``open_serial``
+
 Types
 -----
 

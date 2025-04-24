@@ -14,11 +14,11 @@ from __future__ import annotations
 
 from enum import Enum
 
-from .. import GeoComResponse
 from ..data import (
     toenum,
     enumparser
 )
+from ..protocols import GeoComResponse
 from ..tps1200p.csv import TPS1200PCSV
 
 
