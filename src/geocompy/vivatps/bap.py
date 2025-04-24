@@ -18,7 +18,7 @@ from ..data import (
     toenum,
     enumparser
 )
-from .. import GeoComResponse
+from ..protocols import GeoComResponse
 from ..tps1200p.bap import TPS1200PBAP
 
 

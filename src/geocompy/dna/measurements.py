@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from datetime import time, datetime
 
-from .. import (
+from ..protocols import (
     GsiOnlineSubsystem,
     GsiOnlineResponse
 )

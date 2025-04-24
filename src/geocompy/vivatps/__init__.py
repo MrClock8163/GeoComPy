@@ -41,16 +41,15 @@ from typing import Callable, Iterable, Any
 
 from serial import SerialException, SerialTimeoutException
 
-from ..communication import Connection
-from .. import (
-    GeoComProtocol,
-    GeoComResponse
-)
 from ..data import (
     Angle,
     Byte
 )
-
+from ..communication import Connection
+from ..protocols import (
+    GeoComProtocol,
+    GeoComResponse
+)
 from .aus import VivaTPSAUS
 from .aut import VivaTPSAUT
 from .bap import VivaTPSBAP

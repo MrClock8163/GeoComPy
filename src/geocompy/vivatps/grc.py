@@ -12,7 +12,7 @@ Types
 - ``VivaTPSGRC``
 
 """
-from .. import GeoComReturnCode
+from ..protocols import GeoComReturnCode
 
 
 class VivaTPSGRC(GeoComReturnCode):

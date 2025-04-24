@@ -11,7 +11,7 @@ Types
 """
 from __future__ import annotations
 
-from .. import (
+from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
 )

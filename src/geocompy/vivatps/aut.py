@@ -14,15 +14,15 @@ from __future__ import annotations
 
 from enum import Enum
 
-from .. import (
-    GeoComResponse
-)
 from ..data import (
     toenum,
     enumparser
 )
-from .cam import VivaTPSCAM
+from ..protocols import (
+    GeoComResponse
+)
 from ..tps1200p.aut import TPS1200PAUT
+from .cam import VivaTPSCAM
 
 
 class VivaTPSAUT(TPS1200PAUT):

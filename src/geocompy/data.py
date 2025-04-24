@@ -11,6 +11,7 @@ Functions
 - ``parsestr``
 - ``toenum``
 - ``enumparser``
+- ``gsiword``
 
 Types
 -----

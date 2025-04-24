@@ -15,12 +15,12 @@ from __future__ import annotations
 from enum import Enum
 from datetime import datetime
 
-from .. import GeoComResponse
 from ..data import (
     Byte,
     parsestr,
     toenum
 )
+from ..protocols import GeoComResponse
 from ..tps1200p.ftr import TPS1200PFTR
 
 

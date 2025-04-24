@@ -37,15 +37,15 @@ from typing import Callable, Iterable, Any
 
 from serial import SerialException, SerialTimeoutException
 
-from .. import (
-    GeoComProtocol,
-    GeoComResponse
-)
 from ..data import (
     Angle,
     Byte
 )
 from ..communication import Connection
+from ..protocols import (
+    GeoComProtocol,
+    GeoComResponse
+)
 from .aus import TPS1200PAUS
 from .aut import TPS1200PAUT
 from .bap import TPS1200PBAP
