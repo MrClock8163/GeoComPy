@@ -1,6 +1,8 @@
 """
-``geocompy.communication``
-==========================
+Description
+===========
+
+Module: ``geocompy.communication``
 
 Implementations of connection methods.
 
@@ -13,9 +15,8 @@ Functions
 Types
 -----
 
-- ``Connection`` (generic base class)
+- ``Connection``
 - ``SerialConnection``
-
 """
 from __future__ import annotations
 

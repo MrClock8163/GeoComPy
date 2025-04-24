@@ -1,6 +1,8 @@
 """
-``geocompy.data``
-=================
+Description
+===========
+
+Module: ``geocompy.data``
 
 The data module provides utility functions and classes for serializing
 and deserializing data in the serial communication.
@@ -21,7 +23,6 @@ Types
 - ``Byte``
 - ``Vector``
 - ``Coordinate``
-
 """
 from __future__ import annotations
 
@@ -34,6 +35,20 @@ from typing import (
     Callable,
     TypeVar,
     Self
+)
+
+
+__all__ = (
+    "parsestr",
+    "toenum",
+    "enumparser",
+    "gsiword",
+
+    "AngleUnit",
+    "Angle",
+    "Byte",
+    "Vector",
+    "Coordinate"
 )
 
 
