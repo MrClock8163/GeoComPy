@@ -2,8 +2,7 @@ import re
 
 from geocompy.communication import Connection
 from geocompy.data import gsiword
-from geocompy.dna import DNA
-from geocompy.dna.meta import DNAErrors
+from geocompy.protocols import GsiOnlineProtocol
 
 from helpers import faulty_parser
 
@@ -54,57 +53,57 @@ class DummyGsiOnlineConnection(Connection):
 
 class GsiOnlineTester:
     @staticmethod
-    def test_request(dna: DNA):
-        response = dna.request("d")
+    def test_request(instrument: GsiOnlineProtocol):
+        response = instrument.request("d")
         assert not response.value
-        response = dna.request("a")
+        response = instrument.request("a")
         assert response.value
 
     @staticmethod
-    def test_setrequest(dna: DNA):
-        response = dna.setrequest(0, 0)
+    def test_setrequest(instrument: GsiOnlineProtocol):
+        response = instrument.setrequest(0, 0)
         assert not response.value
         assert response.comment == "INSTRUMENT"
-        assert response.response == DNAErrors.W_INVCMD
+        assert response.response == "@W427"
 
-        response = dna.setrequest(1, 1)
+        response = instrument.setrequest(1, 1)
         assert response.value
 
     @staticmethod
-    def test_confrequest(dna: DNA):
-        response = dna.confrequest(0, int)
+    def test_confrequest(instrument: GsiOnlineProtocol):
+        response = instrument.confrequest(0, int)
         assert not response.value
         assert response.comment == "INSTRUMENT"
-        assert response.response == DNAErrors.W_INVCMD
+        assert response.response == "@W427"
 
-        response = dna.confrequest(1, faulty_parser)
+        response = instrument.confrequest(1, faulty_parser)
         assert response.value is None
         assert response.comment == "PARSE"
 
-        response = dna.confrequest(1, int)
+        response = instrument.confrequest(1, int)
         assert response.comment == ""
         assert response.response == "0001/0000"
         assert response.value == 0
 
     @staticmethod
-    def test_putrequest(dna: DNA):
-        response = dna.putrequest(0, "0.....+00000000 ")
+    def test_putrequest(instrument: GsiOnlineProtocol):
+        response = instrument.putrequest(0, "0.....+00000000 ")
         assert not response.value
         assert response.comment == "INSTRUMENT"
-        assert response.response == DNAErrors.W_INVCMD
+        assert response.response == "@W427"
 
-        response = dna.putrequest(1, "1.....+00000001 ")
+        response = instrument.putrequest(1, "1.....+00000001 ")
         assert response.value
 
     @staticmethod
-    def test_getrequest(dna: DNA):
-        response = dna.getrequest("I", 0, int)
+    def test_getrequest(instrument: GsiOnlineProtocol):
+        response = instrument.getrequest("I", 0, int)
         assert response.value is None
-        assert response.response == DNAErrors.W_INVCMD
+        assert response.response == "@W427"
 
-        response = dna.getrequest("I", 1, faulty_parser)
+        response = instrument.getrequest("I", 1, faulty_parser)
         assert response.value is None
         assert response.comment == "PARSE"
 
-        response = dna.getrequest("I", 1, gsiparser)
+        response = instrument.getrequest("I", 1, gsiparser)
         assert response.value == 1
