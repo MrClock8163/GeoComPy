@@ -4,7 +4,8 @@ project = "GeoComPy"
 copyright = "2025, MrClock8163"
 author = "MrClock8163"
 
-release = version = __version__
+version = ".".join(__version__.split(".")[0:2])
+release = __version__
 
 extensions = [
     "sphinx.ext.autodoc",
