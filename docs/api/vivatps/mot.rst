@@ -1,11 +1,8 @@
-geocompy.vivatps.mot
----------------------
+Motorization
+============
 
-.. module:: geocompy.vivatps.mot
-
-
-.. autoclass:: VivaTPSMOT
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.mot
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

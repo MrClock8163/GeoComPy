@@ -1,11 +1,8 @@
-geocompy.vivatps.sup
----------------------
+Supervisor
+==========
 
-.. module:: geocompy.vivatps.sup
-
-
-.. autoclass:: VivaTPSSUP
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.sup
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

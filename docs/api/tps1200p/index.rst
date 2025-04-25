@@ -1,27 +1,17 @@
-geocompy.tps1200p
-=================
+TPS1200+
+========
 
-.. module:: geocompy.tps1200p
+.. automodule:: geocompy.tps1200p
+    :inherited-members:
 
-.. autoclass:: TPS1200P
-    :members:
-    :class-doc-from: both
-
-
-.. module:: geocompy.tps1200p.grc
-
-.. autoclass:: TPS1200PGRC
-    :members:
-    :undoc-members:
-    :member-order: bysource
-
-
-.. autodata:: rpcnames
-    :no-value:
+    Definitions
+    -----------
 
 .. toctree::
     :maxdepth: 1
+    :hidden:
 
+    grc
     aus
     aut
     bap

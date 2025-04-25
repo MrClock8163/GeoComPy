@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.aut``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.aut``
 
 Definitions for the VivaTPS Automation subsystem.
 

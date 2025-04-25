@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.bmm``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.bmm``
 
 Definitions for the VivaTPS Basic man-machine interface subsystem.
 

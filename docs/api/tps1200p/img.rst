@@ -1,10 +1,8 @@
-geocompy.tps1200p.img
----------------------
+Image Processing
+================
 
-.. module:: geocompy.tps1200p.img
+.. automodule:: geocompy.tps1200p.img
+    :inherited-members:
 
-
-.. autoclass:: TPS1200PIMG
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

@@ -1,10 +1,8 @@
-geocompy.tps1200p.edm
----------------------
+Distance Measurement
+====================
 
-.. module:: geocompy.tps1200p.edm
+.. automodule:: geocompy.tps1200p.edm
+    :inherited-members:
 
-
-.. autoclass:: TPS1200PEDM
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

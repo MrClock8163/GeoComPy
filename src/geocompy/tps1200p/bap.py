@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.bap``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.bap``
 
 Definitions for the TPS1200+ Basic applications subsystem.
 

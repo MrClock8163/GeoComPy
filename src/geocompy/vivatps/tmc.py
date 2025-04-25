@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.tmc``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.tmc``
 
 Definitions for the VivaTPS Theodolite measurement and calculation
 subsystem.

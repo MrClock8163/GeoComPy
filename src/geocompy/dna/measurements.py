@@ -1,6 +1,8 @@
 """
-``geocompy.dna.measurements``
-=============================
+Description
+===========
+
+Module: ``geocompy.dna.measurements``
 
 Definitions for the DNA measurements subsystem.
 

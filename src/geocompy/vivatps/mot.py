@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.mot``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.mot``
 
 Definitions for the VivaTPS Motorization subsystem.
 

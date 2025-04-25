@@ -1,6 +1,8 @@
 """
-``geocompy.protocols``
-======================
+Description
+===========
+
+Module: ``geocompy.protocols``
 
 This module contains the base definitions of all command protocol
 implementations, including their response types.

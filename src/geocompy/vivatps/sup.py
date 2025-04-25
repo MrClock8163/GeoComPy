@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.sup``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.sup``
 
 Definitions for the VivaTPS Supervisor subsystem.
 

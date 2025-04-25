@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.grc``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.grc``
 
 This module contains the TPS1200+ GeoCom return codes and function name
 mapping for all subsystems, that are used during the parsing of an RPC

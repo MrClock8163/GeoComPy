@@ -1,11 +1,8 @@
-geocompy.vivatps.cam
----------------------
+Camera
+======
 
-.. module:: geocompy.vivatps.cam
-
-
-.. autoclass:: VivaTPSCAM
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.cam
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

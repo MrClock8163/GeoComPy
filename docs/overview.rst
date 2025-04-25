@@ -64,4 +64,4 @@ directory. Build and install the package with the following command:
 
 .. code-block:: shell
 
-    python -m build
+    python -m pip install .

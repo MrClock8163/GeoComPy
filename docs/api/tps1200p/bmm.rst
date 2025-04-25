@@ -1,10 +1,8 @@
-geocompy.tps1200p.bmm
----------------------
+Basic Man-Machine Interface
+===========================
 
-.. module:: geocompy.tps1200p.bmm
+.. automodule:: geocompy.tps1200p.bmm
+    :inherited-members:
 
-
-.. autoclass:: TPS1200PBMM
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

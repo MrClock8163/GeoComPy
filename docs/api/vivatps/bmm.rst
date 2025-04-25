@@ -1,11 +1,8 @@
-geocompy.vivatps.bmm
----------------------
+Basic Man-Machine Interface
+===========================
 
-.. module:: geocompy.vivatps.bmm
-
-
-.. autoclass:: VivaTPSBMM
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.bmm
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

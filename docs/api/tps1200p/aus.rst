@@ -1,10 +1,8 @@
-geocompy.tps1200p.aus
----------------------
+Alt-User
+========
 
-.. module:: geocompy.tps1200p.aus
+.. automodule:: geocompy.tps1200p.aus
+    :inherited-members:
 
-
-.. autoclass:: TPS1200PAUS
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

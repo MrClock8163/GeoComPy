@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.com``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.com``
 
 Definitions for the TPS1200+ Communication subsystem.
 

@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.edm``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.edm``
 
 Definitions for the VivaTPS EDM subsystem.
 

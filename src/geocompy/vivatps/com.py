@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.com``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.com``
 
 Definitions for the VivaTPS Communication subsystem.
 

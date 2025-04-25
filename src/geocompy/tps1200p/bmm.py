@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.bmm``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.bmm``
 
 Definitions for the TPS1200+ Basic man-machine interface subsystem.
 

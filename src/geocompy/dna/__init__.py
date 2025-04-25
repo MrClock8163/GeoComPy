@@ -1,6 +1,8 @@
 """
-``geocompy.dna``
-=====================
+Description
+===========
+
+Module: ``geocompy.dna``
 
 The ``dna`` package provides wrapper methods for all GSI Online commands
 available on a DNA digital level instrument.

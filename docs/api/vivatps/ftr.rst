@@ -1,11 +1,8 @@
-geocompy.vivatps.ftr
----------------------
+File Transfer
+=============
 
-.. module:: geocompy.vivatps.ftr
-
-
-.. autoclass:: VivaTPSFTR
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.ftr
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

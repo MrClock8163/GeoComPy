@@ -1,13 +1,10 @@
-import os
-import sys
-sys.path.insert(0, os.path.abspath("../src"))
+from geocompy import __version__
 
 project = "GeoComPy"
 copyright = "2025, MrClock8163"
 author = "MrClock8163"
 
-# from geocompy._version import __version__
-# release = version = "0.0.1"
+release = version = __version__
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -117,8 +114,11 @@ object_description_options = [
 
 autodoc_default_options = {
     "member-order": "groupwise",
-    "no-show-inheritance": True
+    "no-show-inheritance": True,
+    "members": True,
+    "undoc-members": True
 }
+autoclass_content = "both"
 
 napoleon_use_admonition_for_notes = True
 napoleon_preprocess_types = True
@@ -177,6 +177,7 @@ latex_elements = {
     "preamble": (
         r"\usepackage{titlesec}"
         r"\newcommand{\sectionbreak}{\clearpage}"
+        r"\setcounter{tocdepth}{2}"
     ),
     "fontpkg": (
         r"\usepackage{lmodern}"

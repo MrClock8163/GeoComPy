@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.ftr``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.ftr``
 
 Definitions for the TPS1200+ File transfer subsystem.
 

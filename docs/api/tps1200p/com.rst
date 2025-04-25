@@ -1,10 +1,8 @@
-geocompy.tps1200p.com
----------------------
+Communication
+=============
 
-.. module:: geocompy.tps1200p.com
+.. automodule:: geocompy.tps1200p.com
+    :inherited-members:
 
-
-.. autoclass:: TPS1200PCOM
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

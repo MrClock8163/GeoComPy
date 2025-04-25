@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.edm``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.edm``
 
 Definitions for the TPS1200+ EDM subsystem.
 

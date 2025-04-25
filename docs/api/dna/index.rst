@@ -1,15 +1,15 @@
-geocompy.dna
-============
+DNA
+===
 
-.. module:: geocompy.dna
+.. automodule:: geocompy.dna
 
-.. autoclass:: DNA
-    :members:
-    :class-doc-from: both
+    Definitions
+    -----------
 
 
 .. toctree::
     :maxdepth: 1
+    :hidden:
 
     meta
     settings

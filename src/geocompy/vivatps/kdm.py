@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.kdm``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.kdm``
 
 Definitions for the VivaTPS Keyboard display unit subsystem.
 

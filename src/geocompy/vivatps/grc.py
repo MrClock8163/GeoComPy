@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.grc``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.grc``
 
 This module contains the VivaTPS GeoCom return codes and function name
 mapping for all subsystems, that are used during the parsing of an RPC

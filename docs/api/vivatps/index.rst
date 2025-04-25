@@ -1,27 +1,16 @@
-geocompy.vivatps
-=================
+VivaTPS
+=======
 
-.. module:: geocompy.vivatps
+.. automodule:: geocompy.vivatps
 
-.. autoclass:: VivaTPS
-    :members:
-    :class-doc-from: both
-
-
-.. module:: geocompy.vivatps.grc
-
-.. autoclass:: VivaTPSGRC
-    :members:
-    :undoc-members:
-    :member-order: bysource
-
-
-.. autodata:: rpcnames
-    :no-value:
+    Definitions
+    -----------
 
 .. toctree::
     :maxdepth: 1
+    :hidden:
 
+    grc
     aus
     aut
     bap

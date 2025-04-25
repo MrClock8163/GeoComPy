@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.bap``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.bap``
 
 Definitions for the VivaTPS Basic applications subsystem.
 

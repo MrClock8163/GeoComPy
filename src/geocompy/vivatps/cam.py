@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.cam``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.cam``
 
 Definitions for the VivaTPS Camera subsystem.
 

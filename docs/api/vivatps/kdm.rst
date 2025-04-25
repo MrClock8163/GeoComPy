@@ -1,11 +1,8 @@
-geocompy.vivatps.kdm
----------------------
+Keyboard and Display Management
+===============================
 
-.. module:: geocompy.vivatps.kdm
-
-
-.. autoclass:: VivaTPSKDM
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.kdm
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------
