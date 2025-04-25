@@ -1,13 +1,10 @@
-import os
-import sys
-sys.path.insert(0, os.path.abspath("../src"))
+from geocompy import __version__
 
 project = "GeoComPy"
 copyright = "2025, MrClock8163"
 author = "MrClock8163"
 
-# from geocompy._version import __version__
-# release = version = "0.0.1"
+release = version = __version__
 
 extensions = [
     "sphinx.ext.autodoc",
