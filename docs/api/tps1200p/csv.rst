@@ -1,10 +1,7 @@
-geocompy.tps1200p.csv
----------------------
+Central Services
+================
 
-.. module:: geocompy.tps1200p.csv
+.. automodule:: geocompy.tps1200p.csv
 
-
-.. autoclass:: TPS1200PCSV
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

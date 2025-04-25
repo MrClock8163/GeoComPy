@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.sup``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.sup``
 
 Definitions for the TPS1200+ Supervisor subsystem.
 

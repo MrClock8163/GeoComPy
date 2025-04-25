@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.tmc``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.tmc``
 
 Definitions for the TPS1200+ Theodolite measurement and calculation
 subsystem.

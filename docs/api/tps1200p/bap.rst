@@ -1,10 +1,7 @@
-geocompy.tps1200p.bap
----------------------
+Basic Applications
+==================
 
-.. module:: geocompy.tps1200p.bap
+.. automodule:: geocompy.tps1200p.bap
 
-
-.. autoclass:: TPS1200PBAP
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

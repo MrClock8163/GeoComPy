@@ -1,10 +1,7 @@
-geocompy.tps1200p.aut
----------------------
+Automation
+==========
 
-.. module:: geocompy.tps1200p.aut
+.. automodule:: geocompy.tps1200p.aut
 
-
-.. autoclass:: TPS1200PAUT
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.aus``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.aus``
 
 Definitions for the TPS1200+ Alt user subsystem.
 

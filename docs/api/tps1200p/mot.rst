@@ -1,10 +1,7 @@
-geocompy.tps1200p.mot
----------------------
+Motorization
+============
 
-.. module:: geocompy.tps1200p.mot
+.. automodule:: geocompy.tps1200p.mot
 
-
-.. autoclass:: TPS1200PMOT
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

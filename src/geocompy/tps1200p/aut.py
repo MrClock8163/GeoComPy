@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.aut``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.aut``
 
 Definitions for the TPS1200+ Automation subsystem.
 

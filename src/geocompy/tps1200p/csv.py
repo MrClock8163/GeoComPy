@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.csv``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.csv``
 
 Definitions for the TPS1200+ Central services subsystem.
 

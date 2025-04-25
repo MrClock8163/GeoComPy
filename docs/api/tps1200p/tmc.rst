@@ -1,10 +1,7 @@
-geocompy.tps1200p.tmc
----------------------
+Theodolite Measurement and Calculation
+======================================
 
-.. module:: geocompy.tps1200p.tmc
+.. automodule:: geocompy.tps1200p.tmc
 
-
-.. autoclass:: TPS1200PTMC
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

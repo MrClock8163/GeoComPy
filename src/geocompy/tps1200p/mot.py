@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.mot``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.mot``
 
 Definitions for the TPS1200+ Motorization subsystem.
 

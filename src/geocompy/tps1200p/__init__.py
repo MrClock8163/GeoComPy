@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p``
-=====================
+Description
+===========
+
+Module: ``geocompy.tps1200p``
 
 The ``tps1200p`` package provides wrapper methods for all GeoCom RPC
 functions available on an instrument running the TPS1200+ system software.

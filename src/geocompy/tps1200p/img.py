@@ -1,6 +1,8 @@
 """
-``geocompy.tps1200p.img``
-=========================
+Description
+===========
+
+Module: ``geocompy.tps1200p.img``
 
 Definitions for the TPS1200+ Imaging subsystem.
 
