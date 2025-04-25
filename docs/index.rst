@@ -21,6 +21,25 @@ Links
 - :si-icon:`material/download` `Download <https://pypi.org/project/geocompy/>`_
 - :si-icon:`material/github` `GitHub <https://github.com/MrClock8163/GeoComPy>`_
 
+Legend
+======
+
+The documentation pages use various icons to show certain properties.
+Below is a list of what each of them indicate.
+
+- Protocols
+
+  - :si-icon:`protocol_geocom` GeoCom
+  - :si-icon:`protocol_gsionline` GSI Online
+
+- Definitions
+
+  - :si-icon:`material/alpha-c-box` Class
+  - :si-icon:`material/alpha-m-box` Method
+  - :si-icon:`material/alpha-a-box` Attribute
+  - :si-icon:`material/alpha-f-box` Function
+  - :si-icon:`material/alpha-v-box` Variable
+
 Content
 =======
 

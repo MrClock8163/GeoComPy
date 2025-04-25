@@ -1,3 +1,5 @@
+:icon: material/protocol
+
 Protocols
 =========
 

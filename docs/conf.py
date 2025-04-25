@@ -25,6 +25,7 @@ intersphinx_mapping = {
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 templates_path = ["_templates"]
+sphinx_immaterial_icon_path = ["_templates/.icons"]
 
 html_static_path = ["_static"]
 html_css_files = [
