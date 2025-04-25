@@ -2,6 +2,7 @@ TPS1200+
 ========
 
 .. automodule:: geocompy.tps1200p
+    :inherited-members:
 
     Definitions
     -----------
