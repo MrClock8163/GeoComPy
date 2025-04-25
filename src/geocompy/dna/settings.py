@@ -1,6 +1,8 @@
 """
-``geocompy.dna.settings``
-=========================
+Description
+===========
+
+Module: ``geocompy.dna.settings``
 
 Definitions for the DNA settings subsystem.
 

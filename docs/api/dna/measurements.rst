@@ -1,9 +1,7 @@
-geocompy.dna.measurements
-=========================
+Measurements
+============
 
-.. module:: geocompy.dna.measurements
+.. automodule:: geocompy.dna.measurements
 
-.. autoclass:: DNAMeasurements
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

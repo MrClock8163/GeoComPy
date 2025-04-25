@@ -118,7 +118,9 @@ object_description_options = [
 autodoc_default_options = {
     "member-order": "groupwise",
     "no-show-inheritance": True,
-    "members": True
+    "members": True,
+    "undoc-members": True,
+    "no-value": True
 }
 autoclass_content = "both"
 

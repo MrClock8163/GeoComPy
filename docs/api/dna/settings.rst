@@ -1,9 +1,7 @@
-geocompy.dna.settings
-=====================
+Settings
+========
 
-.. module:: geocompy.dna.settings
+.. automodule:: geocompy.dna.settings
 
-.. autoclass:: DNASettings
-    :members:
-    :undoc-members:
-    :class-doc-from: both
+    Definitions
+    -----------

@@ -1,3 +1,17 @@
+"""
+Description
+===========
+
+Module: ``geocompy.dna.meta``
+
+Metadata defintions for DNA commands and responses.
+
+Values
+------
+
+- ``param_descriptions``
+- ``word_descriptions``
+"""
 from __future__ import annotations
 
 from enum import StrEnum
