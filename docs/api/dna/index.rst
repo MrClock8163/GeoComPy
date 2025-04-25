@@ -9,6 +9,7 @@ DNA
 
 .. toctree::
     :maxdepth: 1
+    :hidden:
 
     meta
     settings

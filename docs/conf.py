@@ -180,6 +180,7 @@ latex_elements = {
     "preamble": (
         r"\usepackage{titlesec}"
         r"\newcommand{\sectionbreak}{\clearpage}"
+        r"\setcounter{tocdepth}{2}"
     ),
     "fontpkg": (
         r"\usepackage{lmodern}"
