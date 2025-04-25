@@ -1,11 +1,8 @@
-geocompy.vivatps.com
----------------------
+Communication
+=============
 
-.. module:: geocompy.vivatps.com
-
-
-.. autoclass:: VivaTPSCOM
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.com
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

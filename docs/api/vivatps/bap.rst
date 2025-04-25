@@ -1,11 +1,8 @@
-geocompy.vivatps.bap
----------------------
+Basic Applications
+==================
 
-.. module:: geocompy.vivatps.bap
-
-
-.. autoclass:: VivaTPSBAP
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.bap
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

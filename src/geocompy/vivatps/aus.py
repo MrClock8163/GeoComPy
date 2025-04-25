@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.aus``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.aus``
 
 Definitions for the VivaTPS Alt user subsystem.
 

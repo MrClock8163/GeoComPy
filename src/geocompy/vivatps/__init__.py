@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps``
-=====================
+Description
+===========
+
+Module: ``geocompy.vivatps``
 
 The ``vivatps`` package provides wrapper methods for all GeoCom RPC
 functions available on an instrument running the Viva(/Nova)TPS system

@@ -1,11 +1,8 @@
-geocompy.vivatps.csv
----------------------
+Central Services
+================
 
-.. module:: geocompy.vivatps.csv
-
-
-.. autoclass:: VivaTPSCSV
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.csv
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

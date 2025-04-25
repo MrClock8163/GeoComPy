@@ -1,11 +1,8 @@
-geocompy.vivatps.img
----------------------
+Image Processing
+================
 
-.. module:: geocompy.vivatps.img
-
-
-.. autoclass:: VivaTPSIMG
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.img
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

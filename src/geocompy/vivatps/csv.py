@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.csv``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.csv``
 
 Definitions for the VivaTPS Central services subsystem.
 

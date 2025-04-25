@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.img``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.img``
 
 Definitions for the VivaTPS Imaging subsystem.
 

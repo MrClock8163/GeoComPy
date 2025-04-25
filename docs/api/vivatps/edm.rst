@@ -1,11 +1,8 @@
-geocompy.vivatps.edm
----------------------
+Distance Measurement
+====================
 
-.. module:: geocompy.vivatps.edm
-
-
-.. autoclass:: VivaTPSEDM
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.edm
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

@@ -1,11 +1,8 @@
-geocompy.vivatps.aut
----------------------
+Automation
+==========
 
-.. module:: geocompy.vivatps.aut
-
-
-.. autoclass:: VivaTPSAUT
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.aut
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

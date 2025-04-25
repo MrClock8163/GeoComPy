@@ -119,8 +119,7 @@ autodoc_default_options = {
     "member-order": "groupwise",
     "no-show-inheritance": True,
     "members": True,
-    "undoc-members": True,
-    "no-value": True
+    "undoc-members": True
 }
 autoclass_content = "both"
 

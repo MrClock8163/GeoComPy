@@ -1,11 +1,8 @@
-geocompy.vivatps.aus
----------------------
+Alt-User
+========
 
-.. module:: geocompy.vivatps.aus
-
-
-.. autoclass:: VivaTPSAUS
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.aus
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

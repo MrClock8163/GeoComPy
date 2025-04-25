@@ -1,11 +1,8 @@
-geocompy.vivatps.tmc
----------------------
+Theodolite Measurement and Calculation
+======================================
 
-.. module:: geocompy.vivatps.tmc
-
-
-.. autoclass:: VivaTPSTMC
-    :members:
-    :undoc-members:
+.. automodule:: geocompy.vivatps.tmc
     :inherited-members:
-    :class-doc-from: both
+
+    Definitions
+    -----------

@@ -1,6 +1,8 @@
 """
-``geocompy.vivatps.ftr``
-=========================
+Description
+===========
+
+Module: ``geocompy.vivatps.ftr``
 
 Definitions for the VivaTPS File transfer subsystem.
 
