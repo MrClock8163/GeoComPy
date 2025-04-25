@@ -117,8 +117,10 @@ object_description_options = [
 
 autodoc_default_options = {
     "member-order": "groupwise",
-    "no-show-inheritance": True
+    "no-show-inheritance": True,
+    "members": True
 }
+autoclass_content = "both"
 
 napoleon_use_admonition_for_notes = True
 napoleon_preprocess_types = True
