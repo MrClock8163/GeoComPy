@@ -1,3 +1,5 @@
+:icon: protocol_geocom
+
 TPS1200+
 ========
 

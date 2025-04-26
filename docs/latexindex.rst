@@ -10,6 +10,8 @@ GeoComPy
    :maxdepth: 2
 
    overview
+   introduction
+   examples
 
 *****************
 API documentation

@@ -1,3 +1,5 @@
+:icon: material/serial-port
+
 Communication
 =============
 
