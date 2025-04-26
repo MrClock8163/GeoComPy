@@ -11,6 +11,7 @@ GeoComPy
 
    overview
    introduction
+   examples
 
 *****************
 API documentation

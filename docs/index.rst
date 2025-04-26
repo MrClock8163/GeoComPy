@@ -48,6 +48,7 @@ Content
 
    overview
    introduction
+   examples
 
 .. toctree::
    :maxdepth: 1
