@@ -1,5 +1,6 @@
 from geocompy import __version__
 
+
 project = "GeoComPy"
 copyright = "2025, MrClock8163"
 author = "MrClock8163"
@@ -26,6 +27,10 @@ intersphinx_mapping = {
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 templates_path = ["_templates"]
 sphinx_immaterial_icon_path = ["_templates/.icons"]
+sphinx_immaterial_override_generic_admonitions = False
+sphinx_immaterial_override_builtin_admonitions = False
+sphinx_immaterial_override_version_directives = False
+sphinx_immaterial_generate_extra_admonitions = False
 
 html_static_path = ["_static"]
 html_css_files = [
@@ -93,8 +98,7 @@ html_theme_options = {
             "icon": "fontawesome/brands/python",
             "link": "https://pypi.org/project/geocompy/",
         }
-    ],
-    "version_dropdown": True,
+    ]
 }
 
 # Immaterial toc adjustments
@@ -185,5 +189,24 @@ latex_elements = {
         r"\usepackage{lmodern}"
         r"\renewcommand*{\familydefault}{\rmdefault}"
         r"\renewcommand{\ttdefault}{lmtt}"
+    ),
+    # https://www.sphinx-doc.org/en/master/latex.html#additional-css-like-sphinxsetup-keys
+    "sphinxsetup": ", ".join(
+        map(
+            lambda p: f"div.{p}_border-radius=3pt",
+            (
+                "attention",
+                "caution",
+                "danger",
+                "error",
+                "hint",
+                "important",
+                "note",
+                "tip",
+                "warning",
+                "admonition",
+                "seealso"
+            )
+        )
     )
 }
