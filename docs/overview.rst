@@ -57,6 +57,7 @@ GeoComPy is hosted on PyPI, therefore it can be installed with ``pip``.
 Package dependencies are automatically handled.
 
 .. code-block:: shell
+    :caption: Installing from PyPI
 
     pip install geocompy
 
@@ -70,5 +71,6 @@ Unpack the archive to a suitable place, and enter the ``geocompy-x.y.z``
 directory. Build and install the package with the following command:
 
 .. code-block:: shell
+    :caption: Building and installing locally
 
     python -m pip install .
