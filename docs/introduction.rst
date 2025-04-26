@@ -232,3 +232,34 @@ object, that encapsulates command metadata and the result of the request.
 
     The complete list of available commands and their documentations are
     available in their respective API documentation categories.
+
+Logging
+-------
+
+For debugging purposes it might be very useful to have a log of certain events,
+errors and debug information. To support this, the instrument classes all take
+an optional :class:`~logging.Logger` object, that they use to log specific
+events. The :func:`~geocompy.communication.get_logger` utility function can be
+used to create a simple logger.
+
+.. code-block:: python
+    :caption: Passing a console logger
+    :linenos:
+
+    from logging import DEBUG
+
+    from geocompy.communication import open_serial, get_logger
+    from geocompy.dna import DNA
+
+
+    log = get_logger("DNA", "stdout", DEBUG)
+    with open_serial("COM1", timeout=15) as conn:
+        level = DNA(conn, log)
+
+Some examples of the information logged on various levels:
+
+- connection start
+- instrument wake up
+- instrument shutdown
+- all unexpected exceptions
+- all command responses
