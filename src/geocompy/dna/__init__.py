@@ -200,7 +200,7 @@ class DNA(GsiOnlineProtocol):
         self,
         param: int,
         parser: Callable[[str], _T]
-    ) -> GsiOnlineResponse[_T | None]:
+    ) -> GsiOnlineResponse[_T]:
         """
         Executes a GSI Online CONF command and returns the result
         of the parameter query.
@@ -294,7 +294,7 @@ class DNA(GsiOnlineProtocol):
         mode: str,
         wordindex: int,
         parser: Callable[[str], _T]
-    ) -> GsiOnlineResponse[_T | None]:
+    ) -> GsiOnlineResponse[_T]:
         """
         Executes a GSI Online GET command and returns the parsed result
         of the GSI word query.
