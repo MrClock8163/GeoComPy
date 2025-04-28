@@ -18,6 +18,8 @@ Types
 - ``GsiOnlineProtocol``
 - ``GsiOnlineSubsystem``
 """
+from __future__ import annotations
+
 from enum import IntEnum
 from logging import Logger
 from typing import (
@@ -105,6 +107,39 @@ class GeoComResponse(Generic[_P]):
 
     def __bool__(self) -> bool:
         return bool(self.comcode) and bool(self.rpccode)
+
+    def map_params(
+        self,
+        transformer: Callable[[_P | None], _T | None]
+    ) -> GeoComResponse[_T]:
+        """
+        Returns a new response object with the metadata maintained, but
+        the parameters transformed with the supplied function.
+
+        Parameters
+        ----------
+        transformer : Callable[[_P  |  None], _T  |  None]
+            Function to transform the params to new values.
+
+        Returns
+        -------
+        GeoComResponse
+            Response with transformed parameters.
+        """
+        try:
+            params = transformer(self.params)
+        except Exception:
+            params = None
+
+        return GeoComResponse(
+            self.rpcname,
+            self.cmd,
+            self.response,
+            self.comcode,
+            self.rpccode,
+            self.trans,
+            params
+        )
 
 
 class GeoComProtocol:
