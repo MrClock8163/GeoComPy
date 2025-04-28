@@ -14,6 +14,7 @@ Types
 """
 from __future__ import annotations
 
+from ..data import parsebool
 from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
@@ -31,7 +32,7 @@ class VivaTPSKDM(GeoComSubsystem):
     def set_lcd_power(
         self,
         alwayson: bool
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23107, ``KDM_SetLcdPower``
 
@@ -52,7 +53,7 @@ class VivaTPSKDM(GeoComSubsystem):
             [alwayson]
         )
 
-    def get_lcd_power(self) -> GeoComResponse:
+    def get_lcd_power(self) -> GeoComResponse[bool]:
         """
         RPC 23108, ``KDM_GetLcdPower``
 
@@ -68,7 +69,5 @@ class VivaTPSKDM(GeoComSubsystem):
         """
         return self._request(
             23108,
-            parsers={
-                "alwayson": bool
-            }
+            parsers=parsebool
         )

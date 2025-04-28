@@ -36,7 +36,7 @@ class VivaTPSIMG(TPS1200PIMG):
     def set_tcc_exposure_time(
         self,
         time: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23403, ``IMG_SetTCCExposureTime``
 

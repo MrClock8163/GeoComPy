@@ -18,6 +18,7 @@ from enum import Enum
 
 from ..data import (
     Coordinate,
+    Vector,
     Angle,
     toenum,
     enumparser
@@ -76,7 +77,7 @@ class VivaTPSCAM(GeoComSubsystem):
         self,
         zoom: ZOOM | str,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23608, ``CAM_SetZoomFactor``
 
@@ -106,7 +107,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def get_zoom_factor(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[ZOOM]:
         """
         RPC 23609, ``CAM_GetZoomFactor``
 
@@ -130,15 +131,13 @@ class VivaTPSCAM(GeoComSubsystem):
         return self._request(
             23609,
             [_camtype.value],
-            {
-                "zoom": enumparser(self.ZOOM)
-            }
+            enumparser(self.ZOOM)
         )
 
     def get_cam_pos(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[Coordinate]:
         """
         RPC 23611, ``CAM_GetCamPos``
 
@@ -164,32 +163,35 @@ class VivaTPSCAM(GeoComSubsystem):
         tmc.get_station
         get_cam_viewing_dir
         """
+        def transform(
+            params: tuple[float, float, float] | None
+        ) -> Coordinate | None:
+            if params is None:
+                return None
+
+            return Coordinate(
+                params[0],
+                params[1],
+                params[2]
+            )
+
         _camtype = toenum(self.CAMTYPE, camtype)
         response = self._request(
             23611,
             [_camtype.value],
-            {
-                "east": float,
-                "north": float,
-                "height": float
-            }
+            (
+                float,
+                float,
+                float
+            )
         )
-        coord = Coordinate(
-            response.params["east"],
-            response.params["north"],
-            response.params["height"]
-        )
-        response.params = {
-            "coord": coord
-        }
-
-        return response
+        return response.map_params(transform)
 
     def get_cam_viewing_dir(
         self,
         dist: float,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[Vector]:
         """
         RPC 23611, ``CAM_GetCamViewingDir``
 
@@ -216,32 +218,36 @@ class VivaTPSCAM(GeoComSubsystem):
         --------
         get_cam_pos
         """
+        def transform(
+            params: tuple[float, float, float] | None
+        ) -> Vector | None:
+            if params is None:
+                return None
+
+            return Vector(
+                params[0],
+                params[1],
+                params[2]
+            )
+
         _camtype = toenum(self.CAMTYPE, camtype)
         response = self._request(
             23613,
             [_camtype.value, dist],
-            {
-                "east": float,
-                "north": float,
-                "height": float
-            }
+            (
+                float,
+                float,
+                float
+            )
         )
-        coord = Coordinate(
-            response.params["east"],
-            response.params["north"],
-            response.params["height"]
-        )
-        response.params = {
-            "coord": coord
-        }
 
-        return response
+        return response.map_params(transform)
 
     def get_camera_fov(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC,
         zoom: ZOOM | str = ZOOM.X1
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[Angle, Angle]]:
         """
         RPC 23619, ``CAM_GetCameraFoV``
 
@@ -270,10 +276,10 @@ class VivaTPSCAM(GeoComSubsystem):
         return self._request(
             23619,
             [_camtype.value, _zoom.value],
-            {
-                "hz": Angle.parse,
-                "v": Angle.parse
-            }
+            (
+                Angle.parse,
+                Angle.parse
+            )
         )
 
     def set_actual_image_name(
@@ -281,7 +287,7 @@ class VivaTPSCAM(GeoComSubsystem):
         name: str,
         number: int,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23619, ``CAM_SetActualImageName``
 
@@ -315,7 +321,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def take_image(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23623, ``CAM_TakeImage``
 
@@ -346,7 +352,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [_camtype.value]
         )
 
-    def ovc_get_act_camera_center(self) -> GeoComResponse:
+    def ovc_get_act_camera_center(self) -> GeoComResponse[tuple[float, float]]:
         """
         RPC 23624, ``CAM_GetActCameraCenter``
 
@@ -371,17 +377,17 @@ class VivaTPSCAM(GeoComSubsystem):
         """
         return self._request(
             23624,
-            parsers={
-                "x": float,
-                "y": float
-            }
+            parsers=(
+                float,
+                float
+            )
         )
 
     def ovc_set_act_distance(
         self,
         dist: float,
         isface1: bool = True
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23625, ``CAM_GetActDistance``
 
@@ -413,7 +419,7 @@ class VivaTPSCAM(GeoComSubsystem):
         self,
         whitebalance: WHITEBALANCE | str = WHITEBALANCE.AUTO,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23626, ``CAM_SetWhiteBalanceMode``
 
@@ -446,7 +452,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def is_camera_ready(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23627, ``CAM_IsCameraReady``
 
@@ -483,7 +489,7 @@ class VivaTPSCAM(GeoComSubsystem):
         compression: COMPRESSION | str,
         jpegquality: JPEGQUALITY | str,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23633, ``CAM_SetCameraProperties``
 
@@ -524,7 +530,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def get_camera_power_switch(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[ONOFF]:
         """
         RPC 23636, ``CAM_GetCameraPowerSwitch``
 
@@ -553,16 +559,14 @@ class VivaTPSCAM(GeoComSubsystem):
         return self._request(
             23636,
             [_camtype.value],
-            {
-                "state": enumparser(self.ONOFF)
-            }
+            enumparser(self.ONOFF)
         )
 
     def set_camera_power_switch(
         self,
         state: ONOFF | str,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23637, ``CAM_SetCameraPowerSwitch``
 
@@ -598,7 +602,7 @@ class VivaTPSCAM(GeoComSubsystem):
         self,
         wait: int = 30_000,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23638, ``CAM_WaitForCameraReady``
 
@@ -634,7 +638,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def af_set_motor_position(
         self,
         position: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23645, ``CAM_AF_SetMotorPosition``
 
@@ -660,7 +664,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [position]
         )
 
-    def af_get_motor_position(self) -> GeoComResponse:
+    def af_get_motor_position(self) -> GeoComResponse[int]:
         """
         RPC 23644, ``CAM_AF_GetMotorPosition``
 
@@ -680,15 +684,13 @@ class VivaTPSCAM(GeoComSubsystem):
         """
         return self._request(
             23644,
-            parsers={
-                "position": int
-            }
+            parsers=int
         )
 
     def af_continuous_autofocus(
         self,
         start: bool
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23669, ``CAM_AF_ContinuousAutofocus``
 
@@ -714,7 +716,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def af_posit_focus_motor_to_dist(
         self,
         dist: float
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23652, ``CAM_AF_PositFocusMotorToDist``
 
@@ -737,7 +739,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [dist]
         )
 
-    def af_posit_focus_motor_to_infinity(self) -> GeoComResponse:
+    def af_posit_focus_motor_to_infinity(self) -> GeoComResponse[None]:
         """
         RPC 23677, ``CAM_AF_PositFocusMotorToInfinity``
 
@@ -752,7 +754,7 @@ class VivaTPSCAM(GeoComSubsystem):
         """
         return self._request(23677)
 
-    def at_singleshot_autofocus(self) -> GeoComResponse:
+    def at_singleshot_autofocus(self) -> GeoComResponse[None]:
         """
         RPC 23677, ``CAM_AF_SingleShotAutofocus``
 
@@ -770,7 +772,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def af_focus_contrast_around_current(
         self,
         steps: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23663, ``CAM_AF_FocusContrastAroundCurrent``
 
@@ -796,7 +798,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def get_chip_window_size(
         self,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[float, float]]:
         """
         RPC 23668, ``CAM_GetChipWindowSize``
 
@@ -821,13 +823,13 @@ class VivaTPSCAM(GeoComSubsystem):
         return self._request(
             23668,
             [_camtype.value],
-            {
-                "width": float,
-                "height": float
-            }
+            (
+                float,
+                float
+            )
         )
 
-    def oac_get_crosshair_pos(self) -> GeoComResponse:
+    def oac_get_crosshair_pos(self) -> GeoComResponse[tuple[int, int]]:
         """
         RPC 23671, ``CAM_OAC_GetCrossHairPos``
 
@@ -837,24 +839,24 @@ class VivaTPSCAM(GeoComSubsystem):
         -------
         GeoComResponse
             - Params:
-                - **x** (`float`): Horizontal position.
-                - **y** (`float`): Vertical position.
+                - **x** (`int`): Horizontal position.
+                - **y** (`int`): Vertical position.
             - Error codes:
                 - ``NA``: Imaging license not found.
 
         """
         return self._request(
             23671,
-            parsers={
-                "x": int,
-                "y": int
-            }
+            parsers=(
+                int,
+                int
+            )
         )
 
     def ovc_read_inter_orient(
         self,
         calibrated: bool = True
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[float, float, float, float]]:
         """
         RPC 23602, ``CAM_OAC_ReadInterOrient``
 
@@ -880,18 +882,18 @@ class VivaTPSCAM(GeoComSubsystem):
         return self._request(
             23602,
             [calibrated],
-            {
-                "x": float,
-                "y": float,
-                "f": float,
-                "p": float
-            }
+            (
+                float,
+                float,
+                float,
+                float
+            )
         )
 
     def ovc_read_exter_orient(
         self,
         calibrated: bool = True
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[Coordinate, Angle, Angle, Angle]]:
         """
         RPC 23603, ``CAM_OAC_ReadExterOrient``
 
@@ -914,38 +916,43 @@ class VivaTPSCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
+        def transform(
+            params: tuple[float, float, float, Angle, Angle, Angle] | None
+        ) -> tuple[Coordinate, Angle, Angle, Angle] | None:
+            if params is None:
+                return None
+            return (
+                Coordinate(
+                    params[0],
+                    params[1],
+                    params[2]
+                ),
+                params[3],
+                params[4],
+                params[5]
+            )
+
         response = self._request(
             23603,
             [calibrated],
-            {
-                "x": float,
-                "y": float,
-                "z": float,
-                "phi": Angle.parse,
-                "theta": Angle.parse,
-                "kappa": Angle.parse
-            }
+            (
+                float,
+                float,
+                float,
+                Angle.parse,
+                Angle.parse,
+                Angle.parse
+            )
         )
-        coord = Coordinate(
-            response.params["x"],
-            response.params["y"],
-            response.params["z"]
-        )
-        response.params = {
-            "coord": coord,
-            "phi": response.params["phi"],
-            "theta": response.params["theta"],
-            "kappa": response.params["kappa"]
-        }
 
-        return response
+        return response.map_params(transform)
 
     def start_remote_video(
         self,
         fps: int,
         bitrate: int,
         camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23675, ``CAM_StartRemoteVideo``
 
@@ -975,7 +982,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [_camtype.value, fps, bitrate]
         )
 
-    def stop_remote_video(self) -> GeoComResponse:
+    def stop_remote_video(self) -> GeoComResponse[None]:
         """
         RPC 23676, ``CAM_StopRemoteVideo``
 

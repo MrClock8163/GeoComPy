@@ -43,7 +43,7 @@ class VivaTPSAUT(TPS1200PAUT):
     def set_lock_fly_mode(
         self,
         state: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9103, ``AUT_SetLockFlyMode``
 
@@ -68,7 +68,7 @@ class VivaTPSAUT(TPS1200PAUT):
             [_state.value]
         )
 
-    def get_lock_fly_mode(self) -> GeoComResponse:
+    def get_lock_fly_mode(self) -> GeoComResponse[ONOFF]:
         """
         RPC 9102, ``AUT_GetLockFlyMode``
 
@@ -86,9 +86,7 @@ class VivaTPSAUT(TPS1200PAUT):
         """
         return self._request(
             9102,
-            parsers={
-                "state": enumparser(self.ONOFF)
-            }
+            parsers=enumparser(self.ONOFF)
         )
 
     def cam_posit_to_pixel_coord(
@@ -96,7 +94,7 @@ class VivaTPSAUT(TPS1200PAUT):
         x: int,
         y: int,
         camtype: VivaTPSCAM.CAMTYPE | str = VivaTPSCAM.CAMTYPE.OVC
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9081, ``AUT_CAM_PositToPixelCoord``
 

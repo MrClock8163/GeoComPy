@@ -57,7 +57,7 @@ class VivaTPSFTR(TPS1200PFTR):
         dirname: str,
         time: datetime | None = None,
         device: DEVICETYPE | str = DEVICETYPE.INTERNAL
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[int]:
         """
         RPC 23315, ``FTR_DeleteDir``
 
@@ -106,9 +106,7 @@ class VivaTPSFTR(TPS1200PFTR):
         return self._request(
             23315,
             params,
-            {
-                "deleted": int
-            }
+            int
         )
 
     def setup_download_large(
@@ -117,7 +115,7 @@ class VivaTPSFTR(TPS1200PFTR):
         blocksize: int,
         device: DEVICETYPE | str = DEVICETYPE.INTERNAL,
         filetype: FILETYPE | str = FILETYPE.UNKNOWN
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[int]:
         """
         RPC 23313, ``FTR_SetupDownloadLarge``
 
@@ -159,15 +157,13 @@ class VivaTPSFTR(TPS1200PFTR):
         return self._request(
             23313,
             [_device.value, _filetype.value, filename, blocksize],
-            {
-                "blockcount": int
-            }
+            int
         )
 
     def download_xl(
         self,
         block: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[str, int]]:
         """
         RPC 23314, ``FTR_DownloadXL``
 
@@ -199,8 +195,8 @@ class VivaTPSFTR(TPS1200PFTR):
         return self._request(
             23314,
             [block],
-            {
-                "value": parsestr,
-                "length": int
-            }
+            (
+                parsestr,
+                int
+            )
         )

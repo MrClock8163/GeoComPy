@@ -39,7 +39,7 @@ import re
 import logging
 from time import sleep
 from traceback import format_exc
-from typing import Callable, Iterable, Any
+from typing import Callable, Iterable, Any, overload, TypeVar
 
 from serial import SerialException, SerialTimeoutException
 
@@ -67,6 +67,9 @@ from .mot import VivaTPSMOT
 from .sup import VivaTPSSUP
 from .tmc import VivaTPSTMC
 from .grc import VivaTPSGRC, rpcnames
+
+
+_T = TypeVar("_T")
 
 
 class VivaTPS(GeoComProtocol):
@@ -193,12 +196,17 @@ class VivaTPS(GeoComProtocol):
 
         self._precision = 15
         resp = self.get_double_precision()
-        if resp.comcode and resp.rpccode:
-            self._precision = resp.params["digits"]
+        if resp.params is not None:
+            self._precision = resp.params
+        else:
+            self._logger.error(
+                f"Could not syncronize double precision, "
+                f"defaulting to {self._precision:d}"
+            )
 
         self._logger.info("Connection initialized")
 
-    def get_double_precision(self) -> GeoComResponse:
+    def get_double_precision(self) -> GeoComResponse[int]:
         """
         RPC 108, ``COM_GetDoublePrecision``
 
@@ -218,13 +226,13 @@ class VivaTPS(GeoComProtocol):
         """
         return self.request(
             108,
-            parsers={"digits": int}
+            parsers=int
         )
 
     def set_double_precision(
         self,
         digits: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 107, ``COM_SetDoublePrecision``
 
@@ -245,16 +253,36 @@ class VivaTPS(GeoComProtocol):
         get_double_precision
 
         """
-        response = self.request(107, [digits])
+        response: GeoComResponse[None] = self.request(107, [digits])
         if response.comcode and response.rpccode:
             self._precision = digits
         return response
+
+    @overload
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: Callable[[str], _T] | None = None
+    ) -> GeoComResponse[_T]: ...
+
+    @overload
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: Iterable[Callable[[str], Any]] | None = None
+    ) -> GeoComResponse[tuple]: ...
 
     def request(
         self,
         rpc: int,
         params: Iterable[int | float | bool | str | Angle | Byte] = [],
-        parsers: dict[str, Callable[[str], Any]] | None = None
+        parsers: (
+            Iterable[Callable[[str], Any]]
+            | Callable[[str], Any]
+            | None
+        ) = None
     ) -> GeoComResponse:
         """
         Executes a VivaTPS RPC request and returns the parsed GeoCom
@@ -377,16 +405,36 @@ class VivaTPS(GeoComProtocol):
         response = self.parse_response(
             cmd,
             answer,
-            parsers if parsers is not None else {}
+            parsers
         )
         self._logger.debug(response)
         return response
+
+    @overload
+    def parse_response(
+        self,
+        cmd: str,
+        response: str,
+        parsers: Callable[[str], _T] | None = None
+    ) -> GeoComResponse[_T]: ...
+
+    @overload
+    def parse_response(
+        self,
+        cmd: str,
+        response: str,
+        parsers: Iterable[Callable[[str], Any]] | None = None
+    ) -> GeoComResponse[tuple]: ...
 
     def parse_response(
         self,
         cmd: str,
         response: str,
-        parsers: dict[str, Callable[[str], Any]]
+        parsers: (
+            Iterable[Callable[[str], Any]]
+            | Callable[[str], Any]
+            | None
+        ) = None
     ) -> GeoComResponse:
         """
         Parses RPC response and constructs GeoComResponse
@@ -425,18 +473,23 @@ class VivaTPS(GeoComProtocol):
                 response,
                 VivaTPSGRC.COM_CANT_DECODE,
                 VivaTPSGRC.UNDEFINED,
-                0,
-                {}
+                0
             )
 
         groups = m.groupdict()
         values = groups.get("params", "")
         if values is None:
             values = ""
-        params: dict = {}
+
+        if parsers is None:
+            parsers = ()
+        elif not isinstance(parsers, Iterable):
+            parsers = (parsers,)
+
+        params: list = []
         try:
-            for (name, func), value in zip(parsers.items(), values.split(",")):
-                params[name] = func(value)
+            for func, value in zip(parsers, values.split(",")):
+                params.append(func(value))
         except Exception:
             return GeoComResponse(
                 rpcname,
@@ -444,12 +497,19 @@ class VivaTPS(GeoComProtocol):
                 response,
                 VivaTPSGRC.COM_CANT_DECODE,
                 VivaTPSGRC.UNDEFINED,
-                0,
-                {}
+                0
             )
 
         comrc = VivaTPSGRC(int(groups["comrc"]))
         rc = VivaTPSGRC(int(groups["rc"]))
+        match len(params):
+            case 0:
+                params_final = None
+            case 1:
+                params_final = params[1]
+            case _:
+                params_final = tuple(params)
+
         return GeoComResponse(
             rpcname,
             cmd,
@@ -457,5 +517,5 @@ class VivaTPS(GeoComProtocol):
             comrc,
             rc,
             int(groups["tr"]),
-            params
+            params_final
         )
