@@ -138,42 +138,6 @@ class GeoComProtocol:
         self,
         rpc: int,
         params: Iterable[int | float | bool | str | Angle | Byte] = (),
-        parsers: Iterable[Callable[[str], Any]] | None = None
-    ) -> GeoComResponse[Iterable]:
-        """
-        Executes an RPC request and returns the parsed GeoCom response.
-
-        Constructs a request (from the given RPC code and parameters),
-        writes it to the serial line, then reads the response. The
-        response is then parsed using the provided parser functions.
-
-        Parameters
-        ----------
-        rpc : int
-            Number of the RPC to execute.
-        params : Iterable[int | float | bool | str | Angle | Byte], optional
-            Parameters for the request, by default ()
-        parsers : Iterable[Callable[[str], Any]] | None, optional
-            Parser functions for the values in the RPC response,
-            by default None
-
-        Returns
-        -------
-        GeoComResponse
-            Parsed return codes and parameters from the RPC response.
-
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the class.
-
-        """
-
-    @overload
-    def request(
-        self,
-        rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
         parsers: Callable[[str], _T] | None = None
     ) -> GeoComResponse[_T]:
         """
@@ -191,6 +155,41 @@ class GeoComProtocol:
             Parameters for the request, by default []
         parsers : Callable[[str], Any] | None, optional
             Parser function for the value in the RPC response,
+            by default None
+
+        Returns
+        -------
+        GeoComResponse
+            Parsed return codes and parameter from the RPC response.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the class.
+        """
+
+    @overload
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: Iterable[Callable[[str], Any]] | None = None
+    ) -> GeoComResponse[tuple]:
+        """
+        Executes an RPC request and returns the parsed GeoCom response.
+
+        Constructs a request (from the given RPC code and parameters),
+        writes it to the serial line, then reads the response. The
+        response is then parsed using the provided parser functions.
+
+        Parameters
+        ----------
+        rpc : int
+            Number of the RPC to execute.
+        params : Iterable[int | float | bool | str | Angle | Byte], optional
+            Parameters for the request, by default ()
+        parsers : Iterable[Callable[[str], Any]] | None, optional
+            Parser functions for the values in the RPC response,
             by default None
 
         Returns
@@ -249,38 +248,6 @@ class GeoComProtocol:
         cls,
         cmd: str,
         response: str,
-        parsers: Iterable[Callable[[str], Any]] | None = None
-    ) -> GeoComResponse[Iterable]:
-        """
-        Parses RPC response and constructs :class:`GeoComResponse`
-        instance.
-
-        Parameters
-        ----------
-        cmd : str
-            Full, serialized request, that invoked the response.
-        response : str
-            Full, received response.
-        parsers : Iterable[Callable[[str], Any]], optional
-            Parser functions for the values in the RPC response, by
-            default None
-
-        Returns
-        -------
-        GeoComResponse
-            Parsed return codes and parameters from the RPC response.
-
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the class.
-        """
-
-    @overload
-    def parse_response(
-        cls,
-        cmd: str,
-        response: str,
         parsers: Callable[[str], _T] | None = None
     ) -> GeoComResponse[_T]:
         """
@@ -295,6 +262,38 @@ class GeoComProtocol:
             Full, received response.
         parsers : Callable[[str], Any] | None, optional
             Parser function for the value in the RPC response, by
+            default None
+
+        Returns
+        -------
+        GeoComResponse
+            Parsed return codes and parameter from the RPC response.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the class.
+        """
+
+    @overload
+    def parse_response(
+        cls,
+        cmd: str,
+        response: str,
+        parsers: Iterable[Callable[[str], Any]] | None = None
+    ) -> GeoComResponse[tuple]:
+        """
+        Parses RPC response and constructs :class:`GeoComResponse`
+        instance.
+
+        Parameters
+        ----------
+        cmd : str
+            Full, serialized request, that invoked the response.
+        response : str
+            Full, received response.
+        parsers : Iterable[Callable[[str], Any]], optional
+            Parser functions for the values in the RPC response, by
             default None
 
         Returns
