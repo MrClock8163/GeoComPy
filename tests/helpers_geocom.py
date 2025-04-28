@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Callable, Any, Iterable
 import re
 
 from geocompy.protocols import GeoComProtocol
@@ -43,51 +43,60 @@ class GeoComTester:
     def test_parse_response(instrument: GeoComProtocol):
         cmd = "%R1Q,5008:"
         answer = "%R1P,0,0:0,1996,'07','19','10','13','2f'"
-        parsers: dict[str, Callable[[str], Any]] = {
-            "year": int,
-            "month": Byte.parse,
-            "day": Byte.parse,
-            "hour": Byte.parse,
-            "minute": Byte.parse,
-            "second": Byte.parse
-        }
+        parsers: Iterable[Callable[[str], Any]] = (
+            int,
+            Byte.parse,
+            Byte.parse,
+            Byte.parse,
+            Byte.parse,
+            Byte.parse
+        )
         response = instrument.parse_response(
             cmd,
             answer,
             parsers
         )
-        assert response.params["year"] == 1996
+        assert response.params is not None
+        assert response.params[0] == 1996
 
         response = instrument.parse_response(
             cmd,
             "%R1P,1,0:",
             parsers
         )
-        assert len(response.params) == 0
+        assert response.params is None
+        # assert len(response.params) == 0
 
-        parsers_faulty = parsers.copy()
-        parsers_faulty["year"] = faulty_parser
+        parsers_faulty = (
+            faulty_parser,
+            Byte.parse,
+            Byte.parse,
+            Byte.parse,
+            Byte.parse,
+            Byte.parse
+        )
         response = instrument.parse_response(
             cmd,
             answer,
             parsers_faulty
         )
-        assert len(response.params) == 0
+        assert response.params is None
 
     @staticmethod
     def test_request(instrument: GeoComProtocol):
         response = instrument.request(
             5008,
-            parsers={
-                "year": int,
-                "month": Byte.parse,
-                "day": Byte.parse,
-                "hour": Byte.parse,
-                "minute": Byte.parse,
-                "second": Byte.parse
-            }
+            parsers=(
+                int,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse
+            )
         )
-        assert response.params["year"] == 1996
+        assert response.params is not None
+        assert response.params[0] == 1996
 
         response = instrument.request(
             1,
