@@ -20,6 +20,7 @@ from datetime import datetime
 from ..data import (
     Byte,
     parsestr,
+    parsebool,
     toenum
 )
 from ..protocols import (
@@ -49,7 +50,7 @@ class TPS1200PFTR(GeoComSubsystem):
         device: DEVICETYPE | str = DEVICETYPE.PCPARD,
         filetype: FILETYPE | str = FILETYPE.UNKNOWN,
         path: str = ""
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23306, ``FTR_SetupList``
 
@@ -91,7 +92,7 @@ class TPS1200PFTR(GeoComSubsystem):
     def list(
         self,
         next: bool = False
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[bool, str, int, datetime | None]]:
         """
         RPC 23307, ``FTR_List``
 
@@ -124,46 +125,48 @@ class TPS1200PFTR(GeoComSubsystem):
         abort_list
 
         """
+        def transform(
+            params: tuple[
+                bool, str, int,
+                Byte, Byte, Byte, Byte, Byte, Byte, Byte
+            ] | None
+        ) -> tuple[bool, str, int, datetime | None] | None:
+            if params is None:
+                return None
+
+            return (
+                params[0],
+                params[1],
+                params[2],
+                datetime(
+                    int(params[3]) + 2000,
+                    int(params[4]),
+                    int(params[5]),
+                    int(params[6]),
+                    int(params[7]),
+                    int(params[8]) * 10000
+                ) if params[1] != "" else None
+            )
+
         response = self._request(
             23307,
             [next],
-            {
-                "last": bool,
-                "filename": parsestr,
-                "size": int,
-                "hour": Byte.parse,
-                "minute": Byte.parse,
-                "second": Byte.parse,
-                "centisec": Byte.parse,
-                "day": Byte.parse,
-                "month": Byte.parse,
-                "year": Byte.parse
-            }
-        )
-        time: datetime | None = None
-        if (
-            response.comcode
-            and response.rpccode
-            and response.params["filename"] != ""
-        ):
-            time = datetime(
-                int(response.params["year"]) + 2000,
-                int(response.params["month"]),
-                int(response.params["day"]),
-                int(response.params["hour"]),
-                int(response.params["minute"]),
-                int(response.params["second"]),
-                int(response.params["centisec"]) * 10000
+            (
+                parsebool,
+                parsestr,
+                int,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse
             )
-        response.params = {
-            "last": response.params["last"],
-            "filename": response.params["filename"],
-            "size": response.params["size"],
-            "modified": time
-        }
-        return response
+        )
+        return response.map_params(transform)
 
-    def abort_list(self) -> GeoComResponse:
+    def abort_list(self) -> GeoComResponse[None]:
         """
         RPC 23308, ``FTR_AbortList``
 
@@ -187,7 +190,7 @@ class TPS1200PFTR(GeoComSubsystem):
         blocksize: int,
         device: DEVICETYPE | str = DEVICETYPE.PCPARD,
         filetype: FILETYPE | str = FILETYPE.UNKNOWN,
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[int]:
         """
         RPC 23303, ``FTR_SetupDownload``
 
@@ -229,15 +232,13 @@ class TPS1200PFTR(GeoComSubsystem):
         return self._request(
             23303,
             [_device.value, _filetype.value, filename, blocksize],
-            {
-                "blockcount": int
-            }
+            int
         )
 
     def download(
         self,
         block: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[str, int]]:
         """
         RPC 23304, ``FTR_Download``
 
@@ -269,13 +270,13 @@ class TPS1200PFTR(GeoComSubsystem):
         return self._request(
             23304,
             [block],
-            {
-                "value": parsestr,
-                "length": int
-            }
+            (
+                parsestr,
+                int
+            )
         )
 
-    def abort_download(self) -> GeoComResponse:
+    def abort_download(self) -> GeoComResponse[None]:
         """
         RPC 23305, ``FTR_AbortDownload``
 
@@ -299,7 +300,7 @@ class TPS1200PFTR(GeoComSubsystem):
         time: datetime | None = None,
         device: DEVICETYPE | str = DEVICETYPE.PCPARD,
         filetype: FILETYPE | str = FILETYPE.UNKNOWN
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[int]:
         """
         RPC 23309, ``FTR_Delete``
 
@@ -349,7 +350,5 @@ class TPS1200PFTR(GeoComSubsystem):
         return self._request(
             23309,
             params,
-            {
-                "deleted": int
-            }
+            int
         )

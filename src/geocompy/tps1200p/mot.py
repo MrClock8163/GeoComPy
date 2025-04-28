@@ -52,7 +52,7 @@ class TPS1200PMOT(GeoComSubsystem):
         # 5, 6 do not use (why?)
         TERM = 7  # : Terminate current task.
 
-    def read_lock_status(self) -> GeoComResponse:
+    def read_lock_status(self) -> GeoComResponse[LOCKSTATUS]:
         """
         RPC 23400, ``IMG_GetTccConfig``
 
@@ -73,15 +73,13 @@ class TPS1200PMOT(GeoComSubsystem):
         """
         return self._request(
             6021,
-            parsers={
-                "status": enumparser(self.LOCKSTATUS)
-            }
+            parsers=enumparser(self.LOCKSTATUS)
         )
 
     def start_controller(
         self,
         mode: MODE | str = MODE.MANUPOS
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 6001, ``MOT_StartController``
 
@@ -118,7 +116,7 @@ class TPS1200PMOT(GeoComSubsystem):
     def stop_controller(
         self,
         mode: STOPMODE | str = STOPMODE.NORMAL
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 6002, ``MOT_StopController``
 
@@ -152,7 +150,7 @@ class TPS1200PMOT(GeoComSubsystem):
         self,
         hz: Angle,
         v: Angle
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 6004, ``MOT_SetVelocity``
 

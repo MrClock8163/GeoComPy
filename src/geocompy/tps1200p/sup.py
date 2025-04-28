@@ -42,7 +42,7 @@ class TPS1200PSUP(GeoComSubsystem):
         DISABLED = 0  # : Automatic poweroff disabled.
         OFF = 2  # : Poweroff instrument.
 
-    def get_config(self) -> GeoComResponse:
+    def get_config(self) -> GeoComResponse[tuple[ONOFF, AUTOPOWER, int]]:
         """
         RPC 14001, ``SUP_GetConfig``
 
@@ -63,11 +63,11 @@ class TPS1200PSUP(GeoComSubsystem):
         """
         return self._request(
             14001,
-            parsers={
-                "reserved": enumparser(self.ONOFF),
-                "autopower": enumparser(self.AUTOPOWER),
-                "timeout": int
-            }
+            parsers=(
+                enumparser(self.ONOFF),
+                enumparser(self.AUTOPOWER),
+                int
+            )
         )
 
     def set_config(
@@ -75,7 +75,7 @@ class TPS1200PSUP(GeoComSubsystem):
         autopower: AUTOPOWER | str = AUTOPOWER.OFF,
         timeout: int = 600_000,
         reserved: ONOFF | str = ONOFF.ON
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 14002, ``SUP_SetConfig``
 

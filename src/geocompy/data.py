@@ -89,6 +89,10 @@ def parsestr(value: str) -> str:
     return value
 
 
+def parsebool(value: str) -> bool:
+    return bool(int(value))
+
+
 def toenum(e: type[_E], value: _E | str) -> _E:
     """
     Returns the member of an :class:`~enum.Enum` with the given name.

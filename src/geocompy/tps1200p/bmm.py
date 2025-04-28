@@ -27,7 +27,7 @@ class TPS1200PBMM(GeoComSubsystem):
     keyboard, character sets and singalling devices.
     """
 
-    def beep_alarm(self) -> GeoComResponse:
+    def beep_alarm(self) -> GeoComResponse[None]:
         """
         RPC 11804, ``BMM_BeepAlarm``
 
@@ -42,7 +42,7 @@ class TPS1200PBMM(GeoComSubsystem):
         """
         return self._request(11004)
 
-    def beep_normal(self) -> GeoComResponse:
+    def beep_normal(self) -> GeoComResponse[None]:
         """
         RPC 11803, ``BMM_BeepNormal``
 
@@ -60,7 +60,7 @@ class TPS1200PBMM(GeoComSubsystem):
     def beep_on(
         self,
         intensity: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 20001, ``IOS_BeepOn``
 
@@ -82,7 +82,7 @@ class TPS1200PBMM(GeoComSubsystem):
             [intensity]
         )
 
-    def beep_off(self) -> GeoComResponse:
+    def beep_off(self) -> GeoComResponse[None]:
         """
         RPC 20000, ``IOS_BeepOff``
 

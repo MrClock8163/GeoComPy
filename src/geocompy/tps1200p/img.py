@@ -16,7 +16,10 @@ from __future__ import annotations
 
 from enum import Enum, Flag
 
-from ..data import toenum
+from ..data import (
+    toenum,
+    enumparser
+)
 from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
@@ -44,7 +47,7 @@ class TPS1200PIMG(GeoComSubsystem):
     def get_tcc_config(
         self,
         memtype: MEMTYPE | str = MEMTYPE.PCCARD
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[int, int, SUBFUNC, str]]:
         """
         RPC 23400, ``IMG_GetTccConfig``
 
@@ -80,12 +83,12 @@ class TPS1200PIMG(GeoComSubsystem):
         return self._request(
             23400,
             [_memtype.value],
-            parsers={
-                "imgnumber": int,
-                "quality": int,
-                "subfunc": lambda x: self.SUBFUNC(int(x)),
-                "prefix": str
-            }
+            parsers=(
+                int,
+                int,
+                enumparser(self.SUBFUNC),
+                str
+            )
         )
 
     def set_tcc_config(
@@ -94,7 +97,7 @@ class TPS1200PIMG(GeoComSubsystem):
         quality: int,
         subfunc: SUBFUNC | int,
         memtype: MEMTYPE | str = MEMTYPE.PCCARD,
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 23401, ``IMG_SetTccConfig``
 
@@ -136,7 +139,7 @@ class TPS1200PIMG(GeoComSubsystem):
     def take_tcc_img(
         self,
         memtype: MEMTYPE | str = MEMTYPE.PCCARD
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[int]:
         """
         RPC 23401, ``IMG_SetTccConfig``
 
@@ -151,6 +154,8 @@ class TPS1200PIMG(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
+            - Params:
+                - **imgnumber** (`int`): Number of new image.
             - Error codes:
                 - ``IVRESULT``: Not supported by telescope firmware.
                 - ``FATAL``: CF card is not available or is full.
@@ -166,7 +171,5 @@ class TPS1200PIMG(GeoComSubsystem):
         return self._request(
             23402,
             [_memtype.value],
-            {
-                "imgnumber": int
-            }
+            int
         )

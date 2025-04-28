@@ -19,7 +19,8 @@ from enum import Enum
 from ..data import (
     Angle,
     toenum,
-    enumparser
+    enumparser,
+    parsebool
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -54,7 +55,7 @@ class TPS1200PAUT(GeoComSubsystem):
         CLOCKWISE = 1
         ANTICLOCKWISE = -1
 
-    def read_tol(self) -> GeoComResponse:
+    def read_tol(self) -> GeoComResponse[tuple[Angle, Angle]]:
         """
         RPC 9008, ``AUT_ReadTol``
 
@@ -76,17 +77,14 @@ class TPS1200PAUT(GeoComSubsystem):
         """
         return self._request(
             9008,
-            parsers={
-                "hz": Angle.parse,
-                "v": Angle.parse
-            }
+            parsers=(Angle.parse, Angle.parse)
         )
 
     def set_tol(
         self,
         hz: Angle,
         v: Angle
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9007, ``AUT_SetTol``
 
@@ -113,7 +111,7 @@ class TPS1200PAUT(GeoComSubsystem):
         """
         return self._request(9007, [hz, v])
 
-    def read_timeout(self) -> GeoComResponse:
+    def read_timeout(self) -> GeoComResponse[tuple[float, float]]:
         """
         RPC 9012, ``AUT_ReadTimeout``
 
@@ -135,17 +133,14 @@ class TPS1200PAUT(GeoComSubsystem):
         """
         return self._request(
             9012,
-            parsers={
-                "hz": float,
-                "v": float
-            }
+            parsers=(float, float)
         )
 
     def set_timeout(
         self,
         hz: float,
         v: float
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9011, ``AUT_SetTimeout``
 
@@ -180,7 +175,7 @@ class TPS1200PAUT(GeoComSubsystem):
         v: Angle,
         posmode: POSMODE | str = POSMODE.NORMAL,
         atrmode: ATRMODE | str = ATRMODE.POSITION
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9027, ``AUT_MakePositioning``
 
@@ -243,7 +238,7 @@ class TPS1200PAUT(GeoComSubsystem):
         self,
         posmode: POSMODE | str = POSMODE.NORMAL,
         atrmode: ATRMODE | str = ATRMODE.POSITION
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9028, ``AUT_ChangeFace``
 
@@ -304,7 +299,7 @@ class TPS1200PAUT(GeoComSubsystem):
         self,
         width: Angle,
         height: Angle
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9037, ``AUT_FineAdjust``
 
@@ -355,7 +350,7 @@ class TPS1200PAUT(GeoComSubsystem):
         self,
         width: Angle,
         height: Angle
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9029, ``AUT_Search``
 
@@ -399,7 +394,7 @@ class TPS1200PAUT(GeoComSubsystem):
             [width, height, 0]
         )
 
-    def get_fine_adjust_mode(self) -> GeoComResponse:
+    def get_fine_adjust_mode(self) -> GeoComResponse[ADJMODE]:
         """
         RPC 9030, ``AUT_GetFineAdjustMode``
 
@@ -419,15 +414,13 @@ class TPS1200PAUT(GeoComSubsystem):
         """
         return self._request(
             9030,
-            parsers={
-                "adjmode": enumparser(self.ADJMODE)
-            }
+            parsers=enumparser(self.ADJMODE)
         )
 
     def set_fine_adjust_mode(
         self,
         adjmode: ADJMODE | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9031, ``AUT_SetFineAdjustMode``
 
@@ -454,7 +447,7 @@ class TPS1200PAUT(GeoComSubsystem):
             [_adjmode.value]
         )
 
-    def lock_in(self) -> GeoComResponse:
+    def lock_in(self) -> GeoComResponse[None]:
         """
         RPC 9013, ``AUT_LockIn``
 
@@ -483,7 +476,9 @@ class TPS1200PAUT(GeoComSubsystem):
         """
         return self._request(9013)
 
-    def get_search_area(self) -> GeoComResponse:
+    def get_search_area(
+        self
+    ) -> GeoComResponse[tuple[Angle, Angle, Angle, Angle, bool]]:
         """
         RPC 9042, ``AUT_GetSearchArea``
 
@@ -508,13 +503,13 @@ class TPS1200PAUT(GeoComSubsystem):
         """
         return self._request(
             9042,
-            parsers={
-                "hz": Angle.parse,
-                "v": Angle.parse,
-                "width": Angle.parse,
-                "height": Angle.parse,
-                "enabled": bool
-            }
+            parsers=(
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                parsebool
+            )
         )
 
     def set_search_area(
@@ -524,7 +519,7 @@ class TPS1200PAUT(GeoComSubsystem):
         width: Angle,
         height: Angle,
         enabled: bool = True
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9043, ``AUT_SetSearchArea``
 
@@ -559,7 +554,7 @@ class TPS1200PAUT(GeoComSubsystem):
             [hz, v, width, height, enabled]
         )
 
-    def get_user_spiral(self) -> GeoComResponse:
+    def get_user_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
         """
         RPC 9040, ``AUT_GetUserSpiral``
 
@@ -581,17 +576,14 @@ class TPS1200PAUT(GeoComSubsystem):
         """
         return self._request(
             9040,
-            parsers={
-                "width": Angle.parse,
-                "height": Angle.parse
-            }
+            parsers=(Angle.parse, Angle.parse)
         )
 
     def set_user_spiral(
         self,
         width: Angle,
         height: Angle
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9041, ``AUT_SetUserSpiral``
 
@@ -623,7 +615,7 @@ class TPS1200PAUT(GeoComSubsystem):
     def ps_enable_range(
         self,
         enable: bool
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9048, ``AUT_PS_EnableRange``
 
@@ -655,7 +647,7 @@ class TPS1200PAUT(GeoComSubsystem):
         self,
         closest: int,
         farthest: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9044, ``AUT_PS_SetRange``
 
@@ -686,7 +678,7 @@ class TPS1200PAUT(GeoComSubsystem):
             [closest, farthest]
         )
 
-    def ps_search_window(self) -> GeoComResponse:
+    def ps_search_window(self) -> GeoComResponse[None]:
         """
         RPC 9052, ``AUT_PS_SearchWindow``
 
@@ -713,7 +705,7 @@ class TPS1200PAUT(GeoComSubsystem):
         self,
         direction: DIRECTION | str,
         swing: bool
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 9051, ``AUT_PS_SearchNext``
 
