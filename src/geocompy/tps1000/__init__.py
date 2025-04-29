@@ -17,6 +17,7 @@ Submodules
 
 - ``geocompy.tps1000.rc``
 - ``geocompy.tps1000.aut``
+- ``geocompy.tps1000.com``
 """
 from __future__ import annotations
 

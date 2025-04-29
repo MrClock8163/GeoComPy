@@ -14,4 +14,5 @@ TPS1000
     :hidden:
 
     rc
+    aut
     com
