@@ -147,7 +147,9 @@ nitpick_ignore = {
     ("py:class", "optional"),
     ("py:param", "_E"),
     ("py:param", "_T"),
-    ("py:param", "_P")
+    ("py:class", "_T"),
+    ("py:param", "_P"),
+    ("py:class", "_P")
 }
 nitpick_ignore_regex = {
     ("py:obj", r"[a-zA-Z]{3}\.\w+")

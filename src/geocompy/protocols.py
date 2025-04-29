@@ -205,9 +205,11 @@ class GeoComProtocol:
         ----------
         rpc : int
             Number of the RPC to execute.
-        params : Iterable[int | float | bool | str | Angle | Byte], optional
-            Parameters for the request, by default []
-        parsers : Iterable[Callable[[str], Any]] | None, optional
+        params : Iterable[int | float | bool | str | Angle | Byte]
+            Parameters for the request, by default ()
+        parsers : Iterable[Callable[[str], Any]] \
+                  | Callable[[str], Any] \
+                  | None, optional
             Parser functions for the values in the RPC response,
             by default None
 
@@ -260,9 +262,9 @@ class GeoComProtocol:
             Full, serialized request, that invoked the response.
         response : str
             Full, received response.
-        parsers : Iterable[Callable[[str], Any]]
-        | Callable[[str], Any]
-        | None, optional
+        parsers : Iterable[Callable[[str], Any]] \
+                  | Callable[[str], Any] \
+                  | None, optional
             Parser functions for the values in the RPC response,
             by default None
 
