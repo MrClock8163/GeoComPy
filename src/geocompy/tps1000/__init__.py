@@ -39,6 +39,7 @@ from ..protocols import (
     GeoComResponse
 )
 from .aut import TPS1000AUT
+from .bap import TPS1000BAP
 from .com import TPS1000COM
 from .rc import TPS1000RC, rpcnames
 
@@ -122,6 +123,8 @@ class TPS1000(GeoComProtocol):
         super().__init__(connection, logger)
         self.aut: TPS1000AUT = TPS1000AUT(self)
         """Automation subsystem."""
+        self.bap: TPS1000BAP = TPS1000BAP(self)
+        """Basic applications subsystem."""
         self.com: TPS1000COM = TPS1000COM(self)
         """Communications subsystem."""
 
