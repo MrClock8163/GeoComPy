@@ -43,6 +43,22 @@ class GeoComResponse(Generic[_P]):
     """
     Container class for parsed GeoCom responses.
 
+    The response encapsulates the original command, that was sent, and the
+    response received, as well as the codes and parameters extracted from
+    the response.
+
+    The `params` usually takes 3 types of values:
+
+    - **None**: the response explicitly returned no values
+    - **Scalar**: the response returned a single parameter
+    - **Sequence** (usually a `tuple`): the response returned multiple
+      parameters
+
+    Warning
+    -------
+    The `params` will be also `None`, if the parameter parsing failed for
+    some reason, to signal the unsuccessful operation. This error case must
+    be handled before using the returned values.
     """
 
     def __init__(
