@@ -43,6 +43,7 @@ from .bap import TPS1000BAP
 from .bmm import TPS1000BMM
 from .csv import TPS1000CSV
 from .com import TPS1000COM
+from .ctl import TPS1000CTL
 from .rc import TPS1000RC, rpcnames
 
 
@@ -133,6 +134,8 @@ class TPS1000(GeoComProtocol):
         """Communications subsystem."""
         self.csv: TPS1000CSV = TPS1000CSV(self)
         """Central services subsystem."""
+        self.ctl: TPS1000CTL = TPS1000CTL(self)
+        """Control task subsystem."""
 
         for i in range(retry):
             try:
