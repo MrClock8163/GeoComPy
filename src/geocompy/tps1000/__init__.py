@@ -40,6 +40,7 @@ from ..protocols import (
 )
 from .aut import TPS1000AUT
 from .bap import TPS1000BAP
+from .bmm import TPS1000BMM
 from .com import TPS1000COM
 from .rc import TPS1000RC, rpcnames
 
@@ -125,6 +126,8 @@ class TPS1000(GeoComProtocol):
         """Automation subsystem."""
         self.bap: TPS1000BAP = TPS1000BAP(self)
         """Basic applications subsystem."""
+        self.bmm: TPS1000BMM = TPS1000BMM(self)
+        """Basic man-machine interface subsystem."""
         self.com: TPS1000COM = TPS1000COM(self)
         """Communications subsystem."""
 

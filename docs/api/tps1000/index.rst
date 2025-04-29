@@ -16,4 +16,5 @@ TPS1000
     rc
     aut
     bap
+    bmm
     com
