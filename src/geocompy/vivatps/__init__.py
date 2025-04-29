@@ -506,7 +506,7 @@ class VivaTPS(GeoComProtocol):
             case 0:
                 params_final = None
             case 1:
-                params_final = params[1]
+                params_final = params[0]
             case _:
                 params_final = tuple(params)
 
