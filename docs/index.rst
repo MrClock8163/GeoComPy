@@ -59,6 +59,7 @@ Content
    api/communication
    api/protocols
    api/dna/index
+   api/tps1000/index
    api/tps1200p/index
    api/vivatps/index
 

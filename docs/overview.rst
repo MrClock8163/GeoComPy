@@ -20,12 +20,14 @@ Features
   .. only:: html
 
     - :si-icon:`protocol_gsionline` DNA
+    - :si-icon:`protocol_geocom` TPS1000
     - :si-icon:`protocol_geocom` TPS1200+
     - :si-icon:`protocol_geocom` VivaTPS
 
   .. only:: latex
 
     - DNA
+    - TPS1000
     - TPS1200+
     - VivaTPS
 
