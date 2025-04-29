@@ -62,8 +62,8 @@ class VivaTPSKDM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **alwayson** (`bool`): Keep display turned on, do not go
+            Params:
+                - `bool`: Keep display turned on, do not go
                   into screensaver mode.
 
         """

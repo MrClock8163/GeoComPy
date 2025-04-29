@@ -61,9 +61,9 @@ class TPS1200PMOT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **status** (`LOCKSTATUS`): ATR lock status.
-            - Error codes:
+            Params:
+                - `LOCKSTATUS`: ATR lock status.
+            Error codes:
                 - ``NOT_IMPL``: Motorization not available.
 
         See Also
@@ -93,7 +93,7 @@ class TPS1200PMOT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Control mode is not appropriate for velocity
                   control.
                 - ``NOT_IMPL``: Motorization not available.
@@ -130,7 +130,7 @@ class TPS1200PMOT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``MOT_NOT_BUSY``: Controller is not active.
 
         See Also
@@ -167,7 +167,7 @@ class TPS1200PMOT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Velocities not within acceptable range.
                 - ``MOT_NOT_CONFIG``: Motor controller was not started,
                   or is already busy with continuous task.

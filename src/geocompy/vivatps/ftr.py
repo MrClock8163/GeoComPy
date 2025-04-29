@@ -77,9 +77,9 @@ class VivaTPSFTR(TPS1200PFTR):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **deleted** (`int`): Number of directories deleted.
-            - Error codes:
+            Params:
+                - `int`: Number of directories deleted.
+            Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
 
@@ -136,9 +136,9 @@ class VivaTPSFTR(TPS1200PFTR):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **blockcount** (`int`): Number of download blocks needed.
-            - Error codes:
+            Params:
+                - `int`: Number of download blocks needed.
+            Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
                 - ``NOTOK``: Setup already exists, previous setup was not
@@ -178,10 +178,10 @@ class VivaTPSFTR(TPS1200PFTR):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **value** (`str`): Data block as serialized bytes.
-                - **length** (`int`): Length of data block.
-            - Error codes:
+            Params:
+                - `str`: Data block as serialized bytes.
+                - `int`: Length of data block.
+            Error codes:
                 - ``FTR_MISSINGSETUP``: No active download setup.
                 - ``FTR_INVALIDINPUT``: First block is missing.
                 - ``FTR_FILEACCESS``: File access error.

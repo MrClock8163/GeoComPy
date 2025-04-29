@@ -216,8 +216,8 @@ class VivaTPS(GeoComProtocol):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **digits** (`int`): Floating point decimal places.
+            Params:
+                - `int`: Floating point decimal places.
 
         See Also
         --------

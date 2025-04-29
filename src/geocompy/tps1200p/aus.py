@@ -47,10 +47,10 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): current ATR state
+            Params:
+                - `ONOFF`: current ATR state
 
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: ATR is not available.
 
         Notes
@@ -83,7 +83,7 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: ATR is not available.
 
         Notes
@@ -111,10 +111,10 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): current ATR state
+            Params:
+                - `ONOFF`: current ATR state
 
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: ATR is not available.
 
         See Also
@@ -144,7 +144,7 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: ATR is not available.
 
         Notes

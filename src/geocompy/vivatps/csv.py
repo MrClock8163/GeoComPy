@@ -155,8 +155,8 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **enabled** (`bool`): Startup message is enabled.
+            Params:
+                - `bool`: Startup message is enabled.
 
         """
         return self._request(
@@ -198,8 +198,8 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **enabled** (`bool`): Startup message mode is enabled.
+            Params:
+                - `bool`: Startup message mode is enabled.
 
         """
         return self._request(
@@ -240,8 +240,8 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **intensity** (`int`): Current laserlot intensity.
+            Params:
+                - `int`: Current laserlot intensity.
 
         """
         return self._request(
@@ -266,8 +266,8 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **available** (`bool`): License is available.
+            Params:
+                - `bool`: License is available.
 
         """
         _prop = toenum(self.PROPERTY, property)
@@ -286,8 +286,8 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **voltage** (`int`): Instrument voltage [mV].
+            Params:
+                - `int`: Instrument voltage [mV].
 
         """
         return self._request(
@@ -329,8 +329,8 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): Current state of the charger.
+            Params:
+                - `ONOFF`: Current state of the charger.
 
         """
         return self._request(
@@ -368,8 +368,8 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **source** (`POWERSOURCE`): Preferred power source.
+            Params:
+                - `POWERSOURCE`: Preferred power source.
 
         """
         return self._request(

@@ -64,12 +64,12 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
-            - Params:
-                - **hz** (`Angle`): Horizontal tolerance.
-                - **v** (`Angle`): Vertical tolerance.
+            Params:
+                - `Angle`: Horizontal tolerance.
+                - `Angle`: Vertical tolerance.
 
         See Also
         --------
@@ -100,7 +100,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``IVPARAM``: Tolerances are out of the valid range.
                 - ``MOT_UNREADY``: Instrument has no motorization.
@@ -120,12 +120,12 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
-            - Params:
-                - **hz** (`float`): Horizontal timeout [sec].
-                - **v** (`float`): Vertical timeout [sec].
+            Params:
+                - `float`: Horizontal timeout [sec].
+                - `float`: Vertical timeout [sec].
 
         See Also
         --------
@@ -156,7 +156,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``IVPARAM``: Timeout values are not in the [7; 60] range.
 
@@ -195,7 +195,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``IVPARAM``: Invalid parameter
                 - ``AUT_TIMEOUT``: Positioning timed out.
@@ -254,7 +254,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``IVPARAM``: Invalid parameter
                 - ``AUT_TIMEOUT``: Positioning timed out.
@@ -316,7 +316,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``IVPARAM``: Invalid parameter
                 - ``AUT_TIMEOUT``: Positioning timed out.
@@ -368,7 +368,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``IVPARAM``: Invalid parameter
                 - ``AUT_MOTOR_ERROR``: Instrument has no motorization.
@@ -403,9 +403,9 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **adjmode** (`ADJMODE`): current fine adjustment mode
-            - Error codes:
+            Params:
+                - `ADJMODE`: current fine adjustment mode
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
         See Also
@@ -433,7 +433,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``IVPARAM``: Invalid mode
 
@@ -458,7 +458,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``AUT_MOTOR_ERROR``: Instrument has not motorization.
                 - ``AUT_DETECTOR_ERROR``: Error in target acquisition.
@@ -487,13 +487,13 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal center of window.
-                - **v** (`Angle`): Vertical center of window.
-                - **width** (`Angle`): Width of window.
-                - **height** (`Angle`): Height of window.
-                - **enabled** (`bool`): If window is enabled.
-            - Error codes:
+            Params:
+                - `Angle`: Horizontal center of window.
+                - `Angle`: Vertical center of window.
+                - `Angle`: Width of window.
+                - `Angle`: Height of window.
+                - `bool`: If window is enabled.
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
         See Also
@@ -541,7 +541,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
         See Also
@@ -563,10 +563,10 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **width** (`Angle`): Width of window.
-                - **height** (`Angle`): Height of window.
-            - Error codes:
+            Params:
+                - `Angle`: Width of window.
+                - `Angle`: Height of window.
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
         See Also
@@ -599,7 +599,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
         See Also
@@ -630,7 +630,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
         See Also
@@ -663,7 +663,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``IVPARAM``: Invalid parameters.
 
@@ -687,7 +687,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``AUT_NO_WORKING_AREA``: Search window is not defined.
                 - ``AUT_NO_TARGET``: Target was not found.
@@ -721,7 +721,7 @@ class TPS1200PAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: GeoCom Robotic license not found.
                 - ``AUT_NO_TARGET``: Target was not found.
                 - ``IVPARAM``: Invalid parameters.

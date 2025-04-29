@@ -45,7 +45,7 @@ class VivaTPSSUP(TPS1200PSUP):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Command not available.
 
         """

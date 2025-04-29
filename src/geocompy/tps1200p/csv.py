@@ -95,8 +95,8 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **serial** (`int`): Serial number.
+            Params:
+                - `int`: Serial number.
 
         """
         return self._request(
@@ -113,8 +113,8 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **name** (`str`): Instrument name.
+            Params:
+                - `str`: Instrument name.
 
         """
         return self._request(
@@ -134,9 +134,9 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **deviceclass** (`DEVICECLASS`): Class of the instrument.
-                - **devicetype** (`DEVICETYPE`): Configurations of the
+            Params:
+                - `DEVICECLASS`: Class of the instrument.
+                - `DEVICETYPE`: Configurations of the
                   components.
 
         """
@@ -158,8 +158,8 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **reflessclass** (`REFLESSCLASS`): Class of the
+            Params:
+                - `REFLESSCLASS`: Class of the
                   reflectorless EDM module.
 
         """
@@ -177,8 +177,8 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **time** (`datetime`): Current date and time.
+            Params:
+                - `datetime`: Current date and time.
 
         See Also
         --------
@@ -257,10 +257,10 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **release** (`int`): Release number.
-                - **version** (`int`): Version number.
-                - **subversion** (`int`): Subversion number.
+            Params:
+                - `int`: Release number.
+                - `int`: Version number.
+                - `int`: Subversion number.
 
         """
         return self._request(
@@ -279,10 +279,10 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **capacity** (`int`): Remaining capacity [%].
-                - **source** (`POWERSOURCE`): Active power source.
-                - **suggested** (`POWERSOURCE`): Suggested power source.
+            Params:
+                - `int`: Remaining capacity [%].
+                - `POWERSOURCE`: Active power source.
+                - `POWERSOURCE`: Suggested power source.
 
         """
         return self._request(
@@ -304,8 +304,8 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **temp** (`int`): Internal temperature [°C].
+            Params:
+                - `int`: Internal temperature [°C].
 
         """
         return self._request(
@@ -323,8 +323,8 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **time** (`datetime`): Current date and time.
+            Params:
+                - `datetime`: Current date and time.
 
         See Also
         --------

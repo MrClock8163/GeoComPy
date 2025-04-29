@@ -102,8 +102,8 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **targettype** (`TARGETTYPE`): Current EMD target type.
+            Params:
+                - `TARGETTYPE`: Current EMD target type.
 
         See Also
         --------
@@ -133,7 +133,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Target type is not available.
 
         See Also
@@ -156,9 +156,9 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **prismtype** (`PRISMTYPE`): Current prism type.
-            - Error codes:
+            Params:
+                - `PRISMTYPE`: Current prism type.
+            Error codes:
                 - ``IVRESULT``: EDM is set to reflectorless mode.
 
         See Also
@@ -188,7 +188,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Prism type is not available.
 
         See Also
@@ -211,9 +211,9 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **prismtype** (`PRISMTYPE`): Current prism type.
-                - **name** (`str`): Prism type name.
+            Params:
+                - `PRISMTYPE`: Current prism type.
+                - `str`: Prism type name.
 
         See Also
         --------
@@ -245,7 +245,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Prism type is not available, a user prism
                   is not defined.
 
@@ -277,11 +277,11 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **name** (`str`): Name of the prism.
-                - **const** (`float`): Additive prism constant.
-                - **refltype** (`REFLTYPE`): Reflector type.
-            - Error codes:
+            Params:
+                - `str`: Name of the prism.
+                - `float`: Additive prism constant.
+                - `REFLTYPE`: Reflector type.
+            Error codes:
                 - ``IVPARAM``: Invalid prism type.
 
         See Also
@@ -316,11 +316,11 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **name** (`str`): Name of the prism.
-                - **const** (`float`): Additive prism constant.
-                - **refltype** (`REFLTYPE`): Reflector type.
-            - Error codes:
+            Params:
+                - `str`: Name of the prism.
+                - `float`: Additive prism constant.
+                - `REFLTYPE`: Reflector type.
+            Error codes:
                 - ``IVPARAM``: Invalid prism definition.
 
         See Also
@@ -366,7 +366,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Invalid prism definition.
                 - ``IVRESULT``: Prism definition is not set.
 
@@ -391,8 +391,8 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **measprg** (`MEASUREPRG`): Current measurement program.
+            Params:
+                - `MEASUREPRG`: Current measurement program.
 
         See Also
         --------
@@ -420,7 +420,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Measurement program is not available.
 
         See Also
@@ -452,22 +452,22 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **dist** (`float`): Slope distance.
-                - **distmode** (`MEASUREPRG`): Actual distance mode.
-            - Info codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `float`: Slope distance.
+                - `MEASUREPRG`: Actual distance mode.
+            Info codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy cannot be guaranteed.
                 - ``TMC_ANGLE_ACCURACY_GUARANTEE``: Only angle measurement
                   valid, accuracy cannot be guaranteed.
-            - Warning codes:
+            Warning codes:
                 - ``TMC_ANGLE_NO_FULL_CORRECTION``: Only angle measurement
                   valid, accuracy cannot be guaranteed.
                 - ``TMC_ANGLE_OK``: Only angle measurement valid.
                 - ``TMC_NO_FULL_CORRECTION``: Measurement without full
                   correction.
-            - Error codes:
+            Error codes:
                 - ``AUT_ANGLE_ERROR``: Angle measurement error.
                 - ``AUT_BAD_ENVIRONMENT``: Bad environmental conditions.
                 - ``AUT_CALACC``: ATR calibration failed.
@@ -513,7 +513,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``AUT_BAD_ENVIRONMENT``: Bad environmental conditions.
                 - ``AUT_DEV_ERROR``: Error in angle deviation calculation.
                 - ``AUT_ANGLE_ACCURACY``: Position not exactly reached.
@@ -544,8 +544,8 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **atrsetting** (`ATRSETTING`): Current ATR setting.
+            Params:
+                - `ATRSETTING`: Current ATR setting.
 
         See Also
         --------
@@ -589,8 +589,8 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **redfov** (`ONOFF`): State of the reduced FOV mode.
+            Params:
+                - `ONOFF`: State of the reduced FOV mode.
 
         See Also
         --------

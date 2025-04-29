@@ -51,10 +51,10 @@ class TPS1200PSUP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **reserved** (`ONOFF`): Reserved.
-                - **autopower** (`AUTOPOWER`): Current showdown mechanism.
-                - **timeout** (`int`): Idling timeout [ms].
+            Params:
+                - `ONOFF`: Reserved.
+                - `AUTOPOWER`: Current showdown mechanism.
+                - `int`: Idling timeout [ms].
 
         See Also
         --------
@@ -91,7 +91,7 @@ class TPS1200PSUP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Invalid timeout parameter.
 
         See Also

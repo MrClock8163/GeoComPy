@@ -62,12 +62,12 @@ class TPS1200PIMG(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **imgnumber** (`int`): Current image number.
-                - **quality** (`int`): JPEG compression quality [0; 100]%
-                - **subfunc** (`SUBFUNC`): Current function combination.
-                - **prefix** (`str`): File name prefix.
-            - Error codes:
+            Params:
+                - `int`: Current image number.
+                - `int`: JPEG compression quality [0; 100]%
+                - `SUBFUNC`: Current function combination.
+                - `str`: File name prefix.
+            Error codes:
                 - ``FATAL``: CF card is not available, or config file does
                   not exist.
                 - ``IVVERSION``: Config file version differs from system
@@ -117,7 +117,7 @@ class TPS1200PIMG(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``FATAL``: CF card is not available or full, or any
                   parameter is out of valid range.
                 - ``NA``: Imaging license not found.
@@ -154,9 +154,9 @@ class TPS1200PIMG(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **imgnumber** (`int`): Number of new image.
-            - Error codes:
+            Params:
+                - `int`: Number of new image.
+            Error codes:
                 - ``IVRESULT``: Not supported by telescope firmware.
                 - ``FATAL``: CF card is not available or is full.
                 - ``NA``: Imaging license not found.

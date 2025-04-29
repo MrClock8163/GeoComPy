@@ -58,8 +58,8 @@ class VivaTPSEDM(TPS1200PEDM):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **active** (`bool`): Continuous measurement is active.
+            Params:
+                - `bool`: Continuous measurement is active.
 
         """
         _mode = toenum(self.MEASUREMENTTYPE, mode)

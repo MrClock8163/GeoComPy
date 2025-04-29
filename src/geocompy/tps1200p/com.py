@@ -51,10 +51,10 @@ class TPS1200PCOM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **release** (`int`): Release number.
-                - **version** (`int`): Version number.
-                - **subversion** (`int`): Subversion number.
+            Params:
+                - `int`: Release number.
+                - `int`: Version number.
+                - `int`: Subversion number.
 
         See Also
         --------
@@ -82,7 +82,7 @@ class TPS1200PCOM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: Instrument is already on.
 
         Notes
@@ -146,8 +146,8 @@ class TPS1200PCOM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **available** (`bool`): Availability of binary mode.
+            Params:
+                - `bool`: Availability of binary mode.
 
         See Also
         --------

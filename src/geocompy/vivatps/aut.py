@@ -77,8 +77,8 @@ class VivaTPSAUT(TPS1200PAUT):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): Current state of the fly mode.
+            Params:
+                - `ONOFF`: Current state of the fly mode.
 
         See Also
         --------
@@ -113,7 +113,7 @@ class VivaTPSAUT(TPS1200PAUT):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
                 - ``AUT_SIDECOVER_ERR``: Sidecover is open.
 

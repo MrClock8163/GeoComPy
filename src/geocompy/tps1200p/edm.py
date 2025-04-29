@@ -62,7 +62,7 @@ class TPS1200PEDM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
                   laserpointer.
 
@@ -82,10 +82,10 @@ class TPS1200PEDM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **intensity** (`EGLINTENSITYTYPE`): Current intensity
+            Params:
+                - `EGLINTENSITYTYPE`: Current intensity
                   mode.
-            - Error codes:
+            Error codes:
                 - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
                   EGL.
 
@@ -112,7 +112,7 @@ class TPS1200PEDM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
                   EGL.
 

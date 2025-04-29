@@ -69,7 +69,7 @@ class TPS1200PFTR(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   search path.
                 - ``NOTOK``: Setup already exists, previous setup was not
@@ -108,13 +108,13 @@ class TPS1200PFTR(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **last** (`bool`): If file is last in listing.
-                - **filename** (`str`): Name of the file.
-                - **size** (`int`): File size [byte].
+            Params:
+                - `bool`: If file is last in listing.
+                - `str`: Name of the file.
+                - `int`: File size [byte].
                 - **modified** (`datetime` | None): Date and time of last
                   modification.
-            - Error codes:
+            Error codes:
                 - ``FTR_MISSINGSETUP``: No active listing setup.
                 - ``FTR_INVALIDINPUT``: First item is missing, or last
                   call was already the last.
@@ -211,9 +211,9 @@ class TPS1200PFTR(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **blockcount** (`int`): Number of download blocks needed.
-            - Error codes:
+            Params:
+                - `int`: Number of download blocks needed.
+            Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
                 - ``NOTOK``: Setup already exists, previous setup was not
@@ -253,10 +253,10 @@ class TPS1200PFTR(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **value** (`str`): Data block as serialized bytes.
-                - **length** (`int`): Length of data block.
-            - Error codes:
+            Params:
+                - `str`: Data block as serialized bytes.
+                - `int`: Length of data block.
+            Error codes:
                 - ``FTR_MISSINGSETUP``: No active download setup.
                 - ``FTR_INVALIDINPUT``: First block is missing.
                 - ``FTR_FILEACCESS``: File access error.
@@ -322,9 +322,9 @@ class TPS1200PFTR(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **deleted** (`int`): Number of files deleted.
-            - Error codes:
+            Params:
+                - `int`: Number of files deleted.
+            Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
 

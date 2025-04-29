@@ -46,8 +46,8 @@ class VivaTPSBAP(TPS1200PBAP):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): Current state of precise ATR mode.
+            Params:
+                - `ONOFF`: Current state of precise ATR mode.
 
         See Also
         --------

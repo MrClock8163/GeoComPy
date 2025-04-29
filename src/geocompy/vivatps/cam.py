@@ -93,7 +93,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -121,9 +121,9 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **zoom** (`ZOOM`): Current zoom level.
-            - Error codes:
+            Params:
+                - `ZOOM`: Current zoom level.
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -152,10 +152,10 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **coord** (`Coordinate`): Relative coordinates of the
+            Params:
+                - `Coordinate`: Relative coordinates of the
                   camera.
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -209,9 +209,9 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **coord** (`Coordinate`): Viewing vector.
-            - Error codes:
+            Params:
+                - `Coordinate`: Viewing vector.
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -263,10 +263,10 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal field of view.
-                - **v** (`Angle`): Vertical field of view.
-            - Error codes:
+            Params:
+                - `Angle`: Horizontal field of view.
+                - `Angle`: Vertical field of view.
+            Error codes:
                 - ``IVPARAM``: Invalid parameter.
                 - ``NA``: Imaging license not found.
 
@@ -305,7 +305,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -335,7 +335,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``CAM_IMAGE_SAVING_ERROR``: Error while saving, SD card
                   might not be available.
                 - ``NA``: Imaging license not found.
@@ -362,12 +362,12 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **x** (`float`): Horizontal position of corsshair on
+            Params:
+                - `float`: Horizontal position of corsshair on
                   image.
-                - **y** (`float`): Vertical position of corsshair on
+                - `float`: Vertical position of corsshair on
                   image.
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -403,7 +403,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -435,7 +435,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -466,7 +466,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
                 - ``CAM_NOT_READY``: Camera is turned off, or currently
                   starting up.
@@ -509,7 +509,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -544,9 +544,9 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): Current state of camera.
-            - Error codes:
+            Params:
+                - `ONOFF`: Current state of camera.
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -582,7 +582,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -618,7 +618,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
                 - ``TIMEOUT``: Camera did not become usable within the
                   specified time.
@@ -652,7 +652,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -673,9 +673,9 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **position** (`int`): Autofocus motor position.
-            - Error codes:
+            Params:
+                - `int`: Autofocus motor position.
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         See Also
@@ -704,7 +704,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -730,7 +730,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -748,7 +748,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -763,7 +763,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -786,7 +786,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -812,10 +812,10 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **width** (`float`): Sensor width.
-                - **height** (`float`): Sensor height.
-            - Error codes:
+            Params:
+                - `float`: Sensor width.
+                - `float`: Sensor height.
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -838,10 +838,10 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **x** (`int`): Horizontal position.
-                - **y** (`int`): Vertical position.
-            - Error codes:
+            Params:
+                - `int`: Horizontal position.
+                - `int`: Vertical position.
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -870,12 +870,12 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **x** (`float`): Horizontal position of principal point.
-                - **y** (`float`): Vertical position of principal point.
-                - **f** (`float`): Focus length.
-                - **p** (`float`): Pixel size.
-            - Error codes:
+            Params:
+                - `float`: Horizontal position of principal point.
+                - `float`: Vertical position of principal point.
+                - `float`: Focus length.
+                - `float`: Pixel size.
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -907,12 +907,12 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **coord** (`Coordinate`): Camera coordinates.
-                - **phi** (`Angle`): Azimut angle.
-                - **theta** (`Angle`): Zenith angle.
-                - **kappa** (`Angle`): Tilt angle.
-            - Error codes:
+            Params:
+                - `Coordinate`: Camera coordinates.
+                - `Angle`: Azimut angle.
+                - `Angle`: Zenith angle.
+                - `Angle`: Tilt angle.
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -972,7 +972,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """
@@ -991,7 +991,7 @@ class VivaTPSCAM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Imaging license not found.
 
         """

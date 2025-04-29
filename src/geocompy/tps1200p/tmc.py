@@ -125,21 +125,21 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **coord** (`COORDINATE`): Calculated coordinate.
-                - **time** (`int`): Time of the coordinate acquisition.
-                - **coord_cont** (`COORDINATE`): Continuously calculated
+            Params:
+                - `COORDINATE`: Calculated coordinate.
+                - `int`: Time of the coordinate acquisition.
+                - `COORDINATE`: Continuously calculated
                   coordinate.
-                - **time_cont** (`int`): Time of the coordinate
+                - `int`: Time of the coordinate
                   acquisition.
-            - Warning codes:
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
                 - ``TMC_NO_FULL_CORRECTION``: Results are not corrected by
                   all sensors. Coordinates are available. Run check
                   commands to determine the missing correction.
-            - Error codes:
+            Error codes:
                 - ``TMC_ANGLE_OK``: Angles are measured, but no valid
                   distance was found.
                 - ``TMC_ANGLE_NO_FULL_CORRECTION``: Only angles are
@@ -230,11 +230,11 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **dist** (`float`): Slope distance.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `float`: Slope distance.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -248,7 +248,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -299,17 +299,17 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **angleaccuracy** (`Angle`): Angular accuracy.
-                - **angletime** (`int`): Time of angle measurement.
-                - **crossincline** (`Angle`): Cross inclination.
-                - **lengthincline** (`Angle`): Lengthwise inclination.
-                - **inclineaccuracy** (`Angle`): Inclination accuracy.
-                - **inclinetime** (`int`): Time of inclination measurement.
-                - **face** (`FACEDEF`): Instrument face.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `Angle`: Angular accuracy.
+                - `int`: Time of angle measurement.
+                - `Angle`: Cross inclination.
+                - `Angle`: Lengthwise inclination.
+                - `Angle`: Inclination accuracy.
+                - `int`: Time of inclination measurement.
+                - `FACEDEF`: Instrument face.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -323,7 +323,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -374,10 +374,10 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -391,7 +391,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -427,11 +427,11 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **dist** (`float`): Slope distance.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `float`: Slope distance.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -445,7 +445,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -502,16 +502,16 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **angleaccuracy** (`Angle`): Angular accuracy.
-                - **crossincline** (`Angle`): Cross inclination.
-                - **lengthincline** (`Angle`): Lengthwise inclination.
-                - **inclineaccuracy** (`Angle`): Inclination accuracy.
-                - **dist** (`float`): Slope distance.
-                - **disttime** (`int`): Time of distance measurement.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `Angle`: Angular accuracy.
+                - `Angle`: Cross inclination.
+                - `Angle`: Lengthwise inclination.
+                - `Angle`: Inclination accuracy.
+                - `float`: Slope distance.
+                - `int`: Time of distance measurement.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -525,7 +525,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -621,7 +621,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Warning codes:
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -635,7 +635,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -666,8 +666,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **height** (`float`): Current target height.
+            Params:
+                - `float`: Current target height.
 
         See Also
         --------
@@ -696,7 +696,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``TMC_BUSY``: TMC is currently busy, or target height
                   is not yet set.
                 - ``IVPARAM``: Invalid target height.
@@ -722,11 +722,11 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **wavelength** (`float`): EDM transmitter wavelength.
-                - **pressure** (`float`): Atmospheric pressure [mbar].
-                - **drytemp** (`float`): Dry temperature [°C].
-                - **wettemp** (`float`): Wet temperature [°C].
+            Params:
+                - `float`: EDM transmitter wavelength.
+                - `float`: Atmospheric pressure [mbar].
+                - `float`: Dry temperature [°C].
+                - `float`: Wet temperature [°C].
 
         See Also
         --------
@@ -799,7 +799,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Warning codes:
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -813,7 +813,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -844,8 +844,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **const** (`float`): Prism constant.
+            Params:
+                - `float`: Prism constant.
 
         See Also
         --------
@@ -890,10 +890,10 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **enabled** (`bool`): Refraction correction enabled.
-                - **earthradius** (`float`): Radius of the Earth.
-                - **coef** (`float`): Refraction coefficient.
+            Params:
+                - `bool`: Refraction correction enabled.
+                - `float`: Radius of the Earth.
+                - `float`: Refraction coefficient.
 
         See Also
         --------
@@ -952,8 +952,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **method** (`int`): Refraction method.
+            Params:
+                - `int`: Refraction method.
 
         See Also
         --------
@@ -1002,9 +1002,9 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **station** (`Coordinate`): Station coordinates.
-                - **hi** (`float`): Height of instrument.
+            Params:
+                - `Coordinate`: Station coordinates.
+                - `float`: Height of instrument.
 
         See Also
         --------
@@ -1057,7 +1057,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``TMC_BUSY``: TMC is busy or distance was not cleared.
 
         See Also
@@ -1080,8 +1080,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **ppm** (`float`): Atmospheric correction factor [ppm].
+            Params:
+                - `float`: Atmospheric correction factor [ppm].
 
         See Also
         --------
@@ -1140,16 +1140,16 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **automatic** (`bool`): Autmatically apply geometric
+            Params:
+                - `bool`: Autmatically apply geometric
                   corrections.
-                - **meridianscale** (`float`): Scale factor on central
+                - `float`: Scale factor on central
                   meridian.
-                - **meridianoffset** (`float`): Offset from central
+                - `float`: Offset from central
                   meridian.
-                - **reduction** (`float`): Length reduction from projection
+                - `float`: Length reduction from projection
                   to reference level.
-                - **individual** (`float`): Individual correction [ppm].
+                - `float`: Individual correction [ppm].
 
         See Also
         --------
@@ -1229,8 +1229,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **face** (`FACE`): Current face.
+            Params:
+                - `FACE`: Current face.
 
         See Also
         --------
@@ -1253,10 +1253,10 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **intensity** (`float`): Return signal intensity [%].
-                - **time** (`int`): Time of the signal measurement.
-            - Error codes:
+            Params:
+                - `float`: Return signal intensity [%].
+                - `int`: Time of the signal measurement.
+            Error codes:
                 - ``TMC_SIGNAL_ERROR``: Error in signal measurement.
                 - ``ABORT``: Measurement was aborted.
                 - ``SHUT_DOWN``: System shutdown.
@@ -1285,10 +1285,10 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **inclinecorr** (`bool`): Inclination correction.
-                - **stdaxiscorr** (`bool`): Standing axis correction.
-                - **collimcorr** (`bool`): Collimation error correction.
+            Params:
+                - `bool`: Inclination correction.
+                - `bool`: Standing axis correction.
+                - `bool`: Collimation error correction.
                 - *tiltaxiscorr** (`bool`): Tilting axis correction.
 
         See Also
@@ -1315,8 +1315,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **compensator** (`ONOFF`): Compensator status.
+            Params:
+                - `ONOFF`: Compensator status.
 
         See Also
         --------
@@ -1366,8 +1366,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **mode** (`EDMMODE`): Current EDM mode.
+            Params:
+                - `EDMMODE`: Current EDM mode.
 
         See Also
         --------
@@ -1433,16 +1433,16 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **coord** (`COORDINATE`): Calculated coordinate.
-            - Warning codes:
+            Params:
+                - `COORDINATE`: Calculated coordinate.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
                 - ``TMC_NO_FULL_CORRECTION``: Results are not corrected by
                   all sensors. Coordinates are available. Run check
                   commands to determine the missing correction.
-            - Error codes:
+            Error codes:
                 - ``TMC_ANGLE_OK``: Angles are measured, but no valid
                   distance was found.
                 - ``TMC_ANGLE_NO_FULL_CORRECTION``: Only angles are
@@ -1497,8 +1497,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **atrerror** (`bool`): Last data record was not
+            Params:
+                - `bool`: Last data record was not
                   corrected with ATR deviation.
 
         See Also
@@ -1520,8 +1520,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **inclineerror** (`bool`): Last data record was not
+            Params:
+                - `bool`: Last data record was not
                   corrected with inclination correction.
 
         See Also
@@ -1560,7 +1560,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``TMC_BUSY``: TMC is busy.
 
         See Also
@@ -1584,9 +1584,9 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **ppmcorr** (`float`): Total corrections [ppm].
-                - **prismcorr** (`float`): Prism constant.
+            Params:
+                - `float`: Total corrections [ppm].
+                - `float`: Prism constant.
 
         See Also
         --------
