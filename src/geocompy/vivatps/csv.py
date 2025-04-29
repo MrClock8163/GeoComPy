@@ -18,7 +18,8 @@ from enum import Enum
 
 from ..data import (
     toenum,
-    enumparser
+    enumparser,
+    parsebool
 )
 from ..protocols import GeoComResponse
 from ..tps1200p.csv import TPS1200PCSV
@@ -123,7 +124,7 @@ class VivaTPSCSV(TPS1200PCSV):
     def set_startup_message_mode(
         self,
         enabled: bool
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 5155, ``CSV_SetStartupMessageMode``
 
@@ -144,7 +145,7 @@ class VivaTPSCSV(TPS1200PCSV):
             [enabled]
         )
 
-    def get_startup_message_mode(self) -> GeoComResponse:
+    def get_startup_message_mode(self) -> GeoComResponse[bool]:
         """
         RPC 5156, ``CSV_GetStartupMessageMode``
 
@@ -154,21 +155,19 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **enabled** (`bool`): Startup message is enabled.
+            Params:
+                - `bool`: Startup message is enabled.
 
         """
         return self._request(
             5156,
-            parsers={
-                "enabled": bool
-            }
+            parsers=parsebool
         )
 
     def switch_laserlot(
         self,
         state: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 5043, ``CSV_SwitchLaserlot``
 
@@ -190,7 +189,7 @@ class VivaTPSCSV(TPS1200PCSV):
             [_state.value]
         )
 
-    def get_laserlot_status(self) -> GeoComResponse:
+    def get_laserlot_status(self) -> GeoComResponse[ONOFF]:
         """
         RPC 5042, ``CSV_GetLaserlotStatus``
 
@@ -199,21 +198,19 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **enabled** (`bool`): Startup message mode is enabled.
+            Params:
+                - `bool`: Startup message mode is enabled.
 
         """
         return self._request(
             5042,
-            parsers={
-                "state": enumparser(self.ONOFF)
-            }
+            parsers=enumparser(self.ONOFF)
         )
 
     def set_laserlot_intensity(
         self,
         intensity: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 5040, ``CSV_SetLaserlotIntens``
 
@@ -234,7 +231,7 @@ class VivaTPSCSV(TPS1200PCSV):
             [intensity]
         )
 
-    def get_laserlot_intensity(self) -> GeoComResponse:
+    def get_laserlot_intensity(self) -> GeoComResponse[int]:
         """
         RPC 5041, ``CSV_GetLaserlotIntens``
 
@@ -243,21 +240,19 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **intensity** (`int`): Current laserlot intensity.
+            Params:
+                - `int`: Current laserlot intensity.
 
         """
         return self._request(
             5041,
-            parsers={
-                "intensity": int
-            }
+            parsers=int
         )
 
     def check_property(
         self,
         property: PROPERTY | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[bool]:
         """
         RPC 5039, ``CSV_CheckProperty``
 
@@ -271,20 +266,18 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **available** (`bool`): License is available.
+            Params:
+                - `bool`: License is available.
 
         """
         _prop = toenum(self.PROPERTY, property)
         return self._request(
             5139,
             [_prop.value],
-            {
-                "available": bool
-            }
+            parsebool
         )
 
-    def get_voltage(self) -> GeoComResponse:
+    def get_voltage(self) -> GeoComResponse[int]:
         """
         RPC 5165, ``CSV_GetVoltage``
 
@@ -293,21 +286,19 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **voltage** (`int`): Instrument voltage [mV].
+            Params:
+                - `int`: Instrument voltage [mV].
 
         """
         return self._request(
             5165,
-            parsers={
-                "voltage": int
-            }
+            parsers=int
         )
 
     def set_charging(
         self,
         state: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 5161, ``CSV_SetCharging``
 
@@ -329,7 +320,7 @@ class VivaTPSCSV(TPS1200PCSV):
             [_state.value]
         )
 
-    def get_charging(self) -> GeoComResponse:
+    def get_charging(self) -> GeoComResponse[ONOFF]:
         """
         RPC 5162, ``CSV_GetCharging``
 
@@ -338,21 +329,19 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): Current state of the charger.
+            Params:
+                - `ONOFF`: Current state of the charger.
 
         """
         return self._request(
             5162,
-            parsers={
-                "state": enumparser(self.ONOFF)
-            }
+            parsers=enumparser(self.ONOFF)
         )
 
     def set_preferred_powersource(
         self,
         source: POWERSOURCE | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 5163, ``CSV_SetPreferredPowersource``
 
@@ -370,7 +359,7 @@ class VivaTPSCSV(TPS1200PCSV):
             [_source.value]
         )
 
-    def get_preferred_powersource(self) -> GeoComResponse:
+    def get_preferred_powersource(self) -> GeoComResponse[POWERSOURCE]:
         """
         RPC 5164, ``CSV_GetPreferredPowersource``
 
@@ -379,13 +368,11 @@ class VivaTPSCSV(TPS1200PCSV):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **source** (`POWERSOURCE`): Preferred power source.
+            Params:
+                - `POWERSOURCE`: Preferred power source.
 
         """
         return self._request(
             5164,  # Mistyped as 5163 in the GeoCom reference
-            parsers={
-                "source": enumparser(self.POWERSOURCE)
-            }
+            parsers=enumparser(self.POWERSOURCE)
         )

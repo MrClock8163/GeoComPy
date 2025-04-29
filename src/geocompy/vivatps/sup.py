@@ -30,7 +30,7 @@ class VivaTPSSUP(TPS1200PSUP):
     def set_power_fail_autorestart(
         self,
         autorestart: bool
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 14006, ``SUP_SetPowerFailAutoRestart``
 
@@ -45,7 +45,7 @@ class VivaTPSSUP(TPS1200PSUP):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NA``: Command not available.
 
         """

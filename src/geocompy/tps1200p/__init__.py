@@ -35,7 +35,7 @@ import re
 import logging
 from time import sleep
 from traceback import format_exc
-from typing import Callable, Iterable, Any
+from typing import Callable, Iterable, Any, overload, TypeVar
 
 from serial import SerialException, SerialTimeoutException
 
@@ -61,6 +61,9 @@ from .mot import TPS1200PMOT
 from .sup import TPS1200PSUP
 from .tmc import TPS1200PTMC
 from .grc import TPS1200PGRC, rpcnames
+
+
+_T = TypeVar("_T")
 
 
 class TPS1200P(GeoComProtocol):
@@ -180,12 +183,17 @@ class TPS1200P(GeoComProtocol):
 
         self._precision = 15
         resp = self.get_double_precision()
-        if resp.comcode and resp.rpccode:
-            self._precision = resp.params["digits"]
+        if resp.params is not None:
+            self._precision = resp.params
+        else:
+            self._logger.error(
+                f"Could not syncronize double precision, "
+                f"defaulting to {self._precision:d}"
+            )
 
         self._logger.info("Connection initialized")
 
-    def get_double_precision(self) -> GeoComResponse:
+    def get_double_precision(self) -> GeoComResponse[int]:
         """
         RPC 108, ``COM_GetDoublePrecision``
 
@@ -195,8 +203,8 @@ class TPS1200P(GeoComProtocol):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **digits** (`int`): Floating point decimal places.
+            Params:
+                - `int`: Floating point decimal places.
 
         See Also
         --------
@@ -204,13 +212,13 @@ class TPS1200P(GeoComProtocol):
         """
         return self.request(
             108,
-            parsers={"digits": int}
+            parsers=int
         )
 
     def set_double_precision(
         self,
         digits: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 107, ``COM_SetDoublePrecision``
 
@@ -230,16 +238,36 @@ class TPS1200P(GeoComProtocol):
         --------
         get_double_precision
         """
-        response = self.request(107, [digits])
+        response: GeoComResponse[None] = self.request(107, [digits])
         if response.comcode and response.rpccode:
             self._precision = digits
         return response
 
+    @overload
     def request(
         self,
         rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = [],
-        parsers: dict[str, Callable[[str], Any]] | None = None
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: Callable[[str], _T] | None = None
+    ) -> GeoComResponse[_T]: ...
+
+    @overload
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: Iterable[Callable[[str], Any]] | None = None
+    ) -> GeoComResponse[tuple]: ...
+
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: (
+            Iterable[Callable[[str], Any]]
+            | Callable[[str], Any]
+            | None
+        ) = None
     ) -> GeoComResponse:
         """
         Executes a TPS1200+ RPC request and returns the parsed GeoCom
@@ -253,11 +281,12 @@ class TPS1200P(GeoComProtocol):
         ----------
         rpc : int
             Number of the RPC to execute.
-        params : Iterable[int | float | bool | str | Angle | Byte], optional
-            Parameters for the request, by default []
-        parsers : dict[str, Callable[[str], Any]] | None, optional
-            Parser functions for the values in the RPC response
-            (Maps the parser functions to the names of the parameters),
+        params : Iterable[int | float | bool | str | Angle | Byte]
+            Parameters for the request, by default ()
+        parsers : Iterable[Callable[[str], Any]] \
+                  | Callable[[str], Any] \
+                  | None, optional
+            Parser functions for the values in the RPC response,
             by default None
 
         Returns
@@ -296,9 +325,7 @@ class TPS1200P(GeoComProtocol):
 
         >>> ts.request(
         ...     9030, # AUT_GetFineAdjustMode
-        ...     parsers={
-        ...         "adjmode": ts.aut.ADJMODE.parse
-        ...     }
+        ...     [enumparser(ts.aut.ADJMODE)]
         ... )
 
         Execute command with both input and output parameters:
@@ -306,11 +333,11 @@ class TPS1200P(GeoComProtocol):
         >>> ts.request(
         ...     2108, # TMC_GetSimpleMea
         ...     [5000, ts.tmc.INCLINEPRG.AUTO.value],
-        ...     {
-        ...         "hz": Angle.parse,
-        ...         "v": Angle.parse,
-        ...         "dist": float
-        ...     }
+        ...     [
+        ...         Angle.parse,
+        ...         Angle.parse,
+        ...         float
+        ...     ]
         ... )
         """
         strparams: list[str] = []
@@ -361,16 +388,36 @@ class TPS1200P(GeoComProtocol):
         response = self.parse_response(
             cmd,
             answer,
-            parsers if parsers is not None else {}
+            parsers
         )
         self._logger.debug(response)
         return response
+
+    @overload
+    def parse_response(
+        self,
+        cmd: str,
+        response: str,
+        parsers: Callable[[str], _T] | None = None
+    ) -> GeoComResponse[_T]: ...
+
+    @overload
+    def parse_response(
+        self,
+        cmd: str,
+        response: str,
+        parsers: Iterable[Callable[[str], Any]] | None = None
+    ) -> GeoComResponse[tuple]: ...
 
     def parse_response(
         self,
         cmd: str,
         response: str,
-        parsers: dict[str, Callable[[str], Any]]
+        parsers: (
+            Iterable[Callable[[str], Any]]
+            | Callable[[str], Any]
+            | None
+        ) = None
     ) -> GeoComResponse:
         """
         Parses RPC response and constructs GeoComResponse
@@ -382,9 +429,11 @@ class TPS1200P(GeoComProtocol):
             Full, serialized request, that invoked the response.
         response : str
             Full, received response.
-        parsers : dict[str, Callable[[str], Any]]
-            Parser functions for the values in the RPC response.
-            (Maps the parser functions to the names of the parameters.)
+        parsers : Iterable[Callable[[str], Any]] \
+                  | Callable[[str], Any] \
+                  | None, optional
+            Parser functions for the values in the RPC response,
+            by default None
 
         Returns
         -------
@@ -408,18 +457,23 @@ class TPS1200P(GeoComProtocol):
                 response,
                 TPS1200PGRC.COM_CANT_DECODE,
                 TPS1200PGRC.UNDEFINED,
-                0,
-                {}
+                0
             )
 
         groups = m.groupdict()
         values = groups.get("params", "")
         if values is None:
             values = ""
-        params: dict = {}
+
+        if parsers is None:
+            parsers = ()
+        elif not isinstance(parsers, Iterable):
+            parsers = (parsers,)
+
+        params: list = []
         try:
-            for (name, func), value in zip(parsers.items(), values.split(",")):
-                params[name] = func(value)
+            for func, value in zip(parsers, values.split(",")):
+                params.append(func(value))
         except Exception:
             return GeoComResponse(
                 rpcname,
@@ -427,12 +481,19 @@ class TPS1200P(GeoComProtocol):
                 response,
                 TPS1200PGRC.COM_CANT_DECODE,
                 TPS1200PGRC.UNDEFINED,
-                0,
-                {}
+                0
             )
 
         comrc = TPS1200PGRC(int(groups["comrc"]))
         rc = TPS1200PGRC(int(groups["rc"]))
+        match len(params):
+            case 0:
+                params_final = None
+            case 1:
+                params_final = params[0]
+            case _:
+                params_final = tuple(params)
+
         return GeoComResponse(
             rpcname,
             cmd,
@@ -440,5 +501,5 @@ class TPS1200P(GeoComProtocol):
             comrc,
             rc,
             int(groups["tr"]),
-            params
+            params_final
         )

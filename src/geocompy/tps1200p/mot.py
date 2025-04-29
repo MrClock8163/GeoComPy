@@ -52,7 +52,7 @@ class TPS1200PMOT(GeoComSubsystem):
         # 5, 6 do not use (why?)
         TERM = 7  # : Terminate current task.
 
-    def read_lock_status(self) -> GeoComResponse:
+    def read_lock_status(self) -> GeoComResponse[LOCKSTATUS]:
         """
         RPC 23400, ``IMG_GetTccConfig``
 
@@ -61,9 +61,9 @@ class TPS1200PMOT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **status** (`LOCKSTATUS`): ATR lock status.
-            - Error codes:
+            Params:
+                - `LOCKSTATUS`: ATR lock status.
+            Error codes:
                 - ``NOT_IMPL``: Motorization not available.
 
         See Also
@@ -73,15 +73,13 @@ class TPS1200PMOT(GeoComSubsystem):
         """
         return self._request(
             6021,
-            parsers={
-                "status": enumparser(self.LOCKSTATUS)
-            }
+            parsers=enumparser(self.LOCKSTATUS)
         )
 
     def start_controller(
         self,
         mode: MODE | str = MODE.MANUPOS
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 6001, ``MOT_StartController``
 
@@ -95,7 +93,7 @@ class TPS1200PMOT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Control mode is not appropriate for velocity
                   control.
                 - ``NOT_IMPL``: Motorization not available.
@@ -118,7 +116,7 @@ class TPS1200PMOT(GeoComSubsystem):
     def stop_controller(
         self,
         mode: STOPMODE | str = STOPMODE.NORMAL
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 6002, ``MOT_StopController``
 
@@ -132,7 +130,7 @@ class TPS1200PMOT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``MOT_NOT_BUSY``: Controller is not active.
 
         See Also
@@ -152,7 +150,7 @@ class TPS1200PMOT(GeoComSubsystem):
         self,
         hz: Angle,
         v: Angle
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 6004, ``MOT_SetVelocity``
 
@@ -169,7 +167,7 @@ class TPS1200PMOT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Velocities not within acceptable range.
                 - ``MOT_NOT_CONFIG``: Motor controller was not started,
                   or is already busy with continuous task.

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from ..data import toenum
+from ..data import toenum, parsebool
 from ..protocols import GeoComResponse
 from ..tps1200p.edm import TPS1200PEDM
 
@@ -43,7 +43,7 @@ class VivaTPSEDM(TPS1200PEDM):
     def is_cont_meas_active(
         self,
         mode: MEASUREMENTTYPE | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[bool]:
         """
         RPC 1070, ``EDM_IsContMeasActive``
 
@@ -58,23 +58,21 @@ class VivaTPSEDM(TPS1200PEDM):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **active** (`bool`): Continuous measurement is active.
+            Params:
+                - `bool`: Continuous measurement is active.
 
         """
         _mode = toenum(self.MEASUREMENTTYPE, mode)
         return self._request(
             1070,
             [_mode.value],
-            {
-                "active": bool
-            }
+            parsebool
         )
 
     def set_boomerang_filter(
         self,
         state: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 1061, ``EDM_SetBoomerangFilter``
 

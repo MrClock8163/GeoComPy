@@ -18,25 +18,47 @@ Types
 - ``GsiOnlineProtocol``
 - ``GsiOnlineSubsystem``
 """
+from __future__ import annotations
+
 from enum import IntEnum
 from logging import Logger
-from typing import Any, Callable, Iterable, Literal, Generic, TypeVar
+from typing import (
+    Any, Callable, Iterable, Literal,
+    Generic, TypeVar, overload
+)
 
 from .communication import Connection, get_logger
 from .data import Angle, Byte
 
 
 _T = TypeVar("_T")
+_P = TypeVar("_P", bound=Any)
 
 
 class GeoComReturnCode(IntEnum):
     """Base class for all GeoCom return code enums."""
 
 
-class GeoComResponse:
+class GeoComResponse(Generic[_P]):
     """
     Container class for parsed GeoCom responses.
 
+    The response encapsulates the original command, that was sent, and the
+    response received, as well as the codes and parameters extracted from
+    the response.
+
+    The `params` usually takes 3 types of values:
+
+    - **None**: the response explicitly returned no values
+    - **Scalar**: the response returned a single parameter
+    - **Sequence** (usually a `tuple`): the response returned multiple
+      parameters
+
+    Warning
+    -------
+    The `params` will be also `None`, if the parameter parsing failed for
+    some reason, to signal the unsuccessful operation. This error case must
+    be handled before using the returned values.
     """
 
     def __init__(
@@ -47,7 +69,7 @@ class GeoComResponse:
         comcode: GeoComReturnCode,
         rpccode: GeoComReturnCode,
         trans: int,
-        params: dict[str, Any]
+        params: _P | None = None
     ):
         """
         Parameters
@@ -67,9 +89,9 @@ class GeoComResponse:
             the command.
         trans : int
             Parsed transaction ID.
-        params : dict[str, Any]
+        params : Any | None, optional
             Collection of parsed response parameters. The content
-            is dependent on the executed function.
+            is dependent on the executed function. (default: None)
         """
         self.rpcname: str = rpcname
         """Name of the GeoCom function, that correspondes to the RPC,
@@ -86,7 +108,7 @@ class GeoComResponse:
             the command."""
         self.trans: int = trans
         """Parsed transaction ID."""
-        self.params: dict[str, Any] = params
+        self.params: _P | None = params
         """Collection of parsed response parameters. The content
             is dependent on the executed function."""
 
@@ -101,6 +123,39 @@ class GeoComResponse:
 
     def __bool__(self) -> bool:
         return bool(self.comcode) and bool(self.rpccode)
+
+    def map_params(
+        self,
+        transformer: Callable[[_P | None], _T | None]
+    ) -> GeoComResponse[_T]:
+        """
+        Returns a new response object with the metadata maintained, but
+        the parameters transformed with the supplied function.
+
+        Parameters
+        ----------
+        transformer : Callable[[_P  |  None], _T  |  None]
+            Function to transform the params to new values.
+
+        Returns
+        -------
+        GeoComResponse
+            Response with transformed parameters.
+        """
+        try:
+            params = transformer(self.params)
+        except Exception:
+            params = None
+
+        return GeoComResponse(
+            self.rpcname,
+            self.cmd,
+            self.response,
+            self.comcode,
+            self.rpccode,
+            self.trans,
+            params
+        )
 
 
 class GeoComProtocol:
@@ -129,11 +184,31 @@ class GeoComProtocol:
             logger = get_logger("/dev/null")
         self._logger: Logger = logger
 
+    @overload
     def request(
         self,
         rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = [],
-        parsers: dict[str, Callable[[str], Any]] | None = None
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: Callable[[str], _T] | None = None
+    ) -> GeoComResponse[_T]: ...
+
+    @overload
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: Iterable[Callable[[str], Any]] | None = None
+    ) -> GeoComResponse[tuple]: ...
+
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: (
+            Iterable[Callable[[str], Any]]
+            | Callable[[str], Any]
+            | None
+        ) = None
     ) -> GeoComResponse:
         """
         Executes an RPC request and returns the parsed GeoCom response.
@@ -146,11 +221,12 @@ class GeoComProtocol:
         ----------
         rpc : int
             Number of the RPC to execute.
-        params : Iterable[int | float | bool | str | Angle | Byte], optional
-            Parameters for the request, by default []
-        parsers : dict[str, Callable[[str], Any]] | None, optional
-            Parser functions for the values in the RPC response
-            (Maps the parser functions to the names of the parameters),
+        params : Iterable[int | float | bool | str | Angle | Byte]
+            Parameters for the request, by default ()
+        parsers : Iterable[Callable[[str], Any]] \
+                  | Callable[[str], Any] \
+                  | None, optional
+            Parser functions for the values in the RPC response,
             by default None
 
         Returns
@@ -166,11 +242,31 @@ class GeoComProtocol:
         """
         raise NotImplementedError()
 
+    @overload
     def parse_response(
         cls,
         cmd: str,
         response: str,
-        parsers: dict[str, Callable[[str], Any]]
+        parsers: Callable[[str], _T] | None = None
+    ) -> GeoComResponse[_T]: ...
+
+    @overload
+    def parse_response(
+        cls,
+        cmd: str,
+        response: str,
+        parsers: Iterable[Callable[[str], Any]] | None = None
+    ) -> GeoComResponse[tuple]: ...
+
+    def parse_response(
+        cls,
+        cmd: str,
+        response: str,
+        parsers: (
+            Iterable[Callable[[str], Any]]
+            | Callable[[str], Any]
+            | None
+        ) = None
     ) -> GeoComResponse:
         """
         Parses RPC response and constructs :class:`GeoComResponse`
@@ -182,9 +278,11 @@ class GeoComProtocol:
             Full, serialized request, that invoked the response.
         response : str
             Full, received response.
-        parsers : dict[str, Callable[[str], Any]]
-            Parser functions for the values in the RPC response.
-            (Maps the parser functions to the names of the parameters.)
+        parsers : Iterable[Callable[[str], Any]] \
+                  | Callable[[str], Any] \
+                  | None, optional
+            Parser functions for the values in the RPC response,
+            by default None
 
         Returns
         -------
@@ -227,7 +325,7 @@ class GsiOnlineResponse(Generic[_T]):
         desc: str,
         cmd: str,
         response: str,
-        value: _T,
+        value: _T | None,
         comment: str = ""
     ):
         """
@@ -253,7 +351,7 @@ class GsiOnlineResponse(Generic[_T]):
         """Full, serialized command, that invoked this response."""
         self.response: str = response
         """Full, received response."""
-        self.value: _T = value
+        self.value: _T | None = value
         """Parsed response value. The content is dependent on the
         executed command."""
         self.comment: str = comment

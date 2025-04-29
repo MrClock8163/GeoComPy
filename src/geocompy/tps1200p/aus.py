@@ -38,7 +38,7 @@ class TPS1200PAUS(GeoComSubsystem):
         OFF = 0
         ON = 1
 
-    def get_user_atr_state(self) -> GeoComResponse:
+    def get_user_atr_state(self) -> GeoComResponse[ONOFF]:
         """
         RPC 18006, ``AUS_GetUserAtrState``
 
@@ -47,10 +47,10 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): current ATR state
+            Params:
+                - `ONOFF`: current ATR state
 
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: ATR is not available.
 
         Notes
@@ -63,15 +63,13 @@ class TPS1200PAUS(GeoComSubsystem):
         """
         return self._request(
             18006,
-            parsers={
-                "state": enumparser(self.ONOFF)
-            }
+            parsers=enumparser(self.ONOFF)
         )
 
     def set_user_atr_state(
         self,
         state: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 18005, ``AUS_SetUserAtrState``
 
@@ -85,7 +83,7 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: ATR is not available.
 
         Notes
@@ -104,7 +102,7 @@ class TPS1200PAUS(GeoComSubsystem):
         _state = toenum(self.ONOFF, state)
         return self._request(18005, [_state.value])
 
-    def get_user_lock_state(self) -> GeoComResponse:
+    def get_user_lock_state(self) -> GeoComResponse[ONOFF]:
         """
         RPC 18005, ``AUS_GetUserLockState``
 
@@ -113,10 +111,10 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): current ATR state
+            Params:
+                - `ONOFF`: current ATR state
 
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: ATR is not available.
 
         See Also
@@ -126,15 +124,13 @@ class TPS1200PAUS(GeoComSubsystem):
         """
         return self._request(
             18008,
-            parsers={
-                "state": enumparser(self.ONOFF)
-            }
+            parsers=enumparser(self.ONOFF)
         )
 
     def set_user_lock_state(
         self,
         state: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 18007, ``AUS_SetUserLockState``
 
@@ -148,7 +144,7 @@ class TPS1200PAUS(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: ATR is not available.
 
         Notes

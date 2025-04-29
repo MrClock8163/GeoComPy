@@ -16,7 +16,10 @@ from __future__ import annotations
 
 from enum import Enum
 
-from ..data import toenum
+from ..data import (
+    toenum,
+    parsebool
+)
 from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
@@ -39,7 +42,7 @@ class TPS1200PCOM(GeoComSubsystem):
         LOCAL = 0
         REMOTE = 1
 
-    def get_sw_version(self) -> GeoComResponse:
+    def get_sw_version(self) -> GeoComResponse[tuple[int, int, int]]:
         """
         RPC 110, ``COM_GetSWVersion``
 
@@ -48,10 +51,10 @@ class TPS1200PCOM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **release** (`int`): Release number.
-                - **version** (`int`): Version number.
-                - **subversion** (`int`): Subversion number.
+            Params:
+                - `int`: Release number.
+                - `int`: Version number.
+                - `int`: Subversion number.
 
         See Also
         --------
@@ -59,17 +62,13 @@ class TPS1200PCOM(GeoComSubsystem):
         """
         return self._request(
             110,
-            parsers={
-                "release": int,
-                "version": int,
-                "subversion": int
-            }
+            parsers=(int, int, int)
         )
 
     def switch_on(
         self,
         onmode: STARTUPMODE | str = STARTUPMODE.REMOTE
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 111, ``COM_SwitchOnTPS``
 
@@ -83,7 +82,7 @@ class TPS1200PCOM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``NOT_IMPL``: Instrument is already on.
 
         Notes
@@ -104,7 +103,7 @@ class TPS1200PCOM(GeoComSubsystem):
     def switch_off(
         self,
         offmode: STOPMODE | str = STOPMODE.SHUTDOWN
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 112, ``COM_SwitchOffTPS``
 
@@ -129,7 +128,7 @@ class TPS1200PCOM(GeoComSubsystem):
             [_offmode.value]
         )
 
-    def nullproc(self) -> GeoComResponse:
+    def nullproc(self) -> GeoComResponse[None]:
         """
         RPC 0, ``COM_NullProc``
 
@@ -138,7 +137,7 @@ class TPS1200PCOM(GeoComSubsystem):
         """
         return self._request(0)
 
-    def get_binary_available(self) -> GeoComResponse:
+    def get_binary_available(self) -> GeoComResponse[bool]:
         """
         RPC 113, ``COM_GetBinaryAvailable``
 
@@ -147,8 +146,8 @@ class TPS1200PCOM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **available** (`bool`): Availability of binary mode.
+            Params:
+                - `bool`: Availability of binary mode.
 
         See Also
         --------
@@ -156,15 +155,13 @@ class TPS1200PCOM(GeoComSubsystem):
         """
         return self._request(
             113,
-            parsers={
-                "available": bool
-            }
+            parsers=parsebool
         )
 
     def set_binary_available(
         self,
         enable: bool
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 114, ``COM_SetBinaryAvailable``
 

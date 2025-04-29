@@ -86,7 +86,7 @@ class TPS1200PCSV(GeoComSubsystem):
         EXTERNAL = 1
         INTERNAL = 2
 
-    def get_instrument_no(self) -> GeoComResponse:
+    def get_instrument_no(self) -> GeoComResponse[int]:
         """
         RPC 5003, ``CSV_GetInstrumentNo``
 
@@ -95,18 +95,16 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **serial** (`int`): Serial number.
+            Params:
+                - `int`: Serial number.
 
         """
         return self._request(
             5003,
-            parsers={
-                "serial": int
-            }
+            parsers=int
         )
 
-    def get_instrument_name(self) -> GeoComResponse:
+    def get_instrument_name(self) -> GeoComResponse[str]:
         """
         RPC 5004, ``CSV_GetInstrumentName``
 
@@ -115,18 +113,18 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **name** (`str`): Instrument name.
+            Params:
+                - `str`: Instrument name.
 
         """
         return self._request(
             5004,
-            parsers={
-                "name": parsestr
-            }
+            parsers=parsestr
         )
 
-    def get_device_config(self) -> GeoComResponse:
+    def get_device_config(
+        self
+    ) -> GeoComResponse[tuple[DEVICECLASS, DEVICETYPE]]:
         """
         RPC 5035, ``CSV_GetDeviceConfig``
 
@@ -136,21 +134,21 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **deviceclass** (`DEVICECLASS`): Class of the instrument.
-                - **devicetype** (`DEVICETYPE`): Configurations of the
+            Params:
+                - `DEVICECLASS`: Class of the instrument.
+                - `DEVICETYPE`: Configurations of the
                   components.
 
         """
         return self._request(
             5035,
-            parsers={
-                "deviceclass": enumparser(self.DEVICECLASS),
-                "devicetype": enumparser(self.DEVICETYPE)
-            }
+            parsers=(
+                enumparser(self.DEVICECLASS),
+                enumparser(self.DEVICETYPE)
+            )
         )
 
-    def get_reflectorless_class(self) -> GeoComResponse:
+    def get_reflectorless_class(self) -> GeoComResponse[REFLESSCLASS]:
         """
         RPC 5100, ``CSV_GetReflectorlessClass``
 
@@ -160,19 +158,17 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **reflessclass** (`REFLESSCLASS`): Class of the
+            Params:
+                - `REFLESSCLASS`: Class of the
                   reflectorless EDM module.
 
         """
         return self._request(
             5100,
-            parsers={
-                "reflessclass": enumparser(self.REFLESSCLASS)
-            }
+            parsers=enumparser(self.REFLESSCLASS)
         )
 
-    def get_date_time(self) -> GeoComResponse:
+    def get_date_time(self) -> GeoComResponse[datetime]:
         """
         RPC 5008, ``CSV_GetDateTime``
 
@@ -181,8 +177,8 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **time** (`datetime`): Current date and time.
+            Params:
+                - `datetime`: Current date and time.
 
         See Also
         --------
@@ -190,32 +186,41 @@ class TPS1200PCSV(GeoComSubsystem):
         get_date_time_centisec
 
         """
-        response = self._request(
+        def make_datetime(
+            params: tuple[int, Byte, Byte, Byte, Byte, Byte] | None
+        ) -> datetime | None:
+            if params is None:
+                return None
+
+            return datetime(
+                params[0],
+                int(params[1]),
+                int(params[2]),
+                int(params[3]),
+                int(params[4]),
+                int(params[5])
+            )
+
+        response: GeoComResponse[
+            tuple[int, Byte, Byte, Byte, Byte, Byte]
+        ] = self._request(
             5008,
-            parsers={
-                "year": int,
-                "month": Byte.parse,
-                "day": Byte.parse,
-                "hour": Byte.parse,
-                "minute": Byte.parse,
-                "second": Byte.parse
-            }
+            parsers=(
+                int,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse,
+                Byte.parse
+            )
         )
-        time = datetime(
-            int(response.params["year"]),
-            int(response.params["month"]),
-            int(response.params["day"]),
-            int(response.params["hour"]),
-            int(response.params["minute"]),
-            int(response.params["second"])
-        )
-        response.params = {"time": time}
-        return response
+
+        return response.map_params(make_datetime)
 
     def set_date_time(
         self,
         time: datetime
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 5007, ``CSV_SetDateTime``
 
@@ -243,7 +248,7 @@ class TPS1200PCSV(GeoComSubsystem):
             ]
         )
 
-    def get_sw_version(self) -> GeoComResponse:
+    def get_sw_version(self) -> GeoComResponse[tuple[int, int, int]]:
         """
         RPC 5034, ``CSV_GetSWVersion``
 
@@ -252,22 +257,20 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **release** (`int`): Release number.
-                - **version** (`int`): Version number.
-                - **subversion** (`int`): Subversion number.
+            Params:
+                - `int`: Release number.
+                - `int`: Version number.
+                - `int`: Subversion number.
 
         """
         return self._request(
             5034,
-            parsers={
-                "release": int,
-                "version": int,
-                "subversion": int
-            }
+            parsers=(int, int, int)
         )
 
-    def check_power(self) -> GeoComResponse:
+    def check_power(
+        self
+    ) -> GeoComResponse[tuple[int, POWERSOURCE, POWERSOURCE]]:
         """
         RPC 5039, ``CSV_CheckPower``
 
@@ -276,22 +279,22 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **capacity** (`int`): Remaining capacity [%].
-                - **source** (`POWERSOURCE`): Active power source.
-                - **suggested** (`POWERSOURCE`): Suggested power source.
+            Params:
+                - `int`: Remaining capacity [%].
+                - `POWERSOURCE`: Active power source.
+                - `POWERSOURCE`: Suggested power source.
 
         """
         return self._request(
             5039,
-            parsers={
-                "capacity": int,
-                "source": enumparser(self.POWERSOURCE),
-                "suggested": enumparser(self.POWERSOURCE)
-            }
+            parsers=(
+                int,
+                enumparser(self.POWERSOURCE),
+                enumparser(self.POWERSOURCE)
+            )
         )
 
-    def get_int_temp(self) -> GeoComResponse:
+    def get_int_temp(self) -> GeoComResponse[int]:
         """
         RPC 5011, ``CSV_GetIntTemp``
 
@@ -301,18 +304,16 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **temp** (`int`): Internal temperature [°C].
+            Params:
+                - `int`: Internal temperature [°C].
 
         """
         return self._request(
             5011,
-            parsers={
-                "temp": int
-            }
+            parsers=int
         )
 
-    def get_date_time_centisec(self) -> GeoComResponse:
+    def get_date_time_centisec(self) -> GeoComResponse[datetime]:
         """
         RPC 5117, ``CSV_GetDateTimeCentiSec``
 
@@ -322,8 +323,8 @@ class TPS1200PCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **time** (`datetime`): Current date and time.
+            Params:
+                - `datetime`: Current date and time.
 
         See Also
         --------
@@ -331,26 +332,32 @@ class TPS1200PCSV(GeoComSubsystem):
         set_date_time
 
         """
+        def make_datetime(
+            params: tuple[int, int, int, int, int, int, int] | None
+        ) -> datetime | None:
+            if params is None:
+                return None
+
+            return datetime(
+                params[0],
+                int(params[1]),
+                int(params[2]),
+                int(params[3]),
+                int(params[4]),
+                int(params[5]),
+                int(params[5]) * 10000
+            )
+
         response = self._request(
             5117,
-            parsers={
-                "year": int,
-                "month": int,
-                "day": int,
-                "hour": int,
-                "minute": int,
-                "second": int,
-                "centisec": int
-            }
+            parsers=(
+                int,
+                int,
+                int,
+                int,
+                int,
+                int,
+                int
+            )
         )
-        time = datetime(
-            response.params["year"],
-            response.params["month"],
-            response.params["day"],
-            response.params["hour"],
-            response.params["minute"],
-            response.params["second"],
-            response.params["centisec"] * 10000
-        )
-        response.params = {"time": time}
-        return response
+        return response.map_params(make_datetime)

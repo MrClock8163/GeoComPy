@@ -93,7 +93,7 @@ class TPS1200PBAP(GeoComSubsystem):
         OFF = 0
         ON = 1
 
-    def get_target_type(self) -> GeoComResponse:
+    def get_target_type(self) -> GeoComResponse[TARGETTYPE]:
         """
         RPC 17022, ``BAP_GetTargetType``
 
@@ -102,8 +102,8 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **targettype** (`TARGETTYPE`): Current EMD target type.
+            Params:
+                - `TARGETTYPE`: Current EMD target type.
 
         See Also
         --------
@@ -112,15 +112,13 @@ class TPS1200PBAP(GeoComSubsystem):
         """
         return self._request(
             17022,
-            parsers={
-                "targettype": enumparser(self.TARGETTYPE)
-            }
+            parsers=enumparser(self.TARGETTYPE)
         )
 
     def set_target_type(
         self,
         targettype: TARGETTYPE | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 17021, ``BAP_SetTargetType``
 
@@ -135,7 +133,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Target type is not available.
 
         See Also
@@ -149,7 +147,7 @@ class TPS1200PBAP(GeoComSubsystem):
             [_targettype.value]
         )
 
-    def get_prism_type(self) -> GeoComResponse:
+    def get_prism_type(self) -> GeoComResponse[PRISMTYPE]:
         """
         RPC 17009, ``BAP_GetPrismType``
 
@@ -158,9 +156,9 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **prismtype** (`PRISMTYPE`): Current prism type.
-            - Error codes:
+            Params:
+                - `PRISMTYPE`: Current prism type.
+            Error codes:
                 - ``IVRESULT``: EDM is set to reflectorless mode.
 
         See Also
@@ -169,15 +167,13 @@ class TPS1200PBAP(GeoComSubsystem):
         """
         return self._request(
             17009,
-            parsers={
-                "prismtype": enumparser(self.PRISMTYPE)
-            }
+            parsers=enumparser(self.PRISMTYPE)
         )
 
     def set_prism_type(
         self,
         prismtype: PRISMTYPE | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 17008, ``BAP_SetPrismType``
 
@@ -192,7 +188,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Prism type is not available.
 
         See Also
@@ -206,7 +202,7 @@ class TPS1200PBAP(GeoComSubsystem):
             [_prismtype.value]
         )
 
-    def get_prism_type2(self) -> GeoComResponse:
+    def get_prism_type2(self) -> GeoComResponse[tuple[PRISMTYPE, str]]:
         """
         RPC 17031, ``BAP_GetPrismType2``
 
@@ -215,9 +211,9 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **prismtype** (`PRISMTYPE`): Current prism type.
-                - **name** (`str`): Prism type name.
+            Params:
+                - `PRISMTYPE`: Current prism type.
+                - `str`: Prism type name.
 
         See Also
         --------
@@ -226,17 +222,14 @@ class TPS1200PBAP(GeoComSubsystem):
         """
         return self._request(
             17031,
-            parsers={
-                "prismtype": enumparser(self.PRISMTYPE),
-                "name": parsestr
-            }
+            parsers=(enumparser(self.PRISMTYPE), parsestr)
         )
 
     def set_prism_type2(
         self,
         prismtype: PRISMTYPE | str,
         name: str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 17030, ``BAP_SetPrismType2``
 
@@ -252,7 +245,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Prism type is not available, a user prism
                   is not defined.
 
@@ -270,7 +263,7 @@ class TPS1200PBAP(GeoComSubsystem):
     def get_prism_def(
         self,
         prismtype: PRISMTYPE | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[str, float, REFLTYPE]]:
         """
         RPC 17023, ``BAP_GetPrismDef``
 
@@ -284,11 +277,11 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **name** (`str`): Name of the prism.
-                - **const** (`float`): Additive prism constant.
-                - **refltype** (`REFLTYPE`): Reflector type.
-            - Error codes:
+            Params:
+                - `str`: Name of the prism.
+                - `float`: Additive prism constant.
+                - `REFLTYPE`: Reflector type.
+            Error codes:
                 - ``IVPARAM``: Invalid prism type.
 
         See Also
@@ -299,17 +292,17 @@ class TPS1200PBAP(GeoComSubsystem):
         return self._request(
             17023,
             [_prismtype.value],
-            {
-                "name": parsestr,
-                "const": float,
-                "refltype": enumparser(self.REFLTYPE)
-            }
+            (
+                parsestr,
+                float,
+                enumparser(self.REFLTYPE)
+            )
         )
 
     def get_user_prism_def(
         self,
         name: str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[str, float, REFLTYPE]]:
         """
         RPC 17033, ``BAP_GetUserPrismDef``
 
@@ -323,11 +316,11 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **name** (`str`): Name of the prism.
-                - **const** (`float`): Additive prism constant.
-                - **refltype** (`REFLTYPE`): Reflector type.
-            - Error codes:
+            Params:
+                - `str`: Name of the prism.
+                - `float`: Additive prism constant.
+                - `REFLTYPE`: Reflector type.
+            Error codes:
                 - ``IVPARAM``: Invalid prism definition.
 
         See Also
@@ -340,11 +333,11 @@ class TPS1200PBAP(GeoComSubsystem):
         return self._request(
             17033,
             [name],
-            {
-                "const": float,
-                "refltype": enumparser(self.REFLTYPE),
-                "creator": parsestr
-            }
+            (
+                parsestr,
+                float,
+                enumparser(self.REFLTYPE)
+            )
         )
 
     def set_user_prism_def(
@@ -353,7 +346,7 @@ class TPS1200PBAP(GeoComSubsystem):
         const: float,
         refltype: REFLTYPE | str,
         creator: str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 17032, ``BAP_SetUserPrismDef``
 
@@ -373,7 +366,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Invalid prism definition.
                 - ``IVRESULT``: Prism definition is not set.
 
@@ -389,7 +382,7 @@ class TPS1200PBAP(GeoComSubsystem):
             [name, const, _refltype.value, creator]
         )
 
-    def get_meas_prg(self) -> GeoComResponse:
+    def get_meas_prg(self) -> GeoComResponse[MEASUREPRG]:
         """
         RPC 17018, ``BAP_GetMeasPrg``
 
@@ -398,8 +391,8 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **measprg** (`MEASUREPRG`): Current measurement program.
+            Params:
+                - `MEASUREPRG`: Current measurement program.
 
         See Also
         --------
@@ -407,15 +400,13 @@ class TPS1200PBAP(GeoComSubsystem):
         """
         return self._request(
             17018,
-            parsers={
-                "measprg": enumparser(self.MEASUREPRG)
-            }
+            parsers=enumparser(self.MEASUREPRG)
         )
 
     def set_meas_prg(
         self,
         measprg: MEASUREPRG | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 17019, ``BAP_SetMeasPrg``
 
@@ -429,7 +420,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``IVPARAM``: Measurement program is not available.
 
         See Also
@@ -446,7 +437,7 @@ class TPS1200PBAP(GeoComSubsystem):
     def meas_distance_angle(
         self,
         distmode: MEASUREPRG | str = MEASUREPRG.DEFDIST
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[Angle, Angle, float, MEASUREPRG]]:
         """
         RPC 17017, ``BAP_MeasDistanceAngle``
 
@@ -461,22 +452,22 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **dist** (`float`): Slope distance.
-                - **distmode** (`MEASUREPRG`): Actual distance mode.
-            - Info codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `float`: Slope distance.
+                - `MEASUREPRG`: Actual distance mode.
+            Info codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy cannot be guaranteed.
                 - ``TMC_ANGLE_ACCURACY_GUARANTEE``: Only angle measurement
                   valid, accuracy cannot be guaranteed.
-            - Warning codes:
+            Warning codes:
                 - ``TMC_ANGLE_NO_FULL_CORRECTION``: Only angle measurement
                   valid, accuracy cannot be guaranteed.
                 - ``TMC_ANGLE_OK``: Only angle measurement valid.
                 - ``TMC_NO_FULL_CORRECTION``: Measurement without full
                   correction.
-            - Error codes:
+            Error codes:
                 - ``AUT_ANGLE_ERROR``: Angle measurement error.
                 - ``AUT_BAD_ENVIRONMENT``: Bad environmental conditions.
                 - ``AUT_CALACC``: ATR calibration failed.
@@ -505,15 +496,15 @@ class TPS1200PBAP(GeoComSubsystem):
         return self._request(
             17017,
             [_distmode.value],
-            {
-                "hz": Angle.parse,
-                "v": Angle.parse,
-                "dist": float,
-                "distmode": enumparser(self.MEASUREPRG)
-            }
+            (
+                Angle.parse,
+                Angle.parse,
+                float,
+                enumparser(self.MEASUREPRG)
+            )
         )
 
-    def search_target(self) -> GeoComResponse:
+    def search_target(self) -> GeoComResponse[None]:
         """
         RPC 17020, ``BAP_SearchTarget``
 
@@ -522,7 +513,7 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``AUT_BAD_ENVIRONMENT``: Bad environmental conditions.
                 - ``AUT_DEV_ERROR``: Error in angle deviation calculation.
                 - ``AUT_ANGLE_ACCURACY``: Position not exactly reached.
@@ -544,7 +535,7 @@ class TPS1200PBAP(GeoComSubsystem):
         """
         return self._request(17020, [0])
 
-    def get_atr_setting(self) -> GeoComResponse:
+    def get_atr_setting(self) -> GeoComResponse[ATRSETTING]:
         """
         RPC 17034, ``BAP_GetATRSetting``
 
@@ -553,8 +544,8 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **atrsetting** (`ATRSETTING`): Current ATR setting.
+            Params:
+                - `ATRSETTING`: Current ATR setting.
 
         See Also
         --------
@@ -562,15 +553,13 @@ class TPS1200PBAP(GeoComSubsystem):
         """
         return self._request(
             17034,
-            parsers={
-                "atrsetting": enumparser(self.ATRSETTING)
-            }
+            parsers=enumparser(self.ATRSETTING)
         )
 
     def set_atr_setting(
         self,
         atrsetting: ATRSETTING | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 17035, ``BAP_SetATRSetting``
 
@@ -591,7 +580,7 @@ class TPS1200PBAP(GeoComSubsystem):
             [_atrsetting.value]
         )
 
-    def get_red_atr_fov(self) -> GeoComResponse:
+    def get_red_atr_fov(self) -> GeoComResponse[ONOFF]:
         """
         RPC 17036, ``BAP_GetRedATRFov``
 
@@ -600,8 +589,8 @@ class TPS1200PBAP(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **redfov** (`ONOFF`): State of the reduced FOV mode.
+            Params:
+                - `ONOFF`: State of the reduced FOV mode.
 
         See Also
         --------
@@ -609,15 +598,13 @@ class TPS1200PBAP(GeoComSubsystem):
         """
         return self._request(
             17036,
-            parsers={
-                "redfov": enumparser(self.ONOFF)
-            }
+            parsers=enumparser(self.ONOFF)
         )
 
     def set_red_atr_fov(
         self,
         redfov: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 17037, ``BAP_SetRedATRFov``
 

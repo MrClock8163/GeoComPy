@@ -11,6 +11,7 @@ Functions
 ---------
 
 - ``parsestr``
+- ``parsebool``
 - ``toenum``
 - ``enumparser``
 - ``gsiword``
@@ -87,6 +88,23 @@ def parsestr(value: str) -> str:
         return value[1:-1]
 
     return value
+
+
+def parsebool(value: str) -> bool:
+    """
+    Utility function to parse a serialized boolean value.
+
+    Parameters
+    ----------
+    value : str
+        Serialized value.
+
+    Returns
+    -------
+    bool
+        Parsed boolean.
+    """
+    return bool(int(value))
 
 
 def toenum(e: type[_E], value: _E | str) -> _E:

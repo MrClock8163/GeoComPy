@@ -37,7 +37,7 @@ class VivaTPSBAP(TPS1200PBAP):
         OFF = 0
         ON = 1
 
-    def get_atr_precise(self) -> GeoComResponse:
+    def get_atr_precise(self) -> GeoComResponse[ONOFF]:
         """
         RPC 17039, ``BAP_GetATRPrecise``
 
@@ -46,8 +46,8 @@ class VivaTPSBAP(TPS1200PBAP):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **state** (`ONOFF`): Current state of precise ATR mode.
+            Params:
+                - `ONOFF`: Current state of precise ATR mode.
 
         See Also
         --------
@@ -55,15 +55,13 @@ class VivaTPSBAP(TPS1200PBAP):
         """
         return self._request(
             17039,
-            parsers={
-                "state": enumparser(self.ONOFF)
-            }
+            parsers=enumparser(self.ONOFF)
         )
 
     def set_atr_precise(
         self,
         state: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 17040, ``BAP_SetATRPrecise``
 

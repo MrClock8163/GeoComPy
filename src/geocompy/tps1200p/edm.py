@@ -48,7 +48,7 @@ class TPS1200PEDM(GeoComSubsystem):
     def laserpointer(
         self,
         laser: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 1004, ``EDM_Laserpointer``
 
@@ -62,7 +62,7 @@ class TPS1200PEDM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
                   laserpointer.
 
@@ -73,7 +73,7 @@ class TPS1200PEDM(GeoComSubsystem):
             [_laser.value]
         )
 
-    def get_egl_intensity(self) -> GeoComResponse:
+    def get_egl_intensity(self) -> GeoComResponse[EGLINTENSITYTYPE]:
         """
         RPC 1058, ``EDM_GetEglIntensity``
 
@@ -82,25 +82,23 @@ class TPS1200PEDM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **intensity** (`EGLINTENSITYTYPE`): Current intensity
+            Params:
+                - `EGLINTENSITYTYPE`: Current intensity
                   mode.
-            - Error codes:
+            Error codes:
                 - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
                   EGL.
 
         """
         return self._request(
             1058,
-            parsers={
-                "intensity": enumparser(self.EGLINTENSITYTYPE)
-            }
+            parsers=enumparser(self.EGLINTENSITYTYPE)
         )
 
     def set_egl_intensity(
         self,
         intensity: EGLINTENSITYTYPE | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 1059, ``EDM_SetEglIntensity``
 
@@ -114,7 +112,7 @@ class TPS1200PEDM(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
                   EGL.
 

@@ -21,7 +21,8 @@ from ..data import (
     Angle,
     Coordinate,
     toenum,
-    enumparser
+    enumparser,
+    parsebool
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -103,7 +104,7 @@ class TPS1200PTMC(GeoComSubsystem):
         self,
         wait: int = 5000,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[Coordinate, int, Coordinate, int]]:
         """
         RPC 2082, ``TMC_GetCoordinate``
 
@@ -124,21 +125,21 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **coord** (`COORDINATE`): Calculated coordinate.
-                - **time** (`int`): Time of the coordinate acquisition.
-                - **coord_cont** (`COORDINATE`): Continuously calculated
+            Params:
+                - `COORDINATE`: Calculated coordinate.
+                - `int`: Time of the coordinate acquisition.
+                - `COORDINATE`: Continuously calculated
                   coordinate.
-                - **time_cont** (`int`): Time of the coordinate
+                - `int`: Time of the coordinate
                   acquisition.
-            - Warning codes:
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
                 - ``TMC_NO_FULL_CORRECTION``: Results are not corrected by
                   all sensors. Coordinates are available. Run check
                   commands to determine the missing correction.
-            - Error codes:
+            Error codes:
                 - ``TMC_ANGLE_OK``: Angles are measured, but no valid
                   distance was found.
                 - ``TMC_ANGLE_NO_FULL_CORRECTION``: Only angles are
@@ -160,44 +161,55 @@ class TPS1200PTMC(GeoComSubsystem):
         if_data_inc_corr_error
 
         """
+        def transform(
+            params: tuple[
+                float, float, float, int,
+                float, float, float, int
+            ] | None
+        ) -> tuple[Coordinate, int, Coordinate, int] | None:
+            if params is None:
+                return None
+
+            coord = Coordinate(
+                params[0],
+                params[1],
+                params[2]
+            )
+            coord_cont = Coordinate(
+                params[4],
+                params[5],
+                params[6]
+            )
+            return (
+                coord,
+                params[3],
+                coord_cont,
+                params[7]
+            )
+
         _mode = toenum(self.INCLINEPRG, mode)
         response = self._request(
             2082,
             [wait, _mode.value],
-            {
-                "east": float,
-                "north": float,
-                "height": float,
-                "time": int,
-                "east_cont": float,
-                "north_cont": float,
-                "height_cont": float,
-                "time_cont": int
-            }
+            (
+                float,
+                float,
+                float,
+                int,
+                float,
+                float,
+                float,
+                int
+            )
         )
-        coord = Coordinate(
-            response.params["east"],
-            response.params["north"],
-            response.params["height"]
-        )
-        coord_cont = Coordinate(
-            response.params["east_cont"],
-            response.params["north_cont"],
-            response.params["height_cont"]
-        )
-        response.params = {
-            "coord": coord,
-            "time": response.params["time"],
-            "coord_cont": coord_cont,
-            "time_cont": response.params["time_cont"]
-        }
-        return response
+
+        return response.map_params(transform)
 
     def get_simple_mea(
         self,
         wait: int = 5000,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[Angle, Angle, float]]:
         """
         RPC 2108, ``TMC_GetSimpleMea``
 
@@ -218,11 +230,11 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **dist** (`float`): Slope distance.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `float`: Slope distance.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -236,7 +248,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -256,17 +268,23 @@ class TPS1200PTMC(GeoComSubsystem):
         return self._request(
             2108,
             [wait, _mode.value],
-            {
-                "hz": Angle.parse,
-                "v": Angle.parse,
-                "dist": float
-            }
+            (
+                Angle.parse,
+                Angle.parse,
+                float
+            )
         )
 
     def get_angle_incline(
         self,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[
+        tuple[
+            Angle, Angle, Angle, int,
+            Angle, Angle, Angle, int,
+            FACEDEF
+        ]
+    ]:
         """
         RPC 2003, ``TMC_GetAngle``
 
@@ -281,17 +299,17 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **angleaccuracy** (`Angle`): Angular accuracy.
-                - **angletime** (`int`): Time of angle measurement.
-                - **crossincline** (`Angle`): Cross inclination.
-                - **lengthincline** (`Angle`): Lengthwise inclination.
-                - **inclineaccuracy** (`Angle`): Inclination accuracy.
-                - **inclinetime** (`int`): Time of inclination measurement.
-                - **face** (`FACEDEF`): Instrument face.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `Angle`: Angular accuracy.
+                - `int`: Time of angle measurement.
+                - `Angle`: Cross inclination.
+                - `Angle`: Lengthwise inclination.
+                - `Angle`: Inclination accuracy.
+                - `int`: Time of inclination measurement.
+                - `FACEDEF`: Instrument face.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -305,7 +323,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -325,23 +343,23 @@ class TPS1200PTMC(GeoComSubsystem):
         return self._request(
             2003,
             [_mode.value],
-            {
-                "hz": Angle.parse,
-                "v": Angle.parse,
-                "angleaccuracy": Angle.parse,
-                "angletime": int,
-                "crossincline": Angle.parse,
-                "lengthincline": Angle.parse,
-                "inclineaccuracy": Angle.parse,
-                "inclinetime": int,
-                "face": enumparser(self.FACEDEF)
-            }
+            (
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                int,
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                int,
+                enumparser(self.FACEDEF)
+            )
         )
 
     def get_angle(
         self,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[tuple[Angle, Angle]]:
         """
         RPC 2107, ``TMC_GetAngle5``
 
@@ -356,10 +374,10 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -373,7 +391,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -393,13 +411,13 @@ class TPS1200PTMC(GeoComSubsystem):
         return self._request(
             2107,
             [_mode.value],
-            {
-                "hz": Angle.parse,
-                "v": Angle.parse
-            }
+            (
+                Angle.parse,
+                Angle.parse
+            )
         )
 
-    def quick_dist(self) -> GeoComResponse:
+    def quick_dist(self) -> GeoComResponse[tuple[Angle, Angle, float]]:
         """
         RPC 2117, ``TMC_QuickDist``
 
@@ -409,11 +427,11 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **dist** (`float`): Slope distance.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `float`: Slope distance.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -427,7 +445,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -447,18 +465,23 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2117,
-            parsers={
-                "hz": Angle.parse,
-                "v": Angle.parse,
-                "dist": float
-            }
+            parsers=(
+                Angle.parse,
+                Angle.parse,
+                float
+            )
         )
 
     def get_full_meas(
         self,
         wait: int = 5000,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[
+        tuple[
+            Angle, Angle, Angle, Angle, Angle, Angle,
+            float, int
+        ]
+    ]:
         """
         RPC 2167, ``TMC_GetFullMeas``
 
@@ -479,16 +502,16 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **hz** (`Angle`): Horizontal angle.
-                - **v** (`Angle`): Vertical angle.
-                - **angleaccuracy** (`Angle`): Angular accuracy.
-                - **crossincline** (`Angle`): Cross inclination.
-                - **lengthincline** (`Angle`): Lengthwise inclination.
-                - **inclineaccuracy** (`Angle`): Inclination accuracy.
-                - **dist** (`float`): Slope distance.
-                - **disttime** (`int`): Time of distance measurement.
-            - Warning codes:
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `Angle`: Angular accuracy.
+                - `Angle`: Cross inclination.
+                - `Angle`: Lengthwise inclination.
+                - `Angle`: Inclination accuracy.
+                - `float`: Slope distance.
+                - `int`: Time of distance measurement.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -502,7 +525,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -522,23 +545,23 @@ class TPS1200PTMC(GeoComSubsystem):
         return self._request(
             2167,
             [wait, _mode.value],
-            {
-                "hz": float,
-                "v": float,
-                "angleaccuracy": float,
-                "crossincline": float,
-                "lengthincline": float,
-                "inclineaccuracy": float,
-                "dist": float,
-                "disttime": float
-            }
+            (
+                float,
+                float,
+                float,
+                float,
+                float,
+                float,
+                float,
+                float
+            )
         )
 
     def do_measure(
         self,
         command: MEASUREPRG | str = MEASUREPRG.DEFDIST,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2008, ``TMC_DoMeasure``
 
@@ -578,7 +601,7 @@ class TPS1200PTMC(GeoComSubsystem):
         distance: float,
         offset: float,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2019, ``TMC_SetHandDist``
 
@@ -598,7 +621,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Warning codes:
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -612,7 +635,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -634,7 +657,7 @@ class TPS1200PTMC(GeoComSubsystem):
             [distance, offset, _mode.value]
         )
 
-    def get_height(self) -> GeoComResponse:
+    def get_height(self) -> GeoComResponse[float]:
         """
         RPC 2011, ``TMC_GetHeight``
 
@@ -643,8 +666,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **height** (`float`): Current target height.
+            Params:
+                - `float`: Current target height.
 
         See Also
         --------
@@ -653,15 +676,13 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2011,
-            parsers={
-                "height": float
-            }
+            parsers=float
         )
 
     def set_height(
         self,
         height: float
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2012, ``TMC_SetHeight``
 
@@ -675,7 +696,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``TMC_BUSY``: TMC is currently busy, or target height
                   is not yet set.
                 - ``IVPARAM``: Invalid target height.
@@ -690,7 +711,9 @@ class TPS1200PTMC(GeoComSubsystem):
             [height]
         )
 
-    def get_atm_corr(self) -> GeoComResponse:
+    def get_atm_corr(
+        self
+    ) -> GeoComResponse[tuple[float, float, float, float]]:
         """
         RPC 2029, ``TMC_GetAtmCorr``
 
@@ -699,11 +722,11 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **wavelength** (`float`): EDM transmitter wavelength.
-                - **pressure** (`float`): Atmospheric pressure [mbar].
-                - **drytemp** (`float`): Dry temperature [°C].
-                - **wettemp** (`float`): Wet temperature [°C].
+            Params:
+                - `float`: EDM transmitter wavelength.
+                - `float`: Atmospheric pressure [mbar].
+                - `float`: Dry temperature [°C].
+                - `float`: Wet temperature [°C].
 
         See Also
         --------
@@ -712,12 +735,12 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2029,
-            parsers={
-                "wavelength": float,
-                "pressure": float,
-                "drytemp": float,
-                "wettemp": float
-            }
+            parsers=(
+                float,
+                float,
+                float,
+                float
+            )
         )
 
     def set_atm_corr(
@@ -726,7 +749,7 @@ class TPS1200PTMC(GeoComSubsystem):
         pressure: float,
         drytemp: float,
         wettemp: float
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2028, ``TMC_SetAtmCorr``
 
@@ -760,7 +783,7 @@ class TPS1200PTMC(GeoComSubsystem):
     def set_orientation(
         self,
         azimut: float
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2113, ``TMC_SetOrientation``
 
@@ -776,7 +799,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Warning codes:
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
@@ -790,7 +813,7 @@ class TPS1200PTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
-            - Error codes:
+            Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
                 - ``TMC_DIST_PPM``: Wrong EDM settings.
@@ -812,7 +835,7 @@ class TPS1200PTMC(GeoComSubsystem):
             [azimut]
         )
 
-    def get_prism_corr(self) -> GeoComResponse:
+    def get_prism_corr(self) -> GeoComResponse[float]:
         """
         RPC 2023, ``TMC_GetPrismCorr``
 
@@ -821,8 +844,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **const** (`float`): Prism constant.
+            Params:
+                - `float`: Prism constant.
 
         See Also
         --------
@@ -831,15 +854,13 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2023,
-            parsers={
-                "const": float
-            }
+            parsers=float
         )
 
     def set_prism_corr(
         self,
         const: float
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2024, ``TMC_SetPrismCorr``
 
@@ -860,7 +881,7 @@ class TPS1200PTMC(GeoComSubsystem):
             [const]
         )
 
-    def get_refractive_corr(self) -> GeoComResponse:
+    def get_refractive_corr(self) -> GeoComResponse[tuple[bool, float, float]]:
         """
         RPC 2031, ``TMC_GetRefractiveCorr``
 
@@ -869,10 +890,10 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **enabled** (`bool`): Refraction correction enabled.
-                - **earthradius** (`float`): Radius of the Earth.
-                - **coef** (`float`): Refraction coefficient.
+            Params:
+                - `bool`: Refraction correction enabled.
+                - `float`: Radius of the Earth.
+                - `float`: Refraction coefficient.
 
         See Also
         --------
@@ -881,11 +902,11 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2031,
-            parsers={
-                "enabled": bool,
-                "earthradius": float,
-                "coef": float
-            }
+            parsers=(
+                parsebool,
+                float,
+                float
+            )
         )
 
     def set_refractive_corr(
@@ -893,7 +914,7 @@ class TPS1200PTMC(GeoComSubsystem):
         enabled: bool,
         earthradius: float = 6_378_000,
         coef: float = 0.13
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2030, ``TMC_SetRefractiveCorr``
 
@@ -922,7 +943,7 @@ class TPS1200PTMC(GeoComSubsystem):
             [enabled, earthradius, coef]
         )
 
-    def get_refractive_method(self) -> GeoComResponse:
+    def get_refractive_method(self) -> GeoComResponse[int]:
         """
         RPC 2091, ``TMC_GetRefractiveMethod``
 
@@ -931,8 +952,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **method** (`int`): Refraction method.
+            Params:
+                - `int`: Refraction method.
 
         See Also
         --------
@@ -941,15 +962,13 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2091,
-            parsers={
-                "method": int
-            }
+            parsers=int
         )
 
     def set_refractive_method(
         self,
         method: int
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2090, ``TMC_SetRefractiveMethod``
 
@@ -974,7 +993,7 @@ class TPS1200PTMC(GeoComSubsystem):
             [method]
         )
 
-    def get_station(self) -> GeoComResponse:
+    def get_station(self) -> GeoComResponse[tuple[Coordinate, float]]:
         """
         RPC 2009, ``TMC_GetStation``
 
@@ -983,40 +1002,45 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **station** (`Coordinate`): Station coordinates.
-                - **hi** (`float`): Height of instrument.
+            Params:
+                - `Coordinate`: Station coordinates.
+                - `float`: Height of instrument.
 
         See Also
         --------
         set_station
 
         """
+        def transform(
+            params: tuple[float, float, float, float] | None
+        ) -> tuple[Coordinate, float] | None:
+            if params is None:
+                return None
+            return (
+                Coordinate(
+                    params[0],
+                    params[1],
+                    params[2]
+                ),
+                params[3]
+            )
+
         response = self._request(
             2009,
-            parsers={
-                "east": float,
-                "north": float,
-                "height": float,
-                "hi": float
-            }
+            parsers=(
+                float,
+                float,
+                float,
+                float
+            )
         )
-        coord = Coordinate(
-            response.params["east"],
-            response.params["north"],
-            response.params["height"]
-        )
-        response.params = {
-            "station": coord,
-            "hi": response.params["hi"]
-        }
-        return response
+        return response.map_params(transform)
 
     def set_station(
         self,
         station: Coordinate,
         hi: float
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2010, ``TMC_SetStation``
 
@@ -1033,7 +1057,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``TMC_BUSY``: TMC is busy or distance was not cleared.
 
         See Also
@@ -1047,7 +1071,7 @@ class TPS1200PTMC(GeoComSubsystem):
             [station.x, station.y, station.z, hi]
         )
 
-    def get_atm_ppm(self) -> GeoComResponse:
+    def get_atm_ppm(self) -> GeoComResponse[float]:
         """
         RPC 2151, ``TMC_GetAtmPpm``
 
@@ -1056,8 +1080,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **ppm** (`float`): Atmospheric correction factor [ppm].
+            Params:
+                - `float`: Atmospheric correction factor [ppm].
 
         See Also
         --------
@@ -1070,15 +1094,13 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2151,
-            parsers={
-                "ppm": float
-            }
+            parsers=float
         )
 
     def set_atm_ppm(
         self,
         ppm: float
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2148, ``TMC_SetAtmPpm``
 
@@ -1107,7 +1129,9 @@ class TPS1200PTMC(GeoComSubsystem):
             [ppm]
         )
 
-    def get_geo_ppm(self) -> GeoComResponse:
+    def get_geo_ppm(
+        self
+    ) -> GeoComResponse[tuple[bool, float, float, float, float]]:
         """
         RPC 2154, ``TMC_GetGeoPpm``
 
@@ -1116,16 +1140,16 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **automatic** (`bool`): Autmatically apply geometric
+            Params:
+                - `bool`: Autmatically apply geometric
                   corrections.
-                - **meridianscale** (`float`): Scale factor on central
+                - `float`: Scale factor on central
                   meridian.
-                - **meridianoffset** (`float`): Offset from central
+                - `float`: Offset from central
                   meridian.
-                - **reduction** (`float`): Length reduction from projection
+                - `float`: Length reduction from projection
                   to reference level.
-                - **individual** (`float`): Individual correction [ppm].
+                - `float`: Individual correction [ppm].
 
         See Also
         --------
@@ -1138,13 +1162,13 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2154,
-            parsers={
-                "automatic": bool,
-                "meridianscale": float,
-                "meridianoffset": float,
-                "reduction": float,
-                "individual": float
-            }
+            parsers=(
+                parsebool,
+                float,
+                float,
+                float,
+                float
+            )
         )
 
     def set_geo_ppm(
@@ -1154,7 +1178,7 @@ class TPS1200PTMC(GeoComSubsystem):
         meridianoffset: float,
         reduction: float,
         individual: float
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2153, ``TMC_SetGeoPpm``
 
@@ -1195,7 +1219,7 @@ class TPS1200PTMC(GeoComSubsystem):
             ]
         )
 
-    def get_face(self) -> GeoComResponse:
+    def get_face(self) -> GeoComResponse[FACE]:
         """
         RPC 2026, ``TMC_GetFace``
 
@@ -1205,8 +1229,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **face** (`FACE`): Current face.
+            Params:
+                - `FACE`: Current face.
 
         See Also
         --------
@@ -1215,12 +1239,10 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2026,
-            parsers={
-                "face": enumparser(self.FACE)
-            }
+            parsers=enumparser(self.FACE)
         )
 
-    def get_signal(self) -> GeoComResponse:
+    def get_signal(self) -> GeoComResponse[tuple[float, int]]:
         """
         RPC 2022, ``TMC_GetSignal``
 
@@ -1231,10 +1253,10 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **intensity** (`float`): Return signal intensity [%].
-                - **time** (`int`): Time of the signal measurement.
-            - Error codes:
+            Params:
+                - `float`: Return signal intensity [%].
+                - `int`: Time of the signal measurement.
+            Error codes:
                 - ``TMC_SIGNAL_ERROR``: Error in signal measurement.
                 - ``ABORT``: Measurement was aborted.
                 - ``SHUT_DOWN``: System shutdown.
@@ -1246,13 +1268,15 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2022,
-            parsers={
-                "intensity": float,
-                "time": int
-            }
+            parsers=(
+                float,
+                int
+            )
         )
 
-    def get_angle_switch(self) -> GeoComResponse:
+    def get_angle_switch(
+        self
+    ) -> GeoComResponse[tuple[bool, bool, bool, bool]]:
         """
         RPC 2014, ``TMC_GetAngSwitch``
 
@@ -1261,10 +1285,10 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **inclinecorr** (`bool`): Inclination correction.
-                - **stdaxiscorr** (`bool`): Standing axis correction.
-                - **collimcorr** (`bool`): Collimation error correction.
+            Params:
+                - `bool`: Inclination correction.
+                - `bool`: Standing axis correction.
+                - `bool`: Collimation error correction.
                 - *tiltaxiscorr** (`bool`): Tilting axis correction.
 
         See Also
@@ -1274,15 +1298,15 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2014,
-            parsers={
-                "inclinecorr": bool,
-                "stdaxiscorr": bool,
-                "collimcorr": bool,
-                "tiltaxiscorr": bool
-            }
+            parsers=(
+                parsebool,
+                parsebool,
+                parsebool,
+                parsebool
+            )
         )
 
-    def get_incline_switch(self) -> GeoComResponse:
+    def get_incline_switch(self) -> GeoComResponse[ONOFF]:
         """
         RPC 2007, ``TMC_GetInclineSwitch``
 
@@ -1291,8 +1315,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **compensator** (`ONOFF`): Compensator status.
+            Params:
+                - `ONOFF`: Compensator status.
 
         See Also
         --------
@@ -1301,15 +1325,13 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2007,
-            parsers={
-                "compensator": enumparser(self.ONOFF)
-            }
+            parsers=enumparser(self.ONOFF)
         )
 
     def set_incline_switch(
         self,
         compensator: ONOFF | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2006, ``TMC_SetInclineSwitch``
 
@@ -1335,7 +1357,7 @@ class TPS1200PTMC(GeoComSubsystem):
             [_corr.value]
         )
 
-    def get_edm_mode(self) -> GeoComResponse:
+    def get_edm_mode(self) -> GeoComResponse[EDMMODE]:
         """
         RPC 2021, ``TMC_GetEdmMode``
 
@@ -1344,8 +1366,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **mode** (`EDMMODE`): Current EDM mode.
+            Params:
+                - `EDMMODE`: Current EDM mode.
 
         See Also
         --------
@@ -1354,15 +1376,13 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2021,
-            parsers={
-                "mode": enumparser(self.EDMMODE)
-            }
+            parsers=enumparser(self.EDMMODE)
         )
 
     def set_edm_mode(
         self,
         mode: EDMMODE | str
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2020, ``TMC_SetEdmMode``
 
@@ -1392,7 +1412,7 @@ class TPS1200PTMC(GeoComSubsystem):
         self,
         wait: int = 5000,
         mode: INCLINEPRG | str = INCLINEPRG.AUTO
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[Coordinate]:
         """
         RPC 2116, ``TMC_GetSimpleCoord``
 
@@ -1413,16 +1433,16 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **coord** (`COORDINATE`): Calculated coordinate.
-            - Warning codes:
+            Params:
+                - `COORDINATE`: Calculated coordinate.
+            Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
                   accuracy. Coordinates are available.
                 - ``TMC_NO_FULL_CORRECTION``: Results are not corrected by
                   all sensors. Coordinates are available. Run check
                   commands to determine the missing correction.
-            - Error codes:
+            Error codes:
                 - ``TMC_ANGLE_OK``: Angles are measured, but no valid
                   distance was found.
                 - ``TMC_ANGLE_NO_FULL_CORRECTION``: Only angles are
@@ -1444,18 +1464,31 @@ class TPS1200PTMC(GeoComSubsystem):
         if_data_inc_corr_error
 
         """
+        def transform(
+            params: tuple[float, float, float] | None
+        ) -> Coordinate | None:
+            if params is None:
+                return None
+            return Coordinate(
+                params[0],
+                params[1],
+                params[2]
+            )
+
         _mode = toenum(self.INCLINEPRG, mode)
-        return self._request(
+        response = self._request(
             2116,
             [wait, _mode.value],
-            parsers={
-                "east": float,
-                "north": float,
-                "height": float
-            }
+            parsers=(
+                float,
+                float,
+                float
+            )
         )
 
-    def if_data_aze_corr_error(self) -> GeoComResponse:
+        return response.map_params(transform)
+
+    def if_data_aze_corr_error(self) -> GeoComResponse[bool]:
         """
         RPC 2114, ``TMC_IfDataAzeCorrError``
 
@@ -1464,8 +1497,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **atrerror** (`bool`): Last data record was not
+            Params:
+                - `bool`: Last data record was not
                   corrected with ATR deviation.
 
         See Also
@@ -1475,12 +1508,10 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2114,
-            parsers={
-                "atrerror": bool
-            }
+            parsers=parsebool
         )
 
-    def if_data_inc_corr_error(self) -> GeoComResponse:
+    def if_data_inc_corr_error(self) -> GeoComResponse[bool]:
         """
         RPC 2115, ``TMC_IfDataIncCorrError``
 
@@ -1489,8 +1520,8 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **inclineerror** (`bool`): Last data record was not
+            Params:
+                - `bool`: Last data record was not
                   corrected with inclination correction.
 
         See Also
@@ -1500,9 +1531,7 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2115,
-            parsers={
-                "inclineerror": bool
-            }
+            parsers=parsebool
         )
 
     def set_angle_switch(
@@ -1511,7 +1540,7 @@ class TPS1200PTMC(GeoComSubsystem):
         stdaxiscorr: bool,
         collimcorr: bool,
         tiltaxiscorr: bool
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[None]:
         """
         RPC 2014, ``TMC_SetAngSwitch``
 
@@ -1531,7 +1560,7 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Error codes:
+            Error codes:
                 - ``TMC_BUSY``: TMC is busy.
 
         See Also
@@ -1545,7 +1574,7 @@ class TPS1200PTMC(GeoComSubsystem):
             [inclinecorr, stdaxiscorr, collimcorr, tiltaxiscorr]
         )
 
-    def get_slope_dist_corr(self) -> GeoComResponse:
+    def get_slope_dist_corr(self) -> GeoComResponse[tuple[float, float]]:
         """
         RPC 2126, ``TMC_GetSlopDistCorr``
 
@@ -1555,9 +1584,9 @@ class TPS1200PTMC(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            - Params:
-                - **ppmcorr** (`float`): Total corrections [ppm].
-                - **prismcorr** (`float`): Prism constant.
+            Params:
+                - `float`: Total corrections [ppm].
+                - `float`: Prism constant.
 
         See Also
         --------
@@ -1567,8 +1596,8 @@ class TPS1200PTMC(GeoComSubsystem):
         """
         return self._request(
             2126,
-            parsers={
-                "ppmcorr": float,
-                "prismcorr": float
-            }
+            parsers=(
+                float,
+                float
+            )
         )
