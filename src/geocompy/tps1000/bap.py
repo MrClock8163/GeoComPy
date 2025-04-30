@@ -14,12 +14,11 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     Angle,
     toenum,
-    enumparser
+    enumparser,
+    MEASUREPROGRAM
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -36,19 +35,11 @@ class TPS1000BAP(GeoComSubsystem):
     for ease of operation.
 
     """
-    class MEASUREPRG(Enum):
-        NOMEAS = 0  # : No measurement, take last value.
-        NODIST = 1  # : No distance measurement, angles only.
-        DEFDIST = 2  # : Default distance measurement.
-        TRKDIST = 3  # : Tracking distance measurement.
-        RTRKDIST = 4  # : Rapid tracking distance measurement.
-        CLEARDIST = 5  # : Clear distances.
-        STOPTRK = 6  # : Stop tracking.
 
     def meas_distance_angle(
         self,
-        distmode: MEASUREPRG | str = MEASUREPRG.DEFDIST
-    ) -> GeoComResponse[tuple[Angle, Angle, float, MEASUREPRG]]:
+        mode: MEASUREPROGRAM | str = MEASUREPROGRAM.DISTANCE
+    ) -> GeoComResponse[tuple[Angle, Angle, float, MEASUREPROGRAM]]:
         """
         RPC 17017, ``BAP_MeasDistanceAngle``
 
@@ -57,8 +48,9 @@ class TPS1000BAP(GeoComSubsystem):
 
         Parameters
         ----------
-        distmode : MEASUREPRG | str, optional
-            Distance measurement mode to use, by default MEASUREPRG:DEFDIST
+        mode : MEASUREPROGRAM | str, optional
+            Distance measurement mode to use, by default
+            MEASUREPROGRAM.DISTANCE
 
         Returns
         -------
@@ -106,14 +98,14 @@ class TPS1000BAP(GeoComSubsystem):
                 - ``SHUT_DOWN``: System stopped.
 
         """
-        _distmode = toenum(self.MEASUREPRG, distmode)
+        _mode = toenum(MEASUREPROGRAM, mode)
         return self._request(
             17017,
-            [_distmode.value],
+            [_mode.value],
             (
                 Angle.parse,
                 Angle.parse,
                 float,
-                enumparser(self.MEASUREPRG)
+                enumparser(MEASUREPROGRAM)
             )
         )
