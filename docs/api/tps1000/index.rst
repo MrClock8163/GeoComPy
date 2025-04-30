@@ -23,3 +23,4 @@ TPS1000
     edm
     mot
     sup
+    tmc
