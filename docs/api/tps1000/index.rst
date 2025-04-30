@@ -24,3 +24,4 @@ TPS1000
     mot
     sup
     tmc
+    wir

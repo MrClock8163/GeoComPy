@@ -24,6 +24,7 @@ Submodules
 - ``geocompy.tps1000.mot``
 - ``geocompy.tps1000.sup``
 - ``geocompy.tps1000.tmc``
+- ``geocompy.tps1000.wir``
 """
 from __future__ import annotations
 
@@ -54,6 +55,7 @@ from .edm import TPS1000EDM
 from .mot import TPS1000MOT
 from .sup import TPS1000SUP
 from .tmc import TPS1000TMC
+from .wir import TPS1000WIR
 from .rc import TPS1000RC, rpcnames
 
 
@@ -154,6 +156,8 @@ class TPS1000(GeoComProtocol):
         """Supervisor subsystem."""
         self.tmc: TPS1000TMC = TPS1000TMC(self)
         """Theodolite measurement and calculation subsystem."""
+        self.wir: TPS1000WIR = TPS1000WIR(self)
+        """Word Index registration subsystem."""
 
         for i in range(retry):
             try:
