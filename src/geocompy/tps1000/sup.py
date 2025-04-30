@@ -14,11 +14,11 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     toenum,
-    enumparser
+    enumparser,
+    parsebool,
+    AUTOPOWER
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -34,16 +34,8 @@ class TPS1000SUP(GeoComSubsystem):
     allows to automatically display status information.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
 
-    class AUTOPOWER(Enum):
-        DISABLED = 0  # : Automatic poweroff disabled.
-        SLEEP = 1  # : Put instument into sleep mode.
-        OFF = 2  # : Poweroff instrument.
-
-    def get_config(self) -> GeoComResponse[tuple[ONOFF, AUTOPOWER, int]]:
+    def get_config(self) -> GeoComResponse[tuple[bool, AUTOPOWER, int]]:
         """
         RPC 14001, ``SUP_GetConfig``
 
@@ -53,7 +45,7 @@ class TPS1000SUP(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: Low temperature shutdown.
+                - `bool`: Low temperature shutdown enabled.
                 - `AUTOPOWER`: Current shutdown mechanism.
                 - `int`: Idling timeout [ms].
 
@@ -65,16 +57,16 @@ class TPS1000SUP(GeoComSubsystem):
         return self._request(
             14001,
             parsers=(
-                enumparser(self.ONOFF),
-                enumparser(self.AUTOPOWER),
+                parsebool,
+                enumparser(AUTOPOWER),
                 int
             )
         )
 
     def set_config(
         self,
-        lowtemp: ONOFF | str,
-        autopower: AUTOPOWER | str = AUTOPOWER.OFF,
+        lowtemp: bool,
+        autopower: AUTOPOWER | str = AUTOPOWER.SHUTDOWN,
         timeout: int = 600_000
     ) -> GeoComResponse[None]:
         """
@@ -84,10 +76,10 @@ class TPS1000SUP(GeoComSubsystem):
 
         Parameters
         ----------
-        lowtemp : ONOFF | str
-            Low temperature shutdown.
+        lowtemp : bool
+            Enable low temperature shutdown.
         autopower : AUTOPOWER | str, optional
-            Automatic poweroff action.
+            Automatic poweroff action, by default AUTOPOWER.SHUTDOWN
         timeout : int, optional
             Idling timeout [60000, 6000000] [ms], by default 600000
 
@@ -102,16 +94,15 @@ class TPS1000SUP(GeoComSubsystem):
         get_config
 
         """
-        _autopower = toenum(self.AUTOPOWER, autopower)
-        _lowtemp = toenum(self.ONOFF, lowtemp)
+        _autopower = toenum(AUTOPOWER, autopower)
         return self._request(
             14002,
-            [_lowtemp.value, _autopower.value, timeout]
+            [lowtemp, _autopower.value, timeout]
         )
 
     def switch_low_temp_control(
         self,
-        state: ONOFF | str
+        enabled: bool
     ) -> GeoComResponse[None]:
         """
         RPC 14003, ``SUP_SwitchLowTempControl``
@@ -122,8 +113,8 @@ class TPS1000SUP(GeoComSubsystem):
 
         Parameters
         ----------
-        state : ONOFF | str
-            Low temperature shutdown.
+        enabled : bool
+            Enable low temperature shutdown.
 
         Returns
         -------
@@ -135,8 +126,7 @@ class TPS1000SUP(GeoComSubsystem):
         set_config
 
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             14003,
-            [_state.value]
+            [enabled]
         )
