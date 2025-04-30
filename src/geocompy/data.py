@@ -1012,10 +1012,10 @@ class ATRLOCK(Enum):
     PREDICT = 2
 
 
-class STOPMODE(Enum):
+class STOP(Enum):
     """Servo motor stopping mode."""
     NORMAL = 0  # : Slow down with current acceleration.
-    SHUTDOWN = 1  # : Slow down by motor power termination.
+    CUTOFF = 1  # : Slow down by motor power termination.
 
 
 class CONTROLLER(Enum):

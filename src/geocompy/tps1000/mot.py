@@ -14,12 +14,13 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     Angle,
     toenum,
-    enumparser
+    enumparser,
+    ATRLOCK,
+    STOP,
+    CONTROLLER
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -34,25 +35,8 @@ class TPS1000MOT(GeoComSubsystem):
     This subsystem provides access to motoriztaion parameters and control.
 
     """
-    class LOCKSTATUS(Enum):
-        LOCKEDOUT = 0
-        LOCKEDIN = 1
-        PREDICTION = 2
 
-    class STOPMODE(Enum):
-        NORMAL = 0  # : Slow down with current acceleration.
-        SHUTDOWN = 1  # : Slow down by motor power termination.
-
-    class MODE(Enum):
-        POSIT = 0  # : Relative positioning.
-        OCONST = 1  # : Constant speed.
-        MANUPOS = 2  # : Manual positioning.
-        LOCK = 3  # : Lock-in controller.
-        BREAK = 4  # : Break controller.
-        # 5, 6 do not use (why?)
-        TERM = 7  # : Terminate current task.
-
-    def read_lock_status(self) -> GeoComResponse[LOCKSTATUS]:
+    def read_lock_status(self) -> GeoComResponse[ATRLOCK]:
         """
         RPC 6021, ``MOT_ReadLockStatus``
 
@@ -62,7 +46,7 @@ class TPS1000MOT(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `LOCKSTATUS`: ATR lock status.
+                - `ATRLOCK`: ATR lock status.
             Error codes:
                 - ``NOT_IMPL``: Motorization not available.
 
@@ -73,12 +57,12 @@ class TPS1000MOT(GeoComSubsystem):
         """
         return self._request(
             6021,
-            parsers=enumparser(self.LOCKSTATUS)
+            parsers=enumparser(ATRLOCK)
         )
 
     def start_controller(
         self,
-        mode: MODE | str = MODE.MANUPOS
+        mode: CONTROLLER | str = CONTROLLER.MANUAL
     ) -> GeoComResponse[None]:
         """
         RPC 6001, ``MOT_StartController``
@@ -87,8 +71,8 @@ class TPS1000MOT(GeoComSubsystem):
 
         Parameters
         ----------
-        mode : MODE | str, optional
-            Controller mode, by default MANUPOS
+        mode : CONTROLLER | str, optional
+            Controller mode, by default CONTROLLER.MANUAL
 
         Returns
         -------
@@ -107,7 +91,7 @@ class TPS1000MOT(GeoComSubsystem):
         stop_controller
 
         """
-        _mode = toenum(self.MODE, mode)
+        _mode = toenum(CONTROLLER, mode)
         return self._request(
             6001,
             [_mode.value]
@@ -115,7 +99,7 @@ class TPS1000MOT(GeoComSubsystem):
 
     def stop_controller(
         self,
-        mode: STOPMODE | str = STOPMODE.NORMAL
+        mode: STOP | str = STOP.NORMAL
     ) -> GeoComResponse[None]:
         """
         RPC 6002, ``MOT_StopController``
@@ -124,8 +108,8 @@ class TPS1000MOT(GeoComSubsystem):
 
         Parameters
         ----------
-        mode : MODE | str, optional
-            Controller mode, by default MANUPOS
+        mode : STOP | str, optional
+            Controller mode, by default STOP.NORMAL
 
         Returns
         -------
@@ -140,7 +124,7 @@ class TPS1000MOT(GeoComSubsystem):
         aus.set_user_lock_state
 
         """
-        _mode = toenum(TPS1000MOT.STOPMODE, mode)
+        _mode = toenum(STOP, mode)
         return self._request(
             6002,
             [_mode.value]
