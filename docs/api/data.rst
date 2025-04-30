@@ -4,7 +4,7 @@ Data
 ====
 
 .. automodule:: geocompy.data
-    :exclude-members: R0,PI2,_E
+    :exclude-members: RO,PI2,_E
 
     Definitions
     -----------

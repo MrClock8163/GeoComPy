@@ -30,8 +30,11 @@ has been imported as ``gc``:
 Subpackages
 -----------
 
+``geocompy.tps1000``
+    Communication with instruments running TPS1000 software.
+
 ``geocompy.tps1200p``
-    Communication with instruments running TPS1200+ software.
+    Communication with instruments running TPS1200(+) software.
 
 ``geocompy.vivatps``
     Communication with instruments running Viva(/Nova)TPS software.
