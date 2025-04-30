@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from enum import IntEnum
+from enum import Enum
 
 from ..data import enumparser, toenum
 from ..protocols import (
@@ -29,7 +29,7 @@ class TPS1000WIR(GeoComSubsystem):
     This subsystem is responsible for the GSI data recording operations.
     """
 
-    class FORMAT(IntEnum):
+    class FORMAT(Enum):
         GSI8 = 0
         GSI16 = 1
 
