@@ -17,6 +17,7 @@ Submodules
 
 - ``geocompy.tps1100.rc``
 - ``geocompy.tps1100.com``
+- ``geocompy.tps1100.csv``
 """
 from __future__ import annotations
 
@@ -38,6 +39,7 @@ from ..protocols import (
     GeoComResponse
 )
 from .com import TPS1100COM
+from .csv import TPS1100CSV
 from .rc import TPS1100RC, rpcnames
 
 
@@ -120,6 +122,8 @@ class TPS1100(GeoComProtocol):
         super().__init__(connection, logger)
         self.com: TPS1100COM = TPS1100COM(self)
         """Communications subsystem."""
+        self.csv: TPS1100CSV = TPS1100CSV(self)
+        """Central services subsystem."""
 
         for i in range(retry):
             try:

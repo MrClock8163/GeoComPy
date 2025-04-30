@@ -281,15 +281,15 @@ class TPS1100RC(GeoComReturnCode):
     GM_RADIUS_NOT_POSSIBLE = 1041
     """Invalid radius."""
     GM_NO_PROVISIONAL_VALUES = 1042
-    """GM2: insufficient data."""
+    """GM2 insufficient data."""
     GM_SINGULAR_MATRIX = 1043
-    """GM2: bad data"""
+    """GM2 bad data"""
     GM_TOO_MANY_ITERATIONS = 1044
-    """GM2: bad data distr."""
+    """GM2 bad data distr."""
     GM_IDENTICAL_TIE_POINTS = 1045
-    """GM2: same tie points."""
+    """GM2 same tie points."""
     GM_SETUP_EQUALS_TIE_POINT = 1046
-    """GM2: sta/tie point same."""
+    """GM2 sta/tie point same."""
 
     TMC_NO_FULL_CORRECTION = 1283
     """Warning measurement without full correction"""
