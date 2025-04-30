@@ -15,14 +15,16 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     Angle,
     Coordinate,
     toenum,
     enumparser,
-    parsebool
+    parsebool,
+    INCLINATION,
+    MEASUREMENT,
+    EDMMODE,
+    FACE
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -56,40 +58,11 @@ class TPS1000TMC(GeoComSubsystem):
             Non-successful function termination.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
-
-    class INCLINEPRG(Enum):
-        MEA = 0  # : Measure inclination.
-        AUTO = 1  # : Automatic inclination handling.
-        PLANE = 2  # : Model inclination from previous measurements.
-
-    class MEASUREPRG(Enum):
-        STOP = 0  # : Stop measurement program.
-        DEFDIST = 1  # : Default distance measurement.
-        TRKDIST = 2  # : Track distance.
-        CLEAR = 3  # : Clear current measurement data.
-        SIGNAL = 4  # : Signal intensity measurement.
-        RTRKDIST = 8  # : Rapid track distance.
-
-    class EDMMODE(Enum):
-        SINGLE_STANDARD = 0,  # : Standard single measurement
-        SINGLE_EXACT = 1,  # : Exact single measurement
-        SINGLE_FAST = 2,  # : Fast single measurement
-        CONT_STANDARD = 3,  # : Repeated measurement
-        CONT_EXACT = 4,  # : Repeated average measurement
-        CONT_FAST = 5,  # : Fast repeated measurement
-        UNDEFINED = 6  # : Not defined
-
-    class FACEDEF(Enum):
-        NORMAL = 0
-        TURN = 1
 
     def get_coordinate(
         self,
         wait: int = 5000,
-        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+        mode: INCLINATION | str = INCLINATION.AUTO
     ) -> GeoComResponse[tuple[Coordinate, int, Coordinate, int]]:
         """
         RPC 2082, ``TMC_GetCoordinate``
@@ -105,8 +78,8 @@ class TPS1000TMC(GeoComSubsystem):
         ----------
         wait : int, optional
             Wait time for EDM process [ms], by default 5000
-        mode : INCLINEPRG | str, optional
-            Inclination correction mode, by default INCLINEPRG.AUTO
+        mode : INCLINATION | str, optional
+            Inclination correction mode, by default INCLINATION.AUTO
 
         Returns
         -------
@@ -173,7 +146,7 @@ class TPS1000TMC(GeoComSubsystem):
                 params[7]
             )
 
-        _mode = toenum(self.INCLINEPRG, mode)
+        _mode = toenum(INCLINATION, mode)
         response = self._request(
             2082,
             [wait, _mode.value],
@@ -194,7 +167,7 @@ class TPS1000TMC(GeoComSubsystem):
     def get_simple_mea(
         self,
         wait: int = 5000,
-        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+        mode: INCLINATION | str = INCLINATION.AUTO
     ) -> GeoComResponse[tuple[Angle, Angle, float]]:
         """
         RPC 2108, ``TMC_GetSimpleMea``
@@ -210,8 +183,8 @@ class TPS1000TMC(GeoComSubsystem):
         ----------
         wait : int, optional
             Wait time for EDM process [ms], by default 5000
-        mode : INCLINEPRG | str, optional
-            Inclination correction mode, by default INCLINEPRG.AUTO
+        mode : INCLINATION | str, optional
+            Inclination correction mode, by default INCLINATION.AUTO
 
         Returns
         -------
@@ -250,7 +223,7 @@ class TPS1000TMC(GeoComSubsystem):
         get_angle
 
         """
-        _mode = toenum(self.INCLINEPRG, mode)
+        _mode = toenum(INCLINATION, mode)
         return self._request(
             2108,
             [wait, _mode.value],
@@ -263,12 +236,12 @@ class TPS1000TMC(GeoComSubsystem):
 
     def get_angle_incline(
         self,
-        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+        mode: INCLINATION | str = INCLINATION.AUTO
     ) -> GeoComResponse[
         tuple[
             Angle, Angle, Angle, int,
             Angle, Angle, Angle, int,
-            FACEDEF
+            FACE
         ]
     ]:
         """
@@ -325,7 +298,7 @@ class TPS1000TMC(GeoComSubsystem):
         get_simple_mea
 
         """
-        _mode = toenum(self.INCLINEPRG, mode)
+        _mode = toenum(INCLINATION, mode)
         return self._request(
             2003,
             [_mode.value],
@@ -338,13 +311,13 @@ class TPS1000TMC(GeoComSubsystem):
                 Angle.parse,
                 Angle.parse,
                 int,
-                enumparser(self.FACEDEF)
+                enumparser(FACE)
             )
         )
 
     def get_angle(
         self,
-        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+        mode: INCLINATION | str = INCLINATION.AUTO
     ) -> GeoComResponse[tuple[Angle, Angle]]:
         """
         RPC 2107, ``TMC_GetAngle5``
@@ -354,8 +327,8 @@ class TPS1000TMC(GeoComSubsystem):
 
         Parameters
         ----------
-        mode : INCLINEPRG | str, optional
-            Inclination correction mode, by default INCLINEPRG.AUTO
+        mode : INCLINATION | str, optional
+            Inclination correction mode, by default INCLINATION.AUTO
 
         Returns
         -------
@@ -393,7 +366,7 @@ class TPS1000TMC(GeoComSubsystem):
         get_simple_mea
 
         """
-        _mode = toenum(self.INCLINEPRG, mode)
+        _mode = toenum(INCLINATION, mode)
         return self._request(
             2107,
             [_mode.value],
@@ -460,8 +433,8 @@ class TPS1000TMC(GeoComSubsystem):
 
     def do_measure(
         self,
-        command: MEASUREPRG | str = MEASUREPRG.DEFDIST,
-        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+        command: MEASUREMENT | str = MEASUREMENT.DISTANCE,
+        inclination: INCLINATION | str = INCLINATION.AUTO
     ) -> GeoComResponse[None]:
         """
         RPC 2008, ``TMC_DoMeasure``
@@ -472,10 +445,10 @@ class TPS1000TMC(GeoComSubsystem):
 
         Parameters
         ----------
-        command: MEASREPRG | str, optional
-            Distance measurement program, by default MEASUREPRG.DEFDIST
-        mode : INCLINEPRG | str, optional
-            Inclination correction mode, by default INCLINEPRG.AUTO
+        command: MEASURE | str, optional
+            Distance measurement program, by default MEASURE.DISTANCE
+        inclination : INCLINATION | str, optional
+            Inclination correction mode, by default INCLINATION.AUTO
 
         Returns
         -------
@@ -490,8 +463,8 @@ class TPS1000TMC(GeoComSubsystem):
         get_angle_incline
 
         """
-        _cmd = toenum(self.MEASUREPRG, command)
-        _mode = toenum(self.INCLINEPRG, mode)
+        _cmd = toenum(MEASUREMENT, command)
+        _mode = toenum(INCLINATION, inclination)
         return self._request(
             2008,
             [_cmd.value, _mode.value]
@@ -501,7 +474,7 @@ class TPS1000TMC(GeoComSubsystem):
         self,
         distance: float,
         offset: float,
-        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+        inclination: INCLINATION | str = INCLINATION.AUTO
     ) -> GeoComResponse[None]:
         """
         RPC 2019, ``TMC_SetHandDist``
@@ -516,8 +489,8 @@ class TPS1000TMC(GeoComSubsystem):
             Slope distance to set.
         offset : float,
             Height offset.
-        mode : INCLINEPRG | str, optional
-            Inclination correction mode, by default INCLINEPRG.AUTO
+        inclination : INCLINATION | str, optional
+            Inclination correction mode, by default INCLINATION.AUTO
 
         Returns
         -------
@@ -552,7 +525,7 @@ class TPS1000TMC(GeoComSubsystem):
         if_data_inc_corr_error
 
         """
-        _mode = toenum(self.INCLINEPRG, mode)
+        _mode = toenum(INCLINATION, inclination)
         return self._request(
             2019,
             [distance, offset, _mode.value]
@@ -972,7 +945,7 @@ class TPS1000TMC(GeoComSubsystem):
             [station.x, station.y, station.z, hi]
         )
 
-    def get_face(self) -> GeoComResponse[FACEDEF]:
+    def get_face(self) -> GeoComResponse[FACE]:
         """
         RPC 2026, ``TMC_GetFace``
 
@@ -983,7 +956,7 @@ class TPS1000TMC(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `FACEDEF`: Current face.
+                - `FACE`: Current face.
 
         See Also
         --------
@@ -992,7 +965,7 @@ class TPS1000TMC(GeoComSubsystem):
         """
         return self._request(
             2026,
-            parsers=enumparser(self.FACEDEF)
+            parsers=enumparser(FACE)
         )
 
     def get_signal(self) -> GeoComResponse[tuple[float, int]]:
@@ -1059,7 +1032,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def get_incline_switch(self) -> GeoComResponse[ONOFF]:
+    def get_incline_switch(self) -> GeoComResponse[bool]:
         """
         RPC 2007, ``TMC_GetInclineSwitch``
 
@@ -1069,7 +1042,7 @@ class TPS1000TMC(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: Compensator status.
+                - `bool`: Compensator is enabled.
 
         See Also
         --------
@@ -1078,12 +1051,12 @@ class TPS1000TMC(GeoComSubsystem):
         """
         return self._request(
             2007,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_incline_switch(
         self,
-        compensator: ONOFF | str
+        enabled: bool
     ) -> GeoComResponse[None]:
         """
         RPC 2006, ``TMC_SetInclineSwitch``
@@ -1092,8 +1065,8 @@ class TPS1000TMC(GeoComSubsystem):
 
         Parameters
         ----------
-        compensator : ONOFF | str
-            Compensator status to set.
+        enabled : bool
+            Compensator is enabled.
 
         Returns
         -------
@@ -1104,10 +1077,9 @@ class TPS1000TMC(GeoComSubsystem):
         get_incline_switch
 
         """
-        _corr = toenum(self.ONOFF, compensator)
         return self._request(
             2006,
-            [_corr.value]
+            [enabled]
         )
 
     def get_edm_mode(self) -> GeoComResponse[EDMMODE]:
@@ -1129,7 +1101,7 @@ class TPS1000TMC(GeoComSubsystem):
         """
         return self._request(
             2021,
-            parsers=enumparser(self.EDMMODE)
+            parsers=enumparser(EDMMODE)
         )
 
     def set_edm_mode(
@@ -1155,7 +1127,7 @@ class TPS1000TMC(GeoComSubsystem):
         get_edm_mode
 
         """
-        _mode = toenum(self.EDMMODE, mode)
+        _mode = toenum(EDMMODE, mode)
         return self._request(
             2020,
             [_mode.value]
@@ -1164,7 +1136,7 @@ class TPS1000TMC(GeoComSubsystem):
     def get_simple_coord(
         self,
         wait: int = 5000,
-        mode: INCLINEPRG | str = INCLINEPRG.AUTO
+        inclination: INCLINATION | str = INCLINATION.AUTO
     ) -> GeoComResponse[Coordinate]:
         """
         RPC 2116, ``TMC_GetSimpleCoord``
@@ -1180,8 +1152,8 @@ class TPS1000TMC(GeoComSubsystem):
         ----------
         wait : int, optional
             Wait time for EDM process [ms], by default 5000
-        mode : INCLINEPRG | str, optional
-            Inclination correction mode, by default INCLINEPRG.AUTO
+        inclination : INCLINATION | str, optional
+            Inclination correction mode, by default INCLINATION.AUTO
 
         Returns
         -------
@@ -1228,7 +1200,7 @@ class TPS1000TMC(GeoComSubsystem):
                 params[2]
             )
 
-        _mode = toenum(self.INCLINEPRG, mode)
+        _mode = toenum(INCLINATION, inclination)
         response = self._request(
             2116,
             [wait, _mode.value],

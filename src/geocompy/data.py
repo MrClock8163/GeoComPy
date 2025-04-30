@@ -1043,7 +1043,7 @@ class INCLINATION(Enum):
     PLANE = 2  # : Model inclination from previous measurements.
 
 
-class MEASURE(Enum):
+class MEASUREMENT(Enum):
     STOP = 0  # : Stop measurement program.
     DISTANCE = 1  # : Default distance measurement.
     TRACK = 2  # : Track distance.
@@ -1063,10 +1063,10 @@ class EDMMODE(Enum):
     UNDEFINED = 6  # : Not defined.
 
 
-class FACEDEF(Enum):
+class FACE(Enum):
     """Instrument view face."""
-    NORMAL = 0
-    TURN = 1
+    F1 = 0  # : Face left.
+    F2 = 1  # : Face right.
 
 
 class FORMAT(Enum):
