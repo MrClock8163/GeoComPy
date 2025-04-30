@@ -168,15 +168,15 @@ class TPS1000RC(GeoComReturnCode):
     """limit at 99 measurements (DIL)"""
 
     TMC_NO_FULL_CORRECTION = 1283
-    """Warning: measurement without full correction"""
+    """Warning measurement without full correction"""
     TMC_ACCURACY_GUARANTEE = 1284
-    """Info: accuracy can not be guaranteed"""
+    """Info accuracy can not be guaranteed"""
     TMC_ANGLE_OK = 1285
     """Warning only angle measurement valid"""
     TMC_ANGLE_NO_FULL_CORRECTION = 1288
     """Warning only angle measurement valid but without full correction"""
     TMC_ANGLE_ACCURACY_GUARANTEE = 1289
-    """Info: only angle measurement valid but accuracy can not be guarantee"""
+    """Info only angle measurement valid but accuracy can not be guarantee"""
     TMC_ANGLE_ERROR = 1290
     """Error no angle measurement"""
     TMC_DIST_PPM = 1291
@@ -246,7 +246,7 @@ class TPS1000RC(GeoComReturnCode):
     COM_ERO_END = 3099
     """ERO is terminating."""
     COM_OVERRUN = 3100
-    """Internal error: data buffer overflow."""
+    """Internal error data buffer overflow."""
     COM_SRVR_RX_CHECKSUM_ERROR = 3101
     """Invalid checksum on server side received."""
     COM_CLNT_RX_CHECKSUM_ERROR = 3102

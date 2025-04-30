@@ -124,7 +124,7 @@ class TPS1000CSV(GeoComSubsystem):
 
         Returns
         -------
-        GeoComResponse[None]
+        GeoComResponse
         """
         return self._request(
             5005,

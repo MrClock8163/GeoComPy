@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.tps1000.aut``
 
-Definitions for the TPS1200+ Automation subsystem.
+Definitions for the TPS1100 Automation subsystem.
 
 Types
 -----
@@ -29,7 +29,7 @@ from ..protocols import (
 
 class TPS1000AUT(GeoComSubsystem):
     """
-    Automation subsystem of the TPS1200+ GeoCom protocol.
+    Automation subsystem of the TPS1100 GeoCom protocol.
 
     This subsystem controls most of the motorized functions of
     a total station, such as positioning of the axes, target search,
