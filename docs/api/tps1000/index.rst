@@ -21,3 +21,4 @@ TPS1000
     csv
     ctl
     edm
+    mot
