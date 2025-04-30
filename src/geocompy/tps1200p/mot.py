@@ -54,7 +54,7 @@ class TPS1200PMOT(GeoComSubsystem):
 
     def read_lock_status(self) -> GeoComResponse[LOCKSTATUS]:
         """
-        RPC 23400, ``IMG_GetTccConfig``
+        RPC 6021, ``MOT_ReadLockStatus``
 
         Gets the current status of the ATR target lock.
 

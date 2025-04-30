@@ -53,7 +53,7 @@ class TPS1200PSUP(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `ONOFF`: Reserved.
-                - `AUTOPOWER`: Current showdown mechanism.
+                - `AUTOPOWER`: Current shutdown mechanism.
                 - `int`: Idling timeout [ms].
 
         See Also

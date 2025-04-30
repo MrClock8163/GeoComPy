@@ -29,7 +29,7 @@ class TPS1200PBMM(GeoComSubsystem):
 
     def beep_alarm(self) -> GeoComResponse[None]:
         """
-        RPC 11804, ``BMM_BeepAlarm``
+        RPC 11004, ``BMM_BeepAlarm``
 
         Produces a triple beep. Previously started continuous signals will
         be aborted.
@@ -44,7 +44,7 @@ class TPS1200PBMM(GeoComSubsystem):
 
     def beep_normal(self) -> GeoComResponse[None]:
         """
-        RPC 11803, ``BMM_BeepNormal``
+        RPC 11003, ``BMM_BeepNormal``
 
         Produces a single beep. Previously started continuous signals will
         be aborted.

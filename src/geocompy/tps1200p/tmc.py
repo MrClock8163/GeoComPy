@@ -1289,7 +1289,7 @@ class TPS1200PTMC(GeoComSubsystem):
                 - `bool`: Inclination correction.
                 - `bool`: Standing axis correction.
                 - `bool`: Collimation error correction.
-                - *tiltaxiscorr** (`bool`): Tilting axis correction.
+                - `bool`: Tilting axis correction.
 
         See Also
         --------
