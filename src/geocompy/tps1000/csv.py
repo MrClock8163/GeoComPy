@@ -14,13 +14,14 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum, Flag
 from datetime import datetime
 
 from ..data import (
     Byte,
     parsestr,
-    enumparser
+    enumparser,
+    DEVICECLASS,
+    CAPABILITIES
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -36,25 +37,6 @@ class TPS1000CSV(GeoComSubsystem):
     and configuration of the instruments.
 
     """
-    class DEVICECLASS(Enum):
-        CLASS_1100 = 0  #: TPS1000 3"
-        CLASS_1700 = 1  #: TPS1000 1.5"
-        CLASS_1800 = 2  #: TPS1000 1"
-        CLASS_5000 = 3  #: TPS2000
-        CLASS_6000 = 4  #: TPS2000
-        CLASS_1500 = 5  #: TPS1000
-
-    class DEVICETYPE(Flag):
-        T = 0x00000  #: Theodolite
-        TC1 = 0x00001  # TPS1000
-        TC2 = 0x00002  # TPS1000
-        MOT = 0x00004  #: Motorized
-        ATR = 0x00008  #: ATR
-        EGL = 0x00010  #: Guide Light
-        DB = 0x00020  #: Database
-        DL = 0x00040  #: Diode laser
-        LP = 0x00080  #: Laser plumb
-        # SIM = 0x04000 # TPSSim
 
     def get_instrument_no(self) -> GeoComResponse[int]:
         """
@@ -133,7 +115,7 @@ class TPS1000CSV(GeoComSubsystem):
 
     def get_device_config(
         self
-    ) -> GeoComResponse[tuple[DEVICECLASS, DEVICETYPE]]:
+    ) -> GeoComResponse[tuple[DEVICECLASS, CAPABILITIES]]:
         """
         RPC 5035, ``CSV_GetDeviceConfig``
 
@@ -145,8 +127,7 @@ class TPS1000CSV(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `DEVICECLASS`: Class of the instrument.
-                - `DEVICETYPE`: Configurations of the
-                  components.
+                - `CAPABILITIES`: Configuration of the components.
             Error codes:
                 - ``UNDEFINED``: Precision class is undefined.
 
@@ -154,8 +135,8 @@ class TPS1000CSV(GeoComSubsystem):
         return self._request(
             5035,
             parsers=(
-                enumparser(self.DEVICECLASS),
-                enumparser(self.DEVICETYPE)
+                enumparser(DEVICECLASS),
+                enumparser(CAPABILITIES)
             )
         )
 

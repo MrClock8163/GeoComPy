@@ -986,15 +986,15 @@ class DEVICECLASS(Enum):
 
 class CAPABILITIES(Flag):
     """Instrument capabilities."""
-    T = 0x00000  #: Theodolite
+    THEODOLITE = 0x00000  #: Theodolite
     TC1 = 0x00001  # TPS1000
     TC2 = 0x00002  # TPS1000
-    MOT = 0x00004  #: Motorized
+    MOTORIZED = 0x00004  #: Motorized
     ATR = 0x00008  #: ATR
     EGL = 0x00010  #: Guide Light
-    DB = 0x00020  #: Database
-    DL = 0x00040  #: Diode laser
-    LP = 0x00080  #: Laser plumb
+    DATABASE = 0x00020  #: Database
+    DIODELASER = 0x00040  #: Diode laser
+    LASERPLUMB = 0x00080  #: Laser plumb
     # SIM = 0x04000 # TPSSim
 
 
