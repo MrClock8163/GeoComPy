@@ -22,3 +22,4 @@ TPS1000
     ctl
     edm
     mot
+    sup
