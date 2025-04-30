@@ -18,6 +18,9 @@ Submodules
 - ``geocompy.tps1000.rc``
 - ``geocompy.tps1000.aut``
 - ``geocompy.tps1000.com``
+- ``geocompy.tps1000.csv``
+- ``geocompy.tps1000.ctl``
+- ``geocompy.tps1000.edm``
 """
 from __future__ import annotations
 
@@ -44,6 +47,7 @@ from .bmm import TPS1000BMM
 from .csv import TPS1000CSV
 from .com import TPS1000COM
 from .ctl import TPS1000CTL
+from .edm import TPS1000EDM
 from .rc import TPS1000RC, rpcnames
 
 
@@ -136,6 +140,8 @@ class TPS1000(GeoComProtocol):
         """Central services subsystem."""
         self.ctl: TPS1000CTL = TPS1000CTL(self)
         """Control task subsystem."""
+        self.edm: TPS1000EDM = TPS1000EDM(self)
+        """Electronic distance measurement subsystem."""
 
         for i in range(retry):
             try:

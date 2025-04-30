@@ -20,3 +20,4 @@ TPS1000
     com
     csv
     ctl
+    edm
