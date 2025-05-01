@@ -16,6 +16,10 @@ from __future__ import annotations
 
 from typing_extensions import deprecated
 
+from ..data import (
+    Angle,
+    parsebool
+)
 from ..protocols import GeoComResponse
 from ..tps1000.aut import TPS1000AUT
 
@@ -183,3 +187,147 @@ class TPS1100AUT(TPS1000AUT):
         lock_in
         """
         return super().set_lock_status(activate)
+
+    def get_search_area(
+        self
+    ) -> GeoComResponse[tuple[Angle, Angle, Angle, Angle, bool]]:
+        """
+        RPC 9042, ``AUT_GetSearchArea``
+
+        .. versionadded:: GeoCom-TPS1100-1.04
+
+        Gets current position and size of the PowerSearch window.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `Angle`: Horizontal center of window.
+                - `Angle`: Vertical center of window.
+                - `Angle`: Width of window.
+                - `Angle`: Height of window.
+                - `bool`: If window is enabled.
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+
+        See Also
+        --------
+        set_search_area
+        bap.search_target
+        """
+        return self._request(
+            9042,
+            parsers=(
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                parsebool
+            )
+        )
+
+    def set_search_area(
+        self,
+        hz: Angle,
+        v: Angle,
+        width: Angle,
+        height: Angle,
+        enabled: bool = True
+    ) -> GeoComResponse[None]:
+        """
+        RPC 9043, ``AUT_SetSearchArea``
+
+        .. versionadded:: GeoCom-TPS1100-1.04
+
+        Sets position and size of the PowerSearch window.
+
+        Parameters
+        ----------
+        hz : Angle
+            Horizontal center of search window.
+        v : Angle
+            Vertical center of search window.
+        width : Angle
+            Width of search window.
+        height : Angle
+            Height of search window.
+        enabled : bool
+            Activation state of search window.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+
+        See Also
+        --------
+        get_search_area
+        bap.search_target
+        """
+        return self._request(
+            9043,
+            [hz, v, width, height, enabled]
+        )
+
+    def get_user_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
+        """
+        RPC 9040, ``AUT_GetUserSpiral``
+
+        .. versionadded:: GeoCom-TPS1100-1.04
+
+        Gets the size of the PowerSearch window.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `Angle`: Width of window.
+                - `Angle`: Height of window.
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+
+        See Also
+        --------
+        set_user_spiral
+        bap.search_target
+        """
+        return self._request(
+            9040,
+            parsers=(Angle.parse, Angle.parse)
+        )
+
+    def set_user_spiral(
+        self,
+        width: Angle,
+        height: Angle
+    ) -> GeoComResponse[None]:
+        """
+        RPC 9041, ``AUT_SetUserSpiral``
+
+        .. versionadded:: GeoCom-TPS1100-1.04
+
+        Sets the size of the PowerSearch window.
+
+        Parameters
+        ----------
+        width : Angle
+            Width of the search window.
+        height : Angle
+            Height of the search window.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+
+        See Also
+        --------
+        get_user_spiral
+        bap.search_target
+        """
+        return self._request(
+            9041,
+            [width, height]
+        )
