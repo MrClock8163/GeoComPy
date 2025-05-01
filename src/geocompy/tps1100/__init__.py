@@ -19,6 +19,7 @@ Submodules
 - ``geocompy.tps1100.aus``
 - ``geocompy.tps1100.aut``
 - ``geocompy.tps1100.bap``
+- ``geocompy.tps1100.bmm``
 - ``geocompy.tps1100.com``
 - ``geocompy.tps1100.csv``
 """
@@ -44,6 +45,7 @@ from ..protocols import (
 from .aus import TPS1100AUS
 from .aut import TPS1100AUT
 from .bap import TPS1100BAP
+from .bmm import TPS1100BMM
 from .com import TPS1100COM
 from .csv import TPS1100CSV
 from .rc import TPS1100RC, rpcnames
@@ -136,6 +138,8 @@ class TPS1100(GeoComProtocol):
         """Communications subsystem."""
         self.csv: TPS1100CSV = TPS1100CSV(self)
         """Central services subsystem."""
+        self.bmm: TPS1100BMM = TPS1100BMM(self)
+        """Basic man-machine interface subsystem."""
 
         for i in range(retry):
             try:
