@@ -14,12 +14,14 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     Angle,
     toenum,
-    enumparser
+    enumparser,
+    parsebool,
+    POSITION,
+    ADJUST,
+    ATR
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -36,37 +38,18 @@ class TPS1000AUT(GeoComSubsystem):
     target lock, etc.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
 
-    class POSMODE(Enum):
-        NORMAL = 0
-        PRECISE = 1
-
-    class ADJMODE(Enum):
-        NORMAL = 0
-        POINT = 1
-
-    class ATRMODE(Enum):
-        POSITION = 0
-        TARGET = 1
-
-    class DIRECTION(Enum):
-        CLOCKWISE = 1
-        ANTICLOCKWISE = -1
-
-    def get_atr_status(self) -> GeoComResponse[ONOFF]:
+    def get_atr_status(self) -> GeoComResponse[bool]:
         """
         RPC 9019, ``AUT_GetATRStatus``
 
-        Gets the current state of the ATR mode.
+        Gets whether or not the ATR mode is active.
 
         Returns
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: current ATR state
+                - `bool`: ATR mode is active.
 
             Error codes:
                 - ``NOT_IMPL``: ATR is not available.
@@ -81,12 +64,12 @@ class TPS1000AUT(GeoComSubsystem):
         """
         return self._request(
             9019,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_atr_status(
         self,
-        state: ONOFF | str
+        activate: bool
     ) -> GeoComResponse[None]:
         """
         RPC 9018, ``AUT_SetATRStatus``
@@ -95,8 +78,8 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        state : ONOFF | str
-            ATR state to set
+        activate : bool
+            Set ATR to active.
 
         Returns
         -------
@@ -117,20 +100,19 @@ class TPS1000AUT(GeoComSubsystem):
         get_lock_status
         set_lock_status
         """
-        _state = toenum(self.ONOFF, state)
-        return self._request(9018, [_state.value])
+        return self._request(9018, [activate])
 
-    def get_lock_status(self) -> GeoComResponse[ONOFF]:
+    def get_lock_status(self) -> GeoComResponse[bool]:
         """
         RPC 9021, ``AUT_GetLockStatus``
 
-        Gets the current state of the LOCK mode.
+        Gets whether or not the lock mode is active.
 
         Returns
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: current ATR state
+                - `bool`: Lock mode is active.
 
             Error codes:
                 - ``NOT_IMPL``: ATR is not available.
@@ -142,12 +124,12 @@ class TPS1000AUT(GeoComSubsystem):
         """
         return self._request(
             9021,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_lock_status(
         self,
-        state: ONOFF | str
+        activate: bool
     ) -> GeoComResponse[None]:
         """
         RPC 9020, ``AUT_SetLockStatus``
@@ -156,7 +138,7 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        state : ONOFF | str
+        activate : bool
             LOCK state to set
 
         Returns
@@ -176,10 +158,9 @@ class TPS1000AUT(GeoComSubsystem):
         get_atr_status
         lock_in
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             9020,
-            [_state.value]
+            [activate]
         )
 
     def read_tol(self) -> GeoComResponse[tuple[Angle, Angle]]:
@@ -300,8 +281,8 @@ class TPS1000AUT(GeoComSubsystem):
         self,
         hz: Angle,
         v: Angle,
-        posmode: POSMODE | str = POSMODE.NORMAL,
-        atrmode: ATRMODE | str = ATRMODE.POSITION
+        posmode: POSITION | str = POSITION.NORMAL,
+        atrmode: ATR | str = ATR.POSITION
     ) -> GeoComResponse[None]:
         """
         RPC 9027, ``AUT_MakePositioning``
@@ -314,10 +295,10 @@ class TPS1000AUT(GeoComSubsystem):
             Horizontal position.
         v : Angle
             Vertical position.
-        posmode : POSMODE | str, optional
-            Positioning precision mode, by default POSMODE.NORMAL
-        atrmode : ATRMODE | str, optional
-            ATR mode, by default ATRMODE.TARGET
+        posmode : POSITION | str, optional
+            Positioning precision mode, by default POSITION.NORMAL
+        atrmode : ATR | str, optional
+            ATR mode, by default ATR.POSITION
 
         Returns
         -------
@@ -353,8 +334,8 @@ class TPS1000AUT(GeoComSubsystem):
         com.get_timeout
         com.set_timeout
         """
-        _posmode = toenum(self.POSMODE, posmode)
-        _atrmode = toenum(self.ATRMODE, atrmode)
+        _posmode = toenum(POSITION, posmode)
+        _atrmode = toenum(ATR, atrmode)
         return self._request(
             9027,
             [hz, v, _posmode.value, _atrmode.value, 0]
@@ -362,8 +343,8 @@ class TPS1000AUT(GeoComSubsystem):
 
     def change_face(
         self,
-        posmode: POSMODE | str = POSMODE.NORMAL,
-        atrmode: ATRMODE | str = ATRMODE.POSITION
+        posmode: POSITION | str = POSITION.NORMAL,
+        atrmode: ATR | str = ATR.POSITION
     ) -> GeoComResponse[None]:
         """
         RPC 9028, ``AUT_ChangeFace``
@@ -372,10 +353,10 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        posmode : POSMODE | str, optional
-            Positioning precision mode, by default POSMODE.NORMAL
-        atrmode : ATRMODE | str, optional
-            ATR mode, by default ATRMODE.TARGET
+        posmode : POSITION | str, optional
+            Positioning precision mode, by default POSITION.NORMAL
+        atrmode : ATR | str, optional
+            ATR mode, by default ATR.POSITION
 
         Returns
         -------
@@ -412,8 +393,8 @@ class TPS1000AUT(GeoComSubsystem):
         com.set_timeout
         tmc.get_face
         """
-        _posmode = toenum(self.POSMODE, posmode)
-        _atrmode = toenum(self.ATRMODE, atrmode)
+        _posmode = toenum(POSITION, posmode)
+        _atrmode = toenum(ATR, atrmode)
         return self._request(
             9028,
             [_posmode.value, _atrmode.value, 0]
@@ -516,7 +497,7 @@ class TPS1000AUT(GeoComSubsystem):
             [width, height, 0]
         )
 
-    def get_fine_adjust_mode(self) -> GeoComResponse[ADJMODE]:
+    def get_fine_adjust_mode(self) -> GeoComResponse[ADJUST]:
         """
         RPC 9030, ``AUT_GetFineAdjustMode``
 
@@ -526,7 +507,7 @@ class TPS1000AUT(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `ADJMODE`: current fine adjustment mode
+                - `ADJUST`: Current fine adjustment mode.
 
         See Also
         --------
@@ -534,12 +515,12 @@ class TPS1000AUT(GeoComSubsystem):
         """
         return self._request(
             9030,
-            parsers=enumparser(self.ADJMODE)
+            parsers=enumparser(ADJUST)
         )
 
     def set_fine_adjust_mode(
         self,
-        adjmode: ADJMODE | str
+        mode: ADJUST | str
     ) -> GeoComResponse[None]:
         """
         RPC 9031, ``AUT_SetFineAdjustMode``
@@ -548,7 +529,7 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        adjmode : ADJMODE | str
+        mode : ADJUST | str
 
         Returns
         -------
@@ -561,10 +542,10 @@ class TPS1000AUT(GeoComSubsystem):
         --------
         get_fine_adjust_mode
         """
-        _adjmode = toenum(self.ADJMODE, adjmode)
+        _mode = toenum(ADJUST, mode)
         return self._request(
             9031,
-            [_adjmode.value]
+            [_mode.value]
         )
 
     def lock_in(self) -> GeoComResponse[None]:

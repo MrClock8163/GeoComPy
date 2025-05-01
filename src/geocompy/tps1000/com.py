@@ -14,11 +14,11 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     toenum,
-    parsebool
+    parsebool,
+    SHUTDOWN,
+    STARTUP
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -34,13 +34,6 @@ class TPS1000COM(GeoComSubsystem):
     with the instrument.
 
     """
-    class STOPMODE(Enum):
-        SHUTDOWN = 0
-        SLEEP = 1
-
-    class STARTUPMODE(Enum):
-        LOCAL = 0
-        REMOTE = 1
 
     def get_sw_version(self) -> GeoComResponse[tuple[int, int, int]]:
         """
@@ -104,7 +97,7 @@ class TPS1000COM(GeoComSubsystem):
 
     def switch_on(
         self,
-        onmode: STARTUPMODE | str = STARTUPMODE.REMOTE
+        mode: STARTUP | str = STARTUP.REMOTE
     ) -> GeoComResponse[None]:
         """
         RPC 111, ``COM_SwitchOnTPS``
@@ -113,8 +106,8 @@ class TPS1000COM(GeoComSubsystem):
 
         Parameters
         ----------
-        onmode : STARTUPMODE | str, optional
-            Desired startup mode, by default STARTUPMODE.REMOTE
+        mode : STARTUP | str, optional
+            Desired startup mode, by default STARTUP.REMOTE
 
         Returns
         -------
@@ -131,15 +124,15 @@ class TPS1000COM(GeoComSubsystem):
         --------
         switch_off
         """
-        _onmode = toenum(self.STARTUPMODE, onmode)
+        _mode = toenum(STARTUP, mode)
         return self._request(
             111,
-            [_onmode.value]
+            [_mode.value]
         )
 
     def switch_off(
         self,
-        offmode: STOPMODE | str = STOPMODE.SHUTDOWN
+        mode: SHUTDOWN | str = SHUTDOWN.SHUTDOWN
     ) -> GeoComResponse[None]:
         """
         RPC 112, ``COM_SwitchOffTPS``
@@ -148,8 +141,8 @@ class TPS1000COM(GeoComSubsystem):
 
         Parameters
         ----------
-        offmode : STOPMODE | str, optional
-            Desired stop mode, by default STOPMODE.SHUTDOWN
+        mode : SHUTDOWN | str, optional
+            Desired stop mode, by default SHUTDOWN.SHUTDOWN
 
         Returns
         -------
@@ -159,10 +152,10 @@ class TPS1000COM(GeoComSubsystem):
         --------
         switch_on
         """
-        _offmode = toenum(self.STOPMODE, offmode)
+        _mode = toenum(SHUTDOWN, mode)
         return self._request(
             112,
-            [_offmode.value]
+            [_mode.value]
         )
 
     def nullproc(self) -> GeoComResponse[None]:

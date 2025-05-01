@@ -14,9 +14,11 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
-from ..data import enumparser, toenum
+from ..data import (
+    enumparser,
+    toenum,
+    FORMAT
+)
 from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
@@ -28,10 +30,6 @@ class TPS1000WIR(GeoComSubsystem):
     Word Index registration subsystem of the TPS1000 GeoCom protocol.
     This subsystem is responsible for the GSI data recording operations.
     """
-
-    class FORMAT(Enum):
-        GSI8 = 0
-        GSI16 = 1
 
     def get_rec_format(self) -> GeoComResponse[FORMAT]:
         """
@@ -48,7 +46,7 @@ class TPS1000WIR(GeoComSubsystem):
         """
         return self._request(
             8011,
-            parsers=enumparser(self.FORMAT)
+            parsers=enumparser(FORMAT)
         )
 
     def set_rec_format(
@@ -70,7 +68,7 @@ class TPS1000WIR(GeoComSubsystem):
         GeoComResponse
 
         """
-        _format = toenum(self.FORMAT, format)
+        _format = toenum(FORMAT, format)
         return self._request(
             8012,
             [_format.value]

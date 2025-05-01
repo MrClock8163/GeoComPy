@@ -14,11 +14,11 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     toenum,
-    enumparser
+    enumparser,
+    parsebool,
+    TRACKLIGHT
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -35,18 +35,10 @@ class TPS1000EDM(GeoComSubsystem):
     functions.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
-
-    class TRKLIGHTBRIGHTNESS(Enum):
-        LOW = 0
-        MID = 1
-        HIGH = 2
 
     def laserpointer(
         self,
-        laser: ONOFF | str
+        activate: bool
     ) -> GeoComResponse[None]:
         """
         RPC 1004, ``EDM_Laserpointer``
@@ -55,8 +47,8 @@ class TPS1000EDM(GeoComSubsystem):
 
         Parameters
         ----------
-        laser : ONOFF | str
-            Activation state to set.
+        activate : bool
+            Activate laser pointer
 
         Returns
         -------
@@ -73,15 +65,14 @@ class TPS1000EDM(GeoComSubsystem):
                 - ``UNDEFINED``: Instrument name could not be read.
 
         """
-        _laser = toenum(self.ONOFF, laser)
         return self._request(
             1004,
-            [_laser.value]
+            [activate]
         )
 
     def on(
         self,
-        state: ONOFF | str
+        activate: bool
     ) -> GeoComResponse[None]:
         """
         RPC 1010, ``EDM_On``
@@ -90,8 +81,8 @@ class TPS1000EDM(GeoComSubsystem):
 
         Parameters
         ----------
-        state : ONOFF | str
-            EDM state to change to.
+        activate : bool
+            Activate EDM module.
 
         Returns
         -------
@@ -105,13 +96,12 @@ class TPS1000EDM(GeoComSubsystem):
                 - ``ABORT``: Function was interrupted.
                 - ``UNDEFINED``: Instrument name could not be read.
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             1010,
-            [_state.value]
+            [activate]
         )
 
-    def get_bumerang(self) -> GeoComResponse[ONOFF]:
+    def get_bumerang(self) -> GeoComResponse[bool]:
         """
         RPC 1044, ``EDM_GetBumerang``
 
@@ -121,7 +111,7 @@ class TPS1000EDM(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: State of the boomerang filter.
+                - `bool`: Boomerang filtering is enabled.
             Error codes:
                 - ``IVRESULT``: Wrong result due to error.
                 - ``SYSBUSY``: EDM is already busy.
@@ -135,12 +125,12 @@ class TPS1000EDM(GeoComSubsystem):
         """
         return self._request(
             1044,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_bumerang(
         self,
-        status: ONOFF | str
+        enabled: bool
     ) -> GeoComResponse[None]:
         """
         RPC 1007, ``EDM_SetBumerang``
@@ -149,7 +139,7 @@ class TPS1000EDM(GeoComSubsystem):
 
         Parameters
         ----------
-        status : ONOFF | str
+        enabled : bool
             Boomerant filter status to set.
 
         Returns
@@ -166,13 +156,12 @@ class TPS1000EDM(GeoComSubsystem):
                 - ``UNDEFINED``: Instrument name could not be read.
                 - ``EDM_ERR12``: Supply voltage below minimum.
         """
-        _status = toenum(self.ONOFF, status)
         return self._request(
             1007,
-            [_status.value]
+            [enabled]
         )
 
-    def get_trk_light_brightness(self) -> GeoComResponse[TRKLIGHTBRIGHTNESS]:
+    def get_trk_light_brightness(self) -> GeoComResponse[TRACKLIGHT]:
         """
         RPC 1041, ``EDM_GetTrkLightBrightness``
 
@@ -182,18 +171,18 @@ class TPS1000EDM(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `TRKLIGHTBRIGHTNESS`: Tracklight brightness.
+                - `TRACKLIGHT`: Tracklight brightness.
             Error codes:
                 - ``NOT_IMPL``: Tracklight is not available.
         """
         return self._request(
             1041,
-            parsers=enumparser(self.TRKLIGHTBRIGHTNESS)
+            parsers=enumparser(TRACKLIGHT)
         )
 
     def set_trk_light_brightness(
         self,
-        intensity: TRKLIGHTBRIGHTNESS | str
+        intensity: TRACKLIGHT | str
     ) -> GeoComResponse[None]:
         """
         RPC 1032, ``EDM_SetTrkLightBrightness``
@@ -202,7 +191,7 @@ class TPS1000EDM(GeoComSubsystem):
 
         Parameters
         ----------
-        intensity : TRKLIGHTBRIGHTNESS | str
+        intensity : TRACKLIGHT | str
             Tracklight intensity to set.
 
         Returns
@@ -211,39 +200,44 @@ class TPS1000EDM(GeoComSubsystem):
             Error codes:
                 - ``NOT_IMPL``: Tracklight is not available.
         """
-        _intensity = toenum(self.TRKLIGHTBRIGHTNESS, intensity)
+        _intensity = toenum(TRACKLIGHT, intensity)
         return self._request(
             1032,
             [_intensity.value]
         )
 
-    def get_trk_light_switch(self) -> GeoComResponse[ONOFF]:
+    def get_trk_light_switch(self) -> GeoComResponse[bool]:
         """
         RPC 1040, ``EDM_GetTrkLightSwitch``
 
-        Gets the current activity state of the tracklight.
+        Gets if the track light is currently active.
 
         Returns
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: Tracklight state.
+                - `bool`: Tracklight is on.
             Error codes:
                 - ``NOT_IMPL``: Tracklight is not available.
         """
         return self._request(
             1040,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_trk_light_switch(
         self,
-        state: ONOFF | str
+        activate: bool
     ) -> GeoComResponse[None]:
         """
         RPC 1031, ``EDM_SetTrkLightSwitch``
 
         Sets the status of the tracklight.
+
+        Parameters
+        ----------
+        activate : bool
+            Activate track light.
 
         Returns
         -------
@@ -253,8 +247,7 @@ class TPS1000EDM(GeoComSubsystem):
                 - ``SYSBUSY``: EDM is already busy.
                 - ``NOT_IMPL``: Tracklight is not available.
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             1031,
-            [_state.value]
+            [activate]
         )

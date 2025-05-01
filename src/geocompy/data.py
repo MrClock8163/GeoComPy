@@ -24,32 +24,38 @@ Types
 - ``Byte``
 - ``Vector``
 - ``Coordinate``
+
+- ``ADJUST``
+- ``ATR``
+- ``ATRLOCK``
+- ``AUTOPOWER``
+- ``CAPABILITIES``
+- ``CONTROLLER``
+- ``DEVICECLASS``
+- ``EDMMODE``
+- ``FACE``
+- ``FORMAT``
+- ``INCLINATION``
+- ``MEASUREMENT``
+- ``MEASUREPROGRAM``
+- ``POSITION``
+- ``SHUTDOWN``
+- ``STARTUP``
+- ``STOP``
+- ``TRACKLIGHT``
+- ``TURN``
 """
 from __future__ import annotations
 
 import re
 import math
-from enum import Enum
+from enum import Enum, Flag
 from typing import (
     TypeAlias,
     Literal,
     Callable,
     TypeVar,
     Self
-)
-
-
-__all__ = (
-    "parsestr",
-    "toenum",
-    "enumparser",
-    "gsiword",
-
-    "AngleUnit",
-    "Angle",
-    "Byte",
-    "Vector",
-    "Coordinate"
 )
 
 
@@ -926,3 +932,150 @@ class Coordinate(Vector):
     3.0
 
     """
+
+
+class POSITION(Enum):
+    """Positioning mode."""
+    NORMAL = 0  #: Fast
+    PRECISE = 1  #: Precise
+
+
+class ADJUST(Enum):
+    """ATR adjustment tolerance mode."""
+    NORMAL = 0  #: Angle tolerance.
+    POINT = 1  #: Point tolerance.
+
+
+class ATR(Enum):
+    """ATR mode."""
+    POSITION = 0  #: Position to angles.
+    TARGET = 1  #: Position to target near angles.
+
+
+class TURN(Enum):
+    """Turning direction."""
+    CLOCKWISE = 1
+    COUNTERCLOCKWISE = -1
+
+
+class MEASUREPROGRAM(Enum):
+    NOMEASURE = 0  #: No measurement, take last value.
+    NODISTANCE = 1  #: No distance measurement, angles only.
+    DISTANCE = 2  #: Default distance measurement.
+    TRACK = 3  #: Tracking distance measurement.
+    RAPIDTRACK = 4  #: Rapid tracking distance measurement.
+    CLEAR = 5  #: Clear distances.
+    STOPTRACK = 6  #: Stop tracking.
+
+
+class SHUTDOWN(Enum):
+    """Instrument software stop mode."""
+    SHUTDOWN = 0
+    SLEEP = 1
+
+
+class STARTUP(Enum):
+    """Instrument startup mode."""
+    LOCAL = 0  #: Manual mode.
+    REMOTE = 1  #: GeoCom mode.
+
+
+class DEVICECLASS(Enum):
+    """Instrument accuracy class."""
+    CLASS_1100 = 0  #: TPS1000 3"
+    CLASS_1700 = 1  #: TPS1000 1.5"
+    CLASS_1800 = 2  #: TPS1000 1"
+    CLASS_5000 = 3  #: TPS2000
+    CLASS_6000 = 4  #: TPS2000
+    CLASS_1500 = 5  #: TPS1000
+
+
+class CAPABILITIES(Flag):
+    """Instrument capabilities."""
+    THEODOLITE = 0x00000  #: Theodolite
+    TC1 = 0x00001  # TPS1000
+    TC2 = 0x00002  # TPS1000
+    MOTORIZED = 0x00004  #: Motorized
+    ATR = 0x00008  #: ATR
+    EGL = 0x00010  #: Guide Light
+    DATABASE = 0x00020  #: Database
+    DIODELASER = 0x00040  #: Diode laser
+    LASERPLUMB = 0x00080  #: Laser plumb
+    # SIM = 0x04000 # TPSSim
+
+
+class TRACKLIGHT(Enum):
+    """Tracking light brightness"""
+    LOW = 0
+    MID = 1
+    HIGH = 2
+
+
+class ATRLOCK(Enum):
+    """ATR lock status."""
+    NONE = 0  #: Disabled
+    LOCK = 1  #: Enabled
+    PREDICT = 2
+
+
+class STOP(Enum):
+    """Servo motor stopping mode."""
+    NORMAL = 0  #: Slow down with current acceleration.
+    CUTOFF = 1  #: Slow down by motor power termination.
+
+
+class CONTROLLER(Enum):
+    """Motor controller operation mode."""
+    POSITIONING = 0  #: Relative positioning.
+    MOVE = 1  #: Constant speed.
+    MANUAL = 2  #: Manual positioning.
+    LOCK = 3  #: Lock-in controller.
+    BREAK = 4  #: Break controller.
+    # 5, 6 do not use (why?)
+    TERMINATE = 7  #: Terminate current task.
+
+
+class AUTOPOWER(Enum):
+    """Automatic power off mode."""
+    DISABLED = 0  #: Automatic poweroff disabled.
+    SLEEP = 1  #: Put instument into sleep mode.
+    SHUTDOWN = 2  #: Poweroff instrument.
+
+
+class INCLINATION(Enum):
+    """Inclination calculation mode."""
+    MEASURE = 0  #: Measure inclination.
+    AUTO = 1  #: Automatic inclination handling.
+    PLANE = 2  #: Model inclination from previous measurements.
+
+
+class MEASUREMENT(Enum):
+    STOP = 0  #: Stop measurement program.
+    DISTANCE = 1  #: Default distance measurement.
+    TRACK = 2  #: Track distance.
+    CLEAR = 3  #: Clear current measurement data.
+    SIGNAL = 4  #: Signal intensity measurement.
+    RAPIDTRACK = 8  #: Rapid track distance.
+
+
+class EDMMODE(Enum):
+    """Distance measurement mode."""
+    SINGLE_STANDARD = 0,  #: Standard single measurement.
+    SINGLE_EXACT = 1,  #: Exact single measurement.
+    SINGLE_FAST = 2,  #: Fast single measurement.
+    CONT_STANDARD = 3,  #: Repeated measurement.
+    CONT_EXACT = 4,  #: Repeated average measurement.
+    CONT_FAST = 5,  #: Fast repeated measurement.
+    UNDEFINED = 6  #: Not defined.
+
+
+class FACE(Enum):
+    """Instrument view face."""
+    F1 = 0  #: Face left.
+    F2 = 1  #: Face right.
+
+
+class FORMAT(Enum):
+    """Recording format."""
+    GSI8 = 0
+    GSI16 = 1
