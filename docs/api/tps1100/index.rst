@@ -23,3 +23,4 @@ TPS1100
     ctl
     edm
     mot
+    sup

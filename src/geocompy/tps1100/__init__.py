@@ -25,6 +25,7 @@ Submodules
 - ``geocompy.tps1100.ctl``
 - ``geocompy.tps1100.edm``
 - ``geocompy.tps1100.mot``
+- ``geocompy.tps1100.sup``
 """
 from __future__ import annotations
 
@@ -54,6 +55,7 @@ from .csv import TPS1100CSV
 from .ctl import TPS1100CTL
 from .edm import TPS1100EDM
 from .mot import TPS1100MOT
+from .sup import TPS1100SUP
 from .rc import TPS1100RC, rpcnames
 
 
@@ -152,6 +154,8 @@ class TPS1100(GeoComProtocol):
         """Electronic distance measurement subsystem."""
         self.mot: TPS1100MOT = TPS1100MOT(self)
         """Motorization subsytem."""
+        self.sup: TPS1100SUP = TPS1100SUP(self)
+        """Supervisor subsystem."""
 
         for i in range(retry):
             try:
