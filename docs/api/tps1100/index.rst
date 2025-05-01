@@ -15,5 +15,6 @@ TPS1100
 
     rc
     aus
+    aut
     com
     csv
