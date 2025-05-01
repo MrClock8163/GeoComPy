@@ -14,12 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
-from ..data import (
-    toenum,
-    enumparser
-)
+from ..data import parsebool
 from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
@@ -36,11 +31,8 @@ class TPS1100AUS(GeoComSubsystem):
     automation modes.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
 
-    def get_user_atr_state(self) -> GeoComResponse[ONOFF]:
+    def get_user_atr_state(self) -> GeoComResponse[bool]:
         """
         RPC 18006, ``AUS_GetUserAtrState``
 
@@ -50,7 +42,7 @@ class TPS1100AUS(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: current ATR state
+                - `bool`: ATR is enabled.
 
             Error codes:
                 - ``NOT_IMPL``: ATR is not available.
@@ -65,12 +57,12 @@ class TPS1100AUS(GeoComSubsystem):
         """
         return self._request(
             18006,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_user_atr_state(
         self,
-        state: ONOFF | str
+        enabled: bool
     ) -> GeoComResponse[None]:
         """
         RPC 18005, ``AUS_SetUserAtrState``
@@ -79,8 +71,8 @@ class TPS1100AUS(GeoComSubsystem):
 
         Parameters
         ----------
-        state : ONOFF | str
-            ATR state to set
+        enabled : bool
+            ATR is enabled.
 
         Returns
         -------
@@ -101,10 +93,9 @@ class TPS1100AUS(GeoComSubsystem):
         get_user_lock_state
         set_user_lock_state
         """
-        _state = toenum(self.ONOFF, state)
-        return self._request(18005, [_state.value])
+        return self._request(18005, [enabled])
 
-    def get_user_lock_state(self) -> GeoComResponse[ONOFF]:
+    def get_user_lock_state(self) -> GeoComResponse[bool]:
         """
         RPC 18005, ``AUS_GetUserLockState``
 
@@ -114,7 +105,7 @@ class TPS1100AUS(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: current ATR state
+                - `bool`: ATR lock is enabled.
 
             Error codes:
                 - ``NOT_IMPL``: ATR is not available.
@@ -126,12 +117,12 @@ class TPS1100AUS(GeoComSubsystem):
         """
         return self._request(
             18008,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_user_lock_state(
         self,
-        state: ONOFF | str
+        enabled: bool
     ) -> GeoComResponse[None]:
         """
         RPC 18007, ``AUS_SetUserLockState``
@@ -140,8 +131,8 @@ class TPS1100AUS(GeoComSubsystem):
 
         Parameters
         ----------
-        state : ONOFF | str
-            LOCK state to set
+        enabled : bool
+            ATR lock is enabled.
 
         Returns
         -------
@@ -160,13 +151,12 @@ class TPS1100AUS(GeoComSubsystem):
         get_user_atr_state
         aut.lock_in
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             18007,
-            [_state.value]
+            [enabled]
         )
 
-    def get_rcs_search_switch(self) -> GeoComResponse[ONOFF]:
+    def get_rcs_search_switch(self) -> GeoComResponse[bool]:
         """
         RPC 18010, ``AUS_GetRcsSearchSwitch``
 
@@ -176,7 +166,7 @@ class TPS1100AUS(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: Current RCS state.
+                - `bool`: RCS-style search is enabled.
 
             Error codes:
                 - ``NOT_IMPL``: ATR is not available.
@@ -184,12 +174,12 @@ class TPS1100AUS(GeoComSubsystem):
         """
         return self._request(
             18008,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def switch_rcs_search(
         self,
-        state: ONOFF | str
+        enabled: bool
     ) -> GeoComResponse[None]:
         """
         RPC 18009, ``AUS_SwitchRcsSearch``
@@ -198,8 +188,8 @@ class TPS1100AUS(GeoComSubsystem):
 
         Parameters
         ----------
-        state : ONOFF | str
-            New state of the RCS search mode.
+        enabled : bool
+            RCS-style search is enabled.
 
         Returns
         -------
@@ -208,8 +198,7 @@ class TPS1100AUS(GeoComSubsystem):
                 - ``NOT_IMPL``: ATR is not available.
 
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             18009,
-            [_state.value]
+            [enabled]
         )

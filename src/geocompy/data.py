@@ -39,6 +39,7 @@ Types
 - ``MEASUREMENT``
 - ``MEASUREPROGRAM``
 - ``POSITION``
+- ``POWERSOURCE``
 - ``SHUTDOWN``
 - ``STARTUP``
 - ``STOP``
@@ -988,6 +989,13 @@ class DEVICECLASS(Enum):
     CLASS_5000 = 3  #: TPS2000
     CLASS_6000 = 4  #: TPS2000
     CLASS_1500 = 5  #: TPS1000
+    CLASS_2003 = 6  #: TPS2000
+    CLASS_5005 = 7  #: TPS5000
+    CLASS_5100 = 8  #: TPS5000
+    CLASS_1102 = 100  #: TPS1100 2"
+    CLASS_1103 = 101  #: TPS1100 3"
+    CLASS_1105 = 102  #: TPS1100 5"
+    CLASS_1101 = 103  #: TPS1100 1"
 
 
 class CAPABILITIES(Flag):
@@ -1001,6 +1009,9 @@ class CAPABILITIES(Flag):
     DATABASE = 0x00020  #: Database
     DIODELASER = 0x00040  #: Diode laser
     LASERPLUMB = 0x00080  #: Laser plumb
+    AUTOCOLLIMATION = 0x00100  #: Autocollimation lamp
+    POINTER = 0x00200  #: Laserpointer
+    REFLECTORLESS = 0x00400  #: Reflectorless EDM
     # SIM = 0x04000 # TPSSim
 
 
@@ -1079,3 +1090,10 @@ class FORMAT(Enum):
     """Recording format."""
     GSI8 = 0
     GSI16 = 1
+
+
+class POWERSOURCE(Enum):
+    """Instrument power supply."""
+    CURRENT = 0
+    EXTERNAL = 1
+    INTERNAL = 2
