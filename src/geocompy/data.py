@@ -1022,6 +1022,14 @@ class TRACKLIGHT(Enum):
     HIGH = 2
 
 
+class GUIDELIGHT(Enum):
+    """Guide light intensity."""
+    OFF = 0
+    LOW = 1
+    MID = 2
+    HIGH = 3
+
+
 class ATRLOCK(Enum):
     """ATR lock status."""
     NONE = 0  #: Disabled

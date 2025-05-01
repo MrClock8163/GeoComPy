@@ -21,3 +21,4 @@ TPS1100
     com
     csv
     ctl
+    edm
