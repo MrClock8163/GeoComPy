@@ -25,25 +25,25 @@ Types
 - ``Vector``
 - ``Coordinate``
 
-- ``POSITION``
 - ``ADJUST``
 - ``ATR``
-- ``TURN``
-- ``MEASUREPROGRAM``
-- ``SHUTDOWN``
-- ``STARTUP``
-- ``DEVICECLASS``
-- ``CAPABILITIES``
-- ``TRACKLIGHT``
 - ``ATRLOCK``
-- ``STOP``
-- ``CONTROLLER``
 - ``AUTOPOWER``
-- ``INCLINATION``
-- ``MEASUREMENT``
+- ``CAPABILITIES``
+- ``CONTROLLER``
+- ``DEVICECLASS``
 - ``EDMMODE``
 - ``FACE``
 - ``FORMAT``
+- ``INCLINATION``
+- ``MEASUREMENT``
+- ``MEASUREPROGRAM``
+- ``POSITION``
+- ``SHUTDOWN``
+- ``STARTUP``
+- ``STOP``
+- ``TRACKLIGHT``
+- ``TURN``
 """
 from __future__ import annotations
 
@@ -936,14 +936,14 @@ class Coordinate(Vector):
 
 class POSITION(Enum):
     """Positioning mode."""
-    NORMAL = 0
-    PRECISE = 1
+    NORMAL = 0  # : Fast
+    PRECISE = 1  # : Precise
 
 
 class ADJUST(Enum):
     """ATR adjustment tolerance mode."""
-    NORMAL = 0
-    POINT = 1
+    NORMAL = 0  # : Angle tolerance.
+    POINT = 1  # : Point tolerance.
 
 
 class ATR(Enum):
@@ -1013,8 +1013,8 @@ class TRACKLIGHT(Enum):
 
 class ATRLOCK(Enum):
     """ATR lock status."""
-    NONE = 0
-    LOCK = 1
+    NONE = 0  # : Disabled
+    LOCK = 1  # : Enabled
     PREDICT = 2
 
 
