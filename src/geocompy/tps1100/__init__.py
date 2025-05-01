@@ -26,6 +26,7 @@ Submodules
 - ``geocompy.tps1100.edm``
 - ``geocompy.tps1100.mot``
 - ``geocompy.tps1100.sup``
+- ``geocompy.tps1100.tmc``
 """
 from __future__ import annotations
 
@@ -56,6 +57,7 @@ from .ctl import TPS1100CTL
 from .edm import TPS1100EDM
 from .mot import TPS1100MOT
 from .sup import TPS1100SUP
+from .tmc import TPS1100TMC
 from .rc import TPS1100RC, rpcnames
 
 
@@ -156,6 +158,8 @@ class TPS1100(GeoComProtocol):
         """Motorization subsytem."""
         self.sup: TPS1100SUP = TPS1100SUP(self)
         """Supervisor subsystem."""
+        self.tmc: TPS1100TMC = TPS1100TMC(self)
+        """Theodolite measurement and calculation subsystem."""
 
         for i in range(retry):
             try:

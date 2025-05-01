@@ -24,3 +24,4 @@ TPS1100
     edm
     mot
     sup
+    tmc
