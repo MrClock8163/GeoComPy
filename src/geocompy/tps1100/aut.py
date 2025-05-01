@@ -34,7 +34,7 @@ class TPS1100AUT(TPS1000AUT):
 
     """
     @deprecated(
-        "The 'AUT_GetATRStatus' command was superceded by "
+        "The 'AUT_GetATRStatus' command was superseded by "
         "'AUS_GetUserAtrState' in v1.04 of TPS1100 GeoCom. Use the new "
         "command on instruments, that support it!"
     )
@@ -69,7 +69,7 @@ class TPS1100AUT(TPS1000AUT):
         return super().get_atr_status()
 
     @deprecated(
-        "The 'AUT_SetATRStatus' command was superceded by "
+        "The 'AUT_SetATRStatus' command was superseded by "
         "'AUS_SetUserAtrState' in v1.04 of TPS1100 GeoCom. Use the new "
         "command on instruments, that support it!"
     )
@@ -114,7 +114,7 @@ class TPS1100AUT(TPS1000AUT):
         return super().set_atr_status(activate)
 
     @deprecated(
-        "The 'AUT_GetLockStatus' command was superceded by "
+        "The 'AUT_GetLockStatus' command was superseded by "
         "'AUS_GetUserLockState' in v1.04 of TPS1100 GeoCom. Use the new "
         "command on instruments, that support it!"
     )
@@ -146,7 +146,7 @@ class TPS1100AUT(TPS1000AUT):
         return super().get_lock_status()
 
     @deprecated(
-        "The 'AUT_SetLockStatus' command was superceded by "
+        "The 'AUT_SetLockStatus' command was superseded by "
         "'AUS_SetUserLockState' in v1.04 of TPS1100 GeoCom. Use the new "
         "command on instruments, that support it!"
     )

@@ -33,18 +33,25 @@ Types
 - ``CONTROLLER``
 - ``DEVICECLASS``
 - ``EDMMODE``
+- ``EDMMODEV1``
+- ``EDMMODEV2``
 - ``FACE``
 - ``FORMAT``
+- ``GUIDELIGHT``
 - ``INCLINATION``
 - ``MEASUREMENT``
-- ``MEASUREPROGRAM``
 - ``POSITION``
 - ``POWERSOURCE``
+- ``PRISM``
+- ``PROGRAM``
+- ``REFLECTOR``
 - ``SHUTDOWN``
 - ``STARTUP``
 - ``STOP``
+- ``TARGET``
 - ``TRACKLIGHT``
 - ``TURN``
+- ``USERPROGRAM``
 """
 from __future__ import annotations
 
@@ -936,21 +943,39 @@ class Coordinate(Vector):
 
 
 class POSITION(Enum):
-    """Positioning mode."""
-    NORMAL = 0  #: Fast
-    PRECISE = 1  #: Precise
+    """
+    Positioning mode.
+
+    ``AUT_POSMODE``
+    """
+    NORMAL = 0
+    """Fast positioning."""
+    PRECISE = 1
+    """Percise positioning."""
 
 
 class ADJUST(Enum):
-    """ATR adjustment tolerance mode."""
-    NORMAL = 0  #: Angle tolerance.
-    POINT = 1  #: Point tolerance.
+    """
+    ATR adjustment tolerance mode.
+
+    ``AUT_ADJMODE``
+    """
+    NORMAL = 0
+    """Angle tolerance."""
+    POINT = 1
+    """Point tolerance."""
 
 
 class ATR(Enum):
-    """ATR mode."""
-    POSITION = 0  #: Position to angles.
-    TARGET = 1  #: Position to target near angles.
+    """
+    ATR mode.
+
+    ``AUT_ATRMODE``
+    """
+    POSITION = 0
+    """Position to angles."""
+    TARGET = 1
+    """Position to target near angles."""
 
 
 class TURN(Enum):
@@ -965,90 +990,221 @@ class PROGRAM(Enum):
 
     ``BAP_MEASURE_PRG``
     """
-    NOMEASURE = 0  #: No measurement, take last value.
-    NODISTANCE = 1  #: No distance measurement, angles only.
-    DISTANCE = 2  #: Default distance measurement.
-    TRACK = 3  #: Tracking distance measurement.
-    RAPIDTRACK = 4  #: Rapid tracking distance measurement.
-    CLEAR = 5  #: Clear distances.
-    STOPTRACK = 6  #: Stop tracking.
+    NOMEASURE = 0
+    """No measurement, take last value."""
+    NODISTANCE = 1
+    """No distance measurement, angles only."""
+    DISTANCE = 2
+    """Default distance measurement."""
+    TRACK = 3
+    """Tracking distance measurement.
+
+    .. versionremoved:: GeoCom-TPS1100
+    """
+    RAPIDTRACK = 4
+    """Rapid tracking distance measurement.
+
+    .. versionremoved:: GeoCom-TPS1100
+    """
+    CLEAR = 5
+    """Clear distances."""
+    STOPTRACK = 6
+    """Stop tracking."""
 
 
 class USERPROGRAM(Enum):
     """
     Distance measurement programs.
 
+    .. versionadded:: GeoCom-TPS1100
+
     ``BAP_USER_MEASPRG``
     """
-    SINGLE_REF_STANDARD = 0  #: Standard measurement with reflector.
-    SINGLE_REF_FAST = 1  #: Fast measurement with reflector.
-    SINGLE_REF_VISIBLE = 2  #: Long range measurement with reflector.
-    SINGLE_RLESS_VISIBLE = 3  #: Standard measurement without reflector.
-    CONT_REF_STANDARD = 4  #: Tracking with reflector.
-    CONT_REF_FAST = 5  #: Fast tracking with reflector.
-    CONT_RLESS_VISIBLE = 6  #: Fast tracking without reflector.
-    AVG_REF_STANDARD = 7  #: Averaging measurement with reflector.
-    AVG_REF_VISIBLE = 8  #: Averaging long range measurement with reflector.
-    AVG_RLESS_VISIBLE = 9  #: Averaging measurement without reflector.
-    CONT_REF_SYNCHRO = 10  #: Synchro tracking with reflector.
-    SINGLE_REF_PRECISE = 11  #: Precise measurement with reflector (TS/TM30).
+    SINGLE_REF_STANDARD = 0
+    """Standard measurement with reflector."""
+    SINGLE_REF_FAST = 1
+    """Fast measurement with reflector."""
+    SINGLE_REF_VISIBLE = 2
+    """Long range measurement with reflector."""
+    SINGLE_RLESS_VISIBLE = 3
+    """Standard measurement without reflector."""
+    CONT_REF_STANDARD = 4
+    """Tracking with reflector."""
+    CONT_REF_FAST = 5
+    """Fast tracking with reflector."""
+    CONT_RLESS_VISIBLE = 6
+    """Fast tracking without reflector."""
+    AVG_REF_STANDARD = 7
+    """Averaging measurement with reflector."""
+    AVG_REF_VISIBLE = 8
+    """Averaging long range measurement with reflector."""
+    AVG_RLESS_VISIBLE = 9
+    """Averaging measurement without reflector."""
+    CONT_REF_SYNCHRO = 10
+    """
+    Synchro tracking with reflector.
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    SINGLE_REF_PRECISE = 11
+    """
+    Precise measurement with reflector (TS/TM30).
+
+    .. versionadded:: GeoCom-TPS1200
+    """
 
 
 class SHUTDOWN(Enum):
-    """Instrument software stop mode."""
+    """
+    Instrument software stop mode.
+
+    ``COM_TPS_STOP_MODE``
+    """
     SHUTDOWN = 0
     SLEEP = 1
 
 
 class STARTUP(Enum):
-    """Instrument startup mode."""
-    LOCAL = 0  #: Manual mode.
-    REMOTE = 1  #: GeoCom mode.
+    """
+    Instrument startup mode.
+
+    ``COM_TPS_STARTUP_MODE``
+    """
+    LOCAL = 0
+    """Manual mode."""
+    REMOTE = 1
+    """GeoCom mode."""
 
 
 class DEVICECLASS(Enum):
-    """Instrument accuracy class."""
-    CLASS_1100 = 0  #: TPS1000 3"
-    CLASS_1700 = 1  #: TPS1000 1.5"
-    CLASS_1800 = 2  #: TPS1000 1"
-    CLASS_5000 = 3  #: TPS2000
-    CLASS_6000 = 4  #: TPS2000
-    CLASS_1500 = 5  #: TPS1000
-    CLASS_2003 = 6  #: TPS2000
-    CLASS_5005 = 7  #: TPS5000
-    CLASS_5100 = 8  #: TPS5000
-    CLASS_1102 = 100  #: TPS1100 2"
-    CLASS_1103 = 101  #: TPS1100 3"
-    CLASS_1105 = 102  #: TPS1100 5"
-    CLASS_1101 = 103  #: TPS1100 1"
+    """
+    Instrument accuracy class.
+
+    ``TPS_DEVICE_CLASS``
+    """
+
+    CLASS_1100 = 0
+    """TPS1000 3\""""
+    CLASS_1700 = 1
+    """TPS1000 1.5\""""
+    CLASS_1800 = 2
+    """TPS1000 1\""""
+    CLASS_5000 = 3
+    """TPS2000"""
+    CLASS_6000 = 4
+    """TPS2000"""
+    CLASS_1500 = 5
+    """TPS1000"""
+    CLASS_2003 = 6
+    """
+    TPS2000
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    CLASS_5005 = 7
+    """
+    TPS5000
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    CLASS_5100 = 8
+    """
+    TPS5000
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    CLASS_1102 = 100
+    """
+    TPS1100 2\"
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    CLASS_1103 = 101
+    """
+    TPS1100 3\"
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    CLASS_1105 = 102
+    """
+    TPS1100 5\"
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    CLASS_1101 = 103
+    """
+    TPS1100 1\"
+
+    .. versionadded:: GeoCom-TPS1100
+    """
 
 
 class CAPABILITIES(Flag):
-    """Instrument capabilities."""
-    THEODOLITE = 0x00000  #: Theodolite
+    """
+    Instrument capabilities.
+
+    ``TPS_DEVICE_TYPE``
+    """
+
+    THEODOLITE = 0x00000
+    """Theodolite"""
     TC1 = 0x00001  # TPS1000
     TC2 = 0x00002  # TPS1000
-    MOTORIZED = 0x00004  #: Motorized
-    ATR = 0x00008  #: ATR
-    EGL = 0x00010  #: Guide Light
-    DATABASE = 0x00020  #: Database
-    DIODELASER = 0x00040  #: Diode laser
-    LASERPLUMB = 0x00080  #: Laser plumb
-    AUTOCOLLIMATION = 0x00100  #: Autocollimation lamp
-    POINTER = 0x00200  #: Laserpointer
-    REFLECTORLESS = 0x00400  #: Reflectorless EDM
+    MOTORIZED = 0x00004
+    """Motorized"""
+    ATR = 0x00008
+    """ATR"""
+    EGL = 0x00010
+    """Guide Light"""
+    DATABASE = 0x00020
+    """Database"""
+    DIODELASER = 0x00040
+    """Diode laser"""
+    LASERPLUMB = 0x00080
+    """Laser plumb"""
+    AUTOCOLLIMATION = 0x00100
+    """
+    Autocollimation lamp
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    POINTER = 0x00200
+    """
+    Laserpointer
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    REFLECTORLESS = 0x00400
+    """
+    Reflectorless EDM
+
+    .. versionadded:: GeoCom-TPS1100
+    """
     # SIM = 0x04000 # TPSSim
 
 
 class TRACKLIGHT(Enum):
-    """Tracking light brightness"""
+    """
+    Tracking light brightness
+
+    .. deprecated:: GeoCom-TPS1100
+        Superseded by `GUIDELIGHT`.
+
+    ``EDM_TRKLIGHT_BRIGHTNESS``
+    """
     LOW = 0
     MID = 1
     HIGH = 2
 
 
 class GUIDELIGHT(Enum):
-    """Guide light intensity."""
+    """
+    Guide light intensity.
+
+    .. versionadded:: GeoCom-TPS1100
+
+    ``EDM_EGLINTENSITY_TYPE``
+    """
     OFF = 0
     LOW = 1
     MID = 2
@@ -1056,41 +1212,82 @@ class GUIDELIGHT(Enum):
 
 
 class ATRLOCK(Enum):
-    """ATR lock status."""
-    NONE = 0  #: Disabled
-    LOCK = 1  #: Enabled
+    """
+    ATR lock status.
+
+    ``MOT_LOCK_STATUS``
+    """
+
+    NONE = 0
+    """Disabled"""
+    LOCK = 1
+    """Enabled"""
     PREDICT = 2
 
 
 class STOP(Enum):
-    """Servo motor stopping mode."""
-    NORMAL = 0  #: Slow down with current acceleration.
-    CUTOFF = 1  #: Slow down by motor power termination.
+    """
+    Servo motor stopping mode.
+
+    ``MOT_STOPMODE``
+    """
+
+    NORMAL = 0
+    """Slow down with current acceleration."""
+    CUTOFF = 1
+    """Slow down by motor power termination."""
 
 
 class CONTROLLER(Enum):
-    """Motor controller operation mode."""
-    POSITIONING = 0  #: Relative positioning.
-    MOVE = 1  #: Constant speed.
-    MANUAL = 2  #: Manual positioning.
-    LOCK = 3  #: Lock-in controller.
-    BREAK = 4  #: Break controller.
+    """
+    Motor controller operation mode.
+
+    ``MOT_MODE``
+    """
+
+    POSITIONING = 0
+    """Relative positioning."""
+    MOVE = 1
+    """Constant speed."""
+    MANUAL = 2
+    """Manual positioning."""
+    LOCK = 3
+    """Lock-in controller."""
+    BREAK = 4
+    """Break controller."""
     # 5, 6 do not use (why?)
-    TERMINATE = 7  #: Terminate current task.
+    TERMINATE = 7
+    """Terminate current task."""
 
 
 class AUTOPOWER(Enum):
-    """Automatic power off mode."""
-    DISABLED = 0  #: Automatic poweroff disabled.
-    SLEEP = 1  #: Put instument into sleep mode.
-    SHUTDOWN = 2  #: Poweroff instrument.
+    """
+    Automatic power off mode.
+
+    ``SUP_AUTO_POWER``
+    """
+
+    DISABLED = 0
+    """Automatic poweroff disabled."""
+    SLEEP = 1
+    """Put instument into sleep mode."""
+    SHUTDOWN = 2
+    """Poweroff instrument."""
 
 
 class INCLINATION(Enum):
-    """Inclination calculation mode."""
-    MEASURE = 0  #: Measure inclination.
-    AUTO = 1  #: Automatic inclination handling.
-    PLANE = 2  #: Model inclination from previous measurements.
+    """
+    Inclination calculation mode.
+
+    ``TMC_INCLINE_PRG``
+    """
+
+    MEASURE = 0
+    """Measure inclination."""
+    AUTO = 1
+    """Automatic inclination handling."""
+    MODEL = 2
+    """Model inclination from previous measurements."""
 
 
 class MEASUREMENT(Enum):
@@ -1099,20 +1296,47 @@ class MEASUREMENT(Enum):
 
     ``TMC_MEASURE_PRG``
     """
-    STOP = 0  #: Stop measurement program.
-    DISTANCE = 1  #: Default distance measurement.
-    TRACK = 2  #: Track distance.
-    CLEAR = 3  #: Clear current measurement data.
-    SIGNAL = 4  #: Signal intensity measurement.
-    DOMEASURE = 6  #: Start/Restart measurement.
-    RAPIDTRACK = 8  #: Rapid track distance.
-    REFLESSTRACK = 10  #: Reflectorless tracking.
-    FREQUENCY = 11  #: Frequency measurement.
+    STOP = 0
+    """Stop measurement program."""
+    DISTANCE = 1
+    """Default distance measurement."""
+    TRACK = 2
+    """
+    Track distance.
+
+    .. versionremoved:: GeoCom-TPS1200
+    """
+    CLEAR = 3
+    """Clear current measurement data."""
+    SIGNAL = 4
+    """Signal intensity measurement."""
+    DOMEASURE = 6
+    """
+    Start/Restart measurement.
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    RAPIDTRACK = 8
+    """Rapid track distance."""
+    REFLESSTRACK = 10
+    """
+    Reflectorless tracking.
+
+    .. versionadded:: GeoCom-TPS1100
+    """
+    FREQUENCY = 11
+    """
+    Frequency measurement.
+
+    .. versionadded:: GeoCom-TPS1100
+    """
 
 
 class EDMMODE(Enum):
     """
     Distance measurement mode typing base enum.
+
+    ``EDM_MODE``
     """
 
 
@@ -1120,84 +1344,190 @@ class EDMMODEV1(EDMMODE):
     """
     Distance measurement modes for ``TPS1000``.
 
+    .. deprecated:: GeoCom-TPS1100
+        Superseded by `EDMMODEV2`.
+
     ``EDM_MODE``
     """
-    SINGLE_STANDARD = 0,  #: Standard single measurement.
-    SINGLE_EXACT = 1,  #: Exact single measurement.
-    SINGLE_FAST = 2,  #: Fast single measurement.
-    CONT_STANDARD = 3,  #: Repeated measurement.
-    CONT_EXACT = 4,  #: Repeated average measurement.
-    CONT_FAST = 5,  #: Fast repeated measurement.
-    UNDEFINED = 6  #: Not defined.
+    SINGLE_STANDARD = 0,
+    """Standard single measurement."""
+    SINGLE_EXACT = 1,
+    """Exact single measurement."""
+    SINGLE_FAST = 2,
+    """Fast single measurement."""
+    CONT_STANDARD = 3,
+    """Repeated measurement."""
+    CONT_EXACT = 4,
+    """Repeated average measurement."""
+    CONT_FAST = 5,
+    """Fast repeated measurement."""
+    UNDEFINED = 6
+    """Not defined."""
 
 
 class EDMMODEV2(EDMMODE):
     """
     Distance measurement modes for ``TPS1100`` and onwards.
 
+    .. versionadded:: GeoCom-TPS1100
+        These settings replace the `EDMMODEV1` options.
+
     ``EDM_MODE``
     """
-    NOTUSED = 0  #: Initialization mode.
-    SINGLE_TAPE = 1  #: IR standard with reflector tape.
-    SINGLE_STANDARD = 2  #: IR standard.
-    SINGLE_FAST = 3  #: IR fast.
-    SINGLE_LRANGE = 4  #: LO standard.
-    SINGLE_SRANGE = 5  #: RL standard.
-    CONT_STANDARD = 6  #: Continuous standard.
-    CONT_DYNAMIC = 7  #: IR tracking.
-    CONT_REFLESS = 8  #: RL tracking.
-    CONT_FAST = 9  #: Continuous fast.
-    AVERAGE_IR = 10  #: IR average.
-    AVERAGE_SR = 11  #: RL average.
-    AVERAGE_LR = 12  #: LO average.
-    PRECISE_IR = 13  #: IR precise (TS30, MS30).
-    PRECISE_TAPE = 14  #: IR precise with reflector tape (TS30, MS30).
+    NOTUSED = 0
+    """Initialization mode."""
+    SINGLE_TAPE = 1
+    """IR standard with reflector tape."""
+    SINGLE_STANDARD = 2
+    """IR standard."""
+    SINGLE_FAST = 3
+    """IR fast."""
+    SINGLE_LRANGE = 4
+    """LO standard."""
+    SINGLE_SRANGE = 5
+    """RL standard."""
+    CONT_STANDARD = 6
+    """Continuous standard."""
+    CONT_DYNAMIC = 7
+    """IR tracking."""
+    CONT_REFLESS = 8
+    """RL tracking."""
+    CONT_FAST = 9
+    """Continuous fast."""
+    AVERAGE_IR = 10
+    """IR average."""
+    AVERAGE_SR = 11
+    """RL average."""
+    AVERAGE_LR = 12
+    """LO average."""
+    PRECISE_IR = 13
+    """
+    IR precise (TS30, MS30).
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    PRECISE_TAPE = 14
+    """
+    IR precise with reflector tape (TS30, MS30).
+
+    .. versionadded:: GeoCom-TPS1200
+    """
 
 
 class PRISM(Enum):
-    """Reflector prism type."""
-    ROUND = 0  #: Leica Circular Prism
-    MINI = 1  #: Leica Mini Prism
-    TAPE = 2  #: Leica Reflector Tape
-    THREESIXTY = 3  #: Leica 360° Prism.
+    """
+    Reflector prism type.
+        .. versionadded:: GeoCom-TPS1100
+
+    ``BAP_PRISMTYPE``
+    """
+    ROUND = 0
+    """Leica Circular Prism"""
+    MINI = 1
+    """Leica Mini Prism"""
+    TAPE = 2
+    """Leica Reflector Tape"""
+    THREESIXTY = 3
+    """Leica 360° Prism."""
     USER1 = 4
     USER2 = 5
     USER3 = 6
-    MINI360 = 7  #: Leica Mini 360° Prism.
-    MINIZERO = 8  #: Leica Mini Zero Prism.
-    USER = 9  #: User defined prism.
-    NDSTAPE = 10  #: Leica HDS Target.
-    GRZ121 = 11  #: Leica GRZ121 360° Prism.
-    MAMPR122 = 12  #: Leica MPR122 360° Prism.
+    MINI360 = 7
+    """
+    Leica Mini 360° Prism.
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    MINIZERO = 8
+    """
+    Leica Mini Zero Prism.
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    USER = 9
+    """
+    User defined prism.
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    NDSTAPE = 10
+    """
+    Leica HDS Target.
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    GRZ121 = 11
+    """
+    Leica GRZ121 360° Prism.
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    MPR122 = 12
+    """
+    Leica MPR122 360° Prism.
+
+    .. versionadded:: GeoCom-TPS1200
+    """
 
 
 class TARGET(Enum):
-    """Target type."""
-    REFLECTOR = 0  #: Reflector.
-    DIRECT = 1  #: Not reflector.
+    """
+    Target type.
+        .. versionadded:: GeoCom-TPS1100
+
+    ``BAP_TARGET_TYPE``
+    """
+    REFLECTOR = 0
+    """Reflector."""
+    DIRECT = 1
+    """Not reflector."""
 
 
 class REFLECTOR(Enum):
-    """Reflector type."""
-    UNDEFINED = 0  #: Reflector not defined.
-    PRISM = 1  #: Reflector prism.
-    TAPE = 2  #: Reflector tape.
+    """
+    Reflector type.
+
+    ``BAP_REFLTYPE``
+    """
+
+    UNDEFINED = 0
+    """Reflector not defined."""
+    PRISM = 1
+    """Reflector prism."""
+    TAPE = 2
+    """Reflector tape."""
 
 
 class FACE(Enum):
-    """Instrument view face."""
-    F1 = 0  #: Face left.
-    F2 = 1  #: Face right.
+    """
+    Instrument view face.
+
+    ``TMC_FACE``, ``TMC_FACE_DEF``
+    """
+    F1 = 0
+    """Face left."""
+    F2 = 1
+    """Face right."""
 
 
 class FORMAT(Enum):
-    """Recording format."""
+    """
+    Recording format.
+
+    ``WIR_RECFORMAT``
+    """
     GSI8 = 0
     GSI16 = 1
 
 
 class POWERSOURCE(Enum):
-    """Instrument power supply."""
+    """
+    Instrument power supply.
+
+    .. versionadded:: GeoCom-TPS1100
+
+    ``CSV_POWER_PATH``
+    """
     CURRENT = 0
     EXTERNAL = 1
     INTERNAL = 2

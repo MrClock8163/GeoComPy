@@ -34,7 +34,7 @@ class TPS1100CSV(TPS1000CSV):
     """
 
     @deprecated(
-        "The `CSV_GetVBat` command was superceded by `CSV_CheckPower` "
+        "The `CSV_GetVBat` command was superseded by `CSV_CheckPower` "
         "in v1.05 of GeoCom. Use the new command on instruments that "
         "support it!"
     )
