@@ -178,9 +178,6 @@ class TPS1100BAP(TPS1000BAP):
             Error codes:
                 - ``IVPARAM``: Invalid prism type.
 
-        See Also
-        --------
-        set_user_prism_def
         """
         _prism = toenum(PRISM, prism)
         return self._request(

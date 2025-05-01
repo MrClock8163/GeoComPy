@@ -33,7 +33,7 @@ class TPS1100BMM(TPS1000BMM):
         """
         RPC 20001, ``IOS_BeepOn``
 
-        .. verdionchanged:: GeoCom-TPS1100-v1.00
+        .. versionchanged:: GeoCom-TPS1100-v1.00
             The ``BMM_BeepOn`` command was replaced by ``IOS_BeepOn``.
             Frequency setting was deprecated.
 
@@ -61,7 +61,7 @@ class TPS1100BMM(TPS1000BMM):
         """
         RPC 20000, ``IOS_BeepOff``
 
-        .. verdionchanged:: GeoCom-TPS1100-v1.00
+        .. versionchanged:: GeoCom-TPS1100-v1.00
             The ``BMM_BeepOff`` command was replaced by ``IOS_BeepOff``.
 
         Stops continuous beep signals.

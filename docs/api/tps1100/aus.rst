@@ -1,7 +1,7 @@
 Automation
 ==========
 
-.. automodule:: geocompy.tps1000.aus
+.. automodule:: geocompy.tps1100.aus
     :inherited-members:
 
     Definitions
