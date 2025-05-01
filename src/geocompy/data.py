@@ -936,20 +936,20 @@ class Coordinate(Vector):
 
 class POSITION(Enum):
     """Positioning mode."""
-    NORMAL = 0  # : Fast
-    PRECISE = 1  # : Precise
+    NORMAL = 0  #: Fast
+    PRECISE = 1  #: Precise
 
 
 class ADJUST(Enum):
     """ATR adjustment tolerance mode."""
-    NORMAL = 0  # : Angle tolerance.
-    POINT = 1  # : Point tolerance.
+    NORMAL = 0  #: Angle tolerance.
+    POINT = 1  #: Point tolerance.
 
 
 class ATR(Enum):
     """ATR mode."""
-    POSITION = 0  # : Position to angles.
-    TARGET = 1  # : Position to target near angles.
+    POSITION = 0  #: Position to angles.
+    TARGET = 1  #: Position to target near angles.
 
 
 class TURN(Enum):
@@ -959,13 +959,13 @@ class TURN(Enum):
 
 
 class MEASUREPROGRAM(Enum):
-    NOMEASURE = 0  # : No measurement, take last value.
-    NODISTANCE = 1  # : No distance measurement, angles only.
-    DISTANCE = 2  # : Default distance measurement.
-    TRACK = 3  # : Tracking distance measurement.
-    RAPIDTRACK = 4  # : Rapid tracking distance measurement.
-    CLEAR = 5  # : Clear distances.
-    STOPTRACK = 6  # : Stop tracking.
+    NOMEASURE = 0  #: No measurement, take last value.
+    NODISTANCE = 1  #: No distance measurement, angles only.
+    DISTANCE = 2  #: Default distance measurement.
+    TRACK = 3  #: Tracking distance measurement.
+    RAPIDTRACK = 4  #: Rapid tracking distance measurement.
+    CLEAR = 5  #: Clear distances.
+    STOPTRACK = 6  #: Stop tracking.
 
 
 class SHUTDOWN(Enum):
@@ -976,8 +976,8 @@ class SHUTDOWN(Enum):
 
 class STARTUP(Enum):
     """Instrument startup mode."""
-    LOCAL = 0  # : Manual mode.
-    REMOTE = 1  # : GeoCom mode.
+    LOCAL = 0  #: Manual mode.
+    REMOTE = 1  #: GeoCom mode.
 
 
 class DEVICECLASS(Enum):
@@ -1013,66 +1013,66 @@ class TRACKLIGHT(Enum):
 
 class ATRLOCK(Enum):
     """ATR lock status."""
-    NONE = 0  # : Disabled
-    LOCK = 1  # : Enabled
+    NONE = 0  #: Disabled
+    LOCK = 1  #: Enabled
     PREDICT = 2
 
 
 class STOP(Enum):
     """Servo motor stopping mode."""
-    NORMAL = 0  # : Slow down with current acceleration.
-    CUTOFF = 1  # : Slow down by motor power termination.
+    NORMAL = 0  #: Slow down with current acceleration.
+    CUTOFF = 1  #: Slow down by motor power termination.
 
 
 class CONTROLLER(Enum):
     """Motor controller operation mode."""
-    POSITIONING = 0  # : Relative positioning.
-    MOVE = 1  # : Constant speed.
-    MANUAL = 2  # : Manual positioning.
-    LOCK = 3  # : Lock-in controller.
-    BREAK = 4  # : Break controller.
+    POSITIONING = 0  #: Relative positioning.
+    MOVE = 1  #: Constant speed.
+    MANUAL = 2  #: Manual positioning.
+    LOCK = 3  #: Lock-in controller.
+    BREAK = 4  #: Break controller.
     # 5, 6 do not use (why?)
-    TERMINATE = 7  # : Terminate current task.
+    TERMINATE = 7  #: Terminate current task.
 
 
 class AUTOPOWER(Enum):
     """Automatic power off mode."""
-    DISABLED = 0  # : Automatic poweroff disabled.
-    SLEEP = 1  # : Put instument into sleep mode.
-    SHUTDOWN = 2  # : Poweroff instrument.
+    DISABLED = 0  #: Automatic poweroff disabled.
+    SLEEP = 1  #: Put instument into sleep mode.
+    SHUTDOWN = 2  #: Poweroff instrument.
 
 
 class INCLINATION(Enum):
     """Inclination calculation mode."""
-    MEASURE = 0  # : Measure inclination.
-    AUTO = 1  # : Automatic inclination handling.
-    PLANE = 2  # : Model inclination from previous measurements.
+    MEASURE = 0  #: Measure inclination.
+    AUTO = 1  #: Automatic inclination handling.
+    PLANE = 2  #: Model inclination from previous measurements.
 
 
 class MEASUREMENT(Enum):
-    STOP = 0  # : Stop measurement program.
-    DISTANCE = 1  # : Default distance measurement.
-    TRACK = 2  # : Track distance.
-    CLEAR = 3  # : Clear current measurement data.
-    SIGNAL = 4  # : Signal intensity measurement.
-    RAPIDTRACK = 8  # : Rapid track distance.
+    STOP = 0  #: Stop measurement program.
+    DISTANCE = 1  #: Default distance measurement.
+    TRACK = 2  #: Track distance.
+    CLEAR = 3  #: Clear current measurement data.
+    SIGNAL = 4  #: Signal intensity measurement.
+    RAPIDTRACK = 8  #: Rapid track distance.
 
 
 class EDMMODE(Enum):
     """Distance measurement mode."""
-    SINGLE_STANDARD = 0,  # : Standard single measurement.
-    SINGLE_EXACT = 1,  # : Exact single measurement.
-    SINGLE_FAST = 2,  # : Fast single measurement.
-    CONT_STANDARD = 3,  # : Repeated measurement.
-    CONT_EXACT = 4,  # : Repeated average measurement.
-    CONT_FAST = 5,  # : Fast repeated measurement.
-    UNDEFINED = 6  # : Not defined.
+    SINGLE_STANDARD = 0,  #: Standard single measurement.
+    SINGLE_EXACT = 1,  #: Exact single measurement.
+    SINGLE_FAST = 2,  #: Fast single measurement.
+    CONT_STANDARD = 3,  #: Repeated measurement.
+    CONT_EXACT = 4,  #: Repeated average measurement.
+    CONT_FAST = 5,  #: Fast repeated measurement.
+    UNDEFINED = 6  #: Not defined.
 
 
 class FACE(Enum):
     """Instrument view face."""
-    F1 = 0  # : Face left.
-    F2 = 1  # : Face right.
+    F1 = 0  #: Face left.
+    F2 = 1  #: Face right.
 
 
 class FORMAT(Enum):
