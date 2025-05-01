@@ -22,6 +22,7 @@ Submodules
 - ``geocompy.tps1100.bmm``
 - ``geocompy.tps1100.com``
 - ``geocompy.tps1100.csv``
+- ``geocompy.tps1100.ctl``
 """
 from __future__ import annotations
 
@@ -48,6 +49,7 @@ from .bap import TPS1100BAP
 from .bmm import TPS1100BMM
 from .com import TPS1100COM
 from .csv import TPS1100CSV
+from .ctl import TPS1100CTL
 from .rc import TPS1100RC, rpcnames
 
 
@@ -134,12 +136,14 @@ class TPS1100(GeoComProtocol):
         """Automation subsystem."""
         self.bap: TPS1100BAP = TPS1100BAP(self)
         """Basic applications subsystem."""
+        self.bmm: TPS1100BMM = TPS1100BMM(self)
+        """Basic man-machine interface subsystem."""
         self.com: TPS1100COM = TPS1100COM(self)
         """Communications subsystem."""
         self.csv: TPS1100CSV = TPS1100CSV(self)
         """Central services subsystem."""
-        self.bmm: TPS1100BMM = TPS1100BMM(self)
-        """Basic man-machine interface subsystem."""
+        self.ctl: TPS1100CTL = TPS1100CTL(self)
+        """Control task subsystem."""
 
         for i in range(retry):
             try:
