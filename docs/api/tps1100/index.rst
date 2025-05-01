@@ -25,3 +25,4 @@ TPS1100
     mot
     sup
     tmc
+    wir
