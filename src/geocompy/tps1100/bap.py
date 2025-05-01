@@ -18,7 +18,7 @@ from ..data import (
     toenum,
     enumparser,
     parsestr,
-    EDMPROGRAM,
+    USERPROGRAM,
     TARGET,
     PRISM,
     REFLECTOR
@@ -236,7 +236,7 @@ class TPS1100BAP(TPS1000BAP):
             ]
         )
 
-    def get_meas_prg(self) -> GeoComResponse[EDMPROGRAM]:
+    def get_meas_prg(self) -> GeoComResponse[USERPROGRAM]:
         """
         RPC 17018, ``BAP_GetMeasPrg``
 
@@ -246,7 +246,7 @@ class TPS1100BAP(TPS1000BAP):
         -------
         GeoComResponse
             Params:
-                - `EDMPROGRAM`: Current measurement program.
+                - `USERPROGRAM`: Current measurement program.
 
         See Also
         --------
@@ -254,12 +254,12 @@ class TPS1100BAP(TPS1000BAP):
         """
         return self._request(
             17018,
-            parsers=enumparser(EDMPROGRAM)
+            parsers=enumparser(USERPROGRAM)
         )
 
     def set_meas_prg(
         self,
-        program: EDMPROGRAM | str
+        program: USERPROGRAM | str
     ) -> GeoComResponse[None]:
         """
         RPC 17019, ``BAP_SetMeasPrg``
@@ -268,7 +268,7 @@ class TPS1100BAP(TPS1000BAP):
 
         Parameters
         ----------
-        program : EDMPROGRAM | str
+        program : USERPROGRAM | str
             Measurement program to set.
 
         Returns
@@ -282,7 +282,7 @@ class TPS1100BAP(TPS1000BAP):
         get_meas_prg
         set_target_type
         """
-        _program = toenum(EDMPROGRAM, program)
+        _program = toenum(USERPROGRAM, program)
         return self._request(
             17019,
             [_program.value]

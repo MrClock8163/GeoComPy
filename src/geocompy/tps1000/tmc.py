@@ -24,6 +24,7 @@ from ..data import (
     INCLINATION,
     MEASUREMENT,
     EDMMODE,
+    EDMMODEV1,
     FACE
 )
 from ..protocols import (
@@ -1092,7 +1093,7 @@ class TPS1000TMC(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `EDMMODE`: Current EDM mode.
+                - `EDMMODEV1`: Current EDM mode.
 
         See Also
         --------
@@ -1101,7 +1102,7 @@ class TPS1000TMC(GeoComSubsystem):
         """
         return self._request(
             2021,
-            parsers=enumparser(EDMMODE)
+            parsers=enumparser(EDMMODEV1)
         )
 
     def set_edm_mode(
@@ -1115,7 +1116,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         Parameters
         ----------
-        mode : EDMMODE | str
+        mode : EDMMODEV1 | str
             EDM mode to activate.
 
         Returns
@@ -1127,7 +1128,7 @@ class TPS1000TMC(GeoComSubsystem):
         get_edm_mode
 
         """
-        _mode = toenum(EDMMODE, mode)
+        _mode = toenum(EDMMODEV1, mode)
         return self._request(
             2020,
             [_mode.value]

@@ -959,7 +959,12 @@ class TURN(Enum):
     COUNTERCLOCKWISE = -1
 
 
-class MEASUREPROGRAM(Enum):
+class PROGRAM(Enum):
+    """
+    Basic measurement programs.
+
+    ``BAP_MEASURE_PRG``
+    """
     NOMEASURE = 0  #: No measurement, take last value.
     NODISTANCE = 1  #: No distance measurement, angles only.
     DISTANCE = 2  #: Default distance measurement.
@@ -967,6 +972,26 @@ class MEASUREPROGRAM(Enum):
     RAPIDTRACK = 4  #: Rapid tracking distance measurement.
     CLEAR = 5  #: Clear distances.
     STOPTRACK = 6  #: Stop tracking.
+
+
+class USERPROGRAM(Enum):
+    """
+    Distance measurement programs.
+
+    ``BAP_USER_MEASPRG``
+    """
+    SINGLE_REF_STANDARD = 0  #: Standard measurement with reflector.
+    SINGLE_REF_FAST = 1  #: Fast measurement with reflector.
+    SINGLE_REF_VISIBLE = 2  #: Long range measurement with reflector.
+    SINGLE_RLESS_VISIBLE = 3  #: Standard measurement without reflector.
+    CONT_REF_STANDARD = 4  #: Tracking with reflector.
+    CONT_REF_FAST = 5  #: Fast tracking with reflector.
+    CONT_RLESS_VISIBLE = 6  #: Fast tracking without reflector.
+    AVG_REF_STANDARD = 7  #: Averaging measurement with reflector.
+    AVG_REF_VISIBLE = 8  #: Averaging long range measurement with reflector.
+    AVG_RLESS_VISIBLE = 9  #: Averaging measurement without reflector.
+    CONT_REF_SYNCHRO = 10  #: Synchro tracking with reflector.
+    SINGLE_REF_PRECISE = 11  #: Precise measurement with reflector (TS/TM30).
 
 
 class SHUTDOWN(Enum):
@@ -1069,16 +1094,34 @@ class INCLINATION(Enum):
 
 
 class MEASUREMENT(Enum):
+    """
+    Measurement programs.
+
+    ``TMC_MEASURE_PRG``
+    """
     STOP = 0  #: Stop measurement program.
     DISTANCE = 1  #: Default distance measurement.
     TRACK = 2  #: Track distance.
     CLEAR = 3  #: Clear current measurement data.
     SIGNAL = 4  #: Signal intensity measurement.
+    DOMEASURE = 6  #: Start/Restart measurement.
     RAPIDTRACK = 8  #: Rapid track distance.
+    REFLESSTRACK = 10  #: Reflectorless tracking.
+    FREQUENCY = 11  #: Frequency measurement.
 
 
 class EDMMODE(Enum):
-    """Distance measurement mode."""
+    """
+    Distance measurement mode typing base enum.
+    """
+
+
+class EDMMODEV1(EDMMODE):
+    """
+    Distance measurement modes for ``TPS1000``.
+
+    ``EDM_MODE``
+    """
     SINGLE_STANDARD = 0,  #: Standard single measurement.
     SINGLE_EXACT = 1,  #: Exact single measurement.
     SINGLE_FAST = 2,  #: Fast single measurement.
@@ -1088,20 +1131,27 @@ class EDMMODE(Enum):
     UNDEFINED = 6  #: Not defined.
 
 
-class EDMPROGRAM(Enum):
-    """Distance measurement programs."""
-    SINGLE_REF_STANDARD = 0  #: Standard measurement with reflector.
-    SINGLE_REF_FAST = 1  #: Fast measurement with reflector.
-    SINGLE_REF_VISIBLE = 2  #: Long range measurement with reflector.
-    SINGLE_RLESS_VISIBLE = 3  #: Standard measurement without reflector.
-    CONT_REF_STANDARD = 4  #: Tracking with reflector.
-    CONT_REF_FAST = 5  #: Fast tracking with reflector.
-    CONT_RLESS_VISIBLE = 6  #: Fast tracking without reflector.
-    AVG_REF_STANDARD = 7  #: Averaging measurement with reflector.
-    AVG_REF_VISIBLE = 8  #: Averaging long range measurement with reflector.
-    AVG_RLESS_VISIBLE = 9  #: Averaging measurement without reflector.
-    CONT_REF_SYNCHRO = 10  #: Synchro tracking with reflector.
-    SINGLE_REF_PRECISE = 11  #: Precise measurement with reflector (TS/TM30).
+class EDMMODEV2(EDMMODE):
+    """
+    Distance measurement modes for ``TPS1100`` and onwards.
+
+    ``EDM_MODE``
+    """
+    NOTUSED = 0  #: Initialization mode.
+    SINGLE_TAPE = 1  #: IR standard with reflector tape.
+    SINGLE_STANDARD = 2  #: IR standard.
+    SINGLE_FAST = 3  #: IR fast.
+    SINGLE_LRANGE = 4  #: LO standard.
+    SINGLE_SRANGE = 5  #: RL standard.
+    CONT_STANDARD = 6  #: Continuous standard.
+    CONT_DYNAMIC = 7  #: IR tracking.
+    CONT_REFLESS = 8  #: RL tracking.
+    CONT_FAST = 9  #: Continuous fast.
+    AVERAGE_IR = 10  #: IR average.
+    AVERAGE_SR = 11  #: RL average.
+    AVERAGE_LR = 12  #: LO average.
+    PRECISE_IR = 13  #: IR precise (TS30, MS30).
+    PRECISE_TAPE = 14  #: IR precise with reflector tape (TS30, MS30).
 
 
 class PRISM(Enum):
