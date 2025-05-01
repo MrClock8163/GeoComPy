@@ -1080,6 +1080,52 @@ class EDMMODE(Enum):
     UNDEFINED = 6  #: Not defined.
 
 
+class EDMPROGRAM(Enum):
+    """Distance measurement programs."""
+    SINGLE_REF_STANDARD = 0  #: Standard measurement with reflector.
+    SINGLE_REF_FAST = 1  #: Fast measurement with reflector.
+    SINGLE_REF_VISIBLE = 2  #: Long range measurement with reflector.
+    SINGLE_RLESS_VISIBLE = 3  #: Standard measurement without reflector.
+    CONT_REF_STANDARD = 4  #: Tracking with reflector.
+    CONT_REF_FAST = 5  #: Fast tracking with reflector.
+    CONT_RLESS_VISIBLE = 6  #: Fast tracking without reflector.
+    AVG_REF_STANDARD = 7  #: Averaging measurement with reflector.
+    AVG_REF_VISIBLE = 8  #: Averaging long range measurement with reflector.
+    AVG_RLESS_VISIBLE = 9  #: Averaging measurement without reflector.
+    CONT_REF_SYNCHRO = 10  #: Synchro tracking with reflector.
+    SINGLE_REF_PRECISE = 11  #: Precise measurement with reflector (TS/TM30).
+
+
+class PRISM(Enum):
+    """Reflector prism type."""
+    ROUND = 0  #: Leica Circular Prism
+    MINI = 1  #: Leica Mini Prism
+    TAPE = 2  #: Leica Reflector Tape
+    THREESIXTY = 3  #: Leica 360° Prism.
+    USER1 = 4
+    USER2 = 5
+    USER3 = 6
+    MINI360 = 7  #: Leica Mini 360° Prism.
+    MINIZERO = 8  #: Leica Mini Zero Prism.
+    USER = 9  #: User defined prism.
+    NDSTAPE = 10  #: Leica HDS Target.
+    GRZ121 = 11  #: Leica GRZ121 360° Prism.
+    MAMPR122 = 12  #: Leica MPR122 360° Prism.
+
+
+class TARGET(Enum):
+    """Target type."""
+    REFLECTOR = 0  #: Reflector.
+    DIRECT = 1  #: Not reflector.
+
+
+class REFLECTOR(Enum):
+    """Reflector type."""
+    UNDEFINED = 0  #: Reflector not defined.
+    PRISM = 1  #: Reflector prism.
+    TAPE = 2  #: Reflector tape.
+
+
 class FACE(Enum):
     """Instrument view face."""
     F1 = 0  #: Face left.

@@ -18,6 +18,7 @@ Submodules
 - ``geocompy.tps1100.rc``
 - ``geocompy.tps1100.aus``
 - ``geocompy.tps1100.aut``
+- ``geocompy.tps1100.bap``
 - ``geocompy.tps1100.com``
 - ``geocompy.tps1100.csv``
 """
@@ -42,6 +43,7 @@ from ..protocols import (
 )
 from .aus import TPS1100AUS
 from .aut import TPS1100AUT
+from .bap import TPS1100BAP
 from .com import TPS1100COM
 from .csv import TPS1100CSV
 from .rc import TPS1100RC, rpcnames
@@ -128,6 +130,8 @@ class TPS1100(GeoComProtocol):
         """Alt User subsystem."""
         self.aut: TPS1100AUT = TPS1100AUT(self)
         """Automation subsystem."""
+        self.bap: TPS1100BAP = TPS1100BAP(self)
+        """Basic applications subsystem."""
         self.com: TPS1100COM = TPS1100COM(self)
         """Communications subsystem."""
         self.csv: TPS1100CSV = TPS1100CSV(self)
