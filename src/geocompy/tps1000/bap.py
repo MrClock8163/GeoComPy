@@ -36,6 +36,34 @@ class TPS1000BAP(GeoComSubsystem):
 
     """
 
+    def get_last_displayed_error(self) -> GeoComResponse[tuple[int, int]]:
+        """
+        RPC 17003, ``BAP_GetLastDisplayedError``
+
+        Retrieves the number of the last displayed system error.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `int`: Last error, warning or info number.
+                - `int`: Corresponding GSI error number.
+            Error codes:
+                - ``IVRESULT``: No error was displayed since last call.
+
+        Note
+        ----
+        The error code will be reset once command is executed. A repeated
+        call will be unsuccessful.
+        """
+        return self._request(
+            17003,
+            parsers=(
+                int,
+                int
+            )
+        )
+
     def meas_distance_angle(
         self,
         mode: MEASUREPROGRAM | str = MEASUREPROGRAM.DISTANCE
