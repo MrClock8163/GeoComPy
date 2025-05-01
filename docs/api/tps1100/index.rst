@@ -22,3 +22,4 @@ TPS1100
     csv
     ctl
     edm
+    mot
