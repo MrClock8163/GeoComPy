@@ -33,6 +33,9 @@ Subpackages
 ``geocompy.tps1000``
     Communication with instruments running TPS1000 software.
 
+``geocompy.tps1100``
+    Communication with instruments running TPS1100 software.
+
 ``geocompy.tps1200p``
     Communication with instruments running TPS1200(+) software.
 

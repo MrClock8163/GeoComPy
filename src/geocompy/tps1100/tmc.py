@@ -1,0 +1,132 @@
+"""
+Description
+===========
+
+Module: ``geocompy.tps1100.tmc``
+
+Definitions for the TPS1100 Theodolite measurement and calculation
+subsystem.
+
+Types
+-----
+
+- ``TPS1100TMC``
+
+"""
+from __future__ import annotations
+
+from ..data import (
+    toenum,
+    enumparser,
+    EDMMODE,
+    EDMMODEV2
+)
+from ..protocols import GeoComResponse
+from ..tps1000.tmc import TPS1000TMC
+
+
+class TPS1100TMC(TPS1000TMC):
+    """
+    Theodolite measurement and calculation subsystem of the TPS1100
+    GeoCom protocol.
+
+    This subsystem is the central module of measurement, calculation and
+    geodetic control.
+
+    The module handles:
+        - measurement functions
+        - measurement control functions
+        - data setup functions
+        - information functions
+        - configuration functions
+
+    Possible return codes:
+        System
+            General use codes.
+        Informative/Warning
+            Function terminated with success, but some restrictions may
+            apply (e.g.: angle measurement succeded, distance measurement
+            failed).
+        Error
+            Non-successful function termination.
+
+    """
+
+    def get_edm_mode(self) -> GeoComResponse[EDMMODE]:
+        """
+        RPC 2021, ``TMC_GetEdmMode``
+
+        Gets the current EDM measurement mode.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `EDMMODEV2`: Current EDM mode.
+
+        See Also
+        --------
+        set_edm_mode
+
+        """
+        return self._request(
+            2021,
+            parsers=enumparser(EDMMODEV2)
+        )
+
+    def set_edm_mode(
+        self,
+        mode: EDMMODE | str
+    ) -> GeoComResponse[None]:
+        """
+        RPC 2020, ``TMC_SetEdmMode``
+
+        Sets the EDM measurement mode.
+
+        Parameters
+        ----------
+        mode : EDMMODE | str
+            EDM mode to activate.
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        get_edm_mode
+
+        """
+        _mode = toenum(EDMMODEV2, mode)
+        return self._request(
+            2020,
+            [_mode.value]
+        )
+
+    def get_slope_dist_corr(self) -> GeoComResponse[tuple[float, float]]:
+        """
+        RPC 2126, ``TMC_GetSlopDistCorr``
+
+        Gets the total correction (atmospheric + geometric) applied to the
+        distance measurements, as well as the current prism constant.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `float`: Total corrections [ppm].
+                - `float`: Prism constant.
+
+        See Also
+        --------
+        get_prism_corr
+        set_prism_corr
+
+        """
+        return self._request(
+            2126,
+            parsers=(
+                float,
+                float
+            )
+        )

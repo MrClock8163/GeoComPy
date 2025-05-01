@@ -32,6 +32,8 @@ sphinx_immaterial_override_builtin_admonitions = False
 sphinx_immaterial_override_version_directives = False
 sphinx_immaterial_generate_extra_admonitions = False
 
+add_module_names = False
+
 html_static_path = ["_static"]
 html_css_files = [
     "css/custom.css",
@@ -187,6 +189,14 @@ latex_elements = {
         r"\usepackage{titlesec}"
         r"\newcommand{\sectionbreak}{\clearpage}"
         r"\setcounter{tocdepth}{2}"
+        r"\definecolor{vadded}{RGB}{54,145,0}"
+        r"\definecolor{vchanged}{RGB}{228,160,1}"
+        r"\definecolor{vremoved}{RGB}{204,0,0}"
+        r"\newcommand{\DUroleversionmodified}[1]{\textit{\textbf{#1}}}"
+        r"\newcommand{\DUroleadded}{\color{vadded}}"
+        r"\newcommand{\DUrolechanged}{\color{vchanged}}"
+        r"\newcommand{\DUroleremoved}{\color{vremoved}}"
+        r"\newcommand{\DUroledeprecated}{\color{vremoved}}"
     ),
     "fontpkg": (
         r"\usepackage{lmodern}"
@@ -207,7 +217,6 @@ latex_elements = {
                 "note",
                 "tip",
                 "warning",
-                "admonition",
                 "seealso"
             )
         )
