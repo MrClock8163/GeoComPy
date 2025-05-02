@@ -17,9 +17,11 @@ from __future__ import annotations
 
 from ..data import (
     toenum,
-    enumparser,
-    EDMMODE,
-    EDMMODEV2
+    enumparser
+)
+from ..data_geocom import (
+    EDMMode,
+    EDMModeV2
 )
 from ..protocols import GeoComResponse
 from ..tps1000.tmc import TPS1000TMC
@@ -52,7 +54,7 @@ class TPS1100TMC(TPS1000TMC):
 
     """
 
-    def get_edm_mode(self) -> GeoComResponse[EDMMODE]:
+    def get_edm_mode(self) -> GeoComResponse[EDMMode]:
         """
         RPC 2021, ``TMC_GetEdmMode``
 
@@ -62,7 +64,7 @@ class TPS1100TMC(TPS1000TMC):
         -------
         GeoComResponse
             Params:
-                - `EDMMODEV2`: Current EDM mode.
+                - `EDMMode`: Current EDM mode (EDMModeV2).
 
         See Also
         --------
@@ -71,12 +73,12 @@ class TPS1100TMC(TPS1000TMC):
         """
         return self._request(
             2021,
-            parsers=enumparser(EDMMODEV2)
+            parsers=enumparser(EDMModeV2)
         )
 
     def set_edm_mode(
         self,
-        mode: EDMMODE | str
+        mode: EDMMode | str
     ) -> GeoComResponse[None]:
         """
         RPC 2020, ``TMC_SetEdmMode``
@@ -85,8 +87,8 @@ class TPS1100TMC(TPS1000TMC):
 
         Parameters
         ----------
-        mode : EDMMODE | str
-            EDM mode to activate.
+        mode : EDMMode | str
+            EDM mode to activate (expects EDMModeV2).
 
         Returns
         -------
@@ -97,7 +99,7 @@ class TPS1100TMC(TPS1000TMC):
         get_edm_mode
 
         """
-        _mode = toenum(EDMMODEV2, mode)
+        _mode = toenum(EDMModeV2, mode)
         return self._request(
             2020,
             [_mode.value]

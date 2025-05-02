@@ -17,10 +17,8 @@ from __future__ import annotations
 from typing import Never
 from typing_extensions import deprecated
 
-from ..data import (
-    toenum,
-    TURN
-)
+from ..data import toenum
+from ..data_geocom import Turn
 from ..protocols import GeoComResponse
 from ..tps1100.aut import TPS1100AUT
 
@@ -184,7 +182,7 @@ class TPS1200PAUT(TPS1100AUT):
 
     def ps_search_next(
         self,
-        direction: TURN | str,
+        direction: Turn | str,
         swing: bool
     ) -> GeoComResponse[None]:
         """
@@ -194,7 +192,7 @@ class TPS1200PAUT(TPS1100AUT):
 
         Parameters
         ----------
-        direction : TURN | str
+        direction : Turn | str
             Turning direction during PowerSearch.
         swing : bool
             Search starts -10 GON to the given turn direction.
@@ -212,7 +210,7 @@ class TPS1200PAUT(TPS1100AUT):
         ps_enable_range
         ps_search_window
         """
-        _direction = toenum(TURN, direction)
+        _direction = toenum(Turn, direction)
         return self._request(
             9051,
             [_direction.value, swing]

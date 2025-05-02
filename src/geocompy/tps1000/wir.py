@@ -16,9 +16,9 @@ from __future__ import annotations
 
 from ..data import (
     enumparser,
-    toenum,
-    FORMAT
+    toenum
 )
+from ..data_geocom import Format
 from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
@@ -31,7 +31,7 @@ class TPS1000WIR(GeoComSubsystem):
     This subsystem is responsible for the GSI data recording operations.
     """
 
-    def get_rec_format(self) -> GeoComResponse[FORMAT]:
+    def get_rec_format(self) -> GeoComResponse[Format]:
         """
         RPC 8011, ``WIR_GetRecFormat``
 
@@ -41,17 +41,17 @@ class TPS1000WIR(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `FORMAT`: GSI version used in data recording.
+                - `Format`: GSI version used in data recording.
 
         """
         return self._request(
             8011,
-            parsers=enumparser(FORMAT)
+            parsers=enumparser(Format)
         )
 
     def set_rec_format(
         self,
-        format: FORMAT | str
+        format: Format | str
     ) -> GeoComResponse[None]:
         """
         RPC 8012, ``WIR_SetRecFormat``
@@ -60,7 +60,7 @@ class TPS1000WIR(GeoComSubsystem):
 
         Parameters
         ----------
-        format : FORMAT | str
+        format : Format | str
             GSI format to use in data recording.
 
         Returns
@@ -68,7 +68,7 @@ class TPS1000WIR(GeoComSubsystem):
         GeoComResponse
 
         """
-        _format = toenum(FORMAT, format)
+        _format = toenum(Format, format)
         return self._request(
             8012,
             [_format.value]

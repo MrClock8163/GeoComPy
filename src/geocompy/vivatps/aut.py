@@ -16,9 +16,9 @@ from __future__ import annotations
 
 from ..data import (
     toenum,
-    parsebool,
-    CAMERA
+    parsebool
 )
+from ..data_geocom import Camera
 from ..protocols import GeoComResponse
 from ..tps1200p.aut import TPS1200PAUT
 
@@ -85,7 +85,7 @@ class VivaTPSAUT(TPS1200PAUT):
         self,
         x: int,
         y: int,
-        camera: CAMERA | str = CAMERA.OVERVIEW
+        camera: Camera | str = Camera.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 9081, ``AUT_CAM_PositToPixelCoord``
@@ -99,7 +99,7 @@ class VivaTPSAUT(TPS1200PAUT):
             Horizontal pixel coordinate.
         y : int
             Vertical pixel coordinate.
-        camera : CAMERA, optional
+        camera : Camera, optional
             Camera device, by default OVERVIEW
 
         Returns
@@ -110,7 +110,7 @@ class VivaTPSAUT(TPS1200PAUT):
                 - ``AUT_SIDECOVER_ERR``: Sidecover is open.
 
         """
-        _camera = toenum(CAMERA, camera)
+        _camera = toenum(Camera, camera)
         return self._request(
             9081,
             [_camera.value, x, y]

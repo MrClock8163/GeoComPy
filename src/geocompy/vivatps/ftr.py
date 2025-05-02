@@ -19,9 +19,11 @@ from datetime import datetime
 from ..data import (
     Byte,
     parsestr,
-    toenum,
-    DEVICE,
-    FILE
+    toenum
+)
+from ..data_geocom import (
+    Device,
+    File
 )
 from ..protocols import GeoComResponse
 from ..tps1200p.ftr import TPS1200PFTR
@@ -40,7 +42,7 @@ class VivaTPSFTR(TPS1200PFTR):
         self,
         dirname: str,
         time: datetime | None = None,
-        device: DEVICE | str = DEVICE.INTERNAL
+        device: Device | str = Device.INTERNAL
     ) -> GeoComResponse[int]:
         """
         RPC 23315, ``FTR_DeleteDir``
@@ -55,7 +57,7 @@ class VivaTPSFTR(TPS1200PFTR):
             Directory name.
         time : datetime | None, optional
             Deletion limit date, by default None
-        device : DEVICE | str, optional
+        device : Device | str, optional
             Memory device, by default PCPARD
 
         Returns
@@ -72,8 +74,8 @@ class VivaTPSFTR(TPS1200PFTR):
         list
 
         """
-        _device = toenum(DEVICE, device)
-        _filetype = FILE.DATABASE
+        _device = toenum(Device, device)
+        _filetype = File.DATABASE
 
         if time is None:
             params = [
@@ -97,8 +99,8 @@ class VivaTPSFTR(TPS1200PFTR):
         self,
         filename: str,
         blocksize: int,
-        device: DEVICE | str = DEVICE.INTERNAL,
-        filetype: FILE | str = FILE.UNKNOWN
+        device: Device | str = Device.INTERNAL,
+        filetype: File | str = File.UNKNOWN
     ) -> GeoComResponse[int]:
         """
         RPC 23313, ``FTR_SetupDownloadLarge``
@@ -112,9 +114,9 @@ class VivaTPSFTR(TPS1200PFTR):
             File name (or full path if type is unknown).
         blocksize : int
             Download data block size.
-        device : DEVICE | str, optional
+        device : Device | str, optional
             Memory device, by default INTERNAL
-        filetype : FILE | str, optional
+        filetype : File | str, optional
             File type, by default UNKNOWN
 
         Returns
@@ -136,8 +138,8 @@ class VivaTPSFTR(TPS1200PFTR):
         abort_download
 
         """
-        _device = toenum(DEVICE, device)
-        _filetype = toenum(FILE, filetype)
+        _device = toenum(Device, device)
+        _filetype = toenum(File, filetype)
         return self._request(
             23313,
             [_device.value, _filetype.value, filename, blocksize],

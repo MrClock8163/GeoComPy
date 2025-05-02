@@ -21,10 +21,12 @@ from ..data import (
     toenum,
     enumparser,
     parsestr,
-    parsebool,
-    PRISM,
-    REFLECTOR,
-    ATRMODE
+    parsebool
+)
+from ..data_geocom import (
+    ATRMode,
+    Prism,
+    Reflector
 )
 from ..protocols import GeoComResponse
 from ..tps1100.bap import TPS1100BAP
@@ -69,7 +71,7 @@ class TPS1200PBAP(TPS1100BAP):
         """
         raise AttributeError()
 
-    def get_prism_type2(self) -> GeoComResponse[tuple[PRISM, str]]:
+    def get_prism_type2(self) -> GeoComResponse[tuple[Prism, str]]:
         """
         RPC 17031, ``BAP_GetPrismType2``
 
@@ -79,7 +81,7 @@ class TPS1200PBAP(TPS1100BAP):
         -------
         GeoComResponse
             Params:
-                - `PRISM`: Current prism type.
+                - `Prism`: Current prism type.
                 - `str`: Prism type name.
 
         See Also
@@ -89,12 +91,12 @@ class TPS1200PBAP(TPS1100BAP):
         """
         return self._request(
             17031,
-            parsers=(enumparser(PRISM), parsestr)
+            parsers=(enumparser(Prism), parsestr)
         )
 
     def set_prism_type2(
         self,
-        prism: PRISM | str,
+        prism: Prism | str,
         name: str
     ) -> GeoComResponse[None]:
         """
@@ -104,7 +106,7 @@ class TPS1200PBAP(TPS1100BAP):
 
         Parameters
         ----------
-        prism : PRISM | str
+        prism : Prism | str
             Prism type to set.
         name : str
             Name of the prism type.
@@ -121,7 +123,7 @@ class TPS1200PBAP(TPS1100BAP):
         get_prism_type2
         tmc.set_prism_corr
         """
-        _prism = toenum(PRISM, prism)
+        _prism = toenum(Prism, prism)
         return self._request(
             17030,
             [_prism.value, name]
@@ -130,7 +132,7 @@ class TPS1200PBAP(TPS1100BAP):
     def get_user_prism_def(
         self,
         name: str
-    ) -> GeoComResponse[tuple[str, float, REFLECTOR]]:
+    ) -> GeoComResponse[tuple[str, float, Reflector]]:
         """
         RPC 17033, ``BAP_GetUserPrismDef``
 
@@ -147,7 +149,7 @@ class TPS1200PBAP(TPS1100BAP):
             Params:
                 - `str`: Name of the prism.
                 - `float`: Additive prism constant.
-                - `REFLECTOR`: Reflector type.
+                - `Reflector`: Reflector type.
             Error codes:
                 - ``IVPARAM``: Invalid prism definition.
 
@@ -164,7 +166,7 @@ class TPS1200PBAP(TPS1100BAP):
             (
                 parsestr,
                 float,
-                enumparser(REFLECTOR)
+                enumparser(Reflector)
             )
         )
 
@@ -172,7 +174,7 @@ class TPS1200PBAP(TPS1100BAP):
         self,
         name: str,
         const: float,
-        reflector: REFLECTOR | str,
+        reflector: Reflector | str,
         creator: str
     ) -> GeoComResponse[None]:
         """
@@ -186,7 +188,7 @@ class TPS1200PBAP(TPS1100BAP):
             Name of the prism.
         const : float
             Additive prism constant.
-        reflector: REFLECTOR | str
+        reflector: Reflector | str
             Reflector type.
         creator : str
             Name of the creator.
@@ -204,13 +206,13 @@ class TPS1200PBAP(TPS1100BAP):
         get_prism_def
         set_user_prism_def
         """
-        _reflector = toenum(REFLECTOR, reflector)
+        _reflector = toenum(Reflector, reflector)
         return self._request(
             17032,
             [name, const, _reflector.value, creator]
         )
 
-    def get_atr_setting(self) -> GeoComResponse[ATRMODE]:
+    def get_atr_setting(self) -> GeoComResponse[ATRMode]:
         """
         RPC 17034, ``BAP_GetATRSetting``
 
@@ -220,7 +222,7 @@ class TPS1200PBAP(TPS1100BAP):
         -------
         GeoComResponse
             Params:
-                - `ATRMODE`: Current ATR setting.
+                - `ATRMode`: Current ATR setting.
 
         See Also
         --------
@@ -228,12 +230,12 @@ class TPS1200PBAP(TPS1100BAP):
         """
         return self._request(
             17034,
-            parsers=enumparser(ATRMODE)
+            parsers=enumparser(ATRMode)
         )
 
     def set_atr_setting(
         self,
-        mode: ATRMODE | str
+        mode: ATRMode | str
     ) -> GeoComResponse[None]:
         """
         RPC 17035, ``BAP_SetATRSetting``
@@ -242,14 +244,14 @@ class TPS1200PBAP(TPS1100BAP):
 
         Parameters
         ----------
-        mode : ATRMODE | str
+        mode : ATRMode | str
             ATR setting to activate.
 
         See Also
         --------
         get_atr_setting
         """
-        _mode = toenum(ATRMODE, mode)
+        _mode = toenum(ATRMode, mode)
         return self._request(
             17035,
             [_mode.value]

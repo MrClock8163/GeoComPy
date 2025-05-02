@@ -17,9 +17,11 @@ from __future__ import annotations
 from ..data import (
     toenum,
     enumparser,
-    parsebool,
-    POWERSOURCE,
-    PROPERTY
+    parsebool
+)
+from ..data_geocom import (
+    PowerSource,
+    Property
 )
 from ..protocols import GeoComResponse
 from ..tps1200p.csv import TPS1200PCSV
@@ -163,7 +165,7 @@ class VivaTPSCSV(TPS1200PCSV):
 
     def check_property(
         self,
-        property: PROPERTY | str
+        property: Property | str
     ) -> GeoComResponse[bool]:
         """
         RPC 5039, ``CSV_CheckProperty``
@@ -172,7 +174,7 @@ class VivaTPSCSV(TPS1200PCSV):
 
         Parameters
         ----------
-        property : PROPERTY | str
+        property : Property | str
             License to check.
 
         Returns
@@ -182,7 +184,7 @@ class VivaTPSCSV(TPS1200PCSV):
                 - `bool`: License is available.
 
         """
-        _prop = toenum(PROPERTY, property)
+        _prop = toenum(Property, property)
         return self._request(
             5139,
             [_prop.value],
@@ -251,7 +253,7 @@ class VivaTPSCSV(TPS1200PCSV):
 
     def set_preferred_powersource(
         self,
-        source: POWERSOURCE | str
+        source: PowerSource | str
     ) -> GeoComResponse[None]:
         """
         RPC 5163, ``CSV_SetPreferredPowersource``
@@ -260,17 +262,17 @@ class VivaTPSCSV(TPS1200PCSV):
 
         Parameters
         ----------
-        source : POWERSOURCE | str
+        source : PowerSource | str
             New preferred power source to set.
 
         """
-        _source = toenum(POWERSOURCE, source)
+        _source = toenum(PowerSource, source)
         return self._request(
             5163,
             [_source.value]
         )
 
-    def get_preferred_powersource(self) -> GeoComResponse[POWERSOURCE]:
+    def get_preferred_powersource(self) -> GeoComResponse[PowerSource]:
         """
         RPC 5164, ``CSV_GetPreferredPowersource``
 
@@ -280,10 +282,10 @@ class VivaTPSCSV(TPS1200PCSV):
         -------
         GeoComResponse
             Params:
-                - `POWERSOURCE`: Preferred power source.
+                - `PowerSource`: Preferred power source.
 
         """
         return self._request(
             5164,  # Mistyped as 5163 in the GeoCom reference
-            parsers=enumparser(POWERSOURCE)
+            parsers=enumparser(PowerSource)
         )

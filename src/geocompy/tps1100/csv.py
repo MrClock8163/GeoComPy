@@ -16,10 +16,8 @@ from __future__ import annotations
 
 from typing_extensions import deprecated
 
-from ..data import (
-    enumparser,
-    POWERSOURCE
-)
+from ..data import enumparser
+from ..data_geocom import PowerSource
 from ..protocols import GeoComResponse
 from ..tps1000.csv import TPS1000CSV
 
@@ -65,7 +63,7 @@ class TPS1100CSV(TPS1000CSV):
 
     def check_power(
         self
-    ) -> GeoComResponse[tuple[int, POWERSOURCE, POWERSOURCE]]:
+    ) -> GeoComResponse[tuple[int, PowerSource, PowerSource]]:
         """
         RPC 5039, ``CSV_CheckPower``
 
@@ -78,16 +76,16 @@ class TPS1100CSV(TPS1000CSV):
         GeoComResponse
             Params:
                 - `int`: Remaining capacity [%].
-                - `POWERSOURCE`: Active power source.
-                - `POWERSOURCE`: Suggested power source.
+                - `PowerSource`: Active power source.
+                - `PowerSource`: Suggested power source.
 
         """
         return self._request(
             5039,
             parsers=(
                 int,
-                enumparser(POWERSOURCE),
-                enumparser(POWERSOURCE)
+                enumparser(PowerSource),
+                enumparser(PowerSource)
             )
         )
 

@@ -16,9 +16,11 @@ from __future__ import annotations
 
 from ..data import (
     toenum,
-    parsebool,
-    SHUTDOWN,
-    STARTUP
+    parsebool
+)
+from ..data_geocom import (
+    Shutdown,
+    Startup
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -97,7 +99,7 @@ class TPS1000COM(GeoComSubsystem):
 
     def switch_on(
         self,
-        mode: STARTUP | str = STARTUP.REMOTE
+        mode: Startup | str = Startup.REMOTE
     ) -> GeoComResponse[None]:
         """
         RPC 111, ``COM_SwitchOnTPS``
@@ -106,8 +108,8 @@ class TPS1000COM(GeoComSubsystem):
 
         Parameters
         ----------
-        mode : STARTUP | str, optional
-            Desired startup mode, by default STARTUP.REMOTE
+        mode : Startup | str, optional
+            Desired startup mode, by default Startup.REMOTE
 
         Returns
         -------
@@ -124,7 +126,7 @@ class TPS1000COM(GeoComSubsystem):
         --------
         switch_off
         """
-        _mode = toenum(STARTUP, mode)
+        _mode = toenum(Startup, mode)
         return self._request(
             111,
             [_mode.value]
@@ -132,7 +134,7 @@ class TPS1000COM(GeoComSubsystem):
 
     def switch_off(
         self,
-        mode: SHUTDOWN | str = SHUTDOWN.SHUTDOWN
+        mode: Shutdown | str = Shutdown.SHUTDOWN
     ) -> GeoComResponse[None]:
         """
         RPC 112, ``COM_SwitchOffTPS``
@@ -141,8 +143,8 @@ class TPS1000COM(GeoComSubsystem):
 
         Parameters
         ----------
-        mode : SHUTDOWN | str, optional
-            Desired stop mode, by default SHUTDOWN.SHUTDOWN
+        mode : Shutdown | str, optional
+            Desired stop mode, by default Shutdown.SHUTDOWN
 
         Returns
         -------
@@ -152,7 +154,7 @@ class TPS1000COM(GeoComSubsystem):
         --------
         switch_on
         """
-        _mode = toenum(SHUTDOWN, mode)
+        _mode = toenum(Shutdown, mode)
         return self._request(
             112,
             [_mode.value]

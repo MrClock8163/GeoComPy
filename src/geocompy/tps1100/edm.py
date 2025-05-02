@@ -18,9 +18,11 @@ from typing_extensions import deprecated
 
 from ..data import (
     toenum,
-    enumparser,
-    TRACKLIGHT,
-    GUIDELIGHT
+    enumparser
+)
+from ..data_geocom import (
+    Guidelight,
+    Tracklight
 )
 from ..protocols import GeoComResponse
 from ..tps1000.edm import TPS1000EDM
@@ -36,7 +38,7 @@ class TPS1100EDM(TPS1000EDM):
 
     """
 
-    def get_egl_intensity(self) -> GeoComResponse[GUIDELIGHT]:
+    def get_egl_intensity(self) -> GeoComResponse[Guidelight]:
         """
         RPC 1058, ``EDM_GetEglIntensity``
 
@@ -46,7 +48,7 @@ class TPS1100EDM(TPS1000EDM):
         -------
         GeoComResponse
             Params:
-                - `GUIDELIGHT`: Current intensity mode.
+                - `Guidelight`: Current intensity mode.
             Error codes:
                 - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
                   EGL.
@@ -54,12 +56,12 @@ class TPS1100EDM(TPS1000EDM):
         """
         return self._request(
             1058,
-            parsers=enumparser(GUIDELIGHT)
+            parsers=enumparser(Guidelight)
         )
 
     def set_egl_intensity(
         self,
-        intensity: GUIDELIGHT | str
+        intensity: Guidelight | str
     ) -> GeoComResponse[None]:
         """
         RPC 1059, ``EDM_SetEglIntensity``
@@ -79,7 +81,7 @@ class TPS1100EDM(TPS1000EDM):
                   EGL.
 
         """
-        _intesity = toenum(GUIDELIGHT, intensity)
+        _intesity = toenum(Guidelight, intensity)
         return self._request(
             1059,
             [_intesity.value]
@@ -131,7 +133,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def get_trk_light_brightness(self) -> GeoComResponse[TRACKLIGHT]:
+    def get_trk_light_brightness(self) -> GeoComResponse[Tracklight]:
         """
         RPC 1041, ``EDM_GetTrkLightBrightness``
 

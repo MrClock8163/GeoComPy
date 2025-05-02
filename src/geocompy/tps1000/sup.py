@@ -17,9 +17,9 @@ from __future__ import annotations
 from ..data import (
     toenum,
     enumparser,
-    parsebool,
-    AUTOPOWER
+    parsebool
 )
+from ..data_geocom import AutoPower
 from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
@@ -35,7 +35,7 @@ class TPS1000SUP(GeoComSubsystem):
 
     """
 
-    def get_config(self) -> GeoComResponse[tuple[bool, AUTOPOWER, int]]:
+    def get_config(self) -> GeoComResponse[tuple[bool, AutoPower, int]]:
         """
         RPC 14001, ``SUP_GetConfig``
 
@@ -46,7 +46,7 @@ class TPS1000SUP(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `bool`: Low temperature shutdown enabled.
-                - `AUTOPOWER`: Current shutdown mechanism.
+                - `AutoPower`: Current shutdown mechanism.
                 - `int`: Idling timeout [ms].
 
         See Also
@@ -58,7 +58,7 @@ class TPS1000SUP(GeoComSubsystem):
             14001,
             parsers=(
                 parsebool,
-                enumparser(AUTOPOWER),
+                enumparser(AutoPower),
                 int
             )
         )
@@ -66,7 +66,7 @@ class TPS1000SUP(GeoComSubsystem):
     def set_config(
         self,
         lowtemp: bool,
-        autopower: AUTOPOWER | str = AUTOPOWER.SHUTDOWN,
+        autopower: AutoPower | str = AutoPower.SHUTDOWN,
         timeout: int = 600_000
     ) -> GeoComResponse[None]:
         """
@@ -78,8 +78,8 @@ class TPS1000SUP(GeoComSubsystem):
         ----------
         lowtemp : bool
             Enable low temperature shutdown.
-        autopower : AUTOPOWER | str, optional
-            Automatic poweroff action, by default AUTOPOWER.SHUTDOWN
+        autopower : AutoPower | str, optional
+            Automatic poweroff action, by default AutoPower.SHUTDOWN
         timeout : int, optional
             Idling timeout [60000, 6000000] [ms], by default 600000
 
@@ -94,7 +94,7 @@ class TPS1000SUP(GeoComSubsystem):
         get_config
 
         """
-        _autopower = toenum(AUTOPOWER, autopower)
+        _autopower = toenum(AutoPower, autopower)
         return self._request(
             14002,
             [lowtemp, _autopower.value, timeout]
