@@ -147,6 +147,7 @@ python_type_aliases = {
 nitpicky = True
 nitpick_ignore = {
     ("py:class", "optional"),
+    ("py:class", "datetime"),
     ("py:param", "_E"),
     ("py:param", "_T"),
     ("py:class", "_T"),
