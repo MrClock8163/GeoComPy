@@ -27,15 +27,19 @@ Types
 
 - ``ADJUST``
 - ``ATR``
+- ``ATRMODE``
 - ``ATRLOCK``
 - ``AUTOPOWER``
+- ``CAMERAFUNCTIONS``
 - ``CAPABILITIES``
 - ``CONTROLLER``
+- ``DEVICE``
 - ``DEVICECLASS``
 - ``EDMMODE``
 - ``EDMMODEV1``
 - ``EDMMODEV2``
 - ``FACE``
+- ``FILE``
 - ``FORMAT``
 - ``GUIDELIGHT``
 - ``INCLINATION``
