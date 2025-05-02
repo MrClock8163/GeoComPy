@@ -164,6 +164,17 @@ class GeoComProtocol:
 
     """
 
+    REF_VERSION = (0, 0)
+    """
+    Major and minor version of the reference manual, that this
+    implementation is based on.
+    """
+    REF_VERSION_STR = "0.00"
+    """
+    Version string of the reference manual, that this implementation is
+    based on.
+    """
+
     def __init__(
         self,
         connection: Connection,
@@ -377,6 +388,17 @@ class GsiOnlineResponse(Generic[_T]):
 class GsiOnlineProtocol:
     """
     Base class for GSI Online protocol versions.
+    """
+
+    REF_VERSION = (0, 0)
+    """
+    Major and minor version of the reference manual, that this
+    implementation is based on.
+    """
+    REF_VERSION_STR = "0000.00"
+    """
+    Version string of the reference manual, that this implementation is
+    based on.
     """
 
     def __init__(

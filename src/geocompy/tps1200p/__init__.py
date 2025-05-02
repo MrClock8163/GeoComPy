@@ -111,6 +111,17 @@ class TPS1200P(GeoComProtocol):
         r"(?:,(?P<params>.*))?$"
     )
 
+    REF_VERSION = (1, 50)
+    """
+    Major and minor version of the reference manual, that this
+    implementation is based on.
+    """
+    REF_VERSION_STR = "1.50"
+    """
+    Version string of the reference manual, that this implementation is
+    based on.
+    """
+
     def __init__(
         self,
         connection: Connection,

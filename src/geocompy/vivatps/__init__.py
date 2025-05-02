@@ -119,6 +119,17 @@ class VivaTPS(GeoComProtocol):
         r"(?:,(?P<params>.*))?$"
     )
 
+    REF_VERSION = (5, 51)
+    """
+    Major and minor version of the reference manual, that this
+    implementation is based on.
+    """
+    REF_VERSION_STR = "5.51"
+    """
+    Version string of the reference manual, that this implementation is
+    based on.
+    """
+
     def __init__(
         self,
         connection: Connection,
