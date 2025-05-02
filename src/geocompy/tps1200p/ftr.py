@@ -41,7 +41,7 @@ class TPS1200PFTR(GeoComSubsystem):
 
     """
 
-    def setup_list(
+    def setup_listing(
         self,
         device: Device | str = Device.CFCARD,
         filetype: File | str = File.UNKNOWN,
@@ -117,7 +117,7 @@ class TPS1200PFTR(GeoComSubsystem):
 
         See Also
         --------
-        setup_list
+        setup_listing
         abort_list
 
         """
@@ -174,7 +174,7 @@ class TPS1200PFTR(GeoComSubsystem):
 
         See Also
         --------
-        setup_list
+        setup_listing
         list
 
         """
