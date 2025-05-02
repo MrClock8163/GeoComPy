@@ -25,6 +25,9 @@ Types
 - ``Vector``
 - ``Coordinate``
 
+Enums
+-----
+
 - ``ADJUST``
 - ``ATR``
 - ``ATRMODE``
