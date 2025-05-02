@@ -47,10 +47,12 @@ Types
 - ``INCLINATION``
 - ``JPEGQUALITY``
 - ``MEASUREMENT``
+- ``MEASUREMENTTYPE``
 - ``POSITION``
 - ``POWERSOURCE``
 - ``PRISM``
 - ``PROGRAM``
+- ``PROPERTY``
 - ``REFLECTOR``
 - ``RESOLUTION``
 - ``SHUTDOWN``
@@ -1885,3 +1887,15 @@ class PROPERTY(Enum):
     SERIAL_NUMBER = 30
     PRODUCTION_FLAG = 31
     SYSTEMTIME_VALID = 32
+
+
+class MEASUREMENTTYPE(Enum):
+    """
+    Measurement types.
+
+    ``EDM_MEASUREMENT_TYPE``
+    """
+    SIGNAL = 1
+    FREQ = 2
+    DIST = 3
+    ANY = 4
