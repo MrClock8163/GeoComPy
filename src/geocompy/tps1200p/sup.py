@@ -30,7 +30,7 @@ class TPS1200PSUP(TPS1100SUP):
     """
 
     @deprecated("This command was removed for TPS1200 instruments")
-    def switch_low_temp_control(
+    def switch_low_temperature_control(
         self,
         *args
     ) -> Never:
