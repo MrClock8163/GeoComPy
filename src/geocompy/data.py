@@ -1531,3 +1531,24 @@ class POWERSOURCE(Enum):
     CURRENT = 0
     EXTERNAL = 1
     INTERNAL = 2
+
+
+class ATRMODE(Enum):
+    """
+    ATR visibility modes.
+
+    .. versionadded:: GeoCom-TPS1200
+
+    ``BAP_ATRSETTING``
+    """
+
+    NORMAL = 0
+    """Normal mode."""
+    LOWVIS = 1
+    """Low visibility on."""
+    ALWAYSLOWVIS = 2
+    """Low visibility always on."""
+    HIGHREFL = 3
+    """High reflectivity on."""
+    ALWAYSHIGHREFL = 4
+    """Hight reflectivity always on."""
