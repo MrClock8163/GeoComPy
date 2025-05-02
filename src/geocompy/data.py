@@ -1137,6 +1137,42 @@ class DEVICECLASS(Enum):
 
     .. versionadded:: GeoCom-TPS1100
     """
+    CLASS_1202 = 200
+    """
+    TPS1200 2"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_1203 = 201
+    """
+    TPS1200 3"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_1205 = 202
+    """
+    TPS1200 5"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_1201 = 203
+    """
+    TPS1200 1"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_Tx30 = 300
+    """
+    TS30, MS30 0.5"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_Tx31 = 301
+    """
+    TS30, MS30 1"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
 
 
 class CAPABILITIES(Flag):
@@ -1180,7 +1216,27 @@ class CAPABILITIES(Flag):
 
     .. versionadded:: GeoCom-TPS1100
     """
+    POWERSEARCH = 0x00800
+    """
+    PowerSearch
+
+    .. versionadded:: GeoCom-TPS1200
+    """
     # SIM = 0x04000 # TPSSim
+
+
+class REFLECTORLESS(Enum):
+    """
+    Reflectorless EDM class.
+
+    .. versionadded:: GeoCom-TPS1200
+
+    ``TPS_REFLESS_CLASS``
+    """
+    NONE = 0
+    R100 = 1
+    R300 = 2
+    R400 = 3
 
 
 class TRACKLIGHT(Enum):
