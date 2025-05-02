@@ -14,19 +14,10 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
-from ..data import (
-    toenum,
-    enumparser
-)
-from ..protocols import (
-    GeoComSubsystem,
-    GeoComResponse
-)
+from ..tps1100.edm import TPS1100EDM
 
 
-class TPS1200PEDM(GeoComSubsystem):
+class TPS1200PEDM(TPS1100EDM):
     """
     Electronic distance measurement subsystem of the TPS1200+ GeoCom
     protocol.
@@ -35,90 +26,3 @@ class TPS1200PEDM(GeoComSubsystem):
     functions.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
-
-    class EGLINTENSITYTYPE(Enum):
-        OFF = 0
-        LOW = 1
-        MID = 2
-        HIGH = 3
-
-    def laserpointer(
-        self,
-        laser: ONOFF | str
-    ) -> GeoComResponse[None]:
-        """
-        RPC 1004, ``EDM_Laserpointer``
-
-        Enables or disables the laser pointer.
-
-        Parameters
-        ----------
-        laser : ONOFF | str
-            Activation state to set.
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
-                  laserpointer.
-
-        """
-        _laser = toenum(self.ONOFF, laser)
-        return self._request(
-            1004,
-            [_laser.value]
-        )
-
-    def get_egl_intensity(self) -> GeoComResponse[EGLINTENSITYTYPE]:
-        """
-        RPC 1058, ``EDM_GetEglIntensity``
-
-        Gets the current intensity setting of the electronic guide light.
-
-        Returns
-        -------
-        GeoComResponse
-            Params:
-                - `EGLINTENSITYTYPE`: Current intensity
-                  mode.
-            Error codes:
-                - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
-                  EGL.
-
-        """
-        return self._request(
-            1058,
-            parsers=enumparser(self.EGLINTENSITYTYPE)
-        )
-
-    def set_egl_intensity(
-        self,
-        intensity: EGLINTENSITYTYPE | str
-    ) -> GeoComResponse[None]:
-        """
-        RPC 1059, ``EDM_SetEglIntensity``
-
-        Sets the intensity setting of the electronic guide light.
-
-        Parameters
-        ----------
-        intensity : EGLINTENSITYTYPE | str
-            Intensity setting to activate.
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
-                  EGL.
-
-        """
-        _intesity = toenum(self.EGLINTENSITYTYPE, intensity)
-        return self._request(
-            1059,
-            [_intesity.value]
-        )
