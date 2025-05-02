@@ -17,9 +17,9 @@ from __future__ import annotations
 from ..data import (
     toenum,
     enumparser,
-    parsebool,
-    TRACKLIGHT
+    parsebool
 )
+from ..data_geocom import Tracklight
 from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
@@ -161,7 +161,7 @@ class TPS1000EDM(GeoComSubsystem):
             [enabled]
         )
 
-    def get_trk_light_brightness(self) -> GeoComResponse[TRACKLIGHT]:
+    def get_trk_light_brightness(self) -> GeoComResponse[Tracklight]:
         """
         RPC 1041, ``EDM_GetTrkLightBrightness``
 
@@ -171,18 +171,18 @@ class TPS1000EDM(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `TRACKLIGHT`: Tracklight brightness.
+                - `Tracklight`: Tracklight brightness.
             Error codes:
                 - ``NOT_IMPL``: Tracklight is not available.
         """
         return self._request(
             1041,
-            parsers=enumparser(TRACKLIGHT)
+            parsers=enumparser(Tracklight)
         )
 
     def set_trk_light_brightness(
         self,
-        intensity: TRACKLIGHT | str
+        intensity: Tracklight | str
     ) -> GeoComResponse[None]:
         """
         RPC 1032, ``EDM_SetTrkLightBrightness``
@@ -191,7 +191,7 @@ class TPS1000EDM(GeoComSubsystem):
 
         Parameters
         ----------
-        intensity : TRACKLIGHT | str
+        intensity : Tracklight | str
             Tracklight intensity to set.
 
         Returns
@@ -200,7 +200,7 @@ class TPS1000EDM(GeoComSubsystem):
             Error codes:
                 - ``NOT_IMPL``: Tracklight is not available.
         """
-        _intensity = toenum(TRACKLIGHT, intensity)
+        _intensity = toenum(Tracklight, intensity)
         return self._request(
             1032,
             [_intensity.value]

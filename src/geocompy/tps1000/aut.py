@@ -18,10 +18,12 @@ from ..data import (
     Angle,
     toenum,
     enumparser,
-    parsebool,
-    POSITION,
-    ADJUST,
-    ATR
+    parsebool
+)
+from ..data_geocom import (
+    Adjust,
+    ATR,
+    Position
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -281,7 +283,7 @@ class TPS1000AUT(GeoComSubsystem):
         self,
         hz: Angle,
         v: Angle,
-        posmode: POSITION | str = POSITION.NORMAL,
+        posmode: Position | str = Position.NORMAL,
         atrmode: ATR | str = ATR.POSITION
     ) -> GeoComResponse[None]:
         """
@@ -295,8 +297,8 @@ class TPS1000AUT(GeoComSubsystem):
             Horizontal position.
         v : Angle
             Vertical position.
-        posmode : POSITION | str, optional
-            Positioning precision mode, by default POSITION.NORMAL
+        posmode : Position | str, optional
+            Positioning precision mode, by default Position.NORMAL
         atrmode : ATR | str, optional
             ATR mode, by default ATR.POSITION
 
@@ -334,7 +336,7 @@ class TPS1000AUT(GeoComSubsystem):
         com.get_timeout
         com.set_timeout
         """
-        _posmode = toenum(POSITION, posmode)
+        _posmode = toenum(Position, posmode)
         _atrmode = toenum(ATR, atrmode)
         return self._request(
             9027,
@@ -343,7 +345,7 @@ class TPS1000AUT(GeoComSubsystem):
 
     def change_face(
         self,
-        posmode: POSITION | str = POSITION.NORMAL,
+        posmode: Position | str = Position.NORMAL,
         atrmode: ATR | str = ATR.POSITION
     ) -> GeoComResponse[None]:
         """
@@ -353,8 +355,8 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        posmode : POSITION | str, optional
-            Positioning precision mode, by default POSITION.NORMAL
+        posmode : Position | str, optional
+            Positioning precision mode, by default Position.NORMAL
         atrmode : ATR | str, optional
             ATR mode, by default ATR.POSITION
 
@@ -393,7 +395,7 @@ class TPS1000AUT(GeoComSubsystem):
         com.set_timeout
         tmc.get_face
         """
-        _posmode = toenum(POSITION, posmode)
+        _posmode = toenum(Position, posmode)
         _atrmode = toenum(ATR, atrmode)
         return self._request(
             9028,
@@ -497,7 +499,7 @@ class TPS1000AUT(GeoComSubsystem):
             [width, height, 0]
         )
 
-    def get_fine_adjust_mode(self) -> GeoComResponse[ADJUST]:
+    def get_fine_adjust_mode(self) -> GeoComResponse[Adjust]:
         """
         RPC 9030, ``AUT_GetFineAdjustMode``
 
@@ -507,7 +509,7 @@ class TPS1000AUT(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `ADJUST`: Current fine adjustment mode.
+                - `Adjust`: Current fine adjustment mode.
 
         See Also
         --------
@@ -515,12 +517,12 @@ class TPS1000AUT(GeoComSubsystem):
         """
         return self._request(
             9030,
-            parsers=enumparser(ADJUST)
+            parsers=enumparser(Adjust)
         )
 
     def set_fine_adjust_mode(
         self,
-        mode: ADJUST | str
+        mode: Adjust | str
     ) -> GeoComResponse[None]:
         """
         RPC 9031, ``AUT_SetFineAdjustMode``
@@ -529,7 +531,7 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        mode : ADJUST | str
+        mode : Adjust | str
 
         Returns
         -------
@@ -542,7 +544,7 @@ class TPS1000AUT(GeoComSubsystem):
         --------
         get_fine_adjust_mode
         """
-        _mode = toenum(ADJUST, mode)
+        _mode = toenum(Adjust, mode)
         return self._request(
             9031,
             [_mode.value]

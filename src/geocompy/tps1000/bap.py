@@ -17,9 +17,9 @@ from __future__ import annotations
 from ..data import (
     Angle,
     toenum,
-    enumparser,
-    PROGRAM
+    enumparser
 )
+from ..data_geocom import Program
 from ..protocols import (
     GeoComSubsystem,
     GeoComResponse
@@ -66,8 +66,8 @@ class TPS1000BAP(GeoComSubsystem):
 
     def meas_distance_angle(
         self,
-        mode: PROGRAM | str = PROGRAM.DISTANCE
-    ) -> GeoComResponse[tuple[Angle, Angle, float, PROGRAM]]:
+        mode: Program | str = Program.DISTANCE
+    ) -> GeoComResponse[tuple[Angle, Angle, float, Program]]:
         """
         RPC 17017, ``BAP_MeasDistanceAngle``
 
@@ -76,9 +76,9 @@ class TPS1000BAP(GeoComSubsystem):
 
         Parameters
         ----------
-        mode : PROGRAM | str, optional
+        mode : Program | str, optional
             Distance measurement mode to use, by default
-            PROGRAM.DISTANCE
+            Program.DISTANCE
 
         Returns
         -------
@@ -126,7 +126,7 @@ class TPS1000BAP(GeoComSubsystem):
                 - ``SHUT_DOWN``: System stopped.
 
         """
-        _mode = toenum(PROGRAM, mode)
+        _mode = toenum(Program, mode)
         return self._request(
             17017,
             [_mode.value],
@@ -134,6 +134,6 @@ class TPS1000BAP(GeoComSubsystem):
                 Angle.parse,
                 Angle.parse,
                 float,
-                enumparser(PROGRAM)
+                enumparser(Program)
             )
         )

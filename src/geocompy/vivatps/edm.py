@@ -16,9 +16,9 @@ from __future__ import annotations
 
 from ..data import (
     toenum,
-    parsebool,
-    MEASUREMENTTYPE
+    parsebool
 )
+from ..data_geocom import MeasurementType
 from ..protocols import GeoComResponse
 from ..tps1200p.edm import TPS1200PEDM
 
@@ -35,7 +35,7 @@ class VivaTPSEDM(TPS1200PEDM):
 
     def is_cont_meas_active(
         self,
-        mode: MEASUREMENTTYPE | str
+        mode: MeasurementType | str
     ) -> GeoComResponse[bool]:
         """
         RPC 1070, ``EDM_IsContMeasActive``
@@ -45,7 +45,7 @@ class VivaTPSEDM(TPS1200PEDM):
 
         Parameters
         ----------
-        mode : MEASUREMENTTYPE | str
+        mode : MeasurementType | str
             Measurement mode.
 
         Returns
@@ -55,7 +55,7 @@ class VivaTPSEDM(TPS1200PEDM):
                 - `bool`: Continuous measurement is active.
 
         """
-        _mode = toenum(MEASUREMENTTYPE, mode)
+        _mode = toenum(MeasurementType, mode)
         return self._request(
             1070,
             [_mode.value],

@@ -19,10 +19,8 @@ from typing_extensions import deprecated
 
 from datetime import datetime
 
-from ..data import (
-    enumparser,
-    REFLECTORLESS,
-)
+from ..data import enumparser
+from ..data_geocom import Reflectorless
 from ..protocols import GeoComResponse
 from ..tps1100.csv import TPS1100CSV
 
@@ -62,7 +60,7 @@ class TPS1200PCSV(TPS1100CSV):
         """
         raise AttributeError()
 
-    def get_reflectorless_class(self) -> GeoComResponse[REFLECTORLESS]:
+    def get_reflectorless_class(self) -> GeoComResponse[Reflectorless]:
         """
         RPC 5100, ``CSV_GetReflectorlessClass``
 
@@ -73,12 +71,12 @@ class TPS1200PCSV(TPS1100CSV):
         -------
         GeoComResponse
             Params:
-                - `REFLECTORLESS`: Class of the reflectorless EDM module.
+                - `Reflectorless`: Class of the reflectorless EDM module.
 
         """
         return self._request(
             5100,
-            parsers=enumparser(REFLECTORLESS)
+            parsers=enumparser(Reflectorless)
         )
 
     def get_date_time_centisec(self) -> GeoComResponse[datetime]:

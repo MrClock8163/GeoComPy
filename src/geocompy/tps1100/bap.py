@@ -17,11 +17,13 @@ from __future__ import annotations
 from ..data import (
     toenum,
     enumparser,
-    parsestr,
-    USERPROGRAM,
-    TARGET,
-    PRISM,
-    REFLECTOR
+    parsestr
+)
+from ..data_geocom import (
+    Prism,
+    Reflector,
+    Target,
+    UserProgram
 )
 from ..protocols import GeoComResponse
 from ..tps1000.bap import TPS1000BAP
@@ -37,7 +39,7 @@ class TPS1100BAP(TPS1000BAP):
 
     """
 
-    def get_target_type(self) -> GeoComResponse[TARGET]:
+    def get_target_type(self) -> GeoComResponse[Target]:
         """
         RPC 17022, ``BAP_GetTargetType``
 
@@ -49,7 +51,7 @@ class TPS1100BAP(TPS1000BAP):
         -------
         GeoComResponse
             Params:
-                - `TARGET`: Current EMD target type.
+                - `Target`: Current EMD target type.
 
         See Also
         --------
@@ -57,12 +59,12 @@ class TPS1100BAP(TPS1000BAP):
         """
         return self._request(
             17022,
-            parsers=enumparser(TARGET)
+            parsers=enumparser(Target)
         )
 
     def set_target_type(
         self,
-        target: TARGET | str
+        target: Target | str
     ) -> GeoComResponse[None]:
         """
         RPC 17021, ``BAP_SetTargetType``
@@ -74,7 +76,7 @@ class TPS1100BAP(TPS1000BAP):
 
         Parameters
         ----------
-        target : TARGET | str
+        target : Target | str
             New EDM target type to set.
 
         Returns
@@ -88,13 +90,13 @@ class TPS1100BAP(TPS1000BAP):
         get_target_type
         set_meas_prg
         """
-        _target = toenum(TARGET, target)
+        _target = toenum(Target, target)
         return self._request(
             17021,
             [_target.value]
         )
 
-    def get_prism_type(self) -> GeoComResponse[PRISM]:
+    def get_prism_type(self) -> GeoComResponse[Prism]:
         """
         RPC 17009, ``BAP_GetPrismType``
 
@@ -106,7 +108,7 @@ class TPS1100BAP(TPS1000BAP):
         -------
         GeoComResponse
             Params:
-                - `PRISM`: Current prism type.
+                - `Prism`: Current prism type.
             Error codes:
                 - ``IVRESULT``: EDM is set to reflectorless mode.
 
@@ -116,12 +118,12 @@ class TPS1100BAP(TPS1000BAP):
         """
         return self._request(
             17009,
-            parsers=enumparser(PRISM)
+            parsers=enumparser(Prism)
         )
 
     def set_prism_type(
         self,
-        prism: PRISM | str
+        prism: Prism | str
     ) -> GeoComResponse[None]:
         """
         RPC 17008, ``BAP_SetPrismType``
@@ -133,7 +135,7 @@ class TPS1100BAP(TPS1000BAP):
 
         Parameters
         ----------
-        prism : PRISM | str
+        prism : Prism | str
             New prism type to set.
 
         Returns
@@ -146,7 +148,7 @@ class TPS1100BAP(TPS1000BAP):
         --------
         get_prism_type
         """
-        _prism = toenum(PRISM, prism)
+        _prism = toenum(Prism, prism)
         return self._request(
             17008,
             [_prism.value]
@@ -154,8 +156,8 @@ class TPS1100BAP(TPS1000BAP):
 
     def get_prism_def(
         self,
-        prism: PRISM | str
-    ) -> GeoComResponse[tuple[str, float, REFLECTOR]]:
+        prism: Prism | str
+    ) -> GeoComResponse[tuple[str, float, Reflector]]:
         """
         RPC 17023, ``BAP_GetPrismDef``
 
@@ -165,7 +167,7 @@ class TPS1100BAP(TPS1000BAP):
 
         Parameters
         ----------
-        prism : PRISM | str
+        prism : Prism | str
             Prism type to query.
 
         Returns
@@ -174,28 +176,28 @@ class TPS1100BAP(TPS1000BAP):
             Params:
                 - `str`: Name of the prism.
                 - `float`: Additive prism constant.
-                - `REFLECTOR`: Reflector type.
+                - `Reflector`: Reflector type.
             Error codes:
                 - ``IVPARAM``: Invalid prism type.
 
         """
-        _prism = toenum(PRISM, prism)
+        _prism = toenum(Prism, prism)
         return self._request(
             17023,
             [_prism.value],
             (
                 parsestr,
                 float,
-                enumparser(REFLECTOR)
+                enumparser(Reflector)
             )
         )
 
     def set_prism_def(
         self,
-        prism: PRISM | str,
+        prism: Prism | str,
         name: str,
         const: float,
-        reflector: REFLECTOR | str
+        reflector: Reflector | str
     ) -> GeoComResponse[None]:
         """
         RPC 17024, ``BAP_SetPrismDef``
@@ -206,14 +208,14 @@ class TPS1100BAP(TPS1000BAP):
 
         Parameters
         ----------
-        prism : PRISM | str
+        prism : Prism | str
             Type of the new prism. (Can be USER1, 2 and 3.)
         name : str
             Definition name. (Maximum 16 characters. Longer names will be
             truncated.)
         const : float
             Additive prism constant.
-        reflector : REFLECTOR | str
+        reflector : Reflector | str
             Reflector type.
 
         Returns
@@ -223,8 +225,8 @@ class TPS1100BAP(TPS1000BAP):
                 - ``IVPARAM``: Invalid prism type.
 
         """
-        _prism = toenum(PRISM, prism)
-        _reflector = toenum(REFLECTOR, reflector)
+        _prism = toenum(Prism, prism)
+        _reflector = toenum(Reflector, reflector)
         name = f"{name:.16s}"
         return self._request(
             17024,
@@ -236,7 +238,7 @@ class TPS1100BAP(TPS1000BAP):
             ]
         )
 
-    def get_meas_prg(self) -> GeoComResponse[USERPROGRAM]:
+    def get_meas_prg(self) -> GeoComResponse[UserProgram]:
         """
         RPC 17018, ``BAP_GetMeasPrg``
 
@@ -246,7 +248,7 @@ class TPS1100BAP(TPS1000BAP):
         -------
         GeoComResponse
             Params:
-                - `USERPROGRAM`: Current measurement program.
+                - `UserProgram`: Current measurement program.
 
         See Also
         --------
@@ -254,12 +256,12 @@ class TPS1100BAP(TPS1000BAP):
         """
         return self._request(
             17018,
-            parsers=enumparser(USERPROGRAM)
+            parsers=enumparser(UserProgram)
         )
 
     def set_meas_prg(
         self,
-        program: USERPROGRAM | str
+        program: UserProgram | str
     ) -> GeoComResponse[None]:
         """
         RPC 17019, ``BAP_SetMeasPrg``
@@ -268,7 +270,7 @@ class TPS1100BAP(TPS1000BAP):
 
         Parameters
         ----------
-        program : USERPROGRAM | str
+        program : UserProgram | str
             Measurement program to set.
 
         Returns
@@ -282,7 +284,7 @@ class TPS1100BAP(TPS1000BAP):
         get_meas_prg
         set_target_type
         """
-        _program = toenum(USERPROGRAM, program)
+        _program = toenum(UserProgram, program)
         return self._request(
             17019,
             [_program.value]

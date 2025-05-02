@@ -19,9 +19,11 @@ from datetime import datetime
 from ..data import (
     Byte,
     parsestr,
-    enumparser,
-    DEVICECLASS,
-    CAPABILITIES
+    enumparser
+)
+from ..data_geocom import (
+    Capabilities,
+    DeviceClass
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -115,7 +117,7 @@ class TPS1000CSV(GeoComSubsystem):
 
     def get_device_config(
         self
-    ) -> GeoComResponse[tuple[DEVICECLASS, CAPABILITIES]]:
+    ) -> GeoComResponse[tuple[DeviceClass, Capabilities]]:
         """
         RPC 5035, ``CSV_GetDeviceConfig``
 
@@ -126,8 +128,8 @@ class TPS1000CSV(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `DEVICECLASS`: Class of the instrument.
-                - `CAPABILITIES`: Configuration of the components.
+                - `DeviceClass`: Class of the instrument.
+                - `Capabilities`: Configuration of the components.
             Error codes:
                 - ``UNDEFINED``: Precision class is undefined.
 
@@ -135,8 +137,8 @@ class TPS1000CSV(GeoComSubsystem):
         return self._request(
             5035,
             parsers=(
-                enumparser(DEVICECLASS),
-                enumparser(CAPABILITIES)
+                enumparser(DeviceClass),
+                enumparser(Capabilities)
             )
         )
 

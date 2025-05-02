@@ -16,9 +16,11 @@ from __future__ import annotations
 
 from ..data import (
     toenum,
-    enumparser,
-    DEVICE,
-    CAMERAFUNCTIONS
+    enumparser
+)
+from ..data_geocom import (
+    CameraFunctions,
+    Device
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -37,8 +39,8 @@ class TPS1200PIMG(GeoComSubsystem):
 
     def get_tcc_config(
         self,
-        at: DEVICE | str = DEVICE.CFCARD
-    ) -> GeoComResponse[tuple[int, int, CAMERAFUNCTIONS, str]]:
+        at: Device | str = Device.CFCARD
+    ) -> GeoComResponse[tuple[int, int, CameraFunctions, str]]:
         """
         RPC 23400, ``IMG_GetTccConfig``
 
@@ -47,7 +49,7 @@ class TPS1200PIMG(GeoComSubsystem):
 
         Parameters
         ----------
-        at : DEVICE | str, optional
+        at : Device | str, optional
             Memory device, by default CFCARD
 
         Returns
@@ -56,7 +58,7 @@ class TPS1200PIMG(GeoComSubsystem):
             Params:
                 - `int`: Current image number.
                 - `int`: JPEG compression quality [0; 100]%
-                - `CAMERAFUNCTIONS`: Current camera function combination.
+                - `CameraFunctions`: Current camera function combination.
                 - `str`: File name prefix.
             Error codes:
                 - ``FATAL``: CF card is not available, or config file does
@@ -70,14 +72,14 @@ class TPS1200PIMG(GeoComSubsystem):
         set_tcc_config
 
         """
-        _device = toenum(DEVICE, at)
+        _device = toenum(Device, at)
         return self._request(
             23400,
             [_device.value],
             parsers=(
                 int,
                 int,
-                enumparser(CAMERAFUNCTIONS),
+                enumparser(CameraFunctions),
                 str
             )
         )
@@ -86,8 +88,8 @@ class TPS1200PIMG(GeoComSubsystem):
         self,
         imgnumber: int,
         quality: int,
-        functions: CAMERAFUNCTIONS | int,
-        saveto: DEVICE | str = DEVICE.CFCARD,
+        functions: CameraFunctions | int,
+        saveto: Device | str = Device.CFCARD,
     ) -> GeoComResponse[None]:
         """
         RPC 23401, ``IMG_SetTccConfig``
@@ -100,9 +102,9 @@ class TPS1200PIMG(GeoComSubsystem):
             Image number.
         quality : int
             JPEG compression quality [0; 100]%.
-        functions : CAMERAFUNCTIONS | int
+        functions : CameraFunctions | int
             Camera function combination.
-        saveto : DEVICE | str, optional
+        saveto : Device | str, optional
             Memory device, by default CFCARD
 
         Returns
@@ -119,8 +121,8 @@ class TPS1200PIMG(GeoComSubsystem):
         take_tcc_img
 
         """
-        _device = toenum(DEVICE, saveto)
-        if isinstance(functions, CAMERAFUNCTIONS):
+        _device = toenum(Device, saveto)
+        if isinstance(functions, CameraFunctions):
             functions = functions.value
         return self._request(
             23401,
@@ -129,7 +131,7 @@ class TPS1200PIMG(GeoComSubsystem):
 
     def take_tcc_img(
         self,
-        device: DEVICE | str = DEVICE.CFCARD
+        device: Device | str = Device.CFCARD
     ) -> GeoComResponse[int]:
         """
         RPC 23401, ``IMG_SetTccConfig``
@@ -139,7 +141,7 @@ class TPS1200PIMG(GeoComSubsystem):
 
         Parameters
         ----------
-        device : DEVICE | str, optional
+        device : Device | str, optional
             Memory device, by default CFCARD
 
         Returns
@@ -158,7 +160,7 @@ class TPS1200PIMG(GeoComSubsystem):
         set_tcc_config
 
         """
-        _device = toenum(DEVICE, device)
+        _device = toenum(Device, device)
         return self._request(
             23402,
             [_device.value],
