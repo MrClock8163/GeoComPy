@@ -32,6 +32,28 @@ keywords = ["GeoCom", "surveying", "tps1200", "viva"]
 Homepage = "https://github.com/MrClock8163/geocompy"
 Issues = "https://github.com/MrClock8163/geocompy/issues"
 
+[dependency-groups]
+testing = [
+    "pytest",
+    "pytest-mock",
+]
+linting = [
+    "types-pyserial",
+    "mypy",
+    "flake8"
+]
+development = [
+    "pyserial",
+    {include-group = "testing"},
+    {include-group = "linting"}
+]
+documentation = [
+    "sphinx==8.2.3",
+    "sphinx-notfound-page==1.1.0",
+    "sphinx-last-updated-by-git==0.3.8",
+    "sphinx-immaterial==0.13.5",
+]
+
 [tool.hatch.version]
 source = "vcs"
 
