@@ -13,15 +13,24 @@ Types
 """
 from __future__ import annotations
 
-from enum import IntEnum
-
 from ..protocols import (
     GsiOnlineSubsystem,
     GsiOnlineResponse
 )
 from ..data import (
     toenum,
-    enumparser
+    enumparser,
+    FORMAT,
+    BEEPINTENSITY,
+    ILLUMINATION,
+    DISTUNIT,
+    TEMPUNIT,
+    BAUD,
+    PARITY,
+    TERMINATOR,
+    RECORDER,
+    AUTOOFF,
+    CODERECORD
 )
 
 
@@ -34,58 +43,6 @@ class DNASettings(GsiOnlineSubsystem):
     queried and set/changed.
 
     """
-    class BEEPINTENSITY(IntEnum):
-        OFF = 0
-        MEDIUM = 1
-        LOUD = 2
-
-    class ILLUMINATION(IntEnum):
-        OFF = 0
-        LEVELONLY = 2
-        BOTH = 3
-
-    class DISTUNIT(IntEnum):
-        METER = 0
-        USFEET = 1
-        FEET = 2
-        USFEETINCH = 5
-
-    class TEMPUNIT(IntEnum):
-        CELSIUS = 0
-        FAHRENHEIT = 1
-
-    class BAUD(IntEnum):
-        B1200 = 2
-        B2400 = 3
-        B4800 = 4
-        B9600 = 5
-        B19200 = 6
-
-    class PARITY(IntEnum):
-        NONE = 0
-        ODD = 1
-        EVEN = 2
-
-    class TERMINATOR(IntEnum):
-        CR = 0
-        CRLF = 1
-
-    class RECORDER(IntEnum):
-        INTERNAL = 0
-        RS232 = 1
-
-    class AUTOOFF(IntEnum):
-        OFF = 0
-        ON = 1
-        SLEEP = 2
-
-    class FORMAT(IntEnum):
-        GSI8 = 0
-        GSI16 = 1
-
-    class CODERECORD(IntEnum):
-        BEFORE = 0
-        AFTER = 1
 
     def set_beep(
         self,
@@ -106,7 +63,7 @@ class DNASettings(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        _status = toenum(self.BEEPINTENSITY, intensity)
+        _status = toenum(BEEPINTENSITY, intensity)
         return self._setrequest(30, _status.value)
 
     def get_beep(self) -> GsiOnlineResponse[BEEPINTENSITY | None]:
@@ -127,7 +84,7 @@ class DNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             30,
-            enumparser(self.BEEPINTENSITY)
+            enumparser(BEEPINTENSITY)
         )
 
     def get_illumination(self) -> GsiOnlineResponse[ILLUMINATION | None]:
@@ -148,7 +105,7 @@ class DNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             31,
-            enumparser(self.ILLUMINATION)
+            enumparser(ILLUMINATION)
         )
 
     def set_contrast(
@@ -212,7 +169,7 @@ class DNASettings(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        _unit = toenum(self.DISTUNIT, unit)
+        _unit = toenum(DISTUNIT, unit)
         return self._setrequest(41, _unit.value)
 
     def get_distance_unit(self) -> GsiOnlineResponse[DISTUNIT | None]:
@@ -233,7 +190,7 @@ class DNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             41,
-            enumparser(self.DISTUNIT)
+            enumparser(DISTUNIT)
         )
 
     def set_temperature_unit(
@@ -255,7 +212,7 @@ class DNASettings(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        _unit = toenum(self.TEMPUNIT, unit)
+        _unit = toenum(TEMPUNIT, unit)
         return self._setrequest(42, _unit.value)
 
     def get_temperature_unit(self) -> GsiOnlineResponse[TEMPUNIT | None]:
@@ -276,7 +233,7 @@ class DNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             42,
-            enumparser(self.TEMPUNIT)
+            enumparser(TEMPUNIT)
         )
 
     def set_decimals(
@@ -340,7 +297,7 @@ class DNASettings(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        _baud = toenum(self.BAUD, baud)
+        _baud = toenum(BAUD, baud)
         return self._setrequest(70, _baud.value)
 
     def get_baud(self) -> GsiOnlineResponse[BAUD | None]:
@@ -361,7 +318,7 @@ class DNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             70,
-            enumparser(self.BAUD)
+            enumparser(BAUD)
         )
 
     def set_parity(
@@ -383,7 +340,7 @@ class DNASettings(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        _parity = toenum(self.PARITY, parity)
+        _parity = toenum(PARITY, parity)
         return self._setrequest(71, _parity.value)
 
     def get_parity(self) -> GsiOnlineResponse[PARITY | None]:
@@ -404,7 +361,7 @@ class DNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             71,
-            enumparser(self.PARITY)
+            enumparser(PARITY)
         )
 
     def set_terminator(
@@ -426,7 +383,7 @@ class DNASettings(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        _terminator = toenum(self.TERMINATOR, terminator)
+        _terminator = toenum(TERMINATOR, terminator)
         return self._setrequest(73, _terminator.value)
 
     def get_terminator(self) -> GsiOnlineResponse[TERMINATOR | None]:
@@ -447,7 +404,7 @@ class DNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             73,
-            enumparser(self.TERMINATOR)
+            enumparser(TERMINATOR)
         )
 
     def set_protocol(
@@ -510,7 +467,7 @@ class DNASettings(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        _recorder = toenum(self.TERMINATOR, recorder)
+        _recorder = toenum(TERMINATOR, recorder)
         return self._setrequest(76, _recorder.value)
 
     def get_recorder(self) -> GsiOnlineResponse[RECORDER | None]:
@@ -531,7 +488,7 @@ class DNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             76,
-            enumparser(self.RECORDER)
+            enumparser(RECORDER)
         )
 
     def set_delay(
@@ -638,7 +595,7 @@ class DNASettings(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        _mode = toenum(self.AUTOOFF, status)
+        _mode = toenum(AUTOOFF, status)
         return self._setrequest(95, _mode.value)
 
     def get_autooff(self) -> GsiOnlineResponse[AUTOOFF | None]:
@@ -659,7 +616,7 @@ class DNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             95,
-            enumparser(self.AUTOOFF)
+            enumparser(AUTOOFF)
         )
 
     def set_display_heater(
@@ -811,10 +768,10 @@ class DNASettings(GsiOnlineSubsystem):
         updated accordingly to keep the communication in sync between
         the computer and the instrument.
         """
-        _format = toenum(self.FORMAT, format)
+        _format = toenum(FORMAT, format)
         response = self._setrequest(137, _format.value)
         if response.value:
-            self._parent._gsi16 = _format == self.FORMAT.GSI16
+            self._parent._gsi16 = _format == FORMAT.GSI16
 
         return response
 
@@ -842,10 +799,10 @@ class DNASettings(GsiOnlineSubsystem):
         """
         response = self._confrequest(
             137,
-            enumparser(self.FORMAT)
+            enumparser(FORMAT)
         )
         if response.value:
-            self._parent._gsi16 = response.value == self.FORMAT.GSI16
+            self._parent._gsi16 = response.value == FORMAT.GSI16
         return response
 
     def set_code_recording(
@@ -867,5 +824,5 @@ class DNASettings(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        _mode = toenum(self.CODERECORD, mode)
+        _mode = toenum(CODERECORD, mode)
         return self._setrequest(138, _mode.value)
