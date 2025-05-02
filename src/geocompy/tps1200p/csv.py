@@ -35,7 +35,7 @@ class TPS1200PCSV(TPS1100CSV):
     """
 
     @deprecated("This command was removed for TPS1200 instruments")
-    def get_v_bat(self) -> Never:
+    def get_voltage_battery(self) -> Never:
         """
         RPC 5009, ``CSV_GetVBat``
 
@@ -48,7 +48,7 @@ class TPS1200PCSV(TPS1100CSV):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1200 instruments")
-    def get_v_mem(self) -> Never:
+    def get_voltage_memory(self) -> Never:
         """
         RPC 5009, ``CSV_GetVMem``
 
@@ -79,7 +79,7 @@ class TPS1200PCSV(TPS1100CSV):
             parsers=enumparser(Reflectorless)
         )
 
-    def get_date_time_centisec(self) -> GeoComResponse[datetime]:
+    def get_datetime_precise(self) -> GeoComResponse[datetime]:
         """
         RPC 5117, ``CSV_GetDateTimeCentiSec``
 
@@ -94,8 +94,8 @@ class TPS1200PCSV(TPS1100CSV):
 
         See Also
         --------
-        get_date_time
-        set_date_time
+        get_datetime
+        set_datetime
 
         """
         def make_datetime(

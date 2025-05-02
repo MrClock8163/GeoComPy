@@ -142,7 +142,7 @@ various subsystems.
     :caption: Querying the system software version through Central Services
     :linenos:
 
-    resp = tps.csv.get_sw_version()
+    resp = tps.csv.get_firmware_version()
     print(resp)  # GeoComResponse(CSV_GetSWVersion) com: OK, rpc: OK...
 
 All GeoCom commands return a :class:`~geocompy.protocols.GeoComResponse`

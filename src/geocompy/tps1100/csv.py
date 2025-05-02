@@ -37,7 +37,7 @@ class TPS1100CSV(TPS1000CSV):
         "in v1.05 of GeoCom. Use the new command on instruments that "
         "support it!"
     )
-    def get_v_bat(self) -> GeoComResponse[float]:
+    def get_voltage_battery(self) -> GeoComResponse[float]:
         """
         RPC 5009, ``CSV_GetVBat``
 
@@ -60,7 +60,7 @@ class TPS1100CSV(TPS1000CSV):
                 - `float`: Power source voltage [V].
 
         """
-        return super().get_v_bat()
+        return super().get_voltage_battery()
 
     def check_power(
         self

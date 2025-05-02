@@ -53,7 +53,7 @@ class TPS1000COM(GeoComSubsystem):
 
         See Also
         --------
-        csv.get_sw_version
+        csv.get_firmware_version
         """
         return self._request(
             110,
