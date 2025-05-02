@@ -37,7 +37,7 @@ class TPS1200PIMG(GeoComSubsystem):
 
     """
 
-    def get_tcc_config(
+    def get_telescopic_configuration(
         self,
         at: Device | str = Device.CFCARD
     ) -> GeoComResponse[tuple[int, int, CameraFunctions, str]]:
@@ -69,7 +69,7 @@ class TPS1200PIMG(GeoComSubsystem):
 
         See Also
         --------
-        set_tcc_config
+        set_telescopic_configuration
 
         """
         _device = toenum(Device, at)
@@ -84,7 +84,7 @@ class TPS1200PIMG(GeoComSubsystem):
             )
         )
 
-    def set_tcc_config(
+    def set_telescopic_configuration(
         self,
         imgnumber: int,
         quality: int,
@@ -117,8 +117,8 @@ class TPS1200PIMG(GeoComSubsystem):
 
         See Also
         --------
-        get_tcc_config
-        take_tcc_img
+        get_telescopic_configuration
+        take_telescopic_image
 
         """
         _device = toenum(Device, saveto)
@@ -129,7 +129,7 @@ class TPS1200PIMG(GeoComSubsystem):
             [_device.value, imgnumber, quality, functions]
         )
 
-    def take_tcc_img(
+    def take_telescopic_image(
         self,
         device: Device | str = Device.CFCARD
     ) -> GeoComResponse[int]:
@@ -156,8 +156,8 @@ class TPS1200PIMG(GeoComSubsystem):
 
         See Also
         --------
-        get_tcc_config
-        set_tcc_config
+        get_telescopic_configuration
+        set_telescopic_configuration
 
         """
         _device = toenum(Device, device)
