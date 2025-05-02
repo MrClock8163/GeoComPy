@@ -53,6 +53,22 @@ class TPS1200PBAP(TPS1100BAP):
         """
         raise AttributeError()
 
+    @deprecated("This command was removed for TPS1200 instruments")
+    def set_prism_def(
+        self,
+        *args
+    ) -> Never:
+        """
+        RPC 17024, ``BAP_SetPrismDef``
+
+        .. versionremoved:: GeoCom-TPS1200
+
+        Raises
+        ------
+        AttributeError
+        """
+        raise AttributeError()
+
     def get_prism_type2(self) -> GeoComResponse[tuple[PRISM, str]]:
         """
         RPC 17031, ``BAP_GetPrismType2``
