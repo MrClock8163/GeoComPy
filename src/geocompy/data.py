@@ -1741,7 +1741,13 @@ class DEVICE(Enum):
     INTERNAL = 0
     """Internal memory."""
     CFCARD = 1
-    """CF card."""
+    """CF memory card."""
+    SDCARD = 4
+    """SD memory card."""
+    USB = 5
+    """USB flash drive."""
+    RAM = 6
+    """Volatile RAM."""
 
 
 class FILE(Enum):
@@ -1752,8 +1758,17 @@ class FILE(Enum):
 
     ``FTR_FILETYPE``
     """
-    UNKNOWN = 0  # ?
+    # UNKNOWN = 0  # ?
     IMAGE = 170
+    DATABASE = 103
+    IMAGES = 170
+    IMAGES_OVERVIEW_JPG = 171
+    IMAGES_OVERVIEW_BMP = 172
+    IMAGES_TELESCOPIC_JPG = 173
+    IMAGES_TELESCOPIC_BMP = 174
+    SCANS = 175,
+    UNKNOWN = 200
+    LAST = 201
 
 
 class CAMERAFUNCTIONS(Flag):
