@@ -14,16 +14,14 @@ Types
 """
 from __future__ import annotations
 
+from typing import Never
 from typing_extensions import deprecated
 
 from ..data import (
     toenum,
     enumparser
 )
-from ..data_geocom import (
-    Guidelight,
-    Tracklight
-)
+from ..data_geocom import Guidelight
 from ..protocols import GeoComResponse
 from ..tps1000.edm import TPS1000EDM
 
@@ -91,7 +89,7 @@ class TPS1100EDM(TPS1000EDM):
     def on(
         self,
         *args
-    ) -> GeoComResponse[None]:
+    ) -> Never:
         """
         RPC 1010, ``EDM_On``
 
@@ -104,7 +102,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def get_bumerang(self) -> GeoComResponse[bool]:
+    def get_bumerang(self) -> Never:
         """
         RPC 1044, ``EDM_GetBumerang``
 
@@ -120,7 +118,7 @@ class TPS1100EDM(TPS1000EDM):
     def set_bumerang(
         self,
         *args
-    ) -> GeoComResponse[None]:
+    ) -> Never:
         """
         RPC 1007, ``EDM_SetBumerang``
 
@@ -133,7 +131,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def get_trk_light_brightness(self) -> GeoComResponse[Tracklight]:
+    def get_trk_light_brightness(self) -> Never:
         """
         RPC 1041, ``EDM_GetTrkLightBrightness``
 
@@ -150,7 +148,7 @@ class TPS1100EDM(TPS1000EDM):
     def set_trk_light_brightness(
         self,
         *args
-    ) -> GeoComResponse[None]:
+    ) -> Never:
         """
         RPC 1032, ``EDM_SetTrkLightBrightness``
 
@@ -164,7 +162,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def get_trk_light_switch(self) -> GeoComResponse[bool]:
+    def get_trk_light_switch(self) -> Never:
         """
         RPC 1040, ``EDM_GetTrkLightSwitch``
 
@@ -181,7 +179,7 @@ class TPS1100EDM(TPS1000EDM):
     def set_trk_light_switch(
         self,
         *args
-    ) -> GeoComResponse[None]:
+    ) -> Never:
         """
         RPC 1031, ``EDM_SetTrkLightSwitch``
 

@@ -14,6 +14,7 @@ Types
 """
 from __future__ import annotations
 
+from typing import Never
 from typing_extensions import deprecated
 
 from ..data import enumparser
@@ -90,7 +91,7 @@ class TPS1100CSV(TPS1000CSV):
         )
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def get_user_instrument_name(self) -> GeoComResponse[str]:
+    def get_user_instrument_name(self) -> Never:
         """
         RPC 5006, ``CSV_GetUserInstrumentName``
 
@@ -105,8 +106,8 @@ class TPS1100CSV(TPS1000CSV):
     @deprecated("This command was removed for TPS1100 instruments")
     def set_user_instrument_name(
         self,
-        name: str
-    ) -> GeoComResponse[None]:
+        *args
+    ) -> Never:
         """
         RPC 5005, ``CSV_SetUserInstrumentName``
 
