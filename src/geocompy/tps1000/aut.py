@@ -122,7 +122,7 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         set_lock_status
-        mot.read_lock_status
+        mot.get_lockon_status
         """
         return self._request(
             9021,
@@ -573,6 +573,6 @@ class TPS1000AUT(GeoComSubsystem):
         --------
         get_lock_status
         set_lock_status
-        mot.read_lock_status
+        mot.get_lockon_status
         """
         return self._request(9013)

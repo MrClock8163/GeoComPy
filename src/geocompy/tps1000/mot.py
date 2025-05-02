@@ -38,7 +38,7 @@ class TPS1000MOT(GeoComSubsystem):
 
     """
 
-    def read_lock_status(self) -> GeoComResponse[ATRLock]:
+    def get_lockon_status(self) -> GeoComResponse[ATRLock]:
         """
         RPC 6021, ``MOT_ReadLockStatus``
 

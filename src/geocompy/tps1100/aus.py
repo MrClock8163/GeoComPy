@@ -113,7 +113,7 @@ class TPS1100AUS(GeoComSubsystem):
         See Also
         --------
         set_user_lock_state
-        mot.read_lock_status
+        mot.get_lockon_status
         """
         return self._request(
             18008,

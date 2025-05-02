@@ -141,7 +141,7 @@ class TPS1100AUT(TPS1000AUT):
         See Also
         --------
         set_lock_status
-        mot.read_lock_status
+        mot.get_lockon_status
         """
         return super().get_lock_status()
 
