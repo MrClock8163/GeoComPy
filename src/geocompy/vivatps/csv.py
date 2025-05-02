@@ -14,12 +14,12 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     toenum,
     enumparser,
-    parsebool
+    parsebool,
+    POWERSOURCE,
+    PROPERTY
 )
 from ..protocols import GeoComResponse
 from ..tps1200p.csv import TPS1200PCSV
@@ -33,93 +33,6 @@ class VivaTPSCSV(TPS1200PCSV):
     and configuration of the instruments.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
-
-    class DEVICECLASS(Enum):
-        CLASS_1100 = 0  #: TPS1000 3"
-        CLASS_1700 = 1  #: TPS1000 1.5"
-        CLASS_1800 = 2  #: TPS1000 1"
-        CLASS_5000 = 3  #: TPS2000
-        CLASS_6000 = 4  #: TPS2000
-        CLASS_1500 = 5  #: TPS1000
-        CLASS_2003 = 6  #: TPS2000
-        CLASS_5005 = 7  #: TPS5000
-        CLASS_5100 = 8  #: TPS5000
-        CLASS_1102 = 100  #: TPS1100 2"
-        CLASS_1103 = 101  #: TPS1100 3"
-        CLASS_1105 = 102  #: TPS1100 5"
-        CLASS_1101 = 103  #: TPS1100 1"
-        CLASS_1202 = 200  #: TPS1200 2"
-        CLASS_1203 = 201  #: TPS1200 3"
-        CLASS_1205 = 202  #: TPS1200 5"
-        CLASS_1201 = 203  #: TPS1200 1"
-        CLASS_Tx30 = 300  #: TS30, MS30 0.5"
-        CLASS_Tx31 = 301  #: TS30, MS30 1"
-        CLASS_TDRA = 350  #: TDRA 0.5"
-        CLASS_TS01 = 500  #: 1"
-        CLASS_TS02 = 501  #: 2"
-        CLASS_TS03 = 502  #: 3"
-        CLASS_TS05 = 503  #: 5"
-        CLASS_TS06 = 504  #: 6"
-        CLASS_TS07 = 505  #: 7"
-        CLASS_TS10 = 506  #: 10"
-        CLASS_TS1X_1 = 600  #: Viva 1"
-        CLASS_TS1X_2 = 601  #: Viva 2"
-        CLASS_TS1X_3 = 602  #: Viva 3"
-        CLASS_TS1X_4 = 603  #: Viva 4"
-        CLASS_TS1X_5 = 604  #: Viva 5"
-        CLASS_TS50_05 = 650  #: TPS1300 TS50/TM50, 0.5"
-        CLASS_TS50_1 = 651  #: TPS1300 TS50/TM50, 1"
-
-    class REFLESSCLASS(Enum):
-        NONE = 0
-        R100 = 1
-        R300 = 2
-        R400 = 3
-        R1000 = 4
-        R30 = 5
-
-    class POWERSOURCE(Enum):
-        CURRENT = 0
-        EXTERNAL = 1
-        INTERNAL = 2
-
-    class PROPERTY(Enum):
-        PURCHASE_MODE_NORMAL = 0
-        PURCHASE_MODE_PREPAY = 1
-        RTK_RANGE_5000 = 2
-        RTK_RANGE_UNLIMITED = 3
-        RTK_NETWORK = 4
-        RTK_REFERENCE_STN = 5
-        RTK_LEICA_LITE = 6
-        RTK_NETWORK_LOCKDOWN = 7
-        POSITION_RATE_5HZ = 8
-        POSITION_RATE_20HZ = 9
-        GPS_L2 = 10
-        GPS_L5 = 11
-        GLONASS = 12
-        GALILEO = 13
-        RAWDATA_LOGGING = 14
-        RINEX_LOGGING = 15
-        NMEA_OUT = 16
-        DGPS_RTCM = 17
-        OWI = 18
-        NETWORK_PROVIDER_ACCESS_RESET = 19
-        NO_AREA_LIMITATION = 20
-        SMARTWORX_FULL = 21
-        SMARTWORX_LITE = 22
-        DEMO_LICENSE = 23
-        INTERNAL_WIT2450 = 24
-        GEOCOM_ROBOTICS = 25
-        GEOCOM_IMAGING = 26
-        GEOCOM_GPS = 27
-        GEOCOM_LIMITED_AUT = 28
-        IMAGING_WITH_OVC = 29
-        SERIAL_NUMBER = 30
-        PRODUCTION_FLAG = 31
-        SYSTEMTIME_VALID = 32
 
     def set_startup_message_mode(
         self,
@@ -166,7 +79,7 @@ class VivaTPSCSV(TPS1200PCSV):
 
     def switch_laserlot(
         self,
-        state: ONOFF | str
+        active: bool
     ) -> GeoComResponse[None]:
         """
         RPC 5043, ``CSV_SwitchLaserlot``
@@ -175,21 +88,20 @@ class VivaTPSCSV(TPS1200PCSV):
 
         Parameters
         ----------
-        state : ONOFF
-            State to set for laserlot.
+        active : bool
+            Activate laserlot.
 
         Returns
         -------
         GeoComResponse
 
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             5043,
-            [_state.value]
+            [active]
         )
 
-    def get_laserlot_status(self) -> GeoComResponse[ONOFF]:
+    def get_laserlot_status(self) -> GeoComResponse[bool]:
         """
         RPC 5042, ``CSV_GetLaserlotStatus``
 
@@ -199,12 +111,12 @@ class VivaTPSCSV(TPS1200PCSV):
         -------
         GeoComResponse
             Params:
-                - `bool`: Startup message mode is enabled.
+                - `bool`: Laserlot is active.
 
         """
         return self._request(
             5042,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_laserlot_intensity(
@@ -270,7 +182,7 @@ class VivaTPSCSV(TPS1200PCSV):
                 - `bool`: License is available.
 
         """
-        _prop = toenum(self.PROPERTY, property)
+        _prop = toenum(PROPERTY, property)
         return self._request(
             5139,
             [_prop.value],
@@ -297,7 +209,7 @@ class VivaTPSCSV(TPS1200PCSV):
 
     def set_charging(
         self,
-        state: ONOFF | str
+        activate: bool
     ) -> GeoComResponse[None]:
         """
         RPC 5161, ``CSV_SetCharging``
@@ -306,21 +218,20 @@ class VivaTPSCSV(TPS1200PCSV):
 
         Parameters
         ----------
-        state : ONOFF | str
-            New state to set for charger.
+        activate : bool
+            Activate charger.
 
         Returns
         -------
         GeoComResponse
 
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             5161,
-            [_state.value]
+            [activate]
         )
 
-    def get_charging(self) -> GeoComResponse[ONOFF]:
+    def get_charging(self) -> GeoComResponse[bool]:
         """
         RPC 5162, ``CSV_GetCharging``
 
@@ -330,12 +241,12 @@ class VivaTPSCSV(TPS1200PCSV):
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: Current state of the charger.
+                - `bool`: Charger is active.
 
         """
         return self._request(
             5162,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_preferred_powersource(
@@ -353,7 +264,7 @@ class VivaTPSCSV(TPS1200PCSV):
             New preferred power source to set.
 
         """
-        _source = toenum(self.POWERSOURCE, source)
+        _source = toenum(POWERSOURCE, source)
         return self._request(
             5163,
             [_source.value]
@@ -374,5 +285,5 @@ class VivaTPSCSV(TPS1200PCSV):
         """
         return self._request(
             5164,  # Mistyped as 5163 in the GeoCom reference
-            parsers=enumparser(self.POWERSOURCE)
+            parsers=enumparser(POWERSOURCE)
         )

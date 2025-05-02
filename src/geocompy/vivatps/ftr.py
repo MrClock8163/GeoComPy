@@ -14,13 +14,14 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
 from datetime import datetime
 
 from ..data import (
     Byte,
     parsestr,
-    toenum
+    toenum,
+    DEVICE,
+    FILE
 )
 from ..protocols import GeoComResponse
 from ..tps1200p.ftr import TPS1200PFTR
@@ -34,29 +35,12 @@ class VivaTPSFTR(TPS1200PFTR):
     instrument, and provides methods to list or download files.
 
     """
-    class DEVICETYPE(Enum):
-        INTERNAL = 0
-        PCPARD = 1
-        SDCARD = 4
-        USB = 5
-        RAM = 6
-
-    class FILETYPE(Enum):
-        POINTRELATEDDB = 103
-        IMAGES = 170
-        IMAGES_OVC_JPG = 171
-        IMAGES_OVC_BMP = 172
-        IMAGES_OAV_JPG = 173
-        IMAGES_OAV_BMP = 174
-        SCANS = 175,
-        UNKNOWN = 200
-        LAST = 201
 
     def delete_dir(
         self,
         dirname: str,
         time: datetime | None = None,
-        device: DEVICETYPE | str = DEVICETYPE.INTERNAL
+        device: DEVICE | str = DEVICE.INTERNAL
     ) -> GeoComResponse[int]:
         """
         RPC 23315, ``FTR_DeleteDir``
@@ -71,7 +55,7 @@ class VivaTPSFTR(TPS1200PFTR):
             Directory name.
         time : datetime | None, optional
             Deletion limit date, by default None
-        device : DEVICETYPE | str, optional
+        device : DEVICE | str, optional
             Memory device, by default PCPARD
 
         Returns
@@ -88,8 +72,8 @@ class VivaTPSFTR(TPS1200PFTR):
         list
 
         """
-        _device = toenum(self.DEVICETYPE, device)
-        _filetype = self.FILETYPE.POINTRELATEDDB
+        _device = toenum(DEVICE, device)
+        _filetype = FILE.DATABASE
 
         if time is None:
             params = [
@@ -113,8 +97,8 @@ class VivaTPSFTR(TPS1200PFTR):
         self,
         filename: str,
         blocksize: int,
-        device: DEVICETYPE | str = DEVICETYPE.INTERNAL,
-        filetype: FILETYPE | str = FILETYPE.UNKNOWN
+        device: DEVICE | str = DEVICE.INTERNAL,
+        filetype: FILE | str = FILE.UNKNOWN
     ) -> GeoComResponse[int]:
         """
         RPC 23313, ``FTR_SetupDownloadLarge``
@@ -128,9 +112,9 @@ class VivaTPSFTR(TPS1200PFTR):
             File name (or full path if type is unknown).
         blocksize : int
             Download data block size.
-        device : DEVICETYPE | str, optional
-            Memory device, by default PCPARD
-        filetype : FILETYPE | str, optional
+        device : DEVICE | str, optional
+            Memory device, by default INTERNAL
+        filetype : FILE | str, optional
             File type, by default UNKNOWN
 
         Returns
@@ -152,8 +136,8 @@ class VivaTPSFTR(TPS1200PFTR):
         abort_download
 
         """
-        _device = toenum(self.DEVICETYPE, device)
-        _filetype = toenum(self.FILETYPE, filetype)
+        _device = toenum(DEVICE, device)
+        _filetype = toenum(FILE, filetype)
         return self._request(
             23313,
             [_device.value, _filetype.value, filename, blocksize],

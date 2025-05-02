@@ -14,9 +14,11 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
-from ..data import toenum, parsebool
+from ..data import (
+    toenum,
+    parsebool,
+    MEASUREMENTTYPE
+)
 from ..protocols import GeoComResponse
 from ..tps1200p.edm import TPS1200PEDM
 
@@ -30,15 +32,6 @@ class VivaTPSEDM(TPS1200PEDM):
     functions.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
-
-    class MEASUREMENTTYPE(Enum):
-        SIGNAL = 1
-        FREQ = 2
-        DIST = 3
-        ANY = 4
 
     def is_cont_meas_active(
         self,
@@ -62,7 +55,7 @@ class VivaTPSEDM(TPS1200PEDM):
                 - `bool`: Continuous measurement is active.
 
         """
-        _mode = toenum(self.MEASUREMENTTYPE, mode)
+        _mode = toenum(MEASUREMENTTYPE, mode)
         return self._request(
             1070,
             [_mode.value],
@@ -71,7 +64,7 @@ class VivaTPSEDM(TPS1200PEDM):
 
     def set_boomerang_filter(
         self,
-        state: ONOFF | str
+        enable: bool
     ) -> GeoComResponse[None]:
         """
         RPC 1061, ``EDM_SetBoomerangFilter``
@@ -80,15 +73,14 @@ class VivaTPSEDM(TPS1200PEDM):
 
         Parameters
         ----------
-        state : ONOFF | str
-            New state to set the boomerang filter to.
+        enable : bool
+            Enable boomerang filter.
 
         Returns
         -------
         GeoComResponse
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             1061,
-            [_state.value]
+            [enable]
         )

@@ -27,24 +27,34 @@ Types
 
 - ``ADJUST``
 - ``ATR``
+- ``ATRMODE``
 - ``ATRLOCK``
 - ``AUTOPOWER``
-- ``CAPABILITIES``
+- ``CAMERA``
+- ``CAMERAFUNCTIONS``
+- ``COMPRESSION``
 - ``CONTROLLER``
+- ``CAPABILITIES``
+- ``DEVICE``
 - ``DEVICECLASS``
 - ``EDMMODE``
 - ``EDMMODEV1``
 - ``EDMMODEV2``
 - ``FACE``
+- ``FILE``
 - ``FORMAT``
 - ``GUIDELIGHT``
 - ``INCLINATION``
+- ``JPEGQUALITY``
 - ``MEASUREMENT``
+- ``MEASUREMENTTYPE``
 - ``POSITION``
 - ``POWERSOURCE``
 - ``PRISM``
 - ``PROGRAM``
+- ``PROPERTY``
 - ``REFLECTOR``
+- ``RESOLUTION``
 - ``SHUTDOWN``
 - ``STARTUP``
 - ``STOP``
@@ -52,6 +62,8 @@ Types
 - ``TRACKLIGHT``
 - ``TURN``
 - ``USERPROGRAM``
+- ``WHITEBALANCE``
+- ``ZOOM``
 """
 from __future__ import annotations
 
@@ -1062,6 +1074,12 @@ class SHUTDOWN(Enum):
     """
     SHUTDOWN = 0
     SLEEP = 1
+    GUI = 2
+    """
+    Close onboard software.
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
 
 
 class STARTUP(Enum):
@@ -1071,9 +1089,19 @@ class STARTUP(Enum):
     ``COM_TPS_STARTUP_MODE``
     """
     LOCAL = 0
-    """Manual mode."""
+    """
+    Manual mode.
+
+    .. deprecated:: GeoCom-VivaTPS
+    """
     REMOTE = 1
     """GeoCom mode."""
+    GUI = 2
+    """
+    Start onboard software.
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
 
 
 class DEVICECLASS(Enum):
@@ -1137,6 +1165,132 @@ class DEVICECLASS(Enum):
 
     .. versionadded:: GeoCom-TPS1100
     """
+    CLASS_1202 = 200
+    """
+    TPS1200 2"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_1203 = 201
+    """
+    TPS1200 3"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_1205 = 202
+    """
+    TPS1200 5"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_1201 = 203
+    """
+    TPS1200 1"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_Tx30 = 300
+    """
+    TS30, MS30 0.5"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_Tx31 = 301
+    """
+    TS30, MS30 1"
+
+    .. versionadded:: GeoCom-TPS1200
+    """
+    CLASS_TDRA = 350
+    """
+    TDRA 0.5"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS01 = 500
+    """
+    1"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS02 = 501
+    """
+    2"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS03 = 502
+    """
+    3"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS05 = 503
+    """
+    5"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS06 = 504
+    """
+    6"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS07 = 505
+    """
+    7"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS10 = 506
+    """
+    10"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_1 = 600
+    """
+    Viva 1"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_2 = 601
+    """
+    Viva 2"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_3 = 602
+    """
+    Viva 3"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_4 = 603
+    """
+    Viva 4"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_5 = 604
+    """
+    Viva 5"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS50_05 = 650
+    """
+    TPS1300 TS50/TM50 0.5"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS50_1 = 651
+    """
+    TPS1300 TS50/TM50 1"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
 
 
 class CAPABILITIES(Flag):
@@ -1180,7 +1334,29 @@ class CAPABILITIES(Flag):
 
     .. versionadded:: GeoCom-TPS1100
     """
+    POWERSEARCH = 0x00800
+    """
+    PowerSearch
+
+    .. versionadded:: GeoCom-TPS1200
+    """
     # SIM = 0x04000 # TPSSim
+
+
+class REFLECTORLESS(Enum):
+    """
+    Reflectorless EDM class.
+
+    .. versionadded:: GeoCom-TPS1200
+
+    ``TPS_REFLESS_CLASS``
+    """
+    NONE = 0
+    R100 = 1
+    R300 = 2
+    R400 = 3
+    R1000 = 4
+    R30 = 5
 
 
 class TRACKLIGHT(Enum):
@@ -1531,3 +1707,212 @@ class POWERSOURCE(Enum):
     CURRENT = 0
     EXTERNAL = 1
     INTERNAL = 2
+
+
+class ATRMODE(Enum):
+    """
+    ATR visibility modes.
+
+    .. versionadded:: GeoCom-TPS1200
+
+    ``BAP_ATRSETTING``
+    """
+
+    NORMAL = 0
+    """Normal mode."""
+    LOWVIS = 1
+    """Low visibility on."""
+    ALWAYSLOWVIS = 2
+    """Low visibility always on."""
+    HIGHREFL = 3
+    """High reflectivity on."""
+    ALWAYSHIGHREFL = 4
+    """Hight reflectivity always on."""
+
+
+class DEVICE(Enum):
+    """
+    Data recording device.
+
+    .. versionadded:: GeoCom-TPS1200-v1.50
+
+    ``FTR_DEVICETYPE``
+    """
+    INTERNAL = 0
+    """Internal memory."""
+    CFCARD = 1
+    """CF memory card."""
+    IMGSDCARD = 2
+    """SD memory card."""
+    SDCARD = 4
+    """SD memory card."""
+    USB = 5
+    """USB flash drive."""
+    RAM = 6
+    """Volatile RAM."""
+
+
+class FILE(Enum):
+    """
+    File type.
+
+    .. versionadded:: GeoCom-TPS1200-v1.50
+
+    ``FTR_FILETYPE``
+    """
+    # UNKNOWN = 0  # ?
+    IMAGE = 170
+    DATABASE = 103
+    IMAGES = 170
+    IMAGES_OVERVIEW_JPG = 171
+    IMAGES_OVERVIEW_BMP = 172
+    IMAGES_TELESCOPIC_JPG = 173
+    IMAGES_TELESCOPIC_BMP = 174
+    SCANS = 175,
+    UNKNOWN = 200
+    LAST = 201
+
+
+class CAMERAFUNCTIONS(Flag):
+    """
+    Imaging camera settings.
+    """
+    TESTIMAGE = 1
+    """Test image."""
+    AUTOTIME = 2
+    """Automatic exposure time."""
+    SS2 = 4
+    """2-times subsampling."""
+    SS4 = 8
+    """4-times subsampling."""
+
+
+class CAMERA(Enum):
+    """
+    Camera types.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_ID_TYPE``
+    """
+    OVERVIEW = 0
+    TELESCOPIC = 1
+
+
+class ZOOM(Enum):
+    """
+    Camera zoom levels.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_ZOOM_FACTOR_TYPE``
+    """
+    X1 = 1
+    X2 = 2
+    X4 = 4
+    X8 = 8
+
+
+class RESOLUTION(Enum):
+    """
+    Image resolutions.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_RESOLUTION_TYPE``
+    """
+    R2560X1920 = 0
+    R1280X960 = 3
+    R640X480 = 4
+    R720X240 = 5
+
+
+class COMPRESSION(Enum):
+    """
+    Image compression.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_COMPRESSION_TYPE``
+    """
+    JPEG = 0
+    RAW = 1
+
+
+class WHITEBALANCE(Enum):
+    """
+    Camera whitebalance settings.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_COMPRESSION_TYPE``
+    """
+    AUTO = 0
+    INDOOR = 1
+    OUTDOOR = 2
+
+
+class JPEGQUALITY(Enum):
+    """
+    JPEG image quality.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_JPEG_COMPR_QUALITY_TYPE``
+    """
+    STANDARD = 0
+    BEST = 1
+    IGNORE = 2
+
+
+class PROPERTY(Enum):
+    """
+    Instrument properties.
+
+    ``CSV_PROPERTY``
+    """
+    PURCHASE_MODE_NORMAL = 0
+    PURCHASE_MODE_PREPAY = 1
+    RTK_RANGE_5000 = 2
+    RTK_RANGE_UNLIMITED = 3
+    RTK_NETWORK = 4
+    RTK_REFERENCE_STN = 5
+    RTK_LEICA_LITE = 6
+    RTK_NETWORK_LOCKDOWN = 7
+    POSITION_RATE_5HZ = 8
+    POSITION_RATE_20HZ = 9
+    GPS_L2 = 10
+    GPS_L5 = 11
+    GLONASS = 12
+    GALILEO = 13
+    RAWDATA_LOGGING = 14
+    RINEX_LOGGING = 15
+    NMEA_OUT = 16
+    DGPS_RTCM = 17
+    OWI = 18
+    NETWORK_PROVIDER_ACCESS_RESET = 19
+    NO_AREA_LIMITATION = 20
+    SMARTWORX_FULL = 21
+    SMARTWORX_LITE = 22
+    DEMO_LICENSE = 23
+    INTERNAL_WIT2450 = 24
+    GEOCOM_ROBOTICS = 25
+    GEOCOM_IMAGING = 26
+    GEOCOM_GPS = 27
+    GEOCOM_LIMITED_AUT = 28
+    IMAGING_WITH_OVC = 29
+    SERIAL_NUMBER = 30
+    PRODUCTION_FLAG = 31
+    SYSTEMTIME_VALID = 32
+
+
+class MEASUREMENTTYPE(Enum):
+    """
+    Measurement types.
+
+    ``EDM_MEASUREMENT_TYPE``
+    """
+    SIGNAL = 1
+    FREQ = 2
+    DIST = 3
+    ANY = 4

@@ -14,17 +14,13 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     toenum,
-    enumparser
+    parsebool,
+    CAMERA
 )
-from ..protocols import (
-    GeoComResponse
-)
+from ..protocols import GeoComResponse
 from ..tps1200p.aut import TPS1200PAUT
-from .cam import VivaTPSCAM
 
 
 class VivaTPSAUT(TPS1200PAUT):
@@ -36,13 +32,10 @@ class VivaTPSAUT(TPS1200PAUT):
     target lock, etc.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
 
     def set_lock_fly_mode(
         self,
-        state: ONOFF | str
+        enabled: bool
     ) -> GeoComResponse[None]:
         """
         RPC 9103, ``AUT_SetLockFlyMode``
@@ -51,7 +44,7 @@ class VivaTPSAUT(TPS1200PAUT):
 
         Parameters
         ----------
-        state : ONOFF | str
+        enabled : bool
             New state to set for fly mode.
 
         Returns
@@ -62,13 +55,12 @@ class VivaTPSAUT(TPS1200PAUT):
         --------
         get_lock_fly_mode
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             9103,
-            [_state.value]
+            [enabled]
         )
 
-    def get_lock_fly_mode(self) -> GeoComResponse[ONOFF]:
+    def get_lock_fly_mode(self) -> GeoComResponse[bool]:
         """
         RPC 9102, ``AUT_GetLockFlyMode``
 
@@ -78,7 +70,7 @@ class VivaTPSAUT(TPS1200PAUT):
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: Current state of the fly mode.
+                - `bool`: Fly mode is enabled.
 
         See Also
         --------
@@ -86,14 +78,14 @@ class VivaTPSAUT(TPS1200PAUT):
         """
         return self._request(
             9102,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def cam_posit_to_pixel_coord(
         self,
         x: int,
         y: int,
-        camtype: VivaTPSCAM.CAMTYPE | str = VivaTPSCAM.CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 9081, ``AUT_CAM_PositToPixelCoord``
@@ -107,8 +99,8 @@ class VivaTPSAUT(TPS1200PAUT):
             Horizontal pixel coordinate.
         y : int
             Vertical pixel coordinate.
-        camtype : ~VivaTPSCAM.CAMTYPE, optional
-            Camera device, by default CAMTYPE.OVC
+        camera : CAMERA, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -118,8 +110,8 @@ class VivaTPSAUT(TPS1200PAUT):
                 - ``AUT_SIDECOVER_ERR``: Sidecover is open.
 
         """
-        _camtype = toenum(VivaTPSCAM.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             9081,
-            [_camtype.value, x, y]
+            [_camera.value, x, y]
         )

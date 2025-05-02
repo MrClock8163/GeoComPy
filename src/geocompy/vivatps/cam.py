@@ -14,14 +14,19 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..data import (
     Coordinate,
     Vector,
     Angle,
     toenum,
-    enumparser
+    enumparser,
+    parsebool,
+    CAMERA,
+    ZOOM,
+    RESOLUTION,
+    COMPRESSION,
+    WHITEBALANCE,
+    JPEGQUALITY
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -39,44 +44,11 @@ class VivaTPSCAM(GeoComSubsystem):
     All functions require a valid GeoCom Imaging license.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
-
-    class CAMTYPE(Enum):
-        OVC = 0  # : Overview camera.
-        OAC = 1  # : Telescope camera.
-
-    class ZOOM(Enum):
-        X1 = 1
-        X2 = 2
-        X4 = 4
-        X8 = 8
-
-    class RESOLUTION(Enum):
-        P2560X1920 = 0
-        P1280X960 = 3
-        P640X480 = 4
-        P720X240 = 5
-
-    class COMPRESSION(Enum):
-        JPEG = 0
-        RAW = 1
-
-    class WHITEBALANCE(Enum):
-        AUTO = 0
-        INDOOR = 1
-        OUTDOOR = 2
-
-    class JPEGQUALITY(Enum):
-        STANDARD = 0
-        BEST = 1
-        IGNORE = 2
 
     def set_zoom_factor(
         self,
         zoom: ZOOM | str,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 23608, ``CAM_SetZoomFactor``
@@ -87,8 +59,8 @@ class VivaTPSCAM(GeoComSubsystem):
         ----------
         zoom : ZOOM | str
             Zoom level to set.
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -97,16 +69,16 @@ class VivaTPSCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _zoom = toenum(self.ZOOM, zoom)
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _zoom = toenum(ZOOM, zoom)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23608,
-            [_camtype.value, _zoom.value]
+            [_camera.value, _zoom.value]
         )
 
     def get_zoom_factor(
         self,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[ZOOM]:
         """
         RPC 23609, ``CAM_GetZoomFactor``
@@ -115,8 +87,8 @@ class VivaTPSCAM(GeoComSubsystem):
 
         Parameters
         ----------
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -127,16 +99,16 @@ class VivaTPSCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23609,
-            [_camtype.value],
-            enumparser(self.ZOOM)
+            [_camera.value],
+            enumparser(ZOOM)
         )
 
     def get_cam_pos(
         self,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[Coordinate]:
         """
         RPC 23611, ``CAM_GetCamPos``
@@ -146,8 +118,8 @@ class VivaTPSCAM(GeoComSubsystem):
 
         Parameters
         ----------
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -175,10 +147,10 @@ class VivaTPSCAM(GeoComSubsystem):
                 params[2]
             )
 
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         response = self._request(
             23611,
-            [_camtype.value],
+            [_camera.value],
             (
                 float,
                 float,
@@ -190,7 +162,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def get_cam_viewing_dir(
         self,
         dist: float,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[Vector]:
         """
         RPC 23611, ``CAM_GetCamViewingDir``
@@ -203,8 +175,8 @@ class VivaTPSCAM(GeoComSubsystem):
         ----------
         dist : float
             View vector length.
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -230,10 +202,10 @@ class VivaTPSCAM(GeoComSubsystem):
                 params[2]
             )
 
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         response = self._request(
             23613,
-            [_camtype.value, dist],
+            [_camera.value, dist],
             (
                 float,
                 float,
@@ -245,7 +217,7 @@ class VivaTPSCAM(GeoComSubsystem):
 
     def get_camera_fov(
         self,
-        camtype: CAMTYPE | str = CAMTYPE.OVC,
+        camera: CAMERA | str = CAMERA.OVERVIEW,
         zoom: ZOOM | str = ZOOM.X1
     ) -> GeoComResponse[tuple[Angle, Angle]]:
         """
@@ -255,8 +227,8 @@ class VivaTPSCAM(GeoComSubsystem):
 
         Parameters
         ----------
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
         zoom : ZOOM | str, optional
             Zoom level, by default X1
 
@@ -271,11 +243,11 @@ class VivaTPSCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _camtype = toenum(self.CAMTYPE, camtype)
-        _zoom = toenum(self.ZOOM, zoom)
+        _camera = toenum(CAMERA, camera)
+        _zoom = toenum(ZOOM, zoom)
         return self._request(
             23619,
-            [_camtype.value, _zoom.value],
+            [_camera.value, _zoom.value],
             (
                 Angle.parse,
                 Angle.parse
@@ -286,7 +258,7 @@ class VivaTPSCAM(GeoComSubsystem):
         self,
         name: str,
         number: int,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 23619, ``CAM_SetActualImageName``
@@ -299,8 +271,8 @@ class VivaTPSCAM(GeoComSubsystem):
             Image name.
         number : int
             Image number.
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -312,15 +284,15 @@ class VivaTPSCAM(GeoComSubsystem):
         --------
         take_image
         """
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23622,
-            [_camtype.value, name, number]
+            [_camera.value, name, number]
         )
 
     def take_image(
         self,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 23623, ``CAM_TakeImage``
@@ -329,8 +301,8 @@ class VivaTPSCAM(GeoComSubsystem):
 
         Parameters
         ----------
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -346,10 +318,10 @@ class VivaTPSCAM(GeoComSubsystem):
         set_camera_properties
         set_actual_image_name
         """
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23623,
-            [_camtype.value]
+            [_camera.value]
         )
 
     def ovc_get_act_camera_center(self) -> GeoComResponse[tuple[float, float]]:
@@ -418,7 +390,7 @@ class VivaTPSCAM(GeoComSubsystem):
     def set_whitebalance_mode(
         self,
         whitebalance: WHITEBALANCE | str = WHITEBALANCE.AUTO,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 23626, ``CAM_SetWhiteBalanceMode``
@@ -429,8 +401,8 @@ class VivaTPSCAM(GeoComSubsystem):
         ----------
         whitebalance : WHITEBALANCE | str, optional
             White balance mode, by default WHITEBALANCE.AUTO
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -442,16 +414,16 @@ class VivaTPSCAM(GeoComSubsystem):
         --------
         take_image
         """
-        _wb = toenum(self.WHITEBALANCE, whitebalance)
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _wb = toenum(WHITEBALANCE, whitebalance)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23626,
-            [_camtype.value, _wb.value]
+            [_camera.value, _wb.value]
         )
 
     def is_camera_ready(
         self,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 23627, ``CAM_IsCameraReady``
@@ -460,8 +432,8 @@ class VivaTPSCAM(GeoComSubsystem):
 
         Parameters
         ----------
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -477,10 +449,10 @@ class VivaTPSCAM(GeoComSubsystem):
         set_camera_power_switch
         wait_for_camera_ready
         """
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23627,
-            [_camtype.value]
+            [_camera.value]
         )
 
     def set_camera_properties(
@@ -488,7 +460,7 @@ class VivaTPSCAM(GeoComSubsystem):
         resolution: RESOLUTION | str,
         compression: COMPRESSION | str,
         jpegquality: JPEGQUALITY | str,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 23633, ``CAM_SetCameraProperties``
@@ -503,8 +475,8 @@ class VivaTPSCAM(GeoComSubsystem):
             Image compression.
         jpegquality : JPEGQUALITY | str
             JPEG image compression quality.
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -518,19 +490,19 @@ class VivaTPSCAM(GeoComSubsystem):
         set_actual_image_name
         take_image
         """
-        _res = toenum(self.RESOLUTION, resolution)
-        _comp = toenum(self.COMPRESSION, compression)
-        _qual = toenum(self.JPEGQUALITY, jpegquality)
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _res = toenum(RESOLUTION, resolution)
+        _comp = toenum(COMPRESSION, compression)
+        _qual = toenum(JPEGQUALITY, jpegquality)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23633,
-            [_camtype.value, _res.value, _comp.value, _qual.value]
+            [_camera.value, _res.value, _comp.value, _qual.value]
         )
 
     def get_camera_power_switch(
         self,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
-    ) -> GeoComResponse[ONOFF]:
+        camera: CAMERA | str = CAMERA.OVERVIEW
+    ) -> GeoComResponse[bool]:
         """
         RPC 23636, ``CAM_GetCameraPowerSwitch``
 
@@ -538,14 +510,14 @@ class VivaTPSCAM(GeoComSubsystem):
 
         Parameters
         ----------
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: Current state of camera.
+                - `bool`: Camera is powered and active.
             Error codes:
                 - ``NA``: Imaging license not found.
 
@@ -555,17 +527,17 @@ class VivaTPSCAM(GeoComSubsystem):
         set_camera_power_switch
         wait_for_camera_ready
         """
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23636,
-            [_camtype.value],
-            enumparser(self.ONOFF)
+            [_camera.value],
+            parsebool
         )
 
     def set_camera_power_switch(
         self,
-        state: ONOFF | str,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        activate: bool,
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 23637, ``CAM_SetCameraPowerSwitch``
@@ -574,10 +546,10 @@ class VivaTPSCAM(GeoComSubsystem):
 
         Parameters
         ----------
-        state : ONOFF | str
-            New state of the camera.
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        activate : bool
+            Power up and activate camera.
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -591,17 +563,16 @@ class VivaTPSCAM(GeoComSubsystem):
         get_camera_power_switch
         wait_for_camera_ready
         """
-        _state = toenum(self.ONOFF, state)
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23637,
-            [_camtype.value, _state.value]
+            [_camera.value, activate]
         )
 
     def wait_for_camera_ready(
         self,
         wait: int = 30_000,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 23638, ``CAM_WaitForCameraReady``
@@ -612,8 +583,8 @@ class VivaTPSCAM(GeoComSubsystem):
         ----------
         wait : int, optional
             Time to wait for the camera to come online.
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -629,10 +600,10 @@ class VivaTPSCAM(GeoComSubsystem):
         get_camera_power_switch
         set_camera_power_switch
         """
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23638,
-            [_camtype.value, wait]
+            [_camera.value, wait]
         )
 
     def af_set_motor_position(
@@ -797,7 +768,7 @@ class VivaTPSCAM(GeoComSubsystem):
 
     def get_chip_window_size(
         self,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[tuple[float, float]]:
         """
         RPC 23668, ``CAM_GetChipWindowSize``
@@ -806,8 +777,8 @@ class VivaTPSCAM(GeoComSubsystem):
 
         Parameters
         ----------
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -819,10 +790,10 @@ class VivaTPSCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23668,
-            [_camtype.value],
+            [_camera.value],
             (
                 float,
                 float
@@ -951,7 +922,7 @@ class VivaTPSCAM(GeoComSubsystem):
         self,
         fps: int,
         bitrate: int,
-        camtype: CAMTYPE | str = CAMTYPE.OVC
+        camera: CAMERA | str = CAMERA.OVERVIEW
     ) -> GeoComResponse[None]:
         """
         RPC 23675, ``CAM_StartRemoteVideo``
@@ -966,8 +937,8 @@ class VivaTPSCAM(GeoComSubsystem):
             Frame rate 3/5/10 [Hz].
         bitrate : int
             Video bit rate in [100; 6144] range [kbps].
-        camtype : CAMTYPE | str, optional
-            Camera device, by default OVC
+        camera : CAMERA | str, optional
+            Camera device, by default OVERVIEW
 
         Returns
         -------
@@ -976,10 +947,10 @@ class VivaTPSCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _camtype = toenum(self.CAMTYPE, camtype)
+        _camera = toenum(CAMERA, camera)
         return self._request(
             23675,
-            [_camtype.value, fps, bitrate]
+            [_camera.value, fps, bitrate]
         )
 
     def stop_remote_video(self) -> GeoComResponse[None]:

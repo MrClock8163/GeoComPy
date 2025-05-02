@@ -14,21 +14,18 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
+from typing import Never
+from typing_extensions import deprecated
 
 from ..data import (
-    Angle,
     toenum,
-    enumparser,
-    parsebool
+    TURN
 )
-from ..protocols import (
-    GeoComSubsystem,
-    GeoComResponse
-)
+from ..protocols import GeoComResponse
+from ..tps1100.aut import TPS1100AUT
 
 
-class TPS1200PAUT(GeoComSubsystem):
+class TPS1200PAUT(TPS1100AUT):
     """
     Automation subsystem of the TPS1200+ GeoCom protocol.
 
@@ -37,580 +34,64 @@ class TPS1200PAUT(GeoComSubsystem):
     target lock, etc.
 
     """
-    class POSMODE(Enum):
-        NORMAL = 0
-        PRECISE = 1
-        FAST = 2  # TS30 / MS30
 
-    class ADJMODE(Enum):
-        NORMAL = 0
-        POINT = 1
-        DEFINE = 2
-
-    class ATRMODE(Enum):
-        POSITION = 0
-        TARGET = 1
-
-    class DIRECTION(Enum):
-        CLOCKWISE = 1
-        ANTICLOCKWISE = -1
-
-    def read_tol(self) -> GeoComResponse[tuple[Angle, Angle]]:
+    @deprecated("This command was removed for TPS1200 instruments")
+    def get_atr_status(self) -> Never:
         """
-        RPC 9008, ``AUT_ReadTol``
+        RPC 9019, ``AUT_GetATRStatus``
 
-        Gets the positioning tolerances on the Hz and V axes.
+        .. versionremoved:: GeoCom-TPS1200
 
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-
-            Params:
-                - `Angle`: Horizontal tolerance.
-                - `Angle`: Vertical tolerance.
-
-        See Also
-        --------
-        set_tol
+        Raises
+        ------
+        AttributeError
         """
-        return self._request(
-            9008,
-            parsers=(Angle.parse, Angle.parse)
-        )
+        raise AttributeError()
 
-    def set_tol(
+    @deprecated("This command was removed for TPS1200 instruments")
+    def set_atr_status(
         self,
-        hz: Angle,
-        v: Angle
-    ) -> GeoComResponse[None]:
+        *args
+    ) -> Never:
         """
-        RPC 9007, ``AUT_SetTol``
+        RPC 9018, ``AUT_SetATRStatus``
 
-        Sets the positioning tolerances on the Hz and V axes.
+        .. versionremoved:: GeoCom-TPS1200
 
-        Parameters
-        ----------
-        hz : Angle
-            Horizontal tolerance.
-        v : Angle
-            Vertical tolerance.
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-                - ``IVPARAM``: Tolerances are out of the valid range.
-                - ``MOT_UNREADY``: Instrument has no motorization.
-
-        See Also
-        --------
-        read_tol
+        Raises
+        ------
+        AttributeError
         """
-        return self._request(9007, [hz, v])
+        raise AttributeError()
 
-    def read_timeout(self) -> GeoComResponse[tuple[float, float]]:
+    @deprecated("This command was removed for TPS1200 instruments")
+    def get_lock_status(self) -> Never:
         """
-        RPC 9012, ``AUT_ReadTimeout``
+        RPC 9021, ``AUT_GetLockStatus``
 
-        Gets the positioning timeout for the Hz and V axes.
+        .. versionremoved:: GeoCom-TPS1200
 
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-
-            Params:
-                - `float`: Horizontal timeout [sec].
-                - `float`: Vertical timeout [sec].
-
-        See Also
-        --------
-        set_timeout
+        Raises
+        ------
+        AttributeError
         """
-        return self._request(
-            9012,
-            parsers=(float, float)
-        )
+        raise AttributeError()
 
-    def set_timeout(
+    @deprecated("This command was removed for TPS1200 instruments")
+    def set_lock_status(
         self,
-        hz: float,
-        v: float
-    ) -> GeoComResponse[None]:
+        *args
+    ) -> Never:
         """
-        RPC 9011, ``AUT_SetTimeout``
+        RPC 9020, ``AUT_SetLockStatus``
 
-        Sets the positioning timeout for the Hz and V axes.
+        .. versionremoved:: GeoCom-TPS1200
 
-        Parameters
-        ----------
-        hz : float
-            Horizontal timeout [sec].
-        v : float
-            Vertical timeout [sec]
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-                - ``IVPARAM``: Timeout values are not in the [7; 60] range.
-
-        See Also
-        --------
-        read_timeout
+        Raises
+        ------
+        AttributeError
         """
-        return self._request(
-            9011,
-            [hz, v]
-        )
-
-    def make_positioning(
-        self,
-        hz: Angle,
-        v: Angle,
-        posmode: POSMODE | str = POSMODE.NORMAL,
-        atrmode: ATRMODE | str = ATRMODE.POSITION
-    ) -> GeoComResponse[None]:
-        """
-        RPC 9027, ``AUT_MakePositioning``
-
-        Turns the telescope to the specified angular positions.
-
-        Parameters
-        ----------
-        hz : Angle
-            Horizontal position.
-        v : Angle
-            Vertical position.
-        posmode : POSMODE | str, optional
-            Positioning precision mode, by default POSMODE.NORMAL
-        atrmode : ATRMODE | str, optional
-            ATR mode, by default ATRMODE.TARGET
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-                - ``IVPARAM``: Invalid parameter
-                - ``AUT_TIMEOUT``: Positioning timed out.
-                - ``AUT_MOTOR_ERROR``: Instrument has no motorization.
-                - ``TMC_NO_FULL_CORRECTION``: Instrument might not be
-                  properly levelled.
-                - ``ABORT``: Function aborted.
-                - ``COM_TIMEDOUT``: Communication timeout.
-                - ``AUT_NO_TARGET``: No ATR target found.
-                - ``AUT_MULTIPLE_TARGETS``: Multiple ATR targets found.
-                - ``AUT_BAD_ENVIRONMENT``: Inadequate environmental
-                  conditions.
-                - ``AUT_ACCURACY``: Position is not within tolerances.
-                  Repeat positioning!
-                - ``AUT_DEV_ERROR``: Angle deviation calculation error.
-                  Repeat positioning!
-                - ``AUT_NOT_ENABLED``: ATR mode is not active.
-
-        See Also
-        --------
-        aus.get_user_atr_state
-        aus.set_user_atr_state
-        aus.get_user_lock_state
-        aus.set_user_lock_state
-        read_tol
-        set_tol
-        read_timeout
-        set_timeout
-        com.get_timeout
-        com.set_timeout
-        """
-        _posmode = toenum(self.POSMODE, posmode)
-        _atrmode = toenum(self.ATRMODE, atrmode)
-        return self._request(
-            9027,
-            [hz, v, _posmode.value, _atrmode.value, 0]
-        )
-
-    def change_face(
-        self,
-        posmode: POSMODE | str = POSMODE.NORMAL,
-        atrmode: ATRMODE | str = ATRMODE.POSITION
-    ) -> GeoComResponse[None]:
-        """
-        RPC 9028, ``AUT_ChangeFace``
-
-        Turns the telescope to the opposite face.
-
-        Parameters
-        ----------
-        posmode : POSMODE | str, optional
-            Positioning precision mode, by default POSMODE.NORMAL
-        atrmode : ATRMODE | str, optional
-            ATR mode, by default ATRMODE.TARGET
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-                - ``IVPARAM``: Invalid parameter
-                - ``AUT_TIMEOUT``: Positioning timed out.
-                - ``AUT_MOTOR_ERROR``: Instrument has no motorization.
-                - ``TMC_NO_FULL_CORRECTION``: Instrument might not be
-                  properly levelled.
-                - ``FATAL``: Fatal error.
-                - ``ABORT``: Function aborted.
-                - ``COM_TIMEDOUT``: Communication timeout.
-                - ``AUT_NO_TARGET``: No ATR target found.
-                - ``AUT_MULTIPLE_TARGETS``: Multiple ATR targets found.
-                - ``AUT_BAD_ENVIRONMENT``: Inadequate environmental
-                  conditions.
-                - ``AUT_ACCURACY``: Position is not within tolerances.
-                  Repeat positioning!
-                - ``AUT_DEV_ERROR``: Angle deviation calculation error.
-                  Repeat positioning!
-                - ``AUT_NOT_ENABLED``: ATR mode is not active.
-
-        See Also
-        --------
-        aus.get_user_atr_state
-        aus.set_user_atr_state
-        aus.get_user_lock_state
-        aus.set_user_lock_state
-        read_tol
-        set_tol
-        read_timeout
-        set_timeout
-        com.get_timeout
-        com.set_timeout
-        tmc.get_face
-        """
-        _posmode = toenum(self.POSMODE, posmode)
-        _atrmode = toenum(self.ATRMODE, atrmode)
-        return self._request(
-            9028,
-            [_posmode.value, _atrmode.value, 0]
-        )
-
-    def fine_adjust(
-        self,
-        width: Angle,
-        height: Angle
-    ) -> GeoComResponse[None]:
-        """
-        RPC 9037, ``AUT_FineAdjust``
-
-        Precisely targets a prism. If the prism is not within the view of
-        the ATR, a target search is executed in the specified window.
-
-        Parameters
-        ----------
-        width : Angle
-            Width of target search window.
-        height : Angle
-            Heigth of target search window.
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-                - ``IVPARAM``: Invalid parameter
-                - ``AUT_TIMEOUT``: Positioning timed out.
-                - ``AUT_MOTOR_ERROR``: Instrument has no motorization.
-                - ``TMC_NO_FULL_CORRECTION``: Instrument might not be
-                  properly levelled.
-                - ``FATAL``: Fatal error.
-                - ``ABORT``: Function aborted.
-                - ``COM_TIMEDOUT``: Communication timeout.
-                - ``AUT_NO_TARGET``: No ATR target found.
-                - ``AUT_MULTIPLE_TARGETS``: Multiple ATR targets found.
-                - ``AUT_BAD_ENVIRONMENT``: Inadequate environmental
-                  conditions.
-                - ``AUT_DEV_ERROR``: Angle deviation calculation error.
-                  Repeat positioning!
-                - ``AUT_DETECTOR_ERROR``: Error in target acquisition.
-
-        See Also
-        --------
-        aus.get_user_atr_state
-        aus.set_user_atr_state
-        get_fine_adjust_mode
-        set_fine_adjust_mode
-        """
-        return self._request(
-            9037,
-            [width, height, 0]
-        )
-
-    def search(
-        self,
-        width: Angle,
-        height: Angle
-    ) -> GeoComResponse[None]:
-        """
-        RPC 9029, ``AUT_Search``
-
-        Search for target in the specified search window. The search is
-        terminated once a prism appears in the view of the ATR. Fine
-        adjustment must be executed afterwards.
-
-        Parameters
-        ----------
-        width : Angle
-            Width of target search window.
-        height : Angle
-            Heigth of target search window.
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-                - ``IVPARAM``: Invalid parameter
-                - ``AUT_MOTOR_ERROR``: Instrument has no motorization.
-                - ``TMC_NO_FULL_CORRECTION``: Instrument might not be
-                  properly levelled.
-                - ``FATAL``: Fatal error.
-                - ``ABORT``: Function aborted.
-                - ``COM_TIMEDOUT``: Communication timeout.
-                - ``AUT_NO_TARGET``: No ATR target found.
-                - ``AUT_MULTIPLE_TARGETS``: Multiple ATR targets found.
-                - ``AUT_BAD_ENVIRONMENT``: Inadequate environmental
-                  conditions.
-                - ``AUT_DETECTOR_ERROR``: Error in target acquisition.
-
-        See Also
-        --------
-        aus.get_user_atr_state
-        aus.set_user_atr_state
-        fine_adjust
-        """
-        return self._request(
-            9029,
-            [width, height, 0]
-        )
-
-    def get_fine_adjust_mode(self) -> GeoComResponse[ADJMODE]:
-        """
-        RPC 9030, ``AUT_GetFineAdjustMode``
-
-        Gets the fine adjustment mode.
-
-        Returns
-        -------
-        GeoComResponse
-            Params:
-                - `ADJMODE`: current fine adjustment mode
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-
-        See Also
-        --------
-        set_fine_adjust_mode
-        """
-        return self._request(
-            9030,
-            parsers=enumparser(self.ADJMODE)
-        )
-
-    def set_fine_adjust_mode(
-        self,
-        adjmode: ADJMODE | str
-    ) -> GeoComResponse[None]:
-        """
-        RPC 9031, ``AUT_SetFineAdjustMode``
-
-        Sets the fine adjustment mode.
-
-        Parameters
-        ----------
-        adjmode : ADJMODE | str
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-                - ``IVPARAM``: Invalid mode
-
-        See Also
-        --------
-        aus.get_fine_adjust_mode
-        """
-        _adjmode = toenum(self.ADJMODE, adjmode)
-        return self._request(
-            9031,
-            [_adjmode.value]
-        )
-
-    def lock_in(self) -> GeoComResponse[None]:
-        """
-        RPC 9013, ``AUT_LockIn``
-
-        Locks onto target prism and starts tracking. LOCK mode must be
-        active, and fine adjustment must have been completed, before
-        executing this command.
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-                - ``AUT_MOTOR_ERROR``: Instrument has not motorization.
-                - ``AUT_DETECTOR_ERROR``: Error in target acquisition.
-                - ``AUT_NO_TARGET``: No ATR target found.
-                - ``AUT_BAD_ENVIRONMENT``: Inadequate environmental
-                  conditions.
-                - ``ATA_STRANGE_LIGHT``: No target detected, fine
-                  adjustment was not performed.
-
-        See Also
-        --------
-        aus.get_user_lock_state
-        aus.set_user_lock_state
-        mot.read_lock_status
-        """
-        return self._request(9013)
-
-    def get_search_area(
-        self
-    ) -> GeoComResponse[tuple[Angle, Angle, Angle, Angle, bool]]:
-        """
-        RPC 9042, ``AUT_GetSearchArea``
-
-        Gets current position and size of the PowerSearch window.
-
-        Returns
-        -------
-        GeoComResponse
-            Params:
-                - `Angle`: Horizontal center of window.
-                - `Angle`: Vertical center of window.
-                - `Angle`: Width of window.
-                - `Angle`: Height of window.
-                - `bool`: If window is enabled.
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-
-        See Also
-        --------
-        set_search_area
-        bap.search_target
-        """
-        return self._request(
-            9042,
-            parsers=(
-                Angle.parse,
-                Angle.parse,
-                Angle.parse,
-                Angle.parse,
-                parsebool
-            )
-        )
-
-    def set_search_area(
-        self,
-        hz: Angle,
-        v: Angle,
-        width: Angle,
-        height: Angle,
-        enabled: bool = True
-    ) -> GeoComResponse[None]:
-        """
-        RPC 9043, ``AUT_SetSearchArea``
-
-        Sets position and size of the PowerSearch window.
-
-        Parameters
-        ----------
-        hz : Angle
-            Horizontal center of search window.
-        v : Angle
-            Vertical center of search window.
-        width : Angle
-            Width of search window.
-        height : Angle
-            Height of search window.
-        enabled : bool
-            Activation state of search window.
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-
-        See Also
-        --------
-        get_search_area
-        bap.search_target
-        """
-        return self._request(
-            9043,
-            [hz, v, width, height, enabled]
-        )
-
-    def get_user_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
-        """
-        RPC 9040, ``AUT_GetUserSpiral``
-
-        Gets the size of the PowerSearch window.
-
-        Returns
-        -------
-        GeoComResponse
-            Params:
-                - `Angle`: Width of window.
-                - `Angle`: Height of window.
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-
-        See Also
-        --------
-        set_user_spiral
-        bap.search_target
-        """
-        return self._request(
-            9040,
-            parsers=(Angle.parse, Angle.parse)
-        )
-
-    def set_user_spiral(
-        self,
-        width: Angle,
-        height: Angle
-    ) -> GeoComResponse[None]:
-        """
-        RPC 9041, ``AUT_SetUserSpiral``
-
-        Sets the size of the PowerSearch window.
-
-        Parameters
-        ----------
-        width : Angle
-            Width of the search window.
-        height : Angle
-            Height of the search window.
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NA``: GeoCom Robotic license not found.
-
-        See Also
-        --------
-        get_user_spiral
-        bap.search_target
-        """
-        return self._request(
-            9041,
-            [width, height]
-        )
+        raise AttributeError()
 
     def ps_enable_range(
         self,
@@ -703,7 +184,7 @@ class TPS1200PAUT(GeoComSubsystem):
 
     def ps_search_next(
         self,
-        direction: DIRECTION | str,
+        direction: TURN | str,
         swing: bool
     ) -> GeoComResponse[None]:
         """
@@ -713,7 +194,7 @@ class TPS1200PAUT(GeoComSubsystem):
 
         Parameters
         ----------
-        direction : DIRECTION | str
+        direction : TURN | str
             Turning direction during PowerSearch.
         swing : bool
             Search starts -10 GON to the given turn direction.
@@ -731,7 +212,7 @@ class TPS1200PAUT(GeoComSubsystem):
         ps_enable_range
         ps_search_window
         """
-        _direction = toenum(self.DIRECTION, direction)
+        _direction = toenum(TURN, direction)
         return self._request(
             9051,
             [_direction.value, swing]

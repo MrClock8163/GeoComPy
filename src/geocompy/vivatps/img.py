@@ -14,8 +14,6 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
 from ..protocols import GeoComResponse
 from ..tps1200p.img import TPS1200PIMG
 
@@ -28,10 +26,6 @@ class VivaTPSIMG(TPS1200PIMG):
     for instruments that possess such functionality.
 
     """
-    class MEMTYPE(Enum):
-        INTERNAL = 0x0
-        PCCARD = 0x1
-        SDCARD = 0x2
 
     def set_tcc_exposure_time(
         self,
