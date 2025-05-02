@@ -14,14 +14,15 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
 from datetime import datetime
 
 from ..data import (
     Byte,
     parsestr,
     parsebool,
-    toenum
+    toenum,
+    DEVICE,
+    FILE
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -37,18 +38,11 @@ class TPS1200PFTR(GeoComSubsystem):
     instrument, and provides methods to list or download files.
 
     """
-    class DEVICETYPE(Enum):
-        INTERNAL = 0
-        PCPARD = 1
-
-    class FILETYPE(Enum):
-        UNKNOWN = 0  # ?
-        IMAGE = 170
 
     def setup_list(
         self,
-        device: DEVICETYPE | str = DEVICETYPE.PCPARD,
-        filetype: FILETYPE | str = FILETYPE.UNKNOWN,
+        device: DEVICE | str = DEVICE.CFCARD,
+        filetype: FILE | str = FILE.UNKNOWN,
         path: str = ""
     ) -> GeoComResponse[None]:
         """
@@ -59,9 +53,9 @@ class TPS1200PFTR(GeoComSubsystem):
 
         Parameters
         ----------
-        device : DEVICETYPE | str, optional
-            Memory device, by default PCPARD
-        filetype : FILETYPE | str, optional
+        device : DEVICE | str, optional
+            Memory device, by default CFCARD
+        filetype : FILE | str, optional
             File type, by default UNKNOWN
         path : str, optional
             Search path, by default ""
@@ -82,8 +76,8 @@ class TPS1200PFTR(GeoComSubsystem):
         abort_list
 
         """
-        _device = toenum(self.DEVICETYPE, device)
-        _filetype = toenum(self.FILETYPE, filetype)
+        _device = toenum(DEVICE, device)
+        _filetype = toenum(FILE, filetype)
         return self._request(
             23306,
             [_device.value, _filetype.value, path]
@@ -188,8 +182,8 @@ class TPS1200PFTR(GeoComSubsystem):
         self,
         filename: str,
         blocksize: int,
-        device: DEVICETYPE | str = DEVICETYPE.PCPARD,
-        filetype: FILETYPE | str = FILETYPE.UNKNOWN,
+        device: DEVICE | str = DEVICE.CFCARD,
+        filetype: FILE | str = FILE.UNKNOWN,
     ) -> GeoComResponse[int]:
         """
         RPC 23303, ``FTR_SetupDownload``
@@ -203,9 +197,9 @@ class TPS1200PFTR(GeoComSubsystem):
             File name (or full path if type is unknown).
         blocksize : int
             Download data block size.
-        device : DEVICETYPE | str, optional
-            Memory device, by default PCPARD
-        filetype : FILETYPE | str, optional
+        device : DEVICE | str, optional
+            Memory device, by default CFCARD
+        filetype : FILE | str, optional
             File type, by default UNKNOWN
 
         Returns
@@ -227,8 +221,8 @@ class TPS1200PFTR(GeoComSubsystem):
         abort_download
 
         """
-        _device = toenum(self.DEVICETYPE, device)
-        _filetype = toenum(self.FILETYPE, filetype)
+        _device = toenum(DEVICE, device)
+        _filetype = toenum(FILE, filetype)
         return self._request(
             23303,
             [_device.value, _filetype.value, filename, blocksize],
@@ -298,8 +292,8 @@ class TPS1200PFTR(GeoComSubsystem):
         self,
         filename: str,
         time: datetime | None = None,
-        device: DEVICETYPE | str = DEVICETYPE.PCPARD,
-        filetype: FILETYPE | str = FILETYPE.UNKNOWN
+        device: DEVICE | str = DEVICE.CFCARD,
+        filetype: FILE | str = FILE.UNKNOWN
     ) -> GeoComResponse[int]:
         """
         RPC 23309, ``FTR_Delete``
@@ -314,9 +308,9 @@ class TPS1200PFTR(GeoComSubsystem):
             File name (or full path if type is unknown).
         time : datetime | None, optional
             Deletion limit date, by default None
-        device : DEVICETYPE | str, optional
-            Memory device, by default PCPARD
-        filetype : FILETYPE | str, optional
+        device : DEVICE | str, optional
+            Memory device, by default CFCARD
+        filetype : FILE | str, optional
             File type, by default UNKNOWN
 
         Returns
@@ -333,8 +327,8 @@ class TPS1200PFTR(GeoComSubsystem):
         list
 
         """
-        _device = toenum(self.DEVICETYPE, device)
-        _filetype = toenum(self.FILETYPE, filetype)
+        _device = toenum(DEVICE, device)
+        _filetype = toenum(FILE, filetype)
         if time is None:
             params = [
                 _device.value, _filetype.value,

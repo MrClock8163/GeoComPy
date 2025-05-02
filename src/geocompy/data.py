@@ -1608,3 +1608,29 @@ class ATRMODE(Enum):
     """High reflectivity on."""
     ALWAYSHIGHREFL = 4
     """Hight reflectivity always on."""
+
+
+class DEVICE(Enum):
+    """
+    Data recording device.
+
+    .. versionadded:: GeoCom-TPS1200-v1.50
+
+    ``FTR_DEVICETYPE``
+    """
+    INTERNAL = 0
+    """Internal memory."""
+    CFCARD = 1
+    """CF card."""
+
+
+class FILE(Enum):
+    """
+    File type.
+
+    .. versionadded:: GeoCom-TPS1200-v1.50
+
+    ``FTR_FILETYPE``
+    """
+    UNKNOWN = 0  # ?
+    IMAGE = 170
