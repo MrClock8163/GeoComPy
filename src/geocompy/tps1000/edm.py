@@ -70,7 +70,7 @@ class TPS1000EDM(GeoComSubsystem):
             [activate]
         )
 
-    def on(
+    def activate(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -101,7 +101,7 @@ class TPS1000EDM(GeoComSubsystem):
             [activate]
         )
 
-    def get_bumerang(self) -> GeoComResponse[bool]:
+    def get_boomerang_filter(self) -> GeoComResponse[bool]:
         """
         RPC 1044, ``EDM_GetBumerang``
 
@@ -128,7 +128,7 @@ class TPS1000EDM(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def set_bumerang(
+    def set_boomerang_filter(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -161,7 +161,7 @@ class TPS1000EDM(GeoComSubsystem):
             [enabled]
         )
 
-    def get_trk_light_brightness(self) -> GeoComResponse[Tracklight]:
+    def get_tracklight_brightness(self) -> GeoComResponse[Tracklight]:
         """
         RPC 1041, ``EDM_GetTrkLightBrightness``
 
@@ -180,7 +180,7 @@ class TPS1000EDM(GeoComSubsystem):
             parsers=enumparser(Tracklight)
         )
 
-    def set_trk_light_brightness(
+    def set_tracklight_brightness(
         self,
         intensity: Tracklight | str
     ) -> GeoComResponse[None]:
@@ -206,7 +206,7 @@ class TPS1000EDM(GeoComSubsystem):
             [_intensity.value]
         )
 
-    def get_trk_light_switch(self) -> GeoComResponse[bool]:
+    def is_tracklight_active(self) -> GeoComResponse[bool]:
         """
         RPC 1040, ``EDM_GetTrkLightSwitch``
 
@@ -225,7 +225,7 @@ class TPS1000EDM(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def set_trk_light_switch(
+    def switch_tracklight(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
