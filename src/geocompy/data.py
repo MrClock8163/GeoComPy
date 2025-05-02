@@ -1199,6 +1199,96 @@ class DEVICECLASS(Enum):
 
     .. versionadded:: GeoCom-TPS1200
     """
+    CLASS_TDRA = 350
+    """
+    TDRA 0.5"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS01 = 500
+    """
+    1"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS02 = 501
+    """
+    2"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS03 = 502
+    """
+    3"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS05 = 503
+    """
+    5"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS06 = 504
+    """
+    6"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS07 = 505
+    """
+    7"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS10 = 506
+    """
+    10"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_1 = 600
+    """
+    Viva 1"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_2 = 601
+    """
+    Viva 2"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_3 = 602
+    """
+    Viva 3"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_4 = 603
+    """
+    Viva 4"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS1X_5 = 604
+    """
+    Viva 5"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS50_05 = 650
+    """
+    TPS1300 TS50/TM50 0.5"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
+    CLASS_TS50_1 = 651
+    """
+    TPS1300 TS50/TM50 1"
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
 
 
 class CAPABILITIES(Flag):
@@ -1263,6 +1353,8 @@ class REFLECTORLESS(Enum):
     R100 = 1
     R300 = 2
     R400 = 3
+    R1000 = 4
+    R30 = 5
 
 
 class TRACKLIGHT(Enum):
@@ -1752,3 +1844,44 @@ class JPEGQUALITY(Enum):
     STANDARD = 0
     BEST = 1
     IGNORE = 2
+
+
+class PROPERTY(Enum):
+    """
+    Instrument properties.
+
+    ``CSV_PROPERTY``
+    """
+    PURCHASE_MODE_NORMAL = 0
+    PURCHASE_MODE_PREPAY = 1
+    RTK_RANGE_5000 = 2
+    RTK_RANGE_UNLIMITED = 3
+    RTK_NETWORK = 4
+    RTK_REFERENCE_STN = 5
+    RTK_LEICA_LITE = 6
+    RTK_NETWORK_LOCKDOWN = 7
+    POSITION_RATE_5HZ = 8
+    POSITION_RATE_20HZ = 9
+    GPS_L2 = 10
+    GPS_L5 = 11
+    GLONASS = 12
+    GALILEO = 13
+    RAWDATA_LOGGING = 14
+    RINEX_LOGGING = 15
+    NMEA_OUT = 16
+    DGPS_RTCM = 17
+    OWI = 18
+    NETWORK_PROVIDER_ACCESS_RESET = 19
+    NO_AREA_LIMITATION = 20
+    SMARTWORX_FULL = 21
+    SMARTWORX_LITE = 22
+    DEMO_LICENSE = 23
+    INTERNAL_WIT2450 = 24
+    GEOCOM_ROBOTICS = 25
+    GEOCOM_IMAGING = 26
+    GEOCOM_GPS = 27
+    GEOCOM_LIMITED_AUT = 28
+    IMAGING_WITH_OVC = 29
+    SERIAL_NUMBER = 30
+    PRODUCTION_FLAG = 31
+    SYSTEMTIME_VALID = 32
