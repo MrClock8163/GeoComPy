@@ -30,9 +30,11 @@ Types
 - ``ATRMODE``
 - ``ATRLOCK``
 - ``AUTOPOWER``
+- ``CAMERA``
 - ``CAMERAFUNCTIONS``
-- ``CAPABILITIES``
+- ``COMPRESSION``
 - ``CONTROLLER``
+- ``CAPABILITIES``
 - ``DEVICE``
 - ``DEVICECLASS``
 - ``EDMMODE``
@@ -43,12 +45,14 @@ Types
 - ``FORMAT``
 - ``GUIDELIGHT``
 - ``INCLINATION``
+- ``JPEGQUALITY``
 - ``MEASUREMENT``
 - ``POSITION``
 - ``POWERSOURCE``
 - ``PRISM``
 - ``PROGRAM``
 - ``REFLECTOR``
+- ``RESOLUTION``
 - ``SHUTDOWN``
 - ``STARTUP``
 - ``STOP``
@@ -56,6 +60,8 @@ Types
 - ``TRACKLIGHT``
 - ``TURN``
 - ``USERPROGRAM``
+- ``WHITEBALANCE``
+- ``ZOOM``
 """
 from __future__ import annotations
 
@@ -1652,3 +1658,81 @@ class CAMERAFUNCTIONS(Flag):
     """2-times subsampling."""
     SS4 = 8
     """4-times subsampling."""
+
+
+class CAMERA(Enum):
+    """
+    Camera types.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_ID_TYPE``
+    """
+    OVERVIEW = 0
+    TELESCOPIC = 1
+
+
+class ZOOM(Enum):
+    """
+    Camera zoom levels.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_ZOOM_FACTOR_TYPE``
+    """
+    X1 = 1
+    X2 = 2
+    X4 = 4
+    X8 = 8
+
+
+class RESOLUTION(Enum):
+    """
+    Image resolutions.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_RESOLUTION_TYPE``
+    """
+    R2560X1920 = 0
+    R1280X960 = 3
+    R640X480 = 4
+    R720X240 = 5
+
+
+class COMPRESSION(Enum):
+    """
+    Image compression.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_COMPRESSION_TYPE``
+    """
+    JPEG = 0
+    RAW = 1
+
+
+class WHITEBALANCE(Enum):
+    """
+    Camera whitebalance settings.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_COMPRESSION_TYPE``
+    """
+    AUTO = 0
+    INDOOR = 1
+    OUTDOOR = 2
+
+
+class JPEGQUALITY(Enum):
+    """
+    JPEG image quality.
+
+    .. versionadded:: GeoCom-VivaTPS
+
+    ``CAM_JPEG_COMPR_QUALITY_TYPE``
+    """
+    STANDARD = 0
+    BEST = 1
+    IGNORE = 2
