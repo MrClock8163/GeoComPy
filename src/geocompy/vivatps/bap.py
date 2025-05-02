@@ -14,12 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
-
-from ..data import (
-    toenum,
-    enumparser
-)
+from ..data import parsebool
 from ..protocols import GeoComResponse
 from ..tps1200p.bap import TPS1200PBAP
 
@@ -33,11 +28,8 @@ class VivaTPSBAP(TPS1200PBAP):
     for ease of operation.
 
     """
-    class ONOFF(Enum):
-        OFF = 0
-        ON = 1
 
-    def get_atr_precise(self) -> GeoComResponse[ONOFF]:
+    def get_atr_precise(self) -> GeoComResponse[bool]:
         """
         RPC 17039, ``BAP_GetATRPrecise``
 
@@ -47,7 +39,7 @@ class VivaTPSBAP(TPS1200PBAP):
         -------
         GeoComResponse
             Params:
-                - `ONOFF`: Current state of precise ATR mode.
+                - `bool`: Precise ATR mode is enabled.
 
         See Also
         --------
@@ -55,12 +47,12 @@ class VivaTPSBAP(TPS1200PBAP):
         """
         return self._request(
             17039,
-            parsers=enumparser(self.ONOFF)
+            parsers=parsebool
         )
 
     def set_atr_precise(
         self,
-        state: ONOFF | str
+        enabled: bool
     ) -> GeoComResponse[None]:
         """
         RPC 17040, ``BAP_SetATRPrecise``
@@ -69,8 +61,8 @@ class VivaTPSBAP(TPS1200PBAP):
 
         Parameters
         ----------
-        state : ONOFF | str
-            Precise ATR mode state to set.
+        enabled : bool
+            Precise ATR mode is enabled.
 
         Returns
         -------
@@ -80,8 +72,7 @@ class VivaTPSBAP(TPS1200PBAP):
         --------
         get_atr_precise
         """
-        _state = toenum(self.ONOFF, state)
         return self._request(
             17040,
-            [_state.value]
+            [enabled]
         )
