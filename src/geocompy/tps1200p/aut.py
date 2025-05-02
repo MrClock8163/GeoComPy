@@ -91,7 +91,7 @@ class TPS1200PAUT(TPS1100AUT):
         """
         raise AttributeError()
 
-    def ps_enable_range(
+    def enable_powersearch_range(
         self,
         enable: bool
     ) -> GeoComResponse[None]:
@@ -114,7 +114,7 @@ class TPS1200PAUT(TPS1100AUT):
 
         See Also
         --------
-        ps_set_range
+        set_powersearch_range
         set_search_area
         """
         return self._request(
@@ -122,7 +122,7 @@ class TPS1200PAUT(TPS1100AUT):
             [enable]
         )
 
-    def ps_set_range(
+    def set_powersearch_range(
         self,
         closest: int,
         farthest: int
@@ -148,8 +148,8 @@ class TPS1200PAUT(TPS1100AUT):
 
         See Also
         --------
-        ps_enable_range
-        ps_search_window
+        enable_powersearch_range
+        powersearch_window
         set_search_area
         """
         return self._request(
@@ -157,7 +157,7 @@ class TPS1200PAUT(TPS1100AUT):
             [closest, farthest]
         )
 
-    def ps_search_window(self) -> GeoComResponse[None]:
+    def powersearch_window(self) -> GeoComResponse[None]:
         """
         RPC 9052, ``AUT_PS_SearchWindow``
 
@@ -173,14 +173,14 @@ class TPS1200PAUT(TPS1100AUT):
 
         See Also
         --------
-        ps_enable_range
-        ps_set_range
-        ps_search_next
+        enable_powersearch_range
+        set_powersearch_range
+        powersearch_next
         set_search_area
         """
         return self._request(9052)
 
-    def ps_search_next(
+    def powersearch_next(
         self,
         direction: Turn | str,
         swing: bool
@@ -207,8 +207,8 @@ class TPS1200PAUT(TPS1100AUT):
 
         See Also
         --------
-        ps_enable_range
-        ps_search_window
+        enable_powersearch_range
+        powersearch_window
         """
         _direction = toenum(Turn, direction)
         return self._request(

@@ -165,7 +165,7 @@ class TPS1000AUT(GeoComSubsystem):
             [activate]
         )
 
-    def read_tol(self) -> GeoComResponse[tuple[Angle, Angle]]:
+    def get_tolerance(self) -> GeoComResponse[tuple[Angle, Angle]]:
         """
         RPC 9008, ``AUT_ReadTol``
 
@@ -183,14 +183,14 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        set_tol
+        set_tolerance
         """
         return self._request(
             9008,
             parsers=(Angle.parse, Angle.parse)
         )
 
-    def set_tol(
+    def set_tolerance(
         self,
         hz: Angle,
         v: Angle
@@ -217,11 +217,11 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        read_tol
+        get_tolerance
         """
         return self._request(9007, [hz, v])
 
-    def read_timeout(self) -> GeoComResponse[tuple[float, float]]:
+    def get_timeout(self) -> GeoComResponse[tuple[float, float]]:
         """
         RPC 9012, ``AUT_ReadTimeout``
 
@@ -272,14 +272,14 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        read_timeout
+        get_timeout
         """
         return self._request(
             9011,
             [hz, v]
         )
 
-    def make_positioning(
+    def turn_to(
         self,
         hz: Angle,
         v: Angle,
@@ -329,9 +329,9 @@ class TPS1000AUT(GeoComSubsystem):
         set_atr_status
         get_lock_status
         set_lock_status
-        read_tol
-        set_tol
-        read_timeout
+        get_tolerance
+        set_tolerance
+        get_timeout
         set_timeout
         com.get_timeout
         com.set_timeout
@@ -387,9 +387,9 @@ class TPS1000AUT(GeoComSubsystem):
         set_atr_status
         get_lock_status
         set_lock_status
-        read_tol
-        set_tol
-        read_timeout
+        get_tolerance
+        set_tolerance
+        get_timeout
         set_timeout
         com.get_timeout
         com.set_timeout

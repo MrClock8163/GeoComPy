@@ -270,7 +270,7 @@ class TPS1100AUT(TPS1000AUT):
             [hz, v, width, height, enabled]
         )
 
-    def get_user_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
+    def get_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
         """
         RPC 9040, ``AUT_GetUserSpiral``
 
@@ -289,7 +289,7 @@ class TPS1100AUT(TPS1000AUT):
 
         See Also
         --------
-        set_user_spiral
+        set_spiral
         bap.search_target
         """
         return self._request(
@@ -297,7 +297,7 @@ class TPS1100AUT(TPS1000AUT):
             parsers=(Angle.parse, Angle.parse)
         )
 
-    def set_user_spiral(
+    def set_spiral(
         self,
         width: Angle,
         height: Angle
@@ -324,7 +324,7 @@ class TPS1100AUT(TPS1000AUT):
 
         See Also
         --------
-        get_user_spiral
+        get_spiral
         bap.search_target
         """
         return self._request(

@@ -314,8 +314,8 @@ class TPS1100BAP(TPS1000BAP):
 
         See Also
         --------
-        aut.get_user_spiral
-        aut.set_user_spiral
+        aut.get_spiral
+        aut.set_spiral
         aut.get_search_area
         aut.set_search_area
         """
