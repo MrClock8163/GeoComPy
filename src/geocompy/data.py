@@ -1742,6 +1742,8 @@ class DEVICE(Enum):
     """Internal memory."""
     CFCARD = 1
     """CF memory card."""
+    IMGSDCARD = 2
+    """SD memory card."""
     SDCARD = 4
     """SD memory card."""
     USB = 5
