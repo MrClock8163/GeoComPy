@@ -1,6 +1,0 @@
-pyserial
-types-pyserial
-pytest
-pytest-mock
-mypy
-flake8
