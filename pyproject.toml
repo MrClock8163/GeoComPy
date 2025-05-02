@@ -12,7 +12,8 @@ description = "Python package for controlling Leica instruments through serial c
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pyserial"
+    "pyserial",
+    "typing-extensions"
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -38,13 +39,13 @@ testing = [
     "pytest-mock",
 ]
 linting = [
+    {include-group = "testing"},
     "types-pyserial",
     "mypy",
     "flake8"
 ]
 development = [
     "pyserial",
-    {include-group = "testing"},
     {include-group = "linting"}
 ]
 documentation = [
