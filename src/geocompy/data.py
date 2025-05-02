@@ -1072,6 +1072,12 @@ class SHUTDOWN(Enum):
     """
     SHUTDOWN = 0
     SLEEP = 1
+    GUI = 2
+    """
+    Close onboard software.
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
 
 
 class STARTUP(Enum):
@@ -1081,9 +1087,19 @@ class STARTUP(Enum):
     ``COM_TPS_STARTUP_MODE``
     """
     LOCAL = 0
-    """Manual mode."""
+    """
+    Manual mode.
+
+    .. deprecated:: GeoCom-VivaTPS
+    """
     REMOTE = 1
     """GeoCom mode."""
+    GUI = 2
+    """
+    Start onboard software.
+
+    .. versionadded:: GeoCom-VivaTPS
+    """
 
 
 class DEVICECLASS(Enum):
