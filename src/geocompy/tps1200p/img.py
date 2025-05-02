@@ -14,11 +14,11 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum, Flag
-
 from ..data import (
     toenum,
-    enumparser
+    enumparser,
+    DEVICE,
+    CAMERAFUNCTIONS
 )
 from ..protocols import (
     GeoComSubsystem,
@@ -34,20 +34,11 @@ class TPS1200PIMG(GeoComSubsystem):
     for instruments that possess such functionality.
 
     """
-    class MEMTYPE(Enum):
-        INTERNAL = 0
-        PCCARD = 1
-
-    class SUBFUNC(Flag):
-        TESTIMG = 1  # : Test image.
-        AUTOEXPTIME = 2  # : Automatic exposure time.
-        SS2 = 4  # : x2 subsampling
-        SS4 = 8  # : x4 subsampling
 
     def get_tcc_config(
         self,
-        memtype: MEMTYPE | str = MEMTYPE.PCCARD
-    ) -> GeoComResponse[tuple[int, int, SUBFUNC, str]]:
+        at: DEVICE | str = DEVICE.CFCARD
+    ) -> GeoComResponse[tuple[int, int, CAMERAFUNCTIONS, str]]:
         """
         RPC 23400, ``IMG_GetTccConfig``
 
@@ -56,8 +47,8 @@ class TPS1200PIMG(GeoComSubsystem):
 
         Parameters
         ----------
-        memtype : MEMTYPE | str, optional
-            Memory device, by default PCCARD
+        at : DEVICE | str, optional
+            Memory device, by default CFCARD
 
         Returns
         -------
@@ -65,7 +56,7 @@ class TPS1200PIMG(GeoComSubsystem):
             Params:
                 - `int`: Current image number.
                 - `int`: JPEG compression quality [0; 100]%
-                - `SUBFUNC`: Current function combination.
+                - `CAMERAFUNCTIONS`: Current camera function combination.
                 - `str`: File name prefix.
             Error codes:
                 - ``FATAL``: CF card is not available, or config file does
@@ -79,14 +70,14 @@ class TPS1200PIMG(GeoComSubsystem):
         set_tcc_config
 
         """
-        _memtype = toenum(self.MEMTYPE, memtype)
+        _device = toenum(DEVICE, at)
         return self._request(
             23400,
-            [_memtype.value],
+            [_device.value],
             parsers=(
                 int,
                 int,
-                enumparser(self.SUBFUNC),
+                enumparser(CAMERAFUNCTIONS),
                 str
             )
         )
@@ -95,8 +86,8 @@ class TPS1200PIMG(GeoComSubsystem):
         self,
         imgnumber: int,
         quality: int,
-        subfunc: SUBFUNC | int,
-        memtype: MEMTYPE | str = MEMTYPE.PCCARD,
+        functions: CAMERAFUNCTIONS | int,
+        saveto: DEVICE | str = DEVICE.CFCARD,
     ) -> GeoComResponse[None]:
         """
         RPC 23401, ``IMG_SetTccConfig``
@@ -109,10 +100,10 @@ class TPS1200PIMG(GeoComSubsystem):
             Image number.
         quality : int
             JPEG compression quality [0; 100]%.
-        subfunc : SUBFUNC | int
-            Subfunction combination.
-        memtype : MEMTYPE | str, optional
-            Memory device, by default PCCARD
+        functions : CAMERAFUNCTIONS | int
+            Camera function combination.
+        saveto : DEVICE | str, optional
+            Memory device, by default CFCARD
 
         Returns
         -------
@@ -128,17 +119,17 @@ class TPS1200PIMG(GeoComSubsystem):
         take_tcc_img
 
         """
-        _memtype = toenum(self.MEMTYPE, memtype)
-        if isinstance(subfunc, self.SUBFUNC):
-            subfunc = subfunc.value
+        _device = toenum(DEVICE, saveto)
+        if isinstance(functions, CAMERAFUNCTIONS):
+            functions = functions.value
         return self._request(
             23401,
-            [_memtype.value, imgnumber, quality, subfunc]
+            [_device.value, imgnumber, quality, functions]
         )
 
     def take_tcc_img(
         self,
-        memtype: MEMTYPE | str = MEMTYPE.PCCARD
+        device: DEVICE | str = DEVICE.CFCARD
     ) -> GeoComResponse[int]:
         """
         RPC 23401, ``IMG_SetTccConfig``
@@ -148,8 +139,8 @@ class TPS1200PIMG(GeoComSubsystem):
 
         Parameters
         ----------
-        memtype : MEMTYPE | str, optional
-            Memory device, by default PCCARD
+        device : DEVICE | str, optional
+            Memory device, by default CFCARD
 
         Returns
         -------
@@ -167,9 +158,9 @@ class TPS1200PIMG(GeoComSubsystem):
         set_tcc_config
 
         """
-        _memtype = toenum(self.MEMTYPE, memtype)
+        _device = toenum(DEVICE, device)
         return self._request(
             23402,
-            [_memtype.value],
+            [_device.value],
             int
         )

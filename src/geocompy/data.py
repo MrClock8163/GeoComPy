@@ -1634,3 +1634,17 @@ class FILE(Enum):
     """
     UNKNOWN = 0  # ?
     IMAGE = 170
+
+
+class CAMERAFUNCTIONS(Flag):
+    """
+    Imaging camera settings.
+    """
+    TESTIMAGE = 1
+    """Test image."""
+    AUTOTIME = 2
+    """Automatic exposure time."""
+    SS2 = 4
+    """2-times subsampling."""
+    SS4 = 8
+    """4-times subsampling."""
