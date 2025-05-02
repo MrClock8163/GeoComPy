@@ -14,19 +14,13 @@ Types
 """
 from __future__ import annotations
 
-from enum import Enum
+from typing import Never
+from typing_extensions import deprecated
 
-from ..data import (
-    toenum,
-    parsebool
-)
-from ..protocols import (
-    GeoComSubsystem,
-    GeoComResponse
-)
+from ..tps1100.com import TPS1100COM
 
 
-class TPS1200PCOM(GeoComSubsystem):
+class TPS1200PCOM(TPS1100COM):
     """
     Communication subsystem of the TPS1200+ GeoCom protocol.
 
@@ -34,149 +28,35 @@ class TPS1200PCOM(GeoComSubsystem):
     with the instrument.
 
     """
-    class STOPMODE(Enum):
-        SHUTDOWN = 0
-        SLEEP = 1
 
-    class STARTUPMODE(Enum):
-        LOCAL = 0
-        REMOTE = 1
-
-    def get_sw_version(self) -> GeoComResponse[tuple[int, int, int]]:
-        """
-        RPC 110, ``COM_GetSWVersion``
-
-        Gets the version of the installed GeoCom release.
-
-        Returns
-        -------
-        GeoComResponse
-            Params:
-                - `int`: Release number.
-                - `int`: Version number.
-                - `int`: Subversion number.
-
-        See Also
-        --------
-        csv.get_sw_version
-        """
-        return self._request(
-            110,
-            parsers=(int, int, int)
-        )
-
-    def switch_on(
+    @deprecated("This command was removed for TPS1200 instruments")
+    def set_send_delay(
         self,
-        onmode: STARTUPMODE | str = STARTUPMODE.REMOTE
-    ) -> GeoComResponse[None]:
+        *args
+    ) -> Never:
         """
-        RPC 111, ``COM_SwitchOnTPS``
+        RPC 109, ``COM_SetSendDelay``
 
-        Switches on the instrument.
+        .. versionremoved:: GeoCom-TPS1200
 
-        Parameters
-        ----------
-        onmode : STARTUPMODE | str, optional
-            Desired startup mode, by default STARTUPMODE.REMOTE
-
-        Returns
-        -------
-        GeoComResponse
-            Error codes:
-                - ``NOT_IMPL``: Instrument is already on.
-
-        Notes
-        -----
-        The instrument can be switched on with any command, or even just
-        a single character.
-
-        See Also
-        --------
-        switch_off
+        Raises
+        ------
+        AttributeError
         """
-        _onmode = toenum(self.STARTUPMODE, onmode)
-        return self._request(
-            111,
-            [_onmode.value]
-        )
+        raise AttributeError()
 
-    def switch_off(
+    @deprecated("This command was removed for TPS1200 instruments")
+    def enable_signoff(
         self,
-        offmode: STOPMODE | str = STOPMODE.SHUTDOWN
-    ) -> GeoComResponse[None]:
+        *args
+    ) -> Never:
         """
-        RPC 112, ``COM_SwitchOffTPS``
+        RPC 115, ``COM_EnableSignOff``
 
-        Switches off the instrument.
+        .. versionremoved:: GeoCom-TPS1200
 
-        Parameters
-        ----------
-        offmode : STOPMODE | str, optional
-            Desired stop mode, by default STOPMODE.SHUTDOWN
-
-        Returns
-        -------
-        GeoComResponse
-
-        See Also
-        --------
-        switch_on
+        Raises
+        ------
+        AttributeError
         """
-        _offmode = toenum(self.STOPMODE, offmode)
-        return self._request(
-            112,
-            [_offmode.value]
-        )
-
-    def nullproc(self) -> GeoComResponse[None]:
-        """
-        RPC 0, ``COM_NullProc``
-
-        Tests connection by executing the null process.
-
-        """
-        return self._request(0)
-
-    def get_binary_available(self) -> GeoComResponse[bool]:
-        """
-        RPC 113, ``COM_GetBinaryAvailable``
-
-        Checks if the instrument supports binary communication.
-
-        Returns
-        -------
-        GeoComResponse
-            Params:
-                - `bool`: Availability of binary mode.
-
-        See Also
-        --------
-        set_binary_available
-        """
-        return self._request(
-            113,
-            parsers=parsebool
-        )
-
-    def set_binary_available(
-        self,
-        enable: bool
-    ) -> GeoComResponse[None]:
-        """
-        RPC 114, ``COM_SetBinaryAvailable``
-
-        Enables or disables binary communication with the instrument.
-
-        Parameters
-        ----------
-        enable : bool
-            Enable or disable binary communication.
-
-        See Also
-        --------
-        get_binary_available
-        """
-        return self._request(
-            114,
-            [enable]
-        )
+        raise AttributeError()
