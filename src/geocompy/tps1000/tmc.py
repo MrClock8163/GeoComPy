@@ -118,9 +118,9 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        do_measure
-        if_data_aze_corr_error
-        if_data_inc_corr_error
+        do_measurement
+        was_not_atr_corrected
+        was_not_inclination_corrected
 
         """
         def transform(
@@ -167,7 +167,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         return response.map_params(transform)
 
-    def get_simple_mea(
+    def get_simple_measurement(
         self,
         wait: int = 5000,
         mode: Inclination | str = Inclination.AUTO
@@ -222,7 +222,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        do_measure
+        do_measurement
         get_angle
 
         """
@@ -237,7 +237,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def get_angle_incline(
+    def get_angle_inclination(
         self,
         mode: Inclination | str = Inclination.AUTO
     ) -> GeoComResponse[
@@ -298,7 +298,7 @@ class TPS1000TMC(GeoComSubsystem):
         See Also
         --------
         get_angle
-        get_simple_mea
+        get_simple_measurement
 
         """
         _mode = toenum(Inclination, mode)
@@ -365,8 +365,8 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        do_measure
-        get_simple_mea
+        do_measurement
+        get_simple_measurement
 
         """
         _mode = toenum(Inclination, mode)
@@ -379,7 +379,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def quick_dist(self) -> GeoComResponse[tuple[Angle, Angle, float]]:
+    def quick_distance(self) -> GeoComResponse[tuple[Angle, Angle, float]]:
         """
         RPC 2117, ``TMC_QuickDist``
 
@@ -419,10 +419,10 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        get_angle_incline,
-        do_measure
-        if_data_aze_corr_error
-        if_data_inc_corr_error
+        get_angle_inclination,
+        do_measurement
+        was_not_atr_corrected
+        was_not_inclination_corrected
 
         """
         return self._request(
@@ -434,7 +434,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def do_measure(
+    def do_measurement(
         self,
         command: Measurement | str = Measurement.DISTANCE,
         inclination: Inclination | str = Inclination.AUTO
@@ -461,9 +461,9 @@ class TPS1000TMC(GeoComSubsystem):
         --------
         set_edm_mode
         get_coordinate
-        get_simple_mea
+        get_simple_measurement
         get_angle
-        get_angle_incline
+        get_angle_inclination
 
         """
         _cmd = toenum(Measurement, command)
@@ -473,7 +473,7 @@ class TPS1000TMC(GeoComSubsystem):
             [_cmd.value, _mode.value]
         )
 
-    def set_hand_dist(
+    def set_distance(
         self,
         distance: float,
         offset: float,
@@ -524,8 +524,8 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        if_data_aze_corr_error
-        if_data_inc_corr_error
+        was_not_atr_corrected
+        was_not_inclination_corrected
 
         """
         _mode = toenum(Inclination, inclination)
@@ -588,7 +588,7 @@ class TPS1000TMC(GeoComSubsystem):
             [height]
         )
 
-    def get_atm_corr(
+    def get_atmospheric_corrections(
         self
     ) -> GeoComResponse[tuple[float, float, float, float]]:
         """
@@ -607,7 +607,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        set_atm_corr
+        set_atmospheric_corrections
 
         """
         return self._request(
@@ -620,7 +620,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def set_atm_corr(
+    def set_atmospheric_corrections(
         self,
         wavelength: float,
         pressure: float,
@@ -649,7 +649,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        get_atm_corr
+        get_atmospheric_corrections
 
         """
         return self._request(
@@ -702,9 +702,9 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        if_data_aze_corr_error
-        if_data_inc_corr_error
-        do_measure
+        was_not_atr_corrected
+        was_not_inclination_corrected
+        do_measurement
 
         """
         return self._request(
@@ -712,7 +712,7 @@ class TPS1000TMC(GeoComSubsystem):
             [azimut]
         )
 
-    def get_prism_corr(self) -> GeoComResponse[float]:
+    def get_prism_correction(self) -> GeoComResponse[float]:
         """
         RPC 2023, ``TMC_GetPrismCorr``
 
@@ -726,7 +726,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        set_prism_corr
+        set_prism_correction
 
         """
         return self._request(
@@ -734,7 +734,7 @@ class TPS1000TMC(GeoComSubsystem):
             parsers=float
         )
 
-    def set_prism_corr(
+    def set_prism_correction(
         self,
         const: float
     ) -> GeoComResponse[None]:
@@ -750,7 +750,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        get_prism_corr
+        get_prism_correction
 
         """
         return self._request(
@@ -758,7 +758,9 @@ class TPS1000TMC(GeoComSubsystem):
             [const]
         )
 
-    def get_refractive_corr(self) -> GeoComResponse[tuple[bool, float, float]]:
+    def get_refractive_correction(
+        self
+    ) -> GeoComResponse[tuple[bool, float, float]]:
         """
         RPC 2031, ``TMC_GetRefractiveCorr``
 
@@ -774,7 +776,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        set_refractive_corr
+        set_refractive_correction
 
         """
         return self._request(
@@ -786,7 +788,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def set_refractive_corr(
+    def set_refractive_correction(
         self,
         enabled: bool,
         earthradius: float = 6_378_000,
@@ -812,7 +814,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        get_refractive_corr
+        get_refractive_correction
 
         """
         return self._request(
@@ -940,7 +942,7 @@ class TPS1000TMC(GeoComSubsystem):
         See Also
         --------
         get_station
-        do_measure
+        do_measurement
 
         """
         return self._request(
@@ -992,7 +994,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        do_measure
+        do_measurement
 
         """
         return self._request(
@@ -1003,7 +1005,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def get_angle_switch(
+    def get_active_angle_corrections(
         self
     ) -> GeoComResponse[tuple[bool, bool, bool, bool]]:
         """
@@ -1022,7 +1024,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        set_angle_switch
+        switch_active_angle_corrections
 
         """
         return self._request(
@@ -1035,7 +1037,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def get_incline_switch(self) -> GeoComResponse[bool]:
+    def is_compensated(self) -> GeoComResponse[bool]:
         """
         RPC 2007, ``TMC_GetInclineSwitch``
 
@@ -1049,7 +1051,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        set_incline_switch
+        switch_compensator
 
         """
         return self._request(
@@ -1057,7 +1059,7 @@ class TPS1000TMC(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def set_incline_switch(
+    def switch_compensator(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -1077,7 +1079,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        get_incline_switch
+        is_compensated
 
         """
         return self._request(
@@ -1136,7 +1138,7 @@ class TPS1000TMC(GeoComSubsystem):
             [_mode.value]
         )
 
-    def get_simple_coord(
+    def get_simple_coordinate(
         self,
         wait: int = 5000,
         inclination: Inclination | str = Inclination.AUTO
@@ -1188,8 +1190,8 @@ class TPS1000TMC(GeoComSubsystem):
         See Also
         --------
         get_coordinate
-        if_data_aze_corr_error
-        if_data_inc_corr_error
+        was_not_atr_corrected
+        was_not_inclination_corrected
 
         """
         def transform(
@@ -1216,7 +1218,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         return response.map_params(transform)
 
-    def if_data_aze_corr_error(self) -> GeoComResponse[bool]:
+    def was_not_atr_corrected(self) -> GeoComResponse[bool]:
         """
         RPC 2114, ``TMC_IfDataAzeCorrError``
 
@@ -1231,7 +1233,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        if_data_inc_corr_error
+        was_not_inclination_corrected
 
         """
         return self._request(
@@ -1239,7 +1241,7 @@ class TPS1000TMC(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def if_data_inc_corr_error(self) -> GeoComResponse[bool]:
+    def was_not_inclination_corrected(self) -> GeoComResponse[bool]:
         """
         RPC 2115, ``TMC_IfDataIncCorrError``
 
@@ -1254,7 +1256,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        if_data_inc_corr_error
+        was_not_inclination_corrected
 
         """
         return self._request(
@@ -1262,7 +1264,7 @@ class TPS1000TMC(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def set_angle_switch(
+    def switch_active_angle_corrections(
         self,
         inclinecorr: bool,
         stdaxiscorr: bool,
@@ -1293,8 +1295,8 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        do_measure
-        get_angle_switch
+        do_measurement
+        get_active_angle_corrections
 
         """
         return self._request(

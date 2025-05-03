@@ -121,7 +121,7 @@ class TPS1200PBAP(TPS1100BAP):
         See Also
         --------
         get_prism_type_name
-        tmc.set_prism_corr
+        tmc.set_prism_correction
         """
         _prism = toenum(Prism, prism)
         return self._request(

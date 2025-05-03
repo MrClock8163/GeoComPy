@@ -105,7 +105,9 @@ class TPS1100TMC(TPS1000TMC):
             [_mode.value]
         )
 
-    def get_slope_dist_corr(self) -> GeoComResponse[tuple[float, float]]:
+    def get_slope_distance_correction(
+        self
+    ) -> GeoComResponse[tuple[float, float]]:
         """
         RPC 2126, ``TMC_GetSlopDistCorr``
 
@@ -121,8 +123,8 @@ class TPS1100TMC(TPS1000TMC):
 
         See Also
         --------
-        get_prism_corr
-        set_prism_corr
+        get_prism_correction
+        set_prism_correction
 
         """
         return self._request(
