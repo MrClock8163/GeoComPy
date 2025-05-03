@@ -29,7 +29,7 @@ class VivaTPSKDM(GeoComSubsystem):
 
     """
 
-    def set_lcd_power(
+    def set_display_power(
         self,
         alwayson: bool
     ) -> GeoComResponse[None]:
@@ -53,7 +53,7 @@ class VivaTPSKDM(GeoComSubsystem):
             [alwayson]
         )
 
-    def get_lcd_power(self) -> GeoComResponse[bool]:
+    def get_display_power(self) -> GeoComResponse[bool]:
         """
         RPC 23108, ``KDM_GetLcdPower``
 
