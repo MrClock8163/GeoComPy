@@ -193,7 +193,7 @@ class VivaTPS(GeoComProtocol):
             try:
                 self._conn.send("\n")
                 response = self.com.nullprocess()
-                if response.comcode and response.rpccode:
+                if not response.error:
                     sleep(1)
                     break
             except Exception:
@@ -265,7 +265,7 @@ class VivaTPS(GeoComProtocol):
 
         """
         response: GeoComResponse[None] = self.request(107, [digits])
-        if response.comcode and response.rpccode:
+        if not response.error:
             self._precision = digits
         return response
 
@@ -486,7 +486,7 @@ class VivaTPS(GeoComProtocol):
                 cmd,
                 response,
                 VivaTPSGRC.COM_CANT_DECODE,
-                VivaTPSGRC.UNDEFINED,
+                VivaTPSGRC.OK,
                 0
             )
 
@@ -510,7 +510,7 @@ class VivaTPS(GeoComProtocol):
                 cmd,
                 response,
                 VivaTPSGRC.COM_CANT_DECODE,
-                VivaTPSGRC.UNDEFINED,
+                VivaTPSGRC.OK,
                 0
             )
 
