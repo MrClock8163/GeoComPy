@@ -37,7 +37,7 @@ class TPS1000COM(GeoComSubsystem):
 
     """
 
-    def get_sw_version(self) -> GeoComResponse[tuple[int, int, int]]:
+    def get_geocom_version(self) -> GeoComResponse[tuple[int, int, int]]:
         """
         RPC 110, ``COM_GetSWVersion``
 
@@ -53,7 +53,7 @@ class TPS1000COM(GeoComSubsystem):
 
         See Also
         --------
-        csv.get_sw_version
+        csv.get_firmware_version
         """
         return self._request(
             110,
@@ -80,7 +80,7 @@ class TPS1000COM(GeoComSubsystem):
         """
         return self._request(109, [delay])
 
-    def local(self) -> GeoComResponse[None]:
+    def switch_to_local(self) -> GeoComResponse[None]:
         """
         RPC 1, ``COM_Local``
 
@@ -160,7 +160,7 @@ class TPS1000COM(GeoComSubsystem):
             [_mode.value]
         )
 
-    def nullproc(self) -> GeoComResponse[None]:
+    def nullprocess(self) -> GeoComResponse[None]:
         """
         RPC 0, ``COM_NullProc``
 
@@ -169,7 +169,7 @@ class TPS1000COM(GeoComSubsystem):
         """
         return self._request(0)
 
-    def enable_signoff(
+    def switch_signoff(
         self,
         enable: bool
     ) -> GeoComResponse[None]:

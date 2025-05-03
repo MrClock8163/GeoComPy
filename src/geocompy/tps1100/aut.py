@@ -64,7 +64,7 @@ class TPS1100AUT(TPS1000AUT):
 
         See Also
         --------
-        set_atr_status
+        switch_atr
         """
         return super().get_atr_status()
 
@@ -73,7 +73,7 @@ class TPS1100AUT(TPS1000AUT):
         "'AUS_SetUserAtrState' in v1.04 of TPS1100 GeoCom. Use the new "
         "command on instruments, that support it!"
     )
-    def set_atr_status(
+    def switch_atr(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -82,7 +82,7 @@ class TPS1100AUT(TPS1000AUT):
 
         .. deprecated:: GeoCom-TPS1100-1.04
             The command is still available, but should not be used with
-            instruments that support the new `aus.set_user_atr_state`
+            instruments that support the new `aus.switch_user_atr`
             command.
 
         Activates or deactivates the ATR mode.
@@ -109,9 +109,9 @@ class TPS1100AUT(TPS1000AUT):
         --------
         get_atr_status
         get_lock_status
-        set_lock_status
+        switch_lock
         """
-        return super().set_atr_status(activate)
+        return super().switch_atr(activate)
 
     @deprecated(
         "The 'AUT_GetLockStatus' command was superseded by "
@@ -140,8 +140,8 @@ class TPS1100AUT(TPS1000AUT):
 
         See Also
         --------
-        set_lock_status
-        mot.read_lock_status
+        switch_lock
+        mot.get_lockon_status
         """
         return super().get_lock_status()
 
@@ -150,7 +150,7 @@ class TPS1100AUT(TPS1000AUT):
         "'AUS_SetUserLockState' in v1.04 of TPS1100 GeoCom. Use the new "
         "command on instruments, that support it!"
     )
-    def set_lock_status(
+    def switch_lock(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -159,7 +159,7 @@ class TPS1100AUT(TPS1000AUT):
 
         .. deprecated:: GeoCom-TPS1100-1.04
             The command is still available, but should not be used with
-            instruments that support the new `aus.set_user_lock_state`
+            instruments that support the new `aus.switch_user_lock`
             command.
 
         Activates or deactivates the LOCK mode.
@@ -186,7 +186,7 @@ class TPS1100AUT(TPS1000AUT):
         get_atr_status
         lock_in
         """
-        return super().set_lock_status(activate)
+        return super().switch_lock(activate)
 
     def get_search_area(
         self
@@ -270,7 +270,7 @@ class TPS1100AUT(TPS1000AUT):
             [hz, v, width, height, enabled]
         )
 
-    def get_user_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
+    def get_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
         """
         RPC 9040, ``AUT_GetUserSpiral``
 
@@ -289,7 +289,7 @@ class TPS1100AUT(TPS1000AUT):
 
         See Also
         --------
-        set_user_spiral
+        set_spiral
         bap.search_target
         """
         return self._request(
@@ -297,7 +297,7 @@ class TPS1100AUT(TPS1000AUT):
             parsers=(Angle.parse, Angle.parse)
         )
 
-    def set_user_spiral(
+    def set_spiral(
         self,
         width: Angle,
         height: Angle
@@ -324,7 +324,7 @@ class TPS1100AUT(TPS1000AUT):
 
         See Also
         --------
-        get_user_spiral
+        get_spiral
         bap.search_target
         """
         return self._request(

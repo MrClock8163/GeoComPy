@@ -56,7 +56,7 @@ class TPS1200PBAP(TPS1100BAP):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1200 instruments")
-    def set_prism_def(
+    def set_prism_definition(
         self,
         *args
     ) -> Never:
@@ -71,7 +71,7 @@ class TPS1200PBAP(TPS1100BAP):
         """
         raise AttributeError()
 
-    def get_prism_type2(self) -> GeoComResponse[tuple[Prism, str]]:
+    def get_prism_type_name(self) -> GeoComResponse[tuple[Prism, str]]:
         """
         RPC 17031, ``BAP_GetPrismType2``
 
@@ -87,14 +87,14 @@ class TPS1200PBAP(TPS1100BAP):
         See Also
         --------
         set_prism_type
-        set_prism_type2
+        set_prism_type_name
         """
         return self._request(
             17031,
             parsers=(enumparser(Prism), parsestr)
         )
 
-    def set_prism_type2(
+    def set_prism_type_name(
         self,
         prism: Prism | str,
         name: str
@@ -120,8 +120,8 @@ class TPS1200PBAP(TPS1100BAP):
 
         See Also
         --------
-        get_prism_type2
-        tmc.set_prism_corr
+        get_prism_type_name
+        tmc.set_prism_correction
         """
         _prism = toenum(Prism, prism)
         return self._request(
@@ -129,7 +129,7 @@ class TPS1200PBAP(TPS1100BAP):
             [_prism.value, name]
         )
 
-    def get_user_prism_def(
+    def get_user_prism_definition(
         self,
         name: str
     ) -> GeoComResponse[tuple[str, float, Reflector]]:
@@ -156,9 +156,9 @@ class TPS1200PBAP(TPS1100BAP):
         See Also
         --------
         get_prism_type
-        get_prism_type2
-        get_prism_def
-        set_user_prism_def
+        get_prism_type_name
+        get_prism_definition
+        set_user_prism_definition
         """
         return self._request(
             17033,
@@ -170,7 +170,7 @@ class TPS1200PBAP(TPS1100BAP):
             )
         )
 
-    def set_user_prism_def(
+    def set_user_prism_definition(
         self,
         name: str,
         const: float,
@@ -203,8 +203,8 @@ class TPS1200PBAP(TPS1100BAP):
         See Also
         --------
         set_prism_type
-        get_prism_def
-        set_user_prism_def
+        get_prism_definition
+        set_user_prism_definition
         """
         _reflector = toenum(Reflector, reflector)
         return self._request(
@@ -257,7 +257,7 @@ class TPS1200PBAP(TPS1100BAP):
             [_mode.value]
         )
 
-    def get_red_atr_fov(self) -> GeoComResponse[bool]:
+    def get_reduced_atr_fov_status(self) -> GeoComResponse[bool]:
         """
         RPC 17036, ``BAP_GetRedATRFov``
 
@@ -271,14 +271,14 @@ class TPS1200PBAP(TPS1100BAP):
 
         See Also
         --------
-        set_red_atr_fov
+        switch_reduced_atr_fov
         """
         return self._request(
             17036,
             parsers=parsebool
         )
 
-    def set_red_atr_fov(
+    def switch_reduced_atr_fov(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -294,7 +294,7 @@ class TPS1200PBAP(TPS1100BAP):
 
         See Also
         --------
-        get_red_atr_fov
+        get_reduced_atr_fov_status
         """
         return self._request(
             17037,

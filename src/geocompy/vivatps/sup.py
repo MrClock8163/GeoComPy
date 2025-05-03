@@ -27,7 +27,7 @@ class VivaTPSSUP(TPS1200PSUP):
 
     """
 
-    def set_power_fail_autorestart(
+    def switch_autorestart(
         self,
         autorestart: bool
     ) -> GeoComResponse[None]:

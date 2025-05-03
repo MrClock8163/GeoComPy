@@ -40,7 +40,7 @@ class TPS1000CSV(GeoComSubsystem):
 
     """
 
-    def get_instrument_no(self) -> GeoComResponse[int]:
+    def get_serial_number(self) -> GeoComResponse[int]:
         """
         RPC 5003, ``CSV_GetInstrumentNo``
 
@@ -115,7 +115,7 @@ class TPS1000CSV(GeoComSubsystem):
             [name]
         )
 
-    def get_device_config(
+    def get_instrument_configuration(
         self
     ) -> GeoComResponse[tuple[DeviceClass, Capabilities]]:
         """
@@ -142,7 +142,7 @@ class TPS1000CSV(GeoComSubsystem):
             )
         )
 
-    def get_date_time(self) -> GeoComResponse[datetime]:
+    def get_datetime(self) -> GeoComResponse[datetime]:
         """
         RPC 5008, ``CSV_GetDateTime``
 
@@ -156,7 +156,7 @@ class TPS1000CSV(GeoComSubsystem):
 
         See Also
         --------
-        set_date_time
+        set_datetime
 
         """
         def make_datetime(
@@ -190,7 +190,7 @@ class TPS1000CSV(GeoComSubsystem):
 
         return response.map_params(make_datetime)
 
-    def set_date_time(
+    def set_datetime(
         self,
         time: datetime
     ) -> GeoComResponse[None]:
@@ -210,7 +210,7 @@ class TPS1000CSV(GeoComSubsystem):
 
         See Also
         --------
-        get_date_time
+        get_datetime
 
         """
         return self._request(
@@ -221,7 +221,7 @@ class TPS1000CSV(GeoComSubsystem):
             ]
         )
 
-    def get_sw_version(self) -> GeoComResponse[tuple[int, int, int]]:
+    def get_firmware_version(self) -> GeoComResponse[tuple[int, int, int]]:
         """
         RPC 5034, ``CSV_GetSWVersion``
 
@@ -241,7 +241,7 @@ class TPS1000CSV(GeoComSubsystem):
             parsers=(int, int, int)
         )
 
-    def get_v_bat(self) -> GeoComResponse[float]:
+    def get_voltage_battery(self) -> GeoComResponse[float]:
         """
         RPC 5009, ``CSV_GetVBat``
 
@@ -265,7 +265,7 @@ class TPS1000CSV(GeoComSubsystem):
             parsers=float
         )
 
-    def get_v_mem(self) -> GeoComResponse[float]:
+    def get_voltage_memory(self) -> GeoComResponse[float]:
         """
         RPC 5009, ``CSV_GetVMem``
 
@@ -285,7 +285,7 @@ class TPS1000CSV(GeoComSubsystem):
             parsers=float
         )
 
-    def get_int_temp(self) -> GeoComResponse[int]:
+    def get_internal_temperature(self) -> GeoComResponse[int]:
         """
         RPC 5011, ``CSV_GetIntTemp``
 

@@ -35,7 +35,9 @@ class TPS1000SUP(GeoComSubsystem):
 
     """
 
-    def get_config(self) -> GeoComResponse[tuple[bool, AutoPower, int]]:
+    def get_poweroff_configuration(
+        self
+    ) -> GeoComResponse[tuple[bool, AutoPower, int]]:
         """
         RPC 14001, ``SUP_GetConfig``
 
@@ -51,7 +53,7 @@ class TPS1000SUP(GeoComSubsystem):
 
         See Also
         --------
-        set_config
+        set_poweroff_configuration
 
         """
         return self._request(
@@ -63,7 +65,7 @@ class TPS1000SUP(GeoComSubsystem):
             )
         )
 
-    def set_config(
+    def set_poweroff_configuration(
         self,
         lowtemp: bool,
         autopower: AutoPower | str = AutoPower.SHUTDOWN,
@@ -91,7 +93,7 @@ class TPS1000SUP(GeoComSubsystem):
 
         See Also
         --------
-        get_config
+        get_poweroff_configuration
 
         """
         _autopower = toenum(AutoPower, autopower)
@@ -100,7 +102,7 @@ class TPS1000SUP(GeoComSubsystem):
             [lowtemp, _autopower.value, timeout]
         )
 
-    def switch_low_temp_control(
+    def switch_low_temperature_control(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -122,8 +124,8 @@ class TPS1000SUP(GeoComSubsystem):
 
         See Also
         --------
-        get_config
-        set_config
+        get_poweroff_configuration
+        set_poweroff_configuration
 
         """
         return self._request(

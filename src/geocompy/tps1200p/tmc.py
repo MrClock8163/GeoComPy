@@ -47,7 +47,7 @@ class TPS1200PTMC(TPS1100TMC):
 
     """
 
-    def get_atm_ppm(self) -> GeoComResponse[float]:
+    def get_atmospheric_correction_ppm(self) -> GeoComResponse[float]:
         """
         RPC 2151, ``TMC_GetAtmPpm``
 
@@ -61,11 +61,11 @@ class TPS1200PTMC(TPS1100TMC):
 
         See Also
         --------
-        set_atm_ppm
-        get_geo_ppm
-        set_geo_ppm
-        get_prism_corr
-        set_prism_corr
+        set_atmospheric_correction_ppm
+        get_geometric_correction_ppm
+        set_geometric_correction_ppm
+        get_prism_correction
+        set_prism_correction
 
         """
         return self._request(
@@ -73,7 +73,7 @@ class TPS1200PTMC(TPS1100TMC):
             parsers=float
         )
 
-    def set_atm_ppm(
+    def set_atmospheric_correction_ppm(
         self,
         ppm: float
     ) -> GeoComResponse[None]:
@@ -93,11 +93,11 @@ class TPS1200PTMC(TPS1100TMC):
 
         See Also
         --------
-        get_atm_ppm
-        get_geo_ppm
-        set_geo_ppm
-        get_prism_corr
-        set_prism_corr
+        get_atmospheric_correction_ppm
+        get_geometric_correction_ppm
+        set_geometric_correction_ppm
+        get_prism_correction
+        set_prism_correction
 
         """
         return self._request(
@@ -105,7 +105,7 @@ class TPS1200PTMC(TPS1100TMC):
             [ppm]
         )
 
-    def get_geo_ppm(
+    def get_geometric_correction_ppm(
         self
     ) -> GeoComResponse[tuple[bool, float, float, float, float]]:
         """
@@ -129,11 +129,11 @@ class TPS1200PTMC(TPS1100TMC):
 
         See Also
         --------
-        get_atm_ppm
-        set_atm_ppm
-        set_geo_ppm
-        get_prism_corr
-        set_prism_corr
+        get_atmospheric_correction_ppm
+        set_atmospheric_correction_ppm
+        set_geometric_correction_ppm
+        get_prism_correction
+        set_prism_correction
 
         """
         return self._request(
@@ -147,7 +147,7 @@ class TPS1200PTMC(TPS1100TMC):
             )
         )
 
-    def set_geo_ppm(
+    def set_geometric_correction_ppm(
         self,
         automatic: bool,
         meridianscale: float,
@@ -179,11 +179,11 @@ class TPS1200PTMC(TPS1100TMC):
 
         See Also
         --------
-        get_atm_ppm
-        set_atm_ppm
-        get_geo_ppm
-        get_prism_corr
-        set_prism_corr
+        get_atmospheric_correction_ppm
+        set_atmospheric_correction_ppm
+        get_geometric_correction_ppm
+        get_prism_correction
+        set_prism_correction
 
         """
         return self._request(

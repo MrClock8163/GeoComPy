@@ -53,14 +53,14 @@ class TPS1100AUS(GeoComSubsystem):
 
         See Also
         --------
-        set_user_atr_state
+        switch_user_atr
         """
         return self._request(
             18006,
             parsers=parsebool
         )
 
-    def set_user_atr_state(
+    def switch_user_atr(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -91,7 +91,7 @@ class TPS1100AUS(GeoComSubsystem):
         --------
         get_user_atr_state
         get_user_lock_state
-        set_user_lock_state
+        switch_user_lock
         """
         return self._request(18005, [enabled])
 
@@ -112,15 +112,15 @@ class TPS1100AUS(GeoComSubsystem):
 
         See Also
         --------
-        set_user_lock_state
-        mot.read_lock_status
+        switch_user_lock
+        mot.get_lockon_status
         """
         return self._request(
             18008,
             parsers=parsebool
         )
 
-    def set_user_lock_state(
+    def switch_user_lock(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -156,7 +156,7 @@ class TPS1100AUS(GeoComSubsystem):
             [enabled]
         )
 
-    def get_rcs_search_switch(self) -> GeoComResponse[bool]:
+    def get_rcs_search_status(self) -> GeoComResponse[bool]:
         """
         RPC 18010, ``AUS_GetRcsSearchSwitch``
 

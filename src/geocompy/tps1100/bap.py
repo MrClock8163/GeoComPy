@@ -88,7 +88,7 @@ class TPS1100BAP(TPS1000BAP):
         See Also
         --------
         get_target_type
-        set_meas_prg
+        set_measurement_program
         """
         _target = toenum(Target, target)
         return self._request(
@@ -154,7 +154,7 @@ class TPS1100BAP(TPS1000BAP):
             [_prism.value]
         )
 
-    def get_prism_def(
+    def get_prism_definition(
         self,
         prism: Prism | str
     ) -> GeoComResponse[tuple[str, float, Reflector]]:
@@ -192,7 +192,7 @@ class TPS1100BAP(TPS1000BAP):
             )
         )
 
-    def set_prism_def(
+    def set_prism_definition(
         self,
         prism: Prism | str,
         name: str,
@@ -238,7 +238,7 @@ class TPS1100BAP(TPS1000BAP):
             ]
         )
 
-    def get_meas_prg(self) -> GeoComResponse[UserProgram]:
+    def get_measurement_program(self) -> GeoComResponse[UserProgram]:
         """
         RPC 17018, ``BAP_GetMeasPrg``
 
@@ -252,14 +252,14 @@ class TPS1100BAP(TPS1000BAP):
 
         See Also
         --------
-        set_meas_prg
+        set_measurement_program
         """
         return self._request(
             17018,
             parsers=enumparser(UserProgram)
         )
 
-    def set_meas_prg(
+    def set_measurement_program(
         self,
         program: UserProgram | str
     ) -> GeoComResponse[None]:
@@ -281,7 +281,7 @@ class TPS1100BAP(TPS1000BAP):
 
         See Also
         --------
-        get_meas_prg
+        get_measurement_program
         set_target_type
         """
         _program = toenum(UserProgram, program)
@@ -314,8 +314,8 @@ class TPS1100BAP(TPS1000BAP):
 
         See Also
         --------
-        aut.get_user_spiral
-        aut.set_user_spiral
+        aut.get_spiral
+        aut.set_spiral
         aut.get_search_area
         aut.set_search_area
         """

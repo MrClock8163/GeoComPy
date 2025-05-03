@@ -25,7 +25,7 @@ class TPS1000CTL(GeoComSubsystem):
     Control task subsystem of the TPS1000 GeoCom protocol.
     """
 
-    def get_up_counter(self) -> GeoComResponse[tuple[int, int]]:
+    def get_wakeup_counter(self) -> GeoComResponse[tuple[int, int]]:
         """
         RPC 12003, ``CTL_GetUpCounter``
 

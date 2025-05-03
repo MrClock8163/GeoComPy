@@ -30,7 +30,7 @@ class TPS1200PAUS(TPS1100AUS):
     """
 
     @deprecated("This command was removed for TPS1200 instruments")
-    def get_rcs_search_switch(self) -> Never:
+    def get_rcs_search_status(self) -> Never:
         """
         RPC 18010, ``AUS_GetRcsSearchSwitch``
 

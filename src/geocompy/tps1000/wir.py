@@ -31,7 +31,7 @@ class TPS1000WIR(GeoComSubsystem):
     This subsystem is responsible for the GSI data recording operations.
     """
 
-    def get_rec_format(self) -> GeoComResponse[Format]:
+    def get_recording_format(self) -> GeoComResponse[Format]:
         """
         RPC 8011, ``WIR_GetRecFormat``
 
@@ -49,7 +49,7 @@ class TPS1000WIR(GeoComSubsystem):
             parsers=enumparser(Format)
         )
 
-    def set_rec_format(
+    def set_recording_format(
         self,
         format: Format | str
     ) -> GeoComResponse[None]:

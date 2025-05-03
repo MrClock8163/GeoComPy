@@ -38,7 +38,7 @@ class VivaTPSFTR(TPS1200PFTR):
 
     """
 
-    def delete_dir(
+    def delete_directory(
         self,
         dirname: str,
         time: datetime | None = None,
@@ -95,7 +95,7 @@ class VivaTPSFTR(TPS1200PFTR):
             int
         )
 
-    def setup_download_large(
+    def setup_large_download(
         self,
         filename: str,
         blocksize: int,
@@ -134,7 +134,7 @@ class VivaTPSFTR(TPS1200PFTR):
 
         See Also
         --------
-        download_xl
+        download_large
         abort_download
 
         """
@@ -146,7 +146,7 @@ class VivaTPSFTR(TPS1200PFTR):
             int
         )
 
-    def download_xl(
+    def download_large(
         self,
         block: int
     ) -> GeoComResponse[tuple[str, int]]:
@@ -174,7 +174,7 @@ class VivaTPSFTR(TPS1200PFTR):
 
         See Also
         --------
-        setup_download_large
+        setup_large_download
         abort_download
 
         """

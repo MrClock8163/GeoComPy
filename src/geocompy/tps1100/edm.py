@@ -36,7 +36,7 @@ class TPS1100EDM(TPS1000EDM):
 
     """
 
-    def get_egl_intensity(self) -> GeoComResponse[Guidelight]:
+    def get_guidelight_intensity(self) -> GeoComResponse[Guidelight]:
         """
         RPC 1058, ``EDM_GetEglIntensity``
 
@@ -57,7 +57,7 @@ class TPS1100EDM(TPS1000EDM):
             parsers=enumparser(Guidelight)
         )
 
-    def set_egl_intensity(
+    def set_guidelight_intensity(
         self,
         intensity: Guidelight | str
     ) -> GeoComResponse[None]:
@@ -69,7 +69,7 @@ class TPS1100EDM(TPS1000EDM):
         Parameters
         ----------
         intensity : GUIDELIGHT | str
-            Intensity setting to activate.
+            Intensity setting to switch_edm.
 
         Returns
         -------
@@ -86,7 +86,7 @@ class TPS1100EDM(TPS1000EDM):
         )
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def on(
+    def switch_edm(
         self,
         *args
     ) -> Never:
@@ -102,7 +102,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def get_bumerang(self) -> Never:
+    def get_boomerang_filter_status(self) -> Never:
         """
         RPC 1044, ``EDM_GetBumerang``
 
@@ -115,7 +115,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def set_bumerang(
+    def switch_boomerang_filter(
         self,
         *args
     ) -> Never:
@@ -131,12 +131,12 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def get_trk_light_brightness(self) -> Never:
+    def get_tracklight_brightness(self) -> Never:
         """
         RPC 1041, ``EDM_GetTrkLightBrightness``
 
         .. versionremoved:: GeoCom-TPS1100-1.00
-            Use `get_egl_intensity` instead.
+            Use `get_guidelight_intensity` instead.
 
         Raises
         ------
@@ -145,7 +145,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def set_trk_light_brightness(
+    def set_tracklight_brightness(
         self,
         *args
     ) -> Never:
@@ -153,7 +153,7 @@ class TPS1100EDM(TPS1000EDM):
         RPC 1032, ``EDM_SetTrkLightBrightness``
 
         .. versionremoved:: GeoCom-TPS1100-1.00
-            Use `set_egl_intensity` instead.
+            Use `set_guidelight_intensity` instead.
 
         Raises
         ------
@@ -162,12 +162,12 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def get_trk_light_switch(self) -> Never:
+    def get_tracklight_status(self) -> Never:
         """
         RPC 1040, ``EDM_GetTrkLightSwitch``
 
         .. versionremoved:: GeoCom-TPS1100-1.00
-            Use `get_egl_intensity` instead.
+            Use `get_guidelight_intensity` instead.
 
         Raises
         ------
@@ -176,7 +176,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def set_trk_light_switch(
+    def switch_tracklight(
         self,
         *args
     ) -> Never:
@@ -184,7 +184,7 @@ class TPS1100EDM(TPS1000EDM):
         RPC 1031, ``EDM_SetTrkLightSwitch``
 
         .. versionremoved:: GeoCom-TPS1100-1.00
-            Use `set_egl_intensity` instead.
+            Use `set_guidelight_intensity` instead.
 
         Raises
         ------

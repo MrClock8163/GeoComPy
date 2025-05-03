@@ -64,7 +64,7 @@ class TPS1000BAP(GeoComSubsystem):
             )
         )
 
-    def meas_distance_angle(
+    def measure_distance_angle(
         self,
         mode: Program | str = Program.DISTANCE
     ) -> GeoComResponse[tuple[Angle, Angle, float, Program]]:

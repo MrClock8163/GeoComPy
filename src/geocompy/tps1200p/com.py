@@ -46,7 +46,7 @@ class TPS1200PCOM(TPS1100COM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1200 instruments")
-    def enable_signoff(
+    def switch_signoff(
         self,
         *args
     ) -> Never:

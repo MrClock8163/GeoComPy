@@ -33,19 +33,19 @@ class VivaTPSAUT(TPS1200PAUT):
 
     """
 
-    def set_lock_fly_mode(
+    def switch_lock_onthefly(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
         """
         RPC 9103, ``AUT_SetLockFlyMode``
 
-        Sets the state of the fly mode for the lock mode.
+        Sets the state of on-the-fly mode for the lock mode.
 
         Parameters
         ----------
         enabled : bool
-            New state to set for fly mode.
+            Enable on-the-fly lock mode.
 
         Returns
         -------
@@ -53,35 +53,35 @@ class VivaTPSAUT(TPS1200PAUT):
 
         See Also
         --------
-        get_lock_fly_mode
+        get_lock_onthefly_status
         """
         return self._request(
             9103,
             [enabled]
         )
 
-    def get_lock_fly_mode(self) -> GeoComResponse[bool]:
+    def get_lock_onthefly_status(self) -> GeoComResponse[bool]:
         """
         RPC 9102, ``AUT_GetLockFlyMode``
 
-        Gets the current state of the fly mode for the lock mode.
+        Gets the current state of the on-the-fly lock mode.
 
         Returns
         -------
         GeoComResponse
             Params:
-                - `bool`: Fly mode is enabled.
+                - `bool`: On-the-fly lock mode is enabled.
 
         See Also
         --------
-        get_lock_fly_mode
+        get_lock_onthefly_status
         """
         return self._request(
             9102,
             parsers=parsebool
         )
 
-    def cam_posit_to_pixel_coord(
+    def aim_at_pixel(
         self,
         x: int,
         y: int,

@@ -3,7 +3,7 @@ Distance Measurement
 
 .. automodule:: geocompy.tps1200p.edm
     :inherited-members:
-    :exclude-members: on,get_bumerang,set_bumerang,get_trk_light_brightness,set_trk_light_brightness,get_trk_light_switch,set_trk_light_switch
+    :exclude-members: switch_edm,get_boomerang_filter_status,switch_boomerang_filter,get_tracklight_brightness,set_tracklight_brightness,get_tracklight_status,switch_tracklight
 
     Definitions
     -----------

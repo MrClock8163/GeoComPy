@@ -33,7 +33,7 @@ class VivaTPSEDM(TPS1200PEDM):
 
     """
 
-    def is_cont_meas_active(
+    def is_continuous_measurement(
         self,
         mode: MeasurementType | str
     ) -> GeoComResponse[bool]:
@@ -62,7 +62,7 @@ class VivaTPSEDM(TPS1200PEDM):
             parsebool
         )
 
-    def set_boomerang_filter(
+    def switch_boomerang_filter_new(
         self,
         enable: bool
     ) -> GeoComResponse[None]:

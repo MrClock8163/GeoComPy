@@ -27,7 +27,7 @@ class VivaTPSIMG(TPS1200PIMG):
 
     """
 
-    def set_tcc_exposure_time(
+    def set_telescopic_exposure_time(
         self,
         time: int
     ) -> GeoComResponse[None]:

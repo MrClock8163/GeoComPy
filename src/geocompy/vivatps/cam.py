@@ -47,7 +47,7 @@ class VivaTPSCAM(GeoComSubsystem):
 
     """
 
-    def set_zoom_factor(
+    def set_zoom(
         self,
         zoom: Zoom | str,
         camera: Camera | str = Camera.OVERVIEW
@@ -78,7 +78,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [_camera.value, _zoom.value]
         )
 
-    def get_zoom_factor(
+    def get_zoom(
         self,
         camera: Camera | str = Camera.OVERVIEW
     ) -> GeoComResponse[Zoom]:
@@ -108,7 +108,7 @@ class VivaTPSCAM(GeoComSubsystem):
             enumparser(Zoom)
         )
 
-    def get_cam_pos(
+    def get_camera_position(
         self,
         camera: Camera | str = Camera.OVERVIEW
     ) -> GeoComResponse[Coordinate]:
@@ -135,7 +135,7 @@ class VivaTPSCAM(GeoComSubsystem):
         See Also
         --------
         tmc.get_station
-        get_cam_viewing_dir
+        get_camera_direction
         """
         def transform(
             params: tuple[float, float, float] | None
@@ -161,7 +161,7 @@ class VivaTPSCAM(GeoComSubsystem):
         )
         return response.map_params(transform)
 
-    def get_cam_viewing_dir(
+    def get_camera_direction(
         self,
         dist: float,
         camera: Camera | str = Camera.OVERVIEW
@@ -190,7 +190,7 @@ class VivaTPSCAM(GeoComSubsystem):
 
         See Also
         --------
-        get_cam_pos
+        get_camera_position
         """
         def transform(
             params: tuple[float, float, float] | None
@@ -326,7 +326,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [_camera.value]
         )
 
-    def ovc_get_act_camera_center(self) -> GeoComResponse[tuple[float, float]]:
+    def get_overview_crosshair(self) -> GeoComResponse[tuple[float, float]]:
         """
         RPC 23624, ``CAM_GetActCameraCenter``
 
@@ -346,7 +346,7 @@ class VivaTPSCAM(GeoComSubsystem):
 
         See Also
         --------
-        ovc_set_act_distance
+        set_overview_distance
         set_camera_properties
         """
         return self._request(
@@ -357,10 +357,10 @@ class VivaTPSCAM(GeoComSubsystem):
             )
         )
 
-    def ovc_set_act_distance(
+    def set_overview_distance(
         self,
         dist: float,
-        isface1: bool = True
+        face1: bool = True
     ) -> GeoComResponse[None]:
         """
         RPC 23625, ``CAM_GetActDistance``
@@ -371,7 +371,7 @@ class VivaTPSCAM(GeoComSubsystem):
         ----------
         dist : float
             Target distance.
-        isface1 : float
+        face1 : float
             Telescope is in face 1 position.
 
         Returns
@@ -382,14 +382,14 @@ class VivaTPSCAM(GeoComSubsystem):
 
         See Also
         --------
-        ovc_get_act_camera_center
+        get_overview_crosshair
         """
         return self._request(
             23625,
-            [dist, isface1]
+            [dist, face1]
         )
 
-    def set_whitebalance_mode(
+    def set_whitebalance(
         self,
         whitebalance: WhiteBalance | str = WhiteBalance.AUTO,
         camera: Camera | str = Camera.OVERVIEW
@@ -447,8 +447,8 @@ class VivaTPSCAM(GeoComSubsystem):
 
         See Also
         --------
-        get_camera_power_switch
-        set_camera_power_switch
+        get_camera_power_status
+        switch_camera_power
         wait_for_camera_ready
         """
         _camera = toenum(Camera, camera)
@@ -501,7 +501,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [_camera.value, _res.value, _comp.value, _qual.value]
         )
 
-    def get_camera_power_switch(
+    def get_camera_power_status(
         self,
         camera: Camera | str = Camera.OVERVIEW
     ) -> GeoComResponse[bool]:
@@ -526,7 +526,7 @@ class VivaTPSCAM(GeoComSubsystem):
         See Also
         --------
         is_camera_ready
-        set_camera_power_switch
+        switch_camera_power
         wait_for_camera_ready
         """
         _camera = toenum(Camera, camera)
@@ -536,7 +536,7 @@ class VivaTPSCAM(GeoComSubsystem):
             parsebool
         )
 
-    def set_camera_power_switch(
+    def switch_camera_power(
         self,
         activate: bool,
         camera: Camera | str = Camera.OVERVIEW
@@ -562,7 +562,7 @@ class VivaTPSCAM(GeoComSubsystem):
         See Also
         --------
         is_camera_ready
-        get_camera_power_switch
+        get_camera_power_status
         wait_for_camera_ready
         """
         _camera = toenum(Camera, camera)
@@ -599,8 +599,8 @@ class VivaTPSCAM(GeoComSubsystem):
         See Also
         --------
         is_camera_ready
-        get_camera_power_switch
-        set_camera_power_switch
+        get_camera_power_status
+        switch_camera_power
         """
         _camera = toenum(Camera, camera)
         return self._request(
@@ -608,7 +608,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [_camera.value, wait]
         )
 
-    def af_set_motor_position(
+    def set_autofocus_position(
         self,
         position: int
     ) -> GeoComResponse[None]:
@@ -630,14 +630,14 @@ class VivaTPSCAM(GeoComSubsystem):
 
         See Also
         --------
-        af_get_motor_position
+        get_autofocus_position
         """
         return self._request(
             23645,
             [position]
         )
 
-    def af_get_motor_position(self) -> GeoComResponse[int]:
+    def get_autofocus_position(self) -> GeoComResponse[int]:
         """
         RPC 23644, ``CAM_AF_GetMotorPosition``
 
@@ -653,14 +653,14 @@ class VivaTPSCAM(GeoComSubsystem):
 
         See Also
         --------
-        af_set_motor_position
+        set_autofocus_position
         """
         return self._request(
             23644,
             parsers=int
         )
 
-    def af_continuous_autofocus(
+    def switch_continuous_autofocus(
         self,
         start: bool
     ) -> GeoComResponse[None]:
@@ -686,7 +686,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [start]
         )
 
-    def af_posit_focus_motor_to_dist(
+    def set_focus_to_distance(
         self,
         dist: float
     ) -> GeoComResponse[None]:
@@ -712,7 +712,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [dist]
         )
 
-    def af_posit_focus_motor_to_infinity(self) -> GeoComResponse[None]:
+    def set_focus_to_infinity(self) -> GeoComResponse[None]:
         """
         RPC 23677, ``CAM_AF_PositFocusMotorToInfinity``
 
@@ -727,9 +727,9 @@ class VivaTPSCAM(GeoComSubsystem):
         """
         return self._request(23677)
 
-    def at_singleshot_autofocus(self) -> GeoComResponse[None]:
+    def set_focus_to_target(self) -> GeoComResponse[None]:
         """
-        RPC 23677, ``CAM_AF_SingleShotAutofocus``
+        RPC 23662, ``CAM_AF_SingleShotAutofocus``
 
         Focuses current target.
 
@@ -742,7 +742,7 @@ class VivaTPSCAM(GeoComSubsystem):
         """
         return self._request(23662)
 
-    def af_focus_contrast_around_current(
+    def set_focus_to_target_contrast(
         self,
         steps: int
     ) -> GeoComResponse[None]:
@@ -768,7 +768,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [steps]
         )
 
-    def get_chip_window_size(
+    def get_sensor_size(
         self,
         camera: Camera | str = Camera.OVERVIEW
     ) -> GeoComResponse[tuple[float, float]]:
@@ -802,7 +802,7 @@ class VivaTPSCAM(GeoComSubsystem):
             )
         )
 
-    def oac_get_crosshair_pos(self) -> GeoComResponse[tuple[int, int]]:
+    def get_telescopic_crosshair(self) -> GeoComResponse[tuple[int, int]]:
         """
         RPC 23671, ``CAM_OAC_GetCrossHairPos``
 
@@ -826,12 +826,12 @@ class VivaTPSCAM(GeoComSubsystem):
             )
         )
 
-    def ovc_read_inter_orient(
+    def get_overview_interior_orientation(
         self,
         calibrated: bool = True
     ) -> GeoComResponse[tuple[float, float, float, float]]:
         """
-        RPC 23602, ``CAM_OAC_ReadInterOrient``
+        RPC 23602, ``CAM_OVC_ReadInterOrient``
 
         Gets the interior orientation parameters of the camera.
 
@@ -863,12 +863,12 @@ class VivaTPSCAM(GeoComSubsystem):
             )
         )
 
-    def ovc_read_exter_orient(
+    def get_overview_exterior_orientation(
         self,
         calibrated: bool = True
     ) -> GeoComResponse[tuple[Coordinate, Angle, Angle, Angle]]:
         """
-        RPC 23603, ``CAM_OAC_ReadExterOrient``
+        RPC 23603, ``CAM_OVC_ReadExterOrient``
 
         Gets the exterior orientation parameters of the camera.
 

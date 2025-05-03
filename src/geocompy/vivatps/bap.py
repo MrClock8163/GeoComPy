@@ -29,7 +29,7 @@ class VivaTPSBAP(TPS1200PBAP):
 
     """
 
-    def get_atr_precise(self) -> GeoComResponse[bool]:
+    def get_precise_atr_status(self) -> GeoComResponse[bool]:
         """
         RPC 17039, ``BAP_GetATRPrecise``
 
@@ -43,14 +43,14 @@ class VivaTPSBAP(TPS1200PBAP):
 
         See Also
         --------
-        set_atr_precise
+        switch_precise_atr
         """
         return self._request(
             17039,
             parsers=parsebool
         )
 
-    def set_atr_precise(
+    def switch_precise_atr(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -70,7 +70,7 @@ class VivaTPSBAP(TPS1200PBAP):
 
         See Also
         --------
-        get_atr_precise
+        get_precise_atr_status
         """
         return self._request(
             17040,

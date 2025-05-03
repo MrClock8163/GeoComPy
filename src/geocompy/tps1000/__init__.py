@@ -79,7 +79,7 @@ class TPS1000(GeoComProtocol):
     >>>
     >>> with open_serial("COM1") as line:
     ...     tps = TPS1000(line)
-    ...     tps.com.nullproc()
+    ...     tps.com.nullprocess()
     ...
     >>>
 
@@ -92,7 +92,7 @@ class TPS1000(GeoComProtocol):
     >>> log = get_logger("Viva", "stdout", DEBUG)
     >>> with open_serial("COM1") as line:
     ...     tps = TPS1000(line, log)
-    ...     tps.com.nullproc()
+    ...     tps.com.nullprocess()
     ...
     >>>
     GeoComResponse(COM_NullProc) ... # Startup connection test
@@ -173,7 +173,7 @@ class TPS1000(GeoComProtocol):
         for i in range(retry):
             try:
                 self._conn.send("\n")
-                response = self.com.nullproc()
+                response = self.com.nullprocess()
                 if response.comcode and response.rpccode:
                     sleep(1)
                     break

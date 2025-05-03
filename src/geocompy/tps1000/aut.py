@@ -62,14 +62,14 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        set_atr_status
+        switch_atr
         """
         return self._request(
             9019,
             parsers=parsebool
         )
 
-    def set_atr_status(
+    def switch_atr(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -100,7 +100,7 @@ class TPS1000AUT(GeoComSubsystem):
         --------
         get_atr_status
         get_lock_status
-        set_lock_status
+        switch_lock
         """
         return self._request(9018, [activate])
 
@@ -121,15 +121,15 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        set_lock_status
-        mot.read_lock_status
+        switch_lock
+        mot.get_lockon_status
         """
         return self._request(
             9021,
             parsers=parsebool
         )
 
-    def set_lock_status(
+    def switch_lock(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -165,7 +165,7 @@ class TPS1000AUT(GeoComSubsystem):
             [activate]
         )
 
-    def read_tol(self) -> GeoComResponse[tuple[Angle, Angle]]:
+    def get_tolerance(self) -> GeoComResponse[tuple[Angle, Angle]]:
         """
         RPC 9008, ``AUT_ReadTol``
 
@@ -183,14 +183,14 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        set_tol
+        set_tolerance
         """
         return self._request(
             9008,
             parsers=(Angle.parse, Angle.parse)
         )
 
-    def set_tol(
+    def set_tolerance(
         self,
         hz: Angle,
         v: Angle
@@ -217,11 +217,11 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        read_tol
+        get_tolerance
         """
         return self._request(9007, [hz, v])
 
-    def read_timeout(self) -> GeoComResponse[tuple[float, float]]:
+    def get_timeout(self) -> GeoComResponse[tuple[float, float]]:
         """
         RPC 9012, ``AUT_ReadTimeout``
 
@@ -272,14 +272,14 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        read_timeout
+        get_timeout
         """
         return self._request(
             9011,
             [hz, v]
         )
 
-    def make_positioning(
+    def turn_to(
         self,
         hz: Angle,
         v: Angle,
@@ -326,12 +326,12 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_atr_status
-        set_atr_status
+        switch_atr
         get_lock_status
-        set_lock_status
-        read_tol
-        set_tol
-        read_timeout
+        switch_lock
+        get_tolerance
+        set_tolerance
+        get_timeout
         set_timeout
         com.get_timeout
         com.set_timeout
@@ -384,12 +384,12 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_atr_status
-        set_atr_status
+        switch_atr
         get_lock_status
-        set_lock_status
-        read_tol
-        set_tol
-        read_timeout
+        switch_lock
+        get_tolerance
+        set_tolerance
+        get_timeout
         set_timeout
         com.get_timeout
         com.set_timeout
@@ -443,7 +443,7 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_atr_status
-        set_atr_status
+        switch_atr
         get_fine_adjust_mode
         set_fine_adjust_mode
         """
@@ -491,7 +491,7 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_atr_status
-        set_atr_status
+        switch_atr
         fine_adjust
         """
         return self._request(
@@ -572,7 +572,7 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_lock_status
-        set_lock_status
-        mot.read_lock_status
+        switch_lock
+        mot.get_lockon_status
         """
         return self._request(9013)
