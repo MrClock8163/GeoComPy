@@ -100,12 +100,13 @@ class GeoComResponse(Generic[_P]):
         """Full, serialized request, that invoked this response."""
         self.response: str = response
         """Full, received response."""
-        self.comcode: GeoComReturnCode = comcode
-        """Parsed COM return code indicating the success/failure of
-            communication."""
-        self.rpccode: GeoComReturnCode = rpccode
-        """Parsed RPC return code indicating the success/failure of
-            the command."""
+        self.code: GeoComReturnCode = (
+            comcode
+            if comcode.value == 0
+            else rpccode
+        )
+        """Parsed return code indicating the success/failure of the
+        request."""
         self.trans: int = trans
         """Parsed transaction ID."""
         self.params: _P | None = params
@@ -114,15 +115,14 @@ class GeoComResponse(Generic[_P]):
 
     def __str__(self) -> str:
         return (
-            f"GeoComResponse({self.rpcname}) com: {self.comcode.name:s}, "
-            f"rpc: {self.rpccode.name:s}, "
+            f"GeoComResponse({self.rpcname}) code: {self.code.name:s}, "
             f"tr: {self.trans:d}, "
             f"params: {self.params}, "
             f"(cmd: '{self.cmd}', response: '{self.response}')"
         )
 
     def __bool__(self) -> bool:
-        return bool(self.comcode) and bool(self.rpccode)
+        return bool(self.code)
 
     def map_params(
         self,
@@ -151,8 +151,8 @@ class GeoComResponse(Generic[_P]):
             self.rpcname,
             self.cmd,
             self.response,
-            self.comcode,
-            self.rpccode,
+            self.code,
+            self.code,
             self.trans,
             params
         )
