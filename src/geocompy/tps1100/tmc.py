@@ -105,7 +105,7 @@ class TPS1100TMC(TPS1000TMC):
             [_mode.value]
         )
 
-    def get_slope_distance_correction(
+    def get_distance_correction(
         self
     ) -> GeoComResponse[tuple[float, float]]:
         """

@@ -473,7 +473,7 @@ class TPS1000TMC(GeoComSubsystem):
             [_cmd.value, _mode.value]
         )
 
-    def set_distance(
+    def set_manual_distance(
         self,
         distance: float,
         offset: float,
@@ -534,7 +534,7 @@ class TPS1000TMC(GeoComSubsystem):
             [distance, offset, _mode.value]
         )
 
-    def get_height(self) -> GeoComResponse[float]:
+    def get_target_height(self) -> GeoComResponse[float]:
         """
         RPC 2011, ``TMC_GetHeight``
 
@@ -548,7 +548,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        set_height
+        set_target_height
 
         """
         return self._request(
@@ -556,7 +556,7 @@ class TPS1000TMC(GeoComSubsystem):
             parsers=float
         )
 
-    def set_height(
+    def set_target_height(
         self,
         height: float
     ) -> GeoComResponse[None]:
@@ -580,7 +580,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        get_height
+        get_target_height
 
         """
         return self._request(
