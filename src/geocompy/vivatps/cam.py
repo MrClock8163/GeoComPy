@@ -447,8 +447,8 @@ class VivaTPSCAM(GeoComSubsystem):
 
         See Also
         --------
-        is_camera_powered
-        set_camera_power
+        get_camera_power_status
+        switch_camera_power
         wait_for_camera_ready
         """
         _camera = toenum(Camera, camera)
@@ -501,7 +501,7 @@ class VivaTPSCAM(GeoComSubsystem):
             [_camera.value, _res.value, _comp.value, _qual.value]
         )
 
-    def is_camera_powered(
+    def get_camera_power_status(
         self,
         camera: Camera | str = Camera.OVERVIEW
     ) -> GeoComResponse[bool]:
@@ -526,7 +526,7 @@ class VivaTPSCAM(GeoComSubsystem):
         See Also
         --------
         is_camera_ready
-        set_camera_power
+        switch_camera_power
         wait_for_camera_ready
         """
         _camera = toenum(Camera, camera)
@@ -536,7 +536,7 @@ class VivaTPSCAM(GeoComSubsystem):
             parsebool
         )
 
-    def set_camera_power(
+    def switch_camera_power(
         self,
         activate: bool,
         camera: Camera | str = Camera.OVERVIEW
@@ -562,7 +562,7 @@ class VivaTPSCAM(GeoComSubsystem):
         See Also
         --------
         is_camera_ready
-        is_camera_powered
+        get_camera_power_status
         wait_for_camera_ready
         """
         _camera = toenum(Camera, camera)
@@ -599,8 +599,8 @@ class VivaTPSCAM(GeoComSubsystem):
         See Also
         --------
         is_camera_ready
-        is_camera_powered
-        set_camera_power
+        get_camera_power_status
+        switch_camera_power
         """
         _camera = toenum(Camera, camera)
         return self._request(
@@ -660,7 +660,7 @@ class VivaTPSCAM(GeoComSubsystem):
             parsers=int
         )
 
-    def continuous_autofocus(
+    def switch_continuous_autofocus(
         self,
         start: bool
     ) -> GeoComResponse[None]:

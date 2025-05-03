@@ -257,7 +257,7 @@ class TPS1200PBAP(TPS1100BAP):
             [_mode.value]
         )
 
-    def get_reduced_atr_fov(self) -> GeoComResponse[bool]:
+    def get_reduced_atr_fov_status(self) -> GeoComResponse[bool]:
         """
         RPC 17036, ``BAP_GetRedATRFov``
 
@@ -271,14 +271,14 @@ class TPS1200PBAP(TPS1100BAP):
 
         See Also
         --------
-        set_reduced_atr_fov
+        switch_reduced_atr_fov
         """
         return self._request(
             17036,
             parsers=parsebool
         )
 
-    def set_reduced_atr_fov(
+    def switch_reduced_atr_fov(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -294,7 +294,7 @@ class TPS1200PBAP(TPS1100BAP):
 
         See Also
         --------
-        get_reduced_atr_fov
+        get_reduced_atr_fov_status
         """
         return self._request(
             17037,

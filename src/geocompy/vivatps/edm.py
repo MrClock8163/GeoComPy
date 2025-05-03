@@ -62,7 +62,7 @@ class VivaTPSEDM(TPS1200PEDM):
             parsebool
         )
 
-    def set_boomerang_filter_new(
+    def switch_boomerang_filter_new(
         self,
         enable: bool
     ) -> GeoComResponse[None]:

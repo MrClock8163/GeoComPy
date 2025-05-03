@@ -47,7 +47,7 @@ class TPS1200PAUT(TPS1100AUT):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1200 instruments")
-    def set_atr_status(
+    def switch_atr(
         self,
         *args
     ) -> Never:
@@ -76,7 +76,7 @@ class TPS1200PAUT(TPS1100AUT):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1200 instruments")
-    def set_lock_status(
+    def switch_lock(
         self,
         *args
     ) -> Never:
@@ -91,7 +91,7 @@ class TPS1200PAUT(TPS1100AUT):
         """
         raise AttributeError()
 
-    def enable_powersearch_range(
+    def switch_powersearch_range(
         self,
         enable: bool
     ) -> GeoComResponse[None]:
@@ -148,7 +148,7 @@ class TPS1200PAUT(TPS1100AUT):
 
         See Also
         --------
-        enable_powersearch_range
+        switch_powersearch_range
         powersearch_window
         set_search_area
         """
@@ -173,7 +173,7 @@ class TPS1200PAUT(TPS1100AUT):
 
         See Also
         --------
-        enable_powersearch_range
+        switch_powersearch_range
         set_powersearch_range
         powersearch_next
         set_search_area
@@ -207,7 +207,7 @@ class TPS1200PAUT(TPS1100AUT):
 
         See Also
         --------
-        enable_powersearch_range
+        switch_powersearch_range
         powersearch_window
         """
         _direction = toenum(Turn, direction)

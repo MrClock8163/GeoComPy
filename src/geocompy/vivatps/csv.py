@@ -36,7 +36,7 @@ class VivaTPSCSV(TPS1200PCSV):
 
     """
 
-    def set_startup_message_mode(
+    def switch_startup_message(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -60,7 +60,7 @@ class VivaTPSCSV(TPS1200PCSV):
             [enabled]
         )
 
-    def get_startup_message_mode(self) -> GeoComResponse[bool]:
+    def get_startup_message_status(self) -> GeoComResponse[bool]:
         """
         RPC 5156, ``CSV_GetStartupMessageMode``
 
@@ -209,7 +209,7 @@ class VivaTPSCSV(TPS1200PCSV):
             parsers=int
         )
 
-    def set_charging(
+    def switch_charging(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -233,7 +233,7 @@ class VivaTPSCSV(TPS1200PCSV):
             [activate]
         )
 
-    def get_charging(self) -> GeoComResponse[bool]:
+    def get_charging_status(self) -> GeoComResponse[bool]:
         """
         RPC 5162, ``CSV_GetCharging``
 

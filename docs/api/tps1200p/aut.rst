@@ -3,7 +3,7 @@ Automation
 
 .. automodule:: geocompy.tps1200p.aut
     :inherited-members:
-    :exclude-members: get_atr_status,set_atr_status,get_lock_status,set_lock_status
+    :exclude-members: get_atr_status,switch_atr,get_lock_status,switch_lock
 
     Definitions
     -----------

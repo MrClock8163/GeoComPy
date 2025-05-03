@@ -33,7 +33,7 @@ class VivaTPSAUT(TPS1200PAUT):
 
     """
 
-    def set_lock_onthefly(
+    def switch_lock_onthefly(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -53,14 +53,14 @@ class VivaTPSAUT(TPS1200PAUT):
 
         See Also
         --------
-        get_lock_onthefly
+        get_lock_onthefly_status
         """
         return self._request(
             9103,
             [enabled]
         )
 
-    def get_lock_onthefly(self) -> GeoComResponse[bool]:
+    def get_lock_onthefly_status(self) -> GeoComResponse[bool]:
         """
         RPC 9102, ``AUT_GetLockFlyMode``
 
@@ -74,7 +74,7 @@ class VivaTPSAUT(TPS1200PAUT):
 
         See Also
         --------
-        get_lock_onthefly
+        get_lock_onthefly_status
         """
         return self._request(
             9102,

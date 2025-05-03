@@ -160,7 +160,7 @@ class TPS1000COM(GeoComSubsystem):
             [_mode.value]
         )
 
-    def nullproc(self) -> GeoComResponse[None]:
+    def nullprocess(self) -> GeoComResponse[None]:
         """
         RPC 0, ``COM_NullProc``
 
@@ -169,7 +169,7 @@ class TPS1000COM(GeoComSubsystem):
         """
         return self._request(0)
 
-    def enable_signoff(
+    def switch_signoff(
         self,
         enable: bool
     ) -> GeoComResponse[None]:

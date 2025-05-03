@@ -1005,7 +1005,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def get_active_angle_corrections(
+    def get_angle_correction_status(
         self
     ) -> GeoComResponse[tuple[bool, bool, bool, bool]]:
         """
@@ -1024,7 +1024,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        switch_active_angle_corrections
+        switch_angle_correction
 
         """
         return self._request(
@@ -1037,7 +1037,7 @@ class TPS1000TMC(GeoComSubsystem):
             )
         )
 
-    def is_compensated(self) -> GeoComResponse[bool]:
+    def get_compensator_status(self) -> GeoComResponse[bool]:
         """
         RPC 2007, ``TMC_GetInclineSwitch``
 
@@ -1079,7 +1079,7 @@ class TPS1000TMC(GeoComSubsystem):
 
         See Also
         --------
-        is_compensated
+        get_compensator_status
 
         """
         return self._request(
@@ -1264,7 +1264,7 @@ class TPS1000TMC(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def switch_active_angle_corrections(
+    def switch_angle_correction(
         self,
         inclinecorr: bool,
         stdaxiscorr: bool,
@@ -1296,7 +1296,7 @@ class TPS1000TMC(GeoComSubsystem):
         See Also
         --------
         do_measurement
-        get_active_angle_corrections
+        get_angle_correction_status
 
         """
         return self._request(

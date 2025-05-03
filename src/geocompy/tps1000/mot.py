@@ -123,7 +123,7 @@ class TPS1000MOT(GeoComSubsystem):
         --------
         set_velocity
         start_controller
-        aus.set_user_lock_state
+        aus.switch_user_lock
 
         """
         _mode = toenum(Stop, mode)
@@ -165,7 +165,7 @@ class TPS1000MOT(GeoComSubsystem):
         --------
         set_velocity
         start_controller
-        aus.set_user_lock_state
+        aus.switch_user_lock
 
         """
         _horizontal = min(0.79, max(-0.79, float(hz)))

@@ -69,7 +69,7 @@ class TPS1100EDM(TPS1000EDM):
         Parameters
         ----------
         intensity : GUIDELIGHT | str
-            Intensity setting to activate.
+            Intensity setting to switch_edm.
 
         Returns
         -------
@@ -86,7 +86,7 @@ class TPS1100EDM(TPS1000EDM):
         )
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def activate(
+    def switch_edm(
         self,
         *args
     ) -> Never:
@@ -102,7 +102,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def get_boomerang_filter(self) -> Never:
+    def get_boomerang_filter_status(self) -> Never:
         """
         RPC 1044, ``EDM_GetBumerang``
 
@@ -115,7 +115,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def set_boomerang_filter(
+    def switch_boomerang_filter(
         self,
         *args
     ) -> Never:
@@ -162,7 +162,7 @@ class TPS1100EDM(TPS1000EDM):
         raise AttributeError()
 
     @deprecated("This command was removed for TPS1100 instruments")
-    def is_tracklight_active(self) -> Never:
+    def get_tracklight_status(self) -> Never:
         """
         RPC 1040, ``EDM_GetTrkLightSwitch``
 

@@ -62,14 +62,14 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        set_atr_status
+        switch_atr
         """
         return self._request(
             9019,
             parsers=parsebool
         )
 
-    def set_atr_status(
+    def switch_atr(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -100,7 +100,7 @@ class TPS1000AUT(GeoComSubsystem):
         --------
         get_atr_status
         get_lock_status
-        set_lock_status
+        switch_lock
         """
         return self._request(9018, [activate])
 
@@ -121,7 +121,7 @@ class TPS1000AUT(GeoComSubsystem):
 
         See Also
         --------
-        set_lock_status
+        switch_lock
         mot.get_lockon_status
         """
         return self._request(
@@ -129,7 +129,7 @@ class TPS1000AUT(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def set_lock_status(
+    def switch_lock(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -326,9 +326,9 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_atr_status
-        set_atr_status
+        switch_atr
         get_lock_status
-        set_lock_status
+        switch_lock
         get_tolerance
         set_tolerance
         get_timeout
@@ -384,9 +384,9 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_atr_status
-        set_atr_status
+        switch_atr
         get_lock_status
-        set_lock_status
+        switch_lock
         get_tolerance
         set_tolerance
         get_timeout
@@ -443,7 +443,7 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_atr_status
-        set_atr_status
+        switch_atr
         get_fine_adjust_mode
         set_fine_adjust_mode
         """
@@ -491,7 +491,7 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_atr_status
-        set_atr_status
+        switch_atr
         fine_adjust
         """
         return self._request(
@@ -572,7 +572,7 @@ class TPS1000AUT(GeoComSubsystem):
         See Also
         --------
         get_lock_status
-        set_lock_status
+        switch_lock
         mot.get_lockon_status
         """
         return self._request(9013)

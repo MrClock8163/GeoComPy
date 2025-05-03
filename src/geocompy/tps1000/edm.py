@@ -36,7 +36,7 @@ class TPS1000EDM(GeoComSubsystem):
 
     """
 
-    def laserpointer(
+    def switch_laserpointer(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -55,7 +55,7 @@ class TPS1000EDM(GeoComSubsystem):
         GeoComResponse
             Error codes:
                 - ``NOT_IMPL``: Instrument has no
-                  laserpointer.
+                  switch_laserpointer.
                 - ``EDM_HWFAILURE``: Hardware error.
                 - ``EDM_COMERR``: Error communicating with EDM.
                 - ``TIMEDOUT``: Process timed out.
@@ -70,7 +70,7 @@ class TPS1000EDM(GeoComSubsystem):
             [activate]
         )
 
-    def activate(
+    def switch_edm(
         self,
         activate: bool
     ) -> GeoComResponse[None]:
@@ -101,7 +101,7 @@ class TPS1000EDM(GeoComSubsystem):
             [activate]
         )
 
-    def get_boomerang_filter(self) -> GeoComResponse[bool]:
+    def get_boomerang_filter_status(self) -> GeoComResponse[bool]:
         """
         RPC 1044, ``EDM_GetBumerang``
 
@@ -128,7 +128,7 @@ class TPS1000EDM(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def set_boomerang_filter(
+    def switch_boomerang_filter(
         self,
         enabled: bool
     ) -> GeoComResponse[None]:
@@ -206,7 +206,7 @@ class TPS1000EDM(GeoComSubsystem):
             [_intensity.value]
         )
 
-    def is_tracklight_active(self) -> GeoComResponse[bool]:
+    def get_tracklight_status(self) -> GeoComResponse[bool]:
         """
         RPC 1040, ``EDM_GetTrkLightSwitch``
 
