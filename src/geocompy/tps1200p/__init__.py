@@ -179,8 +179,7 @@ class TPS1200P(GeoComProtocol):
         for i in range(retry):
             try:
                 self._conn.send("\n")
-                response = self.com.nullprocess()
-                if not response.error:
+                if self.com.nullprocess():
                     sleep(1)
                     break
             except Exception:

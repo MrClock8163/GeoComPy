@@ -38,6 +38,9 @@ _P = TypeVar("_P", bound=Any)
 class GeoComReturnCode(IntEnum):
     """Base class for all GeoCom return code enums."""
 
+    def __bool__(self) -> bool:
+        return self == 0
+
 
 class GeoComResponse(Generic[_P]):
     """
