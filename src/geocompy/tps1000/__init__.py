@@ -373,20 +373,20 @@ class TPS1000(GeoComProtocol):
         except SerialTimeoutException:
             self._logger.error(format_exc())
             answer = (
-                f"%R1P,{TPS1000RC.COM_TIMEDOUT.value:d},"
-                f"0:{TPS1000RC.FATAL.value:d}"
+                f"%R1P,{TPS1000RC.COM_TIMEDOUT:d},"
+                f"0:{TPS1000RC.OK:d}"
             )
         except SerialException:
             self._logger.error(format_exc())
             answer = (
-                f"%R1P,{TPS1000RC.COM_CANT_SEND.value:d},"
-                f"0:{TPS1000RC.FATAL.value:d}"
+                f"%R1P,{TPS1000RC.COM_CANT_SEND:d},"
+                f"0:{TPS1000RC.OK:d}"
             )
         except Exception:
             self._logger.error(format_exc())
             answer = (
-                f"%R1P,{TPS1000RC.FATAL.value:d},"
-                f"0:{TPS1000RC.FATAL.value:d}"
+                f"%R1P,{TPS1000RC.COM_FAILED:d},"
+                f"0:{TPS1000RC.OK:d}"
             )
 
         response = self.parse_response(

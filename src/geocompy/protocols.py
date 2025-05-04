@@ -105,7 +105,7 @@ class GeoComResponse(Generic[_P]):
         """Full, received response."""
         self.error: GeoComReturnCode = (
             comcode
-            if comcode.value == 0
+            if comcode
             else rpccode
         )
         """Parsed return code indicating the success/failure of the
