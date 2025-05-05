@@ -36,3 +36,52 @@ To use the package, Python 3.11 or higher is required.
 For the platform independent serial communication, GeoComPy relies on the
 [pySerial](https://pypi.org/project/pyserial/) package to provide the
 necessary abstractions.
+
+## Installation
+
+The preferred method to install GeoComPy is through PyPI, where both wheel
+and source distributions are made available.
+
+```shell
+python -m pip install geocompy
+```
+
+If not yet published changes/fixes are needed, that are only available in
+source, GeoComPy can also be installed locally from source, without any
+external tools. Once the repository is cloned to a directory, it can be
+installed with pip.
+
+```shell
+git clone https://github.com/MrClock8163/GeoComPy.git
+cd GeoComPy
+python -m pip install .
+```
+
+## Short example
+
+The below example demonstrates how to connect to a TPS1000 instrument
+through a serial connection. Once the connection is up and running, the
+total station is instructed to turn to horizontal 0, and position the
+telescope parallel to the ground.
+
+```py
+from geocompy import (
+    Angle,
+    open_serial,
+    TPS1000
+)
+
+
+with open_serial("COM1") as comm:
+    tps = TPS1000(comm)
+    tps.aut.turn_to(Angle(0), Angle(90, 'DEG'))
+```
+
+## License
+
+GeoComPy is free and open source software, and it is distributed under
+the terms of the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html)
+license.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see https://www.gnu.org/licenses/.
