@@ -913,4 +913,51 @@ class Coordinate(Vector):
 
     """
 
-    # SIM = 0x04000 # TPSSim
+    @classmethod
+    def from_polar(
+        cls,
+        hz: Angle,
+        v: Angle,
+        dist: float
+    ) -> Self:
+        """
+        Constructs 3D cartesian coordinate from polar coordinate.
+
+        Parameters
+        ----------
+        hz : Angle
+            Horizontal angle.
+        v : Angle
+            Vertical angle.
+        dist : float
+            Slope distance.
+
+        Returns
+        -------
+        Coordinate
+        """
+        dist2d = math.sin(v) * dist
+        x = math.sin(hz) * dist2d
+        y = math.cos(hz) * dist2d
+        z = math.cos(v) * dist
+
+        return cls(x, y, z)
+
+    def to_polar(self) -> tuple[Angle, Angle, float]:
+        """
+        Converts 3D cartesian coordinates to polar coordinates.
+
+        Returns
+        -------
+        tuple
+            Horizontal and vertical angles and slope distance.
+        """
+        dist2d = math.sqrt(self.x**2 + self.y**2)
+        dist = math.sqrt(dist2d**2 + self.z**2)
+        hz = math.atan2(self.x, self.y)
+        v = math.atan2(dist2d, self.z)
+        return (
+            Angle(hz, normalize=True, positive=True),
+            Angle(v, normalize=True, positive=True),
+            dist
+        )

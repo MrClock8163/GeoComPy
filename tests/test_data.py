@@ -1,3 +1,4 @@
+import math
 from enum import Enum
 
 import pytest
@@ -156,3 +157,17 @@ class TestCoordinate:
         assert type(+c1) is Coordinate
         c3 = +c1
         assert c3 is not c1
+
+    def test_polar(self):
+        c1 = Coordinate(-1, -1, -1)
+        p1 = c1.to_polar()
+
+        assert float(p1[0]) == approx(math.radians(225))
+        assert float(p1[1]) == approx(math.radians(125.2643897))
+        assert p1[2] == approx(math.sqrt(3))
+
+        c2 = Coordinate.from_polar(*p1)
+
+        assert c1.x == approx(c2.x)
+        assert c1.y == approx(c2.y)
+        assert c1.z == approx(c2.z)
