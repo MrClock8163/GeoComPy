@@ -22,7 +22,8 @@ from __future__ import annotations
 
 import logging
 from types import TracebackType
-from typing import Literal
+from typing import Literal, Generator
+from contextlib import contextmanager
 
 from serial import (
     Serial,
@@ -412,3 +413,45 @@ class SerialConnection(Connection):
         """
         self.send(cmd)
         return self.receive()
+
+    @contextmanager
+    def timeout_override(self, timeout: int) -> Generator[None, None, None]:
+        """
+        Context manager that temporarily overrides connection parameters.
+
+        Parameters
+        ----------
+        timeout : int
+            Temporary timeout in seconds.
+
+        Returns
+        -------
+        Generator
+            Context manager generator object.
+
+        Example
+        -------
+
+        >>> from serial import Serial
+        >>> from geocompy.communication import SerialConnection
+        >>>
+        >>> port = Serial("COM1", timeout=5)
+        >>> with SerialConnection(port) as com:
+        ...     # normal operation
+        ...
+        ...     # potentially long operation
+        ...     with com.timeout_override(20):
+        ...         answer = com.exchange("message")
+        ...
+        ...     # continue normal operation
+        ...
+        """
+        saved_timeout = self._port.timeout
+
+        try:
+            if timeout is not None:
+                self._port.timeout = timeout
+            yield
+        finally:
+            if timeout is not None:
+                self._port.timeout = saved_timeout
