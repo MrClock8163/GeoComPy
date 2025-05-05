@@ -215,6 +215,14 @@ class VivaTPS(GeoComProtocol):
             )
 
         self._logger.info("Connection initialized")
+        name = self.csv.get_instrument_name().params or "Unknown"
+        geocom = self.com.get_geocom_version().params or (0, 0, 0)
+        firmware = self.csv.get_firmware_version().params or (0, 0, 0)
+        self._logger.info(
+            f"Instrument: {name} "
+            f"(firmware: v{firmware[0]}.{firmware[1]}.{firmware[2]}, "
+            f"geocom: v{geocom[0]}.{geocom[1]}.{geocom[2]})"
+        )
 
     def get_double_precision(self) -> GeoComResponse[int]:
         """
