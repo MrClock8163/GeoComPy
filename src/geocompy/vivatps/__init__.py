@@ -192,8 +192,7 @@ class VivaTPS(GeoComProtocol):
         for i in range(retry):
             try:
                 self._conn.send("\n")
-                response = self.com.nullprocess()
-                if response.comcode and response.rpccode:
+                if self.com.nullprocess():
                     sleep(1)
                     break
             except Exception:
@@ -265,7 +264,7 @@ class VivaTPS(GeoComProtocol):
 
         """
         response: GeoComResponse[None] = self.request(107, [digits])
-        if response.comcode and response.rpccode:
+        if not response.error:
             self._precision = digits
         return response
 
@@ -398,20 +397,20 @@ class VivaTPS(GeoComProtocol):
         except SerialTimeoutException:
             self._logger.error(format_exc())
             answer = (
-                f"%R1P,{VivaTPSGRC.COM_TIMEDOUT.value:d},"
-                f"0:{VivaTPSGRC.FATAL.value:d}"
+                f"%R1P,{VivaTPSGRC.COM_TIMEDOUT:d},"
+                f"0:{VivaTPSGRC.OK:d}"
             )
         except SerialException:
             self._logger.error(format_exc())
             answer = (
-                f"%R1P,{VivaTPSGRC.COM_CANT_SEND.value:d},"
-                f"0:{VivaTPSGRC.FATAL.value:d}"
+                f"%R1P,{VivaTPSGRC.COM_CANT_SEND:d},"
+                f"0:{VivaTPSGRC.OK:d}"
             )
         except Exception:
             self._logger.error(format_exc())
             answer = (
-                f"%R1P,{VivaTPSGRC.FATAL.value:d},"
-                f"0:{VivaTPSGRC.FATAL.value:d}"
+                f"%R1P,{VivaTPSGRC.COM_FAILED:d},"
+                f"0:{VivaTPSGRC.OK:d}"
             )
 
         response = self.parse_response(
@@ -486,7 +485,7 @@ class VivaTPS(GeoComProtocol):
                 cmd,
                 response,
                 VivaTPSGRC.COM_CANT_DECODE,
-                VivaTPSGRC.UNDEFINED,
+                VivaTPSGRC.OK,
                 0
             )
 
@@ -510,7 +509,7 @@ class VivaTPS(GeoComProtocol):
                 cmd,
                 response,
                 VivaTPSGRC.COM_CANT_DECODE,
-                VivaTPSGRC.UNDEFINED,
+                VivaTPSGRC.OK,
                 0
             )
 
