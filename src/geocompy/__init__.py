@@ -72,6 +72,12 @@ Reexports
 ``geocompy.data.Coordinate``
     3D coordinate primitive.
 
+``geocompy.communication.open_serial``
+    Serial connection context manager function.
+
+``geocompy.communication.get_logger``
+    Utility function to create logger objects.
+
 ``geocompy.protocols.GeoComResponse``
     GeoCom protocol response container.
 
@@ -116,6 +122,11 @@ from .data import (  # noqa: F401
     AngleUnit as AngleUnit,
     Vector as Vector,
     Coordinate as Coordinate
+)
+
+from .communication import (  # noqa: F401
+    open_serial as open_serial,
+    get_logger as get_logger
 )
 
 from .protocols import (  # noqa: F401
