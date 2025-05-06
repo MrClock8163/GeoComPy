@@ -8,7 +8,7 @@ name = "geocompy"
 authors = [
   { name="MrClock", email="mrclock8163@gmail.com" },
 ]
-description = "Python package for controlling Leica instruments through serial connection"
+description = "Surveying instrument automation through GeoCom and other protocols."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -16,18 +16,29 @@ dependencies = [
     "typing-extensions"
 ]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Education",
     "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Terminals :: Serial",
     "Typing :: Typed"
 ]
-license = "GPL-3.0-or-later"
+license = "MIT"
 license-files = ["LICEN[CS]E*"]
-keywords = ["GeoCom", "surveying", "tps1200", "viva"]
+keywords = ["geocom", "surveying", "leica", "totalstation", "monitoring", "automation", "gsi"]
 
 [project.urls]
 Homepage = "https://github.com/MrClock8163/geocompy"

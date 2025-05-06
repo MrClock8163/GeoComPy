@@ -79,9 +79,5 @@ with open_serial("COM1") as comm:
 
 ## License
 
-GeoComPy is free and open source software, and it is distributed under
-the terms of the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html)
-license.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see https://www.gnu.org/licenses/.
+GeoComPy is free and open source software, and it is distributed under the terms of the
+[MIT License](https://opensource.org/license/mit).
