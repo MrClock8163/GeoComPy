@@ -28,7 +28,6 @@ Submodules
 """
 from __future__ import annotations
 
-import re
 import logging
 from time import sleep
 from typing import TypeVar
@@ -93,13 +92,6 @@ class TPS1000(GeoComProtocol):
     GeoComResponse(COM_GetDoublePrecision) ... # Precision sync
     GeoComResponse(COM_NullProc) ... # First executed command
     """
-    _RESPPAT: re.Pattern = re.compile(
-        r"^%R1P,"
-        r"(?P<comrc>\d+),"
-        r"(?P<tr>\d+):"
-        r"(?P<rc>\d+)"
-        r"(?:,(?P<params>.*))?$"
-    )
     _RPCNAMES: dict[int, str] = rpcnames
     _CODES: type[GeoComReturnCode] = TPS1000RC
     _OK: GeoComReturnCode = TPS1000RC.OK
