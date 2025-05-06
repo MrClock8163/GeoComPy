@@ -15,7 +15,7 @@ def dna() -> DNA:
 
 
 class TestDNA:
-    def test_init(self):
+    def test_init(self) -> None:
         conn_bad = Connection()
         with pytest.raises(ConnectionError):
             DNA(conn_bad, retry=1)
@@ -24,17 +24,17 @@ class TestDNA:
         dna = DNA(conn_good)
         assert dna._gsi16
 
-    def test_request(self, dna: DNA):
+    def test_request(self, dna: DNA) -> None:
         GsiOnlineTester.test_request(dna)
 
-    def test_setrequest(self, dna: DNA):
+    def test_setrequest(self, dna: DNA) -> None:
         GsiOnlineTester.test_setrequest(dna)
 
-    def test_confrequest(self, dna: DNA):
+    def test_confrequest(self, dna: DNA) -> None:
         GsiOnlineTester.test_confrequest(dna)
 
-    def test_putrequest(self, dna: DNA):
+    def test_putrequest(self, dna: DNA) -> None:
         GsiOnlineTester.test_putrequest(dna)
 
-    def test_getrequest(self, dna: DNA):
+    def test_getrequest(self, dna: DNA) -> None:
         GsiOnlineTester.test_getrequest(dna)
