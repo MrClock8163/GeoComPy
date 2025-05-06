@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from typing import Never
+from typing import Never, Any
 from typing_extensions import deprecated
 
 from ..data import enumparser
@@ -106,7 +106,8 @@ class TPS1100CSV(TPS1000CSV):
     @deprecated("This command was removed for TPS1100 instruments")
     def set_user_instrument_name(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 5005, ``CSV_SetUserInstrumentName``

@@ -113,7 +113,7 @@ class Connection:
         """
         raise NotImplementedError("interface does not implement 'is_open'")
 
-    def send(self, message: str):
+    def send(self, message: str) -> None:
         """
         Sends a single serialized message through the connection.
 
@@ -296,7 +296,7 @@ class SerialConnection(Connection):
         if not self._port.is_open:
             self._port.open()
 
-    def __del__(self):
+    def __del__(self) -> None:
         self._port.close()
 
     def __enter__(self) -> SerialConnection:
@@ -307,10 +307,10 @@ class SerialConnection(Connection):
         exc_type: BaseException,
         exc_value: BaseException,
         exc_tb: TracebackType
-    ):
+    ) -> None:
         self._port.close()
 
-    def close(self):
+    def close(self) -> None:
         """
         Closes the serial port.
         """
@@ -328,7 +328,7 @@ class SerialConnection(Connection):
         """
         return self._port.is_open
 
-    def send(self, message: str):
+    def send(self, message: str) -> None:
         """
         Writes a single message to the serial line.
 

@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from typing import Never
+from typing import Never, Any
 from typing_extensions import deprecated
 
 from ..data import toenum
@@ -49,7 +49,8 @@ class TPS1200PAUT(TPS1100AUT):
     @deprecated("This command was removed for TPS1200 instruments")
     def switch_atr(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 9018, ``AUT_SetATRStatus``
@@ -78,7 +79,8 @@ class TPS1200PAUT(TPS1100AUT):
     @deprecated("This command was removed for TPS1200 instruments")
     def switch_lock(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 9020, ``AUT_SetLockStatus``

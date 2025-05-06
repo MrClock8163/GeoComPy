@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from typing import Never
+from typing import Never, Any
 from typing_extensions import deprecated
 
 from ..tps1100.sup import TPS1100SUP
@@ -32,7 +32,8 @@ class TPS1200PSUP(TPS1100SUP):
     @deprecated("This command was removed for TPS1200 instruments")
     def switch_low_temperature_control(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 14003, ``SUP_SwitchLowTempControl``

@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from typing import Never
+from typing import Never, Any
 from typing_extensions import deprecated
 
 from ..tps1100.aus import TPS1100AUS
@@ -45,7 +45,8 @@ class TPS1200PAUS(TPS1100AUS):
     @deprecated("This command was removed for TPS1200 instruments")
     def switch_rcs_search(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 18009, ``AUS_SwitchRcsSearch``

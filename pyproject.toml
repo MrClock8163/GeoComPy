@@ -68,3 +68,6 @@ version-file = "src/geocompy/_version.py"
 addopts = ["-ra", "-v", "--color=yes"]
 testpaths = ["tests"]
 required_plugins = "pytest-mock"
+
+[tool.mypy]
+strict = true
