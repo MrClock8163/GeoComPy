@@ -30,7 +30,6 @@ from __future__ import annotations
 
 import logging
 from time import sleep
-from typing import TypeVar
 
 from ..communication import Connection
 from ..protocols import (
@@ -50,9 +49,6 @@ from .sup import TPS1000SUP
 from .tmc import TPS1000TMC
 from .wir import TPS1000WIR
 from .rc import TPS1000RC, rpcnames
-
-
-_T = TypeVar("_T")
 
 
 class TPS1000(GeoComProtocol):
