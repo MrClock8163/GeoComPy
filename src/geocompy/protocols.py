@@ -20,12 +20,16 @@ Types
 """
 from __future__ import annotations
 
+import re
 from enum import IntEnum
 from logging import Logger
+from traceback import format_exc
 from typing import (
     Any, Callable, Iterable, Literal,
     Generic, TypeVar, overload
 )
+
+from serial import SerialException, SerialTimeoutException
 
 from .communication import Connection, get_logger
 from .data import Angle, Byte
@@ -40,6 +44,15 @@ class GeoComReturnCode(IntEnum):
 
     def __bool__(self) -> bool:
         return self == 0
+
+
+class _FallbackReturnCodes(GeoComReturnCode):
+    OK = 0
+    UNDEFINED = 1
+    COM_CANT_DECODE = 3074
+    COM_CANT_SEND = 3075
+    COM_TIMEDOUT = 3077
+    COM_FAILED = 3085
 
 
 class GeoComResponse(Generic[_P]):
@@ -166,6 +179,21 @@ class GeoComProtocol:
     Base class for GeoCom protocol versions.
 
     """
+    _R1P: re.Pattern = re.compile(
+        r"^%R1P,"
+        r"(?P<comrc>\d+),"
+        r"(?P<tr>\d+):"
+        r"(?P<rc>\d+)"
+        r"(?:,(?P<params>.*))?$"
+    )
+    _RPCNAMES: dict[int, str] = {}
+    _CODES: type[GeoComReturnCode] = _FallbackReturnCodes
+    _OK: GeoComReturnCode = _FallbackReturnCodes.OK
+    _FAILED: GeoComReturnCode = _FallbackReturnCodes.COM_FAILED
+    _CANTDECODE: GeoComReturnCode = _FallbackReturnCodes.COM_CANT_DECODE
+    _CANTSEND: GeoComReturnCode = _FallbackReturnCodes.COM_CANT_SEND
+    _TIMEOUT: GeoComReturnCode = _FallbackReturnCodes.COM_TIMEDOUT
+    _UNDEF: GeoComReturnCode = _FallbackReturnCodes.UNDEFINED
 
     REF_VERSION = (0, 0)
     """
@@ -197,6 +225,7 @@ class GeoComProtocol:
         if logger is None:
             logger = get_logger("/dev/null")
         self._logger: Logger = logger
+        self._precision = 15
 
     @overload
     def request(
@@ -248,17 +277,63 @@ class GeoComProtocol:
         GeoComResponse
             Parsed return codes and parameters from the RPC response.
 
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the class.
-
         """
-        raise NotImplementedError()
+        strparams: list[str] = []
+        for item in params:
+            match item:
+                case Angle():
+                    value = f"{round(float(item), self._precision):f}"
+                    value = value.rstrip("0")
+                    if value[-1] == ".":
+                        value += "0"
+                case Byte():
+                    value = str(item)
+                case float():
+                    value = f"{round(item, self._precision):f}".rstrip("0")
+                    if value[-1] == ".":
+                        value += "0"
+                case int():
+                    value = f"{item:d}"
+                case str():
+                    value = f"\"{item}\""
+                case _:
+                    raise TypeError(f"unexpected parameter type: {type(item)}")
+
+            strparams.append(value)
+
+        cmd = f"%R1Q,{rpc}:{','.join(strparams)}"
+        try:
+            answer = self._conn.exchange(cmd)
+        except SerialTimeoutException:
+            self._logger.error(format_exc())
+            answer = (
+                f"%R1P,{self._TIMEOUT:d},"
+                f"0:{self._OK:d}"
+            )
+        except SerialException:
+            self._logger.error(format_exc())
+            answer = (
+                f"%R1P,{self._CANTSEND:d},"
+                f"0:{self._OK:d}"
+            )
+        except Exception:
+            self._logger.error(format_exc())
+            answer = (
+                f"%R1P,{self._FAILED:d},"
+                f"0:{self._OK:d}"
+            )
+
+        response = self.parse_response(
+            cmd,
+            answer,
+            parsers
+        )
+        self._logger.debug(response)
+        return response
 
     @overload
     def parse_response(
-        cls,
+        self,
         cmd: str,
         response: str,
         parsers: Callable[[str], _T] | None = None
@@ -266,14 +341,14 @@ class GeoComProtocol:
 
     @overload
     def parse_response(
-        cls,
+        self,
         cmd: str,
         response: str,
         parsers: Iterable[Callable[[str], Any]] | None = None
     ) -> GeoComResponse[tuple]: ...
 
     def parse_response(
-        cls,
+        self,
         cmd: str,
         response: str,
         parsers: (
@@ -303,13 +378,71 @@ class GeoComProtocol:
         GeoComResponse
             Parsed return codes and parameters from the RPC response.
 
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the class.
-
         """
-        raise NotImplementedError()
+        m = self._R1P.match(response)
+        rpc = int(cmd.split(":")[0].split(",")[1])
+        rpcname = self._RPCNAMES.get(rpc, str(rpc))
+        if not m:
+            return GeoComResponse(
+                rpcname,
+                cmd,
+                response,
+                self._CANTDECODE,
+                self._OK,
+                0
+            )
+
+        groups = m.groupdict()
+        values = groups.get("params", "")
+        if values is None:
+            values = ""
+
+        if parsers is None:
+            parsers = ()
+        elif not isinstance(parsers, Iterable):
+            parsers = (parsers,)
+
+        params: list = []
+        try:
+            for func, value in zip(parsers, values.split(",")):
+                params.append(func(value))
+        except Exception:
+            return GeoComResponse(
+                rpcname,
+                cmd,
+                response,
+                self._CANTDECODE,
+                self._OK,
+                0
+            )
+
+        try:
+            comrc = self._CODES(int(groups["comrc"]))
+        except Exception:
+            comrc = self._UNDEF
+
+        try:
+            rc = self._CODES(int(groups["rc"]))
+        except Exception:
+            rc = self._UNDEF
+
+        match len(params):
+            case 0:
+                params_final = None
+            case 1:
+                params_final = params[0]
+            case _:
+                params_final = tuple(params)
+
+        return GeoComResponse(
+            rpcname,
+            cmd,
+            response,
+            comrc,
+            rc,
+            int(groups["tr"]),
+            params_final
+        )
 
 
 class GeoComSubsystem:

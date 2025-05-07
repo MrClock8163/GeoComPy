@@ -31,20 +31,12 @@ Submodules
 """
 from __future__ import annotations
 
-import re
 import logging
 from time import sleep
-from traceback import format_exc
-from typing import Callable, Iterable, Any, overload, TypeVar
 
-from serial import SerialException, SerialTimeoutException
-
-from ..data import (
-    Angle,
-    Byte
-)
 from ..communication import Connection
 from ..protocols import (
+    GeoComReturnCode,
     GeoComProtocol,
     GeoComResponse
 )
@@ -61,9 +53,6 @@ from .mot import TPS1200PMOT
 from .sup import TPS1200PSUP
 from .tmc import TPS1200PTMC
 from .grc import TPS1200PGRC, rpcnames
-
-
-_T = TypeVar("_T")
 
 
 class TPS1200P(GeoComProtocol):
@@ -103,13 +92,14 @@ class TPS1200P(GeoComProtocol):
     GeoComResponse(COM_GetDoublePrecision) ... # Precision sync
     GeoComResponse(COM_NullProc) ... # First executed command
     """
-    _RESPPAT: re.Pattern = re.compile(
-        r"^%R1P,"
-        r"(?P<comrc>\d+),"
-        r"(?P<tr>\d+):"
-        r"(?P<rc>\d+)"
-        r"(?:,(?P<params>.*))?$"
-    )
+    _RPCNAMES: dict[int, str] = rpcnames
+    _CODES: type[GeoComReturnCode] = TPS1200PGRC
+    _OK: GeoComReturnCode = TPS1200PGRC.OK
+    _FAILED: GeoComReturnCode = TPS1200PGRC.COM_FAILED
+    _CANTDECODE: GeoComReturnCode = TPS1200PGRC.COM_CANT_DECODE
+    _CANTSEND: GeoComReturnCode = TPS1200PGRC.COM_CANT_SEND
+    _TIMEOUT: GeoComReturnCode = TPS1200PGRC.COM_TIMEDOUT
+    _UNDEF: GeoComReturnCode = TPS1200PGRC.UNDEFINED
 
     REF_VERSION = (1, 50)
     """
@@ -195,6 +185,7 @@ class TPS1200P(GeoComProtocol):
         resp = self.get_double_precision()
         if resp.params is not None:
             self._precision = resp.params
+            self._logger.info(f"Synced double precision: {self._precision}")
         else:
             self._logger.error(
                 f"Could not syncronize double precision, "
@@ -260,264 +251,3 @@ class TPS1200P(GeoComProtocol):
         if not response.error:
             self._precision = digits
         return response
-
-    @overload
-    def request(
-        self,
-        rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
-        parsers: Callable[[str], _T] | None = None
-    ) -> GeoComResponse[_T]: ...
-
-    @overload
-    def request(
-        self,
-        rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
-        parsers: Iterable[Callable[[str], Any]] | None = None
-    ) -> GeoComResponse[tuple]: ...
-
-    def request(
-        self,
-        rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
-        parsers: (
-            Iterable[Callable[[str], Any]]
-            | Callable[[str], Any]
-            | None
-        ) = None
-    ) -> GeoComResponse:
-        """
-        Executes a TPS1200+ RPC request and returns the parsed GeoCom
-        response.
-
-        Constructs a request (from the given RPC code and parameters),
-        writes it to the serial line, then reads the response. The
-        response is then parsed using the provided parser functions.
-
-        Parameters
-        ----------
-        rpc : int
-            Number of the RPC to execute.
-        params : Iterable[int | float | bool | str | Angle | Byte]
-            Parameters for the request, by default ()
-        parsers : Iterable[Callable[[str], Any]] \
-                  | Callable[[str], Any] \
-                  | None, optional
-            Parser functions for the values in the RPC response,
-            by default None
-
-        Returns
-        -------
-        GeoComResponse
-            Parsed return codes and parameters from the RPC response.
-
-        Raises
-        ------
-        TypeError
-            If the passed parameters contained an unexpected type.
-
-        Notes
-        -----
-        If a :class:`~serial.SerialTimeoutException` occurs during the
-        request, a response with :attr:`~grc.TPS1200PGRC.COM_TIMEDOUT`
-        and :attr:`~grc.TPS1200PGRC.FATAL` codes is returned.
-
-        If a :class:`~serial.SerialException` occurs during the requrest,
-        a response with :attr:`~grc.TPS1200PGRC.COM_CANT_SEND` and
-        :attr:`~grc.TPS1200PGRC.FATAL` codes is returned.
-
-        If an unknown :class:`Exception` occurs during the request, a
-        response with :attr:`~grc.TPS1200PGRC.FATAL` and
-        :attr:`~grc.TPS1200PGRC.FATAL` codes is returned.
-
-        Examples
-        --------
-
-        Executing a command without input or output parameters:
-
-        >>> ts # Instantiated TPS1200P
-        >>> ts.request(9013) # AUT_LockIn
-
-        Query command with output:
-
-        >>> ts.request(
-        ...     9030, # AUT_GetFineAdjustMode
-        ...     [enumparser(ts.aut.ADJMODE)]
-        ... )
-
-        Execute command with both input and output parameters:
-
-        >>> ts.request(
-        ...     2108, # TMC_GetSimpleMea
-        ...     [5000, ts.tmc.INCLINEPRG.AUTO.value],
-        ...     [
-        ...         Angle.parse,
-        ...         Angle.parse,
-        ...         float
-        ...     ]
-        ... )
-        """
-        strparams: list[str] = []
-        for item in params:
-            match item:
-                case Angle():
-                    value = f"{round(float(item), self._precision):f}"
-                    value = value.rstrip("0")
-                    if value[-1] == ".":
-                        value += "0"
-                case Byte():
-                    value = str(item)
-                case float():
-                    value = f"{round(item, self._precision):f}".rstrip("0")
-                    if value[-1] == ".":
-                        value += "0"
-                case int():
-                    value = f"{item:d}"
-                case str():
-                    value = f"\"{item}\""
-                case _:
-                    raise TypeError(f"unexpected parameter type: {type(item)}")
-
-            strparams.append(value)
-
-        cmd = f"%R1Q,{rpc}:{','.join(strparams)}"
-        try:
-            answer = self._conn.exchange(cmd)
-        except SerialTimeoutException:
-            self._logger.error(format_exc())
-            answer = (
-                f"%R1P,{TPS1200PGRC.COM_TIMEDOUT:d},"
-                f"0:{TPS1200PGRC.OK:d}"
-            )
-        except SerialException:
-            self._logger.error(format_exc())
-            answer = (
-                f"%R1P,{TPS1200PGRC.COM_CANT_SEND:d},"
-                f"0:{TPS1200PGRC.OK:d}"
-            )
-        except Exception:
-            self._logger.error(format_exc())
-            answer = (
-                f"%R1P,{TPS1200PGRC.COM_FAILED:d},"
-                f"0:{TPS1200PGRC.OK:d}"
-            )
-
-        response = self.parse_response(
-            cmd,
-            answer,
-            parsers
-        )
-        self._logger.debug(response)
-        return response
-
-    @overload
-    def parse_response(
-        self,
-        cmd: str,
-        response: str,
-        parsers: Callable[[str], _T] | None = None
-    ) -> GeoComResponse[_T]: ...
-
-    @overload
-    def parse_response(
-        self,
-        cmd: str,
-        response: str,
-        parsers: Iterable[Callable[[str], Any]] | None = None
-    ) -> GeoComResponse[tuple]: ...
-
-    def parse_response(
-        self,
-        cmd: str,
-        response: str,
-        parsers: (
-            Iterable[Callable[[str], Any]]
-            | Callable[[str], Any]
-            | None
-        ) = None
-    ) -> GeoComResponse:
-        """
-        Parses RPC response and constructs GeoComResponse
-        instance.
-
-        Parameters
-        ----------
-        cmd : str
-            Full, serialized request, that invoked the response.
-        response : str
-            Full, received response.
-        parsers : Iterable[Callable[[str], Any]] \
-                  | Callable[[str], Any] \
-                  | None, optional
-            Parser functions for the values in the RPC response,
-            by default None
-
-        Returns
-        -------
-        GeoComResponse
-            Parsed return codes and parameters from the RPC response.
-
-        Notes
-        -----
-        If the response does not match the expected pattern, or an
-        :class:`Exception` occurs during parsing, a response with
-        :attr:`~grc.TPS1200PGRC.COM_CANT_DECODE` and
-        :attr:`~grc.TPS1200PGRC.UNDEFINED` codes is returned.
-        """
-        m = self._RESPPAT.match(response)
-        rpc = int(cmd.split(":")[0].split(",")[1])
-        rpcname = rpcnames.get(rpc, str(rpc))
-        if not m:
-            return GeoComResponse(
-                rpcname,
-                cmd,
-                response,
-                TPS1200PGRC.COM_CANT_DECODE,
-                TPS1200PGRC.OK,
-                0
-            )
-
-        groups = m.groupdict()
-        values = groups.get("params", "")
-        if values is None:
-            values = ""
-
-        if parsers is None:
-            parsers = ()
-        elif not isinstance(parsers, Iterable):
-            parsers = (parsers,)
-
-        params: list = []
-        try:
-            for func, value in zip(parsers, values.split(",")):
-                params.append(func(value))
-        except Exception:
-            return GeoComResponse(
-                rpcname,
-                cmd,
-                response,
-                TPS1200PGRC.COM_CANT_DECODE,
-                TPS1200PGRC.OK,
-                0
-            )
-
-        comrc = TPS1200PGRC(int(groups["comrc"]))
-        rc = TPS1200PGRC(int(groups["rc"]))
-        match len(params):
-            case 0:
-                params_final = None
-            case 1:
-                params_final = params[0]
-            case _:
-                params_final = tuple(params)
-
-        return GeoComResponse(
-            rpcname,
-            cmd,
-            response,
-            comrc,
-            rc,
-            int(groups["tr"]),
-            params_final
-        )
