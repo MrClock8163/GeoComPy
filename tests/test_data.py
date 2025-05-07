@@ -21,21 +21,21 @@ class A(Enum):
 
 
 class TestFunctions:
-    def test_toenum(self):
+    def test_toenum(self) -> None:
         assert toenum(A, "MEMBER") is A.MEMBER
         assert toenum(A, A.MEMBER) is A.MEMBER
 
-    def test_enumparser(self):
+    def test_enumparser(self) -> None:
         assert callable(enumparser(A))
         assert enumparser(A)("1") is A.MEMBER
 
-    def test_parsestr(self):
+    def test_parsestr(self) -> None:
         assert parsestr("value") == "value"
         assert parsestr("\"value") == "\"value"
         assert parsestr("value\"") == "value\""
         assert parsestr("\"value\"") == "value"
 
-    def test_gsiword(self):
+    def test_gsiword(self) -> None:
         assert gsiword(11, "1") == "11....+00000001 "
         assert gsiword(11, "1", gsi16=True) == "*11....+0000000000000001 "
         assert gsiword(
@@ -47,7 +47,7 @@ class TestFunctions:
 
 
 class TestAngle:
-    def test_init(self):
+    def test_init(self) -> None:
         assert float(Angle(1)) == approx(float(Angle(1, AngleUnit.RAD)))
 
         units = AngleUnit._member_names_.copy()
@@ -60,12 +60,12 @@ class TestAngle:
                 == approx(float(Angle(1, unit)))
             )
 
-    def test_asunit(self):
+    def test_asunit(self) -> None:
         value = Angle(180, 'DEG')
         assert value.asunit('DEG') == approx(180)
         assert value.asunit() == value.asunit('RAD')
 
-    def test_normalize(self):
+    def test_normalize(self) -> None:
         assert (
             Angle(
                 370,
@@ -98,7 +98,7 @@ class TestAngle:
             == approx(Angle(370, 'DEG').normalized().asunit('DEG'))
         )
 
-    def test_arithmetic(self):
+    def test_arithmetic(self) -> None:
         a1 = Angle(90, 'DEG')
         a2 = Angle(90, 'DEG')
         assert (
@@ -125,21 +125,21 @@ class TestAngle:
 
 
 class TestByte:
-    def test_init(self):
+    def test_init(self) -> None:
         with pytest.raises(ValueError):
             Byte(-1)
 
         with pytest.raises(ValueError):
             Byte(256)
 
-    def test_str(self):
+    def test_str(self) -> None:
         value = Byte(12)
         assert int(value) == 12
         assert str(value) == "'0C'"
 
 
 class TestCoordinate:
-    def test_init(self):
+    def test_init(self) -> None:
         value = Coordinate(1, 2, 3)
         assert value.x == 1
         assert value.y == 2
@@ -148,7 +148,7 @@ class TestCoordinate:
         x, _, _ = value
         assert x == value.x
 
-    def test_arithmetic(self):
+    def test_arithmetic(self) -> None:
         c1 = Coordinate(1, 1, 1)
         c2 = Coordinate(1, 2, 3)
 
@@ -158,7 +158,7 @@ class TestCoordinate:
         c3 = +c1
         assert c3 is not c1
 
-    def test_polar(self):
+    def test_polar(self) -> None:
         c1 = Coordinate(-1, -1, -1)
         p1 = c1.to_polar()
 

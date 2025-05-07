@@ -179,7 +179,7 @@ class GeoComProtocol:
     Base class for GeoCom protocol versions.
 
     """
-    _R1P: re.Pattern = re.compile(
+    _R1P: re.Pattern[str] = re.compile(
         r"^%R1P,"
         r"(?P<comrc>\d+),"
         r"(?P<tr>\d+):"
@@ -241,7 +241,7 @@ class GeoComProtocol:
         rpc: int,
         params: Iterable[int | float | bool | str | Angle | Byte] = (),
         parsers: Iterable[Callable[[str], Any]] | None = None
-    ) -> GeoComResponse[tuple]: ...
+    ) -> GeoComResponse[tuple[Any, ...]]: ...
 
     def request(
         self,
@@ -252,7 +252,7 @@ class GeoComProtocol:
             | Callable[[str], Any]
             | None
         ) = None
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[Any]:
         """
         Executes an RPC request and returns the parsed GeoCom response.
 
@@ -345,7 +345,7 @@ class GeoComProtocol:
         cmd: str,
         response: str,
         parsers: Iterable[Callable[[str], Any]] | None = None
-    ) -> GeoComResponse[tuple]: ...
+    ) -> GeoComResponse[tuple[Any, ...]]: ...
 
     def parse_response(
         self,
@@ -356,7 +356,7 @@ class GeoComProtocol:
             | Callable[[str], Any]
             | None
         ) = None
-    ) -> GeoComResponse:
+    ) -> GeoComResponse[Any]:
         """
         Parses RPC response and constructs :class:`GeoComResponse`
         instance.
@@ -402,7 +402,7 @@ class GeoComProtocol:
         elif not isinstance(parsers, Iterable):
             parsers = (parsers,)
 
-        params: list = []
+        params: list[Any] = []
         try:
             for func, value in zip(parsers, values.split(",")):
                 params.append(func(value))

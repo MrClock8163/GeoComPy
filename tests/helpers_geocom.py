@@ -25,7 +25,7 @@ class DummyGeoComConnection(Connection):
         r"(?:(?P<params>.*))?$"
     )
 
-    def send(self, message: str):
+    def send(self, message: str) -> None:
         return
 
     def exchange(self, cmd: str) -> str:
@@ -40,7 +40,7 @@ class DummyGeoComConnection(Connection):
 
 class GeoComTester:
     @staticmethod
-    def test_parse_response(instrument: GeoComProtocol):
+    def test_parse_response(instrument: GeoComProtocol) -> None:
         cmd = "%R1Q,5008:"
         answer = "%R1P,0,0:0,1996,'07','19','10','13','2f'"
         parsers: Iterable[Callable[[str], Any]] = (
@@ -65,7 +65,6 @@ class GeoComTester:
             parsers
         )
         assert response.params is None
-        # assert len(response.params) == 0
 
         parsers_faulty = (
             faulty_parser,
@@ -83,7 +82,7 @@ class GeoComTester:
         assert response.params is None
 
     @staticmethod
-    def test_request(instrument: GeoComProtocol):
+    def test_request(instrument: GeoComProtocol) -> None:
         response = instrument.request(
             5008,
             parsers=(

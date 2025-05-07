@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from typing import Never
+from typing import Never, Any
 from typing_extensions import deprecated
 
 from ..data import (
@@ -58,7 +58,8 @@ class TPS1200PBAP(TPS1100BAP):
     @deprecated("This command was removed for TPS1200 instruments")
     def set_prism_definition(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 17024, ``BAP_SetPrismDef``

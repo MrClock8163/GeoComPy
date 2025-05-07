@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from typing import Never
+from typing import Never, Any
 from typing_extensions import deprecated
 
 from ..data import (
@@ -88,7 +88,8 @@ class TPS1100EDM(TPS1000EDM):
     @deprecated("This command was removed for TPS1100 instruments")
     def switch_edm(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 1010, ``EDM_On``
@@ -117,7 +118,8 @@ class TPS1100EDM(TPS1000EDM):
     @deprecated("This command was removed for TPS1100 instruments")
     def switch_boomerang_filter(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 1007, ``EDM_SetBumerang``
@@ -147,7 +149,8 @@ class TPS1100EDM(TPS1000EDM):
     @deprecated("This command was removed for TPS1100 instruments")
     def set_tracklight_brightness(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 1032, ``EDM_SetTrkLightBrightness``
@@ -178,7 +181,8 @@ class TPS1100EDM(TPS1000EDM):
     @deprecated("This command was removed for TPS1100 instruments")
     def switch_tracklight(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 1031, ``EDM_SetTrkLightSwitch``

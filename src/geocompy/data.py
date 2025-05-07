@@ -34,8 +34,10 @@ from typing import (
     TypeAlias,
     Literal,
     Callable,
+    Iterator,
     TypeVar,
-    Self
+    Self,
+    Any
 )
 
 
@@ -758,7 +760,7 @@ class Vector:
     def __repr__(self) -> str:
         return str(self)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[float]:
         return iter([self.x, self.y, self.z])
 
     def __getitem__(self, idx: int) -> float:
@@ -768,7 +770,7 @@ class Vector:
         coords = (self.x, self.y, self.z)
         return coords[idx]
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if type(other) is not type(self):
             return False
 

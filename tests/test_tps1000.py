@@ -15,7 +15,7 @@ def tps() -> TPS1000:
 
 
 class TestTPS1000:
-    def test_init(self):
+    def test_init(self) -> None:
         conn_bad = Connection()
         with pytest.raises(ConnectionError):
             TPS1000(conn_bad, retry=1)
@@ -24,8 +24,8 @@ class TestTPS1000:
         instrument = TPS1000(conn_good)
         assert instrument._precision == 15
 
-    def test_parse_response(self, tps: TPS1000):
+    def test_parse_response(self, tps: TPS1000) -> None:
         GeoComTester.test_parse_response(tps)
 
-    def test_request(self, tps: TPS1000):
+    def test_request(self, tps: TPS1000) -> None:
         GeoComTester.test_request(tps)

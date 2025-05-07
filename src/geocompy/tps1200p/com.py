@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from typing import Never
+from typing import Never, Any
 from typing_extensions import deprecated
 
 from ..tps1100.com import TPS1100COM
@@ -32,7 +32,8 @@ class TPS1200PCOM(TPS1100COM):
     @deprecated("This command was removed for TPS1200 instruments")
     def set_send_delay(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 109, ``COM_SetSendDelay``
@@ -48,7 +49,8 @@ class TPS1200PCOM(TPS1100COM):
     @deprecated("This command was removed for TPS1200 instruments")
     def switch_signoff(
         self,
-        *args
+        *args: Any,
+        **kwargs: Any
     ) -> Never:
         """
         RPC 115, ``COM_EnableSignOff``

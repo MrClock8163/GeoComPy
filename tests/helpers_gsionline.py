@@ -24,7 +24,7 @@ class DummyGsiOnlineConnection(Connection):
         r"(?:[a-zA-Z0-9]{8}|[a-zA-Z0-9]{16}) $"
     )
 
-    def __init__(self, gsi16=False):
+    def __init__(self, gsi16: bool = False):
         self._gsi16 = gsi16
 
     def exchange(self, cmd: str) -> str:
@@ -53,14 +53,14 @@ class DummyGsiOnlineConnection(Connection):
 
 class GsiOnlineTester:
     @staticmethod
-    def test_request(instrument: GsiOnlineProtocol):
+    def test_request(instrument: GsiOnlineProtocol) -> None:
         response = instrument.request("d")
         assert not response.value
         response = instrument.request("a")
         assert response.value
 
     @staticmethod
-    def test_setrequest(instrument: GsiOnlineProtocol):
+    def test_setrequest(instrument: GsiOnlineProtocol) -> None:
         response = instrument.setrequest(0, 0)
         assert not response.value
         assert response.comment == "INSTRUMENT"
@@ -70,7 +70,7 @@ class GsiOnlineTester:
         assert response.value
 
     @staticmethod
-    def test_confrequest(instrument: GsiOnlineProtocol):
+    def test_confrequest(instrument: GsiOnlineProtocol) -> None:
         response = instrument.confrequest(0, int)
         assert not response.value
         assert response.comment == "INSTRUMENT"
@@ -86,7 +86,7 @@ class GsiOnlineTester:
         assert response.value == 0
 
     @staticmethod
-    def test_putrequest(instrument: GsiOnlineProtocol):
+    def test_putrequest(instrument: GsiOnlineProtocol) -> None:
         response = instrument.putrequest(0, "0.....+00000000 ")
         assert not response.value
         assert response.comment == "INSTRUMENT"
@@ -96,7 +96,7 @@ class GsiOnlineTester:
         assert response.value
 
     @staticmethod
-    def test_getrequest(instrument: GsiOnlineProtocol):
+    def test_getrequest(instrument: GsiOnlineProtocol) -> None:
         response = instrument.getrequest("I", 0, int)
         assert response.value is None
         assert response.response == "@W427"

@@ -15,7 +15,7 @@ def tps() -> VivaTPS:
 
 
 class TestVivaTPS:
-    def test_init(self):
+    def test_init(self) -> None:
         conn_bad = Connection()
         with pytest.raises(ConnectionError):
             VivaTPS(conn_bad, retry=1)
@@ -24,8 +24,8 @@ class TestVivaTPS:
         instrument = VivaTPS(conn_good)
         assert instrument._precision == 15
 
-    def test_parse_response(self, tps: VivaTPS):
+    def test_parse_response(self, tps: VivaTPS) -> None:
         GeoComTester.test_parse_response(tps)
 
-    def test_request(self, tps: VivaTPS):
+    def test_request(self, tps: VivaTPS) -> None:
         GeoComTester.test_request(tps)
