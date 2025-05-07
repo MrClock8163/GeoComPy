@@ -358,8 +358,7 @@ class GeoComProtocol:
         ) = None
     ) -> GeoComResponse[Any]:
         """
-        Parses RPC response and constructs :class:`GeoComResponse`
-        instance.
+        Parses RPC response and constructs `GeoComResponse` instance.
 
         Parameters
         ----------
