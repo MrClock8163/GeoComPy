@@ -415,19 +415,28 @@ class SerialConnection(Connection):
         return self.receive()
 
     @contextmanager
-    def timeout_override(self, timeout: int) -> Generator[None, None, None]:
+    def timeout_override(
+        self,
+        timeout: int | None
+    ) -> Generator[None, None, None]:
         """
         Context manager that temporarily overrides connection parameters.
 
         Parameters
         ----------
-        timeout : int
-            Temporary timeout in seconds.
+        timeout : int | None
+            Temporary timeout in seconds. Set to None to wait indefinitely.
 
         Returns
         -------
         Generator
             Context manager generator object.
+
+        Warning
+        -------
+        An indefinite timeout might leave the connection in a perpetual
+        waiting state, if the instrument became unresponsive in the
+        mean time (e.g. it powered off due to low battery charge).
 
         Example
         -------
@@ -449,9 +458,7 @@ class SerialConnection(Connection):
         saved_timeout = self._port.timeout
 
         try:
-            if timeout is not None:
-                self._port.timeout = timeout
+            self._port.timeout = timeout
             yield
         finally:
-            if timeout is not None:
-                self._port.timeout = saved_timeout
+            self._port.timeout = saved_timeout
