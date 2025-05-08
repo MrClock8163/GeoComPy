@@ -517,6 +517,9 @@ class Angle:
     def __repr__(self) -> str:
         return f"{type(self).__name__:s}({self.asunit(AngleUnit.DMS):s})"
 
+    def __format__(self, format_spec: str) -> str:
+        return format(self._value, format_spec)
+
     def __eq__(self, other: object) -> bool:
         if type(other) is not Angle:
             return False
