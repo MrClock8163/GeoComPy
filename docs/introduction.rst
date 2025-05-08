@@ -1,7 +1,7 @@
 Introduction
 ============
 
-This page aims to introduce the basic usage, and general concepts of the
+This section aims to introduce the basic usage, and general concepts of the
 package.
 
 Communication
@@ -12,57 +12,11 @@ a direct serial connection (RS232). This is available on almost all products.
 Newer equipment might also come with built-in, or attachable bluetooth
 connection capabilities.
 
-Currently the package only supports serial connections, for which the
-necessary primitives are implemented. Other communication formats may be
-added later.
-
 Communication related definitions can be found in the
-:mod:`~geocompy.communication` module. The main primitive is the
-:class:`~geocompy.communication.SerialConnection` class, that acts as a
-wrapper around a :class:`~serial.Serial` object that implements the actual
-low level serial communication.
+:mod:`~geocompy.communication` module.
 
-.. code-block:: python
-    :caption: Simple serial connection
-    :linenos:
-
-    from serial import Serial
-    from geocompy.communication import SerialConnection
-
-
-    port = Serial("COM1", timeout=15)
-    conn = SerialConnection(port)
-    conn.send("some message")
-    conn.close()  # Closes the wrapped serial port
-
-.. caution::
-    :class: warning
-
-    It is strongly recommended to set a ``timeout`` on the connection. Without
-    a ``timeout`` set, the connection may end up in a perpetual waiting state
-    if the instrument becomes unresponsive. A too small value however might
-    result in premature timeout issues when using slow commands (e.g.
-    motorized functions, measurements).
-
-The :class:`~geocompy.communication.SerialConnection` can also be used as a
-context manager, that automatically closes the serial port when the context
-is left.
-
-.. code-block:: python
-    :caption: Serial connection as context manager
-    :linenos:
-
-    from serial import Serial
-    from geocompy.communication import SerialConnection
-
-
-    port = Serial("COM1", timeout=15)
-    with SerialConnection(port) as conn:
-        conn.send("some message")
-
-To make the connection creation simpler, a utility function is also included
-that can be used similarly to the :func:`open` function of the standard
-library.
+A utility function can be used to open the serial connection, that works
+similarly to the :func:`open` function of the standard library.
 
 .. code-block:: python
     :caption: Creating connection with the utility function
@@ -71,8 +25,13 @@ library.
     from geocompy.communication import open_serial
 
 
-    with open_serial("COM1", timeout=15) as conn:
-        conn.send("some message")
+    with open_serial("COM1", timeout=15) as com:
+        com.send("some message")
+
+.. seealso::
+
+    Communication methods are discussed in more detail in
+    :ref:`page_connections`.
 
 Protocols
 ---------

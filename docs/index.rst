@@ -48,6 +48,7 @@ Content
 
    overview
    introduction
+   connections
    examples
 
 .. toctree::
