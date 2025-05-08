@@ -1,7 +1,7 @@
 Introduction
 ============
 
-This page aims to introduce the basic usage, and general concepts of the
+This section aims to introduce the basic usage, and general concepts of the
 package.
 
 Communication
@@ -30,7 +30,8 @@ similarly to the :func:`open` function of the standard library.
 
 .. seealso::
 
-    Connection methods are discussed in more detail in :ref:`page_connections`.
+    Communication methods are discussed in more detail in
+    :ref:`page_connections`.
 
 Protocols
 ---------

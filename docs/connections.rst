@@ -10,10 +10,10 @@ bluetooth as well.
 Serial Line
 -----------
 
-The RS232 serial line is the main method of connection. The main primitive
-is the :class:`~geocompy.communication.SerialConnection` class, that acts as a
-wrapper around a :class:`~serial.Serial` object that implements the actual
-low level serial communication.
+The RS232 serial line is the main method of connection. The relevant main
+primitive is the :class:`~geocompy.communication.SerialConnection` class,
+that acts as a wrapper around a :class:`~serial.Serial` object that
+implements the actual low level serial communication.
 
 .. code-block:: python
     :caption: Simple serial connection
@@ -67,8 +67,8 @@ library.
     with open_serial("COM1", timeout=15) as com:
         com.send("some message")
 
-If a time consuming request has to be executed, that might exceed the normal
-connection timeout, it is possible to run it with a temporary override.
+If a time consuming request has to be executed (that might exceed the normal
+connection timeout), it is possible to run it with a temporary override.
 
 .. code-block:: python
     :caption: Timeout override for slow requests
@@ -95,6 +95,13 @@ built-in or attachable bluetooth connection capabilities (e.g. Leica TS15
 with radio handle). These instruments communicate over Serial Port Profile
 Bluetooth Classic, that emulates a direct line serial connection.
 
+.. note::
+
+    In case of Leica instruments and GeoCom, the GeoCom interface on the
+    instrument might have to be manually switched to the bluetooth device,
+    before initiating a connection. Make sure to sync the port parameters
+    (e.g. speed, parity) between the instrument and the computer!
+
 To initiate a connection like this, the instrument first has to be paired
 to the controlling computer, and the bluetooth address of the instrument
 must be bound to an RFCOMM port as well.
@@ -120,13 +127,6 @@ be opened just like a normal serial line.
 
     with open_serial("COM9") as com:
         com.send("some message")
-
-.. note::
-
-    In case of Leica instruments and GeoCom, the GeoCom interface on the
-    instrument has to be manually switched to the bluetooth device,
-    before initiating a connection. Make sure to sync the port parameters
-    (e.g. speed, parity) between the instrument and the computer!
 
 .. seealso::
 
