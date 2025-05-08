@@ -14,6 +14,7 @@ Types
 """
 from __future__ import annotations
 
+from typing import SupportsFloat
 from typing_extensions import deprecated
 
 from ..data import (
@@ -228,10 +229,10 @@ class TPS1100AUT(TPS1000AUT):
 
     def set_search_area(
         self,
-        hz: Angle,
-        v: Angle,
-        width: Angle,
-        height: Angle,
+        hz: SupportsFloat,
+        v: SupportsFloat,
+        width: SupportsFloat,
+        height: SupportsFloat,
         enabled: bool = True
     ) -> GeoComResponse[None]:
         """
@@ -243,13 +244,13 @@ class TPS1100AUT(TPS1000AUT):
 
         Parameters
         ----------
-        hz : Angle
+        hz : SupportsFloat
             Horizontal center of search window.
-        v : Angle
+        v : SupportsFloat
             Vertical center of search window.
-        width : Angle
+        width : SupportsFloat
             Width of search window.
-        height : Angle
+        height : SupportsFloat
             Height of search window.
         enabled : bool
             Activation state of search window.
@@ -267,7 +268,7 @@ class TPS1100AUT(TPS1000AUT):
         """
         return self._request(
             9043,
-            [hz, v, width, height, enabled]
+            [float(hz), float(v), float(width), float(height), float(enabled)]
         )
 
     def get_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
@@ -299,8 +300,8 @@ class TPS1100AUT(TPS1000AUT):
 
     def set_spiral(
         self,
-        width: Angle,
-        height: Angle
+        width: SupportsFloat,
+        height: SupportsFloat
     ) -> GeoComResponse[None]:
         """
         RPC 9041, ``AUT_SetUserSpiral``
@@ -311,9 +312,9 @@ class TPS1100AUT(TPS1000AUT):
 
         Parameters
         ----------
-        width : Angle
+        width : SupportsFloat
             Width of the search window.
-        height : Angle
+        height : SupportsFloat
             Height of the search window.
 
         Returns
@@ -329,5 +330,5 @@ class TPS1100AUT(TPS1000AUT):
         """
         return self._request(
             9041,
-            [width, height]
+            [float(width), float(height)]
         )
