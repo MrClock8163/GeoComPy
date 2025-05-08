@@ -19,7 +19,6 @@ Functions
 Types
 -----
 
-- ``AngleUnit``
 - ``Angle``
 - ``Byte``
 - ``Vector``
@@ -31,7 +30,6 @@ import re
 import math
 from enum import Enum
 from typing import (
-    TypeAlias,
     Literal,
     Callable,
     Iterator,
@@ -243,45 +241,7 @@ def gsiword(
     return f"{mark}{idx}{padding}{info}{sign}{data} "
 
 
-class AngleUnit(Enum):
-    """
-    Angle measurement units to indicate the unit of an :class:`Angle`
-    instance.
-
-    See Also
-    --------
-    Angle
-
-    """
-    RAD = 1
-    """Radians"""
-
-    DEG = 2
-    """Degrees"""
-
-    PDEG = 3
-    """Pseudo-degrees (DDD.MMSS)"""
-
-    GON = 4
-    """Gradians"""
-
-    MIL = 5
-    """NATO milliradians (6400 mils per circle)"""
-
-    SEC = 6
-    """Arcseconds"""
-
-    DMS = 7
-    """DDD-MM-SS"""
-
-    NMEA = 8
-    """NMEA degrees (DDDMM.NNNNNN)"""
-
-
-_AngleUnitLike: TypeAlias = (
-    AngleUnit
-    | Literal['RAD', 'DEG', 'PDEG', 'GON', 'MIL', 'SEC', 'DMS', 'NMEA']
-)
+_AngleUnit = Literal['deg', 'rad', 'gon']
 
 
 class Angle:
@@ -301,10 +261,6 @@ class Angle:
     An `Angle` can be instantiated from a number of units,
     and can be converted to any other unit, but internally it is always
     represented in radians.
-
-    See Also
-    --------
-    AngleUnit
 
     """
 
@@ -337,46 +293,10 @@ class Angle:
         return math.radians(a)
 
     @staticmethod
-    def dm2rad(angle: float) -> float:
-        """Converts DDDMM.NNNNNN NMEA angle to radians.
-        """
-        w = angle / 100
-        d = int(w)
-        return math.radians(d + (w - d) * 100 / 60)
-
-    @staticmethod
-    def pdeg2rad(angle: float) -> float:
-        """Converts DDD.MMSS to radians.
-        """
-        d = math.floor(angle)
-        angle = round((angle - d) * 100, 10)
-        m = math.floor(angle)
-        s = round((angle - m) * 100, 10)
-        return math.radians(d + m / 60 + s / 3600)
-
-    @staticmethod
-    def sec2rad(angle: float) -> float:
-        """Converts arcseconds to radians.
-        """
-        return angle / RO
-
-    @staticmethod
-    def mil2rad(angle: float) -> float:
-        """Converts NATO mils to radians.
-        """
-        return angle / 6400 * 2 * math.pi
-
-    @staticmethod
     def rad2gon(angle: float) -> float:
         """Converts radians to gradians.
         """
         return angle / math.pi * 200
-
-    @staticmethod
-    def rad2sec(angle: float) -> float:
-        """Converts radians to arcseconds.
-        """
-        return angle * RO
 
     @staticmethod
     def rad2deg(angle: float) -> float:
@@ -394,30 +314,6 @@ class Angle:
         deg, mi = divmod(mi, 60)
         deg = int(deg)
         return f"{signum:s}{deg:d}-{mi:02d}-{sec:02d}"
-
-    @staticmethod
-    def rad2dm(angle: float) -> float:
-        """Converts radians to NMEA DDDMM.NNNNNNN.
-        """
-        w = angle / math.pi * 180.0
-        d = int(w)
-        return d * 100 + (w - d) * 60
-
-    @staticmethod
-    def rad2pdeg(angle: float) -> float:
-        """Converts radians to DDD.MMSS.
-        """
-        secs = round(angle * RO)
-        mi, sec = divmod(secs, 60)
-        deg, mi = divmod(mi, 60)
-        deg = int(deg)
-        return deg + mi / 100 + sec / 10000
-
-    @staticmethod
-    def rad2mil(angle: float) -> float:
-        """Converts radian to NATO mils.
-        """
-        return angle / math.pi / 2 * 6400
 
     @staticmethod
     def normalize_rad(angle: float, positive: bool = False) -> float:
@@ -443,25 +339,27 @@ class Angle:
         return norm
 
     @classmethod
-    def parse(cls, string: str) -> Angle:
+    def parse(cls, string: str, unit: _AngleUnit = 'rad') -> Angle:
         """Parses string value to float and creates new `Angle`.
 
         Parameters
         ----------
         string : str
             Floating point number to parse.
+        unit : Literal['deg', 'rad', 'gon'], optional
+            Unit of the value to parse, by default 'rad'
 
         Returns
         -------
         Angle
 
         """
-        return Angle(float(string))
+        return Angle(float(string), unit)
 
     def __init__(
         self,
-        value: float | str,
-        unit: _AngleUnitLike = AngleUnit.RAD,
+        value: float,
+        unit: _AngleUnit = 'rad',
         /,
         normalize: bool = False,
         positive: bool = False
@@ -469,10 +367,10 @@ class Angle:
         """
         Parameters
         ----------
-        value : float | str
+        value : float
             Angular value to represent.
-        unit : AngleUnit | str, optional
-            Unit of the source value, by default AngleUnit.RAD
+        unit : Literal['deg', 'rad', 'gon'], optional
+            Unit of the source value, by default 'rad'
         normalize : bool, optional
             Normalize angle to +/- full angle, by default False
         positive : bool, optional
@@ -485,37 +383,40 @@ class Angle:
         """
         self._value: float = 0
 
-        match unit, value:
-            case AngleUnit.RAD | 'RAD', float() | int():
-                self._value = value
-            case AngleUnit.DEG | 'DEG', float() | int():
+        match unit:
+            case 'deg':
                 self._value = self.deg2rad(value)
-            case AngleUnit.PDEG | 'PDEG', float() | int():
-                self._value = self.pdeg2rad(value)
-            case AngleUnit.GON | 'GON', float() | int():
+            case 'rad':
+                self._value = float(value)
+            case 'gon':
                 self._value = self.gon2rad(value)
-            case AngleUnit.MIL | 'MIL', float() | int():
-                self._value = self.mil2rad(value)
-            case AngleUnit.SEC | 'SEC', float() | int():
-                self._value = self.sec2rad(value)
-            case AngleUnit.DMS | 'DMS', str():
-                self._value = self.dms2rad(value)
-            case AngleUnit.NMEA | 'NMEA', float() | int():
-                self._value = self.dm2rad(value)
             case _:
-                raise ValueError(
-                    f"unknown source unit and value type pair: "
-                    f"{unit} - {type(value).__name__}"
-                )
+                raise ValueError(f"unknown source unit: '{unit}'")
 
         if normalize:
             self._value = self.normalize_rad(self._value, positive)
 
+    @classmethod
+    def from_dms(cls, value: str) -> Angle:
+        """
+        Parses angle from DMS notation.
+
+        Parameters
+        ----------
+        value : str
+            DMS angle to parse.
+
+        Returns
+        -------
+        Angle
+        """
+        return Angle(cls.dms2rad(value))
+
     def __str__(self) -> str:
-        return f"{self.asunit(AngleUnit.DEG):.4f} DEG"
+        return f"{self.asunit('deg'):.4f} DEG"
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__:s}({self.asunit(AngleUnit.DMS):s})"
+        return f"{type(self).__name__:s}({self.to_dms():s})"
 
     def __format__(self, format_spec: str) -> str:
         return format(self._value, format_spec)
@@ -572,16 +473,27 @@ class Angle:
         return self.normalized()
 
     def __float__(self) -> float:
-        return float(self._value)
+        return self._value
 
-    def asunit(self, unit: _AngleUnitLike = AngleUnit.RAD) -> float | str:
+    def to_dms(self) -> str:
+        """
+        Returns the represented angle as a formatted DDD-MM-SS string.
+
+        Returns
+        -------
+        str
+            Angle in DMS notation.
+        """
+        return self.rad2dms(self._value)
+
+    def asunit(self, unit: _AngleUnit = 'rad') -> float:
         """
         Returns the represented angle in the target unit.
 
         Parameters
         ----------
-        unit : AngleUnit | str, optional
-            Target unit, by default AngleUnit.RAD
+        unit : Literal['deg', 'rad', 'gon'], optional
+            Target unit, by default 'rad'
 
         Returns
         -------
@@ -594,24 +506,14 @@ class Angle:
             If an unknown `unit` was passed
         """
         match unit:
-            case AngleUnit.RAD | 'RAD':
-                return self._value
-            case AngleUnit.DEG | 'DEG':
+            case 'deg':
                 return self.rad2deg(self._value)
-            case AngleUnit.PDEG | 'PDEG':
-                return self.rad2pdeg(self._value)
-            case AngleUnit.GON | 'GON':
+            case 'rad':
+                return self._value
+            case 'gon':
                 return self.rad2gon(self._value)
-            case AngleUnit.MIL | 'MIL':
-                return self.rad2mil(self._value)
-            case AngleUnit.SEC | 'SEC':
-                return self.rad2sec(self._value)
-            case AngleUnit.DMS | 'DMS':
-                return self.rad2dms(self._value)
-            case AngleUnit.NMEA | 'NMEA':
-                return self.rad2dm(self._value)
             case _:
-                raise ValueError(f"unknown target unit: {unit}")
+                raise ValueError(f"unknown target unit: '{unit}'")
 
     def normalized(self, positive: bool = True) -> Angle:
         """
@@ -627,7 +529,7 @@ class Angle:
         Angle
             New `Angle` with normalized value.
         """
-        return Angle(self._value, AngleUnit.RAD, True, positive)
+        return Angle(self._value, 'rad', True, positive)
 
 
 class Byte:
