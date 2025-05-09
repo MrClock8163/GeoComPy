@@ -497,7 +497,7 @@ class Angle:
 
         Returns
         -------
-        float | str
+        float
             Angular value.
 
         Raises
