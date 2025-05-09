@@ -14,8 +14,9 @@ Types
 """
 from __future__ import annotations
 
+from typing import SupportsFloat
+
 from ..data import (
-    Angle,
     toenum,
     enumparser
 )
@@ -134,8 +135,8 @@ class TPS1000MOT(GeoComSubsystem):
 
     def set_velocity(
         self,
-        hz: Angle,
-        v: Angle
+        hz: SupportsFloat,
+        v: SupportsFloat
     ) -> GeoComResponse[None]:
         """
         RPC 6004, ``MOT_SetVelocity``
@@ -145,9 +146,9 @@ class TPS1000MOT(GeoComSubsystem):
 
         Parameters
         ----------
-        hz : Angle
+        hz : SupportsFloat
             Horizontal angle to turn in a second [-0.79; +0.79]rad.
-        v : Angle
+        v : SupportsFloat
             Vertical angle to turn in a second [-0.79; +0.79]rad.
 
         Returns

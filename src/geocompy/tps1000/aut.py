@@ -14,6 +14,8 @@ Types
 """
 from __future__ import annotations
 
+from typing import SupportsFloat
+
 from ..data import (
     Angle,
     toenum,
@@ -192,8 +194,8 @@ class TPS1000AUT(GeoComSubsystem):
 
     def set_tolerance(
         self,
-        hz: Angle,
-        v: Angle
+        hz: SupportsFloat,
+        v: SupportsFloat
     ) -> GeoComResponse[None]:
         """
         RPC 9007, ``AUT_SetTol``
@@ -202,9 +204,9 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        hz : Angle
+        hz : SupportsFloat
             Horizontal tolerance.
-        v : Angle
+        v : SupportsFloat
             Vertical tolerance.
 
         Returns
@@ -219,7 +221,7 @@ class TPS1000AUT(GeoComSubsystem):
         --------
         get_tolerance
         """
-        return self._request(9007, [hz, v])
+        return self._request(9007, [float(hz), float(v)])
 
     def get_timeout(self) -> GeoComResponse[tuple[float, float]]:
         """
@@ -281,8 +283,8 @@ class TPS1000AUT(GeoComSubsystem):
 
     def turn_to(
         self,
-        hz: Angle,
-        v: Angle,
+        hz: SupportsFloat,
+        v: SupportsFloat,
         posmode: Position | str = Position.NORMAL,
         atrmode: ATR | str = ATR.POSITION
     ) -> GeoComResponse[None]:
@@ -293,9 +295,9 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        hz : Angle
+        hz : SupportsFloat
             Horizontal position.
-        v : Angle
+        v : SupportsFloat
             Vertical position.
         posmode : Position | str, optional
             Positioning precision mode, by default Position.NORMAL
@@ -340,7 +342,7 @@ class TPS1000AUT(GeoComSubsystem):
         _atrmode = toenum(ATR, atrmode)
         return self._request(
             9027,
-            [hz, v, _posmode.value, _atrmode.value, 0]
+            [float(hz), float(v), _posmode.value, _atrmode.value, 0]
         )
 
     def change_face(
@@ -404,8 +406,8 @@ class TPS1000AUT(GeoComSubsystem):
 
     def fine_adjust(
         self,
-        width: Angle,
-        height: Angle
+        width: SupportsFloat,
+        height: SupportsFloat
     ) -> GeoComResponse[None]:
         """
         RPC 9037, ``AUT_FineAdjust``
@@ -415,9 +417,9 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        width : Angle
+        width : SupportsFloat
             Width of target search window.
-        height : Angle
+        height : SupportsFloat
             Heigth of target search window.
 
         Returns
@@ -449,13 +451,13 @@ class TPS1000AUT(GeoComSubsystem):
         """
         return self._request(
             9037,
-            [width, height, 0]
+            [float(width), float(height), 0]
         )
 
     def search(
         self,
-        width: Angle,
-        height: Angle
+        width: SupportsFloat,
+        height: SupportsFloat
     ) -> GeoComResponse[None]:
         """
         RPC 9029, ``AUT_Search``
@@ -466,9 +468,9 @@ class TPS1000AUT(GeoComSubsystem):
 
         Parameters
         ----------
-        width : Angle
+        width : SupportsFloat
             Width of target search window.
-        height : Angle
+        height : SupportsFloat
             Heigth of target search window.
 
         Returns
@@ -496,7 +498,7 @@ class TPS1000AUT(GeoComSubsystem):
         """
         return self._request(
             9029,
-            [width, height, 0]
+            [float(width), float(height), 0]
         )
 
     def get_fine_adjust_mode(self) -> GeoComResponse[Adjust]:

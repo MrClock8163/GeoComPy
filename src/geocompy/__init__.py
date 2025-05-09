@@ -63,9 +63,6 @@ Reexports
 ``geocompy.data.Angle``
     Angle value primitive.
 
-``geocompy.data.AngleUnit``
-    Angle unit enum.
-
 ``geocompy.data.Vector``
     3D vector primitive.
 
@@ -119,7 +116,6 @@ except Exception:
 
 from .data import (  # noqa: F401
     Angle as Angle,
-    AngleUnit as AngleUnit,
     Vector as Vector,
     Coordinate as Coordinate
 )

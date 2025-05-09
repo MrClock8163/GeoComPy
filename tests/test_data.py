@@ -10,7 +10,6 @@ from geocompy.data import (
     parsestr,
     gsiword,
     Angle,
-    AngleUnit,
     Byte,
     Coordinate
 )
@@ -48,74 +47,64 @@ class TestFunctions:
 
 class TestAngle:
     def test_init(self) -> None:
-        assert float(Angle(1)) == approx(float(Angle(1, AngleUnit.RAD)))
-
-        units = AngleUnit._member_names_.copy()
-        units.remove("DMS")
-
-        for name in units:
-            unit = AngleUnit[name]
-            assert (
-                float(Angle(1, name))  # type: ignore
-                == approx(float(Angle(1, unit)))
-            )
+        assert float(Angle(1)) == approx(float(Angle(1, 'rad')))
 
     def test_asunit(self) -> None:
-        value = Angle(180, 'DEG')
-        assert value.asunit('DEG') == approx(180)
-        assert value.asunit() == value.asunit('RAD')
+        value = Angle(180, 'deg')
+        assert value.asunit('deg') == approx(180)
+        assert value.asunit() == value.asunit('rad')
 
     def test_normalize(self) -> None:
         assert (
             Angle(
                 370,
-                'DEG',
+                'deg',
                 normalize=True,
                 positive=True
-            ).asunit('DEG')
+            ).asunit('deg')
             == approx(10)
         )
         assert (
             Angle(
                 -10,
-                'DEG',
+                'deg',
                 normalize=True,
                 positive=True
-            ).asunit('DEG')
+            ).asunit('deg')
             == approx(350)
         )
         assert (
             Angle(
                 -370,
-                'DEG',
+                'deg',
                 normalize=True,
                 positive=True
-            ).asunit('DEG')
+            ).asunit('deg')
             == approx(350)
         )
         assert (
-            Angle(370, 'DEG', normalize=True).asunit('DEG')
-            == approx(Angle(370, 'DEG').normalized().asunit('DEG'))
+            Angle(370, 'deg', normalize=True).asunit('deg')
+            == approx(Angle(370, 'deg').normalized().asunit('deg'))
         )
 
     def test_arithmetic(self) -> None:
-        a1 = Angle(90, 'DEG')
-        a2 = Angle(90, 'DEG')
+        a1 = Angle(90, 'deg')
+        a2 = Angle(90, 'deg')
         assert (
             float(a1 + a2)
-            == approx(float(Angle(180, 'DEG')))
+            == approx(float(Angle(180, 'deg')))
         )
         assert (
             float(a1 - a2)
-            == approx(float(Angle(0, 'DEG')))
+            == approx(float(Angle(0, 'deg')))
         )
         assert (
             float(a1 * 2)
-            == approx(float(Angle(180, 'DEG')))
+            == approx(float(Angle(180, 'deg')))
         )
         assert (
             float(a1 / 2)
-            == approx(float(Angle(45, 'DEG')))
+            == approx(float(Angle(45, 'deg')))
         )
         with pytest.raises(TypeError):
             a1 * "str"  # type: ignore
