@@ -4,11 +4,11 @@ from time import sleep
 from serial import Serial
 
 from geocompy.communication import SerialConnection
-from geocompy.tps1200p import TPS1200P
+from geocompy import GeoCom
 
 
-def morse_beep(tps: TPS1200P, message: str, intensity: int) -> None:
-    def letter_beep(tps: TPS1200P, letter: str, intensity: int) -> None:
+def morse_beep(tps: GeoCom, message: str, intensity: int) -> None:
+    def letter_beep(tps: GeoCom, letter: str, intensity: int) -> None:
         lookup = {
             "a": ".-",
             "b": "-...",
@@ -82,7 +82,7 @@ def cli() -> None:
 
     port = Serial(args.port)
     with SerialConnection(port) as conn:
-        ts = TPS1200P(conn)
+        ts = GeoCom(conn)
 
         morse_beep(ts, args.message, args.intensity)
 
