@@ -1394,3 +1394,159 @@ class GeoComTMC(GeoComSubsystem):
                 float
             )
         )
+
+    def get_atmospheric_correction_ppm(self) -> GeoComResponse[float]:
+        """
+        RPC 2151, ``TMC_GetAtmPpm``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Gets the current atmospheric correction factor.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `float`: Atmospheric correction factor [ppm].
+
+        See Also
+        --------
+        set_atmospheric_correction_ppm
+        get_geometric_correction_ppm
+        set_geometric_correction_ppm
+        get_prism_correction
+        set_prism_correction
+
+        """
+        return self._request(
+            2151,
+            parsers=float
+        )
+
+    def set_atmospheric_correction_ppm(
+        self,
+        ppm: float
+    ) -> GeoComResponse[None]:
+        """
+        RPC 2148, ``TMC_SetAtmPpm``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Sets the atmospheric correction factor.
+
+        Parameters
+        ----------
+        ppm : float
+            Atmospheric correction factor [ppm].
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        get_atmospheric_correction_ppm
+        get_geometric_correction_ppm
+        set_geometric_correction_ppm
+        get_prism_correction
+        set_prism_correction
+
+        """
+        return self._request(
+            2148,
+            [ppm]
+        )
+
+    def get_geometric_correction_ppm(
+        self
+    ) -> GeoComResponse[tuple[bool, float, float, float, float]]:
+        """
+        RPC 2154, ``TMC_GetGeoPpm``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Gets the current geometric correction factors.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `bool`: Autmatically apply geometric
+                  corrections.
+                - `float`: Scale factor on central
+                  meridian.
+                - `float`: Offset from central
+                  meridian.
+                - `float`: Length reduction from projection
+                  to reference level.
+                - `float`: Individual correction [ppm].
+
+        See Also
+        --------
+        get_atmospheric_correction_ppm
+        set_atmospheric_correction_ppm
+        set_geometric_correction_ppm
+        get_prism_correction
+        set_prism_correction
+
+        """
+        return self._request(
+            2154,
+            parsers=(
+                parsebool,
+                float,
+                float,
+                float,
+                float
+            )
+        )
+
+    def set_geometric_correction_ppm(
+        self,
+        automatic: bool,
+        meridianscale: float,
+        meridianoffset: float,
+        reduction: float,
+        individual: float
+    ) -> GeoComResponse[None]:
+        """
+        RPC 2153, ``TMC_SetGeoPpm``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Sets the geometric correction factors.
+
+        Parameters
+        ----------
+        automatic : bool
+            Automatically apply geometric corrections.
+        meridianscale : float
+            Scale factor on central meridian.
+        meridianoffset : float
+            Offset from central meridian.
+        reduction : float
+            Length reduction from projection to reference level [ppm].
+        individual : float
+            Individual correction [ppm].
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        get_atmospheric_correction_ppm
+        set_atmospheric_correction_ppm
+        get_geometric_correction_ppm
+        get_prism_correction
+        set_prism_correction
+
+        """
+        return self._request(
+            2153,
+            [
+                automatic,
+                meridianscale, meridianoffset,
+                reduction, individual
+            ]
+        )

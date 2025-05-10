@@ -26,6 +26,8 @@ Submodules
 - ``geocompy.geo.csv``
 - ``geocompy.geo.ctl``
 - ``geocompy.geo.edm``
+- ``geocompy.geo.ftr``
+- ``geocompy.geo.img``
 - ``geocompy.geo.mot``
 - ``geocompy.geo.sup``
 - ``geocompy.geo.tmc``
@@ -55,6 +57,8 @@ from .com import GeoComCOM
 from .csv import GeoComCSV
 from .ctl import GeoComCTL
 from .edm import GeoComEDM
+from .ftr import GeoComFTR
+from .img import GeoComIMG
 from .mot import GeoComMOT
 from .sup import GeoComSUP
 from .tmc import GeoComTMC
@@ -144,7 +148,11 @@ class GeoCom(GeoComType):
         self._precision = 15
 
         self.aus: GeoComAUS = GeoComAUS(self)
-        """Alt User subsystem."""
+        """
+        Alt User subsystem.
+
+        .. versionadded:: GeoCom-TPS1100-1.04
+        """
         self.aut: GeoComAUT = GeoComAUT(self)
         """Automation subsystem."""
         self.bap: GeoComBAP = GeoComBAP(self)
@@ -156,9 +164,25 @@ class GeoCom(GeoComType):
         self.csv: GeoComCSV = GeoComCSV(self)
         """Central services subsystem."""
         self.ctl: GeoComCTL = GeoComCTL(self)
-        """Control task subsystem."""
+        """
+        Control task subsystem.
+
+        .. versionremoved:: GeoCom-TPS1200
+        """
         self.edm: GeoComEDM = GeoComEDM(self)
         """Electronic distance measurement subsystem."""
+        self.ftr: GeoComFTR = GeoComFTR(self)
+        """
+        File transfer subsystem.
+
+        .. versionadded:: GeoCom-TPS1200
+        """
+        self.img: GeoComIMG = GeoComIMG(self)
+        """
+        Image processing subsystem.
+
+        .. versionadded:: GeoCom-TPS1200
+        """
         self.mot: GeoComMOT = GeoComMOT(self)
         """Motorization subsytem."""
         self.sup: GeoComSUP = GeoComSUP(self)
@@ -166,7 +190,11 @@ class GeoCom(GeoComType):
         self.tmc: GeoComTMC = GeoComTMC(self)
         """Theodolite measurement and calculation subsystem."""
         self.wir: GeoComWIR = GeoComWIR(self)
-        """Word Index registration subsystem."""
+        """
+        Word Index registration subsystem.
+
+        .. versionremoved:: GeoCom-TPS1200
+        """
 
         for i in range(retry):
             try:
@@ -232,17 +260,17 @@ class GeoCom(GeoComType):
         """
         Executes an RPC request and returns the parsed GeoCom response.
 
-        Constructs a request (from the given RPC code and parameters),
+        Constructs a request(from the given RPC code and parameters),
         writes it to the serial line, then reads the response. The
         response is then parsed using the provided parser functions.
 
         Parameters
         ----------
-        rpc : int
+        rpc: int
             Number of the RPC to execute.
-        params : Iterable[int | float | bool | str | Angle | Byte]
-            Parameters for the request, by default ()
-        parsers : Iterable[Callable[[str], Any]] \
+        params: Iterable[int | float | bool | str | Angle | Byte]
+            Parameters for the request, by default()
+        parsers: Iterable[Callable[[str], Any]] \
                   | Callable[[str], Any] \
                   | None, optional
             Parser functions for the values in the RPC response,
@@ -338,11 +366,11 @@ class GeoCom(GeoComType):
 
         Parameters
         ----------
-        cmd : str
+        cmd: str
             Full, serialized request, that invoked the response.
-        response : str
+        response: str
             Full, received response.
-        parsers : Iterable[Callable[[str], Any]] \
+        parsers: Iterable[Callable[[str], Any]] \
                   | Callable[[str], Any] \
                   | None, optional
             Parser functions for the values in the RPC response,

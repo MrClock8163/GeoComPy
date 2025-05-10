@@ -18,14 +18,16 @@ from ..data import (
     Angle,
     toenum,
     enumparser,
-    parsestr
+    parsestr,
+    parsebool
 )
 from .gcdata import (
     Program,
     Prism,
     Reflector,
     Target,
-    UserProgram
+    UserProgram,
+    ATRMode
 )
 from .gctypes import (
     GeoComSubsystem,
@@ -46,6 +48,8 @@ class GeoComBAP(GeoComSubsystem):
     def get_last_displayed_error(self) -> GeoComResponse[tuple[int, int]]:
         """
         RPC 17003, ``BAP_GetLastDisplayedError``
+
+        .. versionremoved:: GeoCom-TPS1200
 
         Retrieves the number of the last displayed system error.
 
@@ -310,6 +314,8 @@ class GeoComBAP(GeoComSubsystem):
 
         .. versionadded:: GeoCom-TPS1100-1.05
 
+        .. versionremoved:: GeoCom-TPS1200
+
         Defines a user prism.
 
         Parameters
@@ -426,3 +432,249 @@ class GeoComBAP(GeoComSubsystem):
         aut.set_search_area
         """
         return self._request(17020, [0])
+
+    def get_prism_type_name(self) -> GeoComResponse[tuple[Prism, str]]:
+        """
+        RPC 17031, ``BAP_GetPrismType2``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Gets the current prism type and name.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `Prism`: Current prism type.
+                - `str`: Prism type name.
+
+        See Also
+        --------
+        set_prism_type
+        set_prism_type_name
+        """
+        return self._request(
+            17031,
+            parsers=(enumparser(Prism), parsestr)
+        )
+
+    def set_prism_type_name(
+        self,
+        prism: Prism | str,
+        name: str
+    ) -> GeoComResponse[None]:
+        """
+        RPC 17030, ``BAP_SetPrismType2``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Sets the prism type and name.
+
+        Parameters
+        ----------
+        prism : Prism | str
+            Prism type to set.
+        name : str
+            Name of the prism type.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``IVPARAM``: Prism type is not available, a user prism
+                  is not defined.
+
+        See Also
+        --------
+        get_prism_type_name
+        tmc.set_prism_correction
+        """
+        _prism = toenum(Prism, prism)
+        return self._request(
+            17030,
+            [_prism.value, name]
+        )
+
+    def get_user_prism_definition(
+        self,
+        name: str
+    ) -> GeoComResponse[tuple[str, float, Reflector]]:
+        """
+        RPC 17033, ``BAP_GetUserPrismDef``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Gets the definition of a user defined prism.
+
+        Parameters
+        ----------
+        name : str
+            Name of the prism.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `str`: Name of the prism.
+                - `float`: Additive prism constant.
+                - `Reflector`: Reflector type.
+            Error codes:
+                - ``IVPARAM``: Invalid prism definition.
+
+        See Also
+        --------
+        get_prism_type
+        get_prism_type_name
+        get_prism_definition
+        set_user_prism_definition
+        """
+        return self._request(
+            17033,
+            [name],
+            (
+                parsestr,
+                float,
+                enumparser(Reflector)
+            )
+        )
+
+    def set_user_prism_definition(
+        self,
+        name: str,
+        const: float,
+        reflector: Reflector | str,
+        creator: str
+    ) -> GeoComResponse[None]:
+        """
+        RPC 17032, ``BAP_SetUserPrismDef``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Defines a new user defined prism.
+
+        Parameters
+        ----------
+        name : str
+            Name of the prism.
+        const : float
+            Additive prism constant.
+        reflector: Reflector | str
+            Reflector type.
+        creator : str
+            Name of the creator.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``IVPARAM``: Invalid prism definition.
+                - ``IVRESULT``: Prism definition is not set.
+
+        See Also
+        --------
+        set_prism_type
+        get_prism_definition
+        set_user_prism_definition
+        """
+        _reflector = toenum(Reflector, reflector)
+        return self._request(
+            17032,
+            [name, const, _reflector.value, creator]
+        )
+
+    def get_atr_setting(self) -> GeoComResponse[ATRMode]:
+        """
+        RPC 17034, ``BAP_GetATRSetting``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Gets the current ATR setting.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `ATRMode`: Current ATR setting.
+
+        See Also
+        --------
+        set_atr_setting
+        """
+        return self._request(
+            17034,
+            parsers=enumparser(ATRMode)
+        )
+
+    def set_atr_setting(
+        self,
+        mode: ATRMode | str
+    ) -> GeoComResponse[None]:
+        """
+        RPC 17035, ``BAP_SetATRSetting``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Sets the ATR setting.
+
+        Parameters
+        ----------
+        mode : ATRMode | str
+            ATR setting to activate.
+
+        See Also
+        --------
+        get_atr_setting
+        """
+        _mode = toenum(ATRMode, mode)
+        return self._request(
+            17035,
+            [_mode.value]
+        )
+
+    def get_reduced_atr_fov_status(self) -> GeoComResponse[bool]:
+        """
+        RPC 17036, ``BAP_GetRedATRFov``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Gets the state of the reduced ATR field of view mode.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `bool`: Reduced field of view ATR is enabled.
+
+        See Also
+        --------
+        switch_reduced_atr_fov
+        """
+        return self._request(
+            17036,
+            parsers=parsebool
+        )
+
+    def switch_reduced_atr_fov(
+        self,
+        enabled: bool
+    ) -> GeoComResponse[None]:
+        """
+        RPC 17037, ``BAP_SetRedATRFov``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Sets the state of the reduced ATR field of view mode.
+
+        Parameters
+        ----------
+        enabled : bool
+            Reduced field of view ATR is enabled.
+
+        See Also
+        --------
+        get_reduced_atr_fov_status
+        """
+        return self._request(
+            17037,
+            [enabled]
+        )

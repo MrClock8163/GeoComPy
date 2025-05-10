@@ -24,7 +24,8 @@ from ..data import (
 from .gcdata import (
     Capabilities,
     DeviceClass,
-    PowerSource
+    PowerSource,
+    Reflectorless
 )
 from .gctypes import (
     GeoComSubsystem,
@@ -254,6 +255,8 @@ class GeoComCSV(GeoComSubsystem):
             The command is still available, but should not be used with
             instruments that support the new `check_power` command.
 
+        .. versionremoved:: GeoCom-TPS1200
+
         Gets the voltage of the power supply.
 
         | 12,7 V < voltage            full
@@ -277,6 +280,8 @@ class GeoComCSV(GeoComSubsystem):
     def get_voltage_memory(self) -> GeoComResponse[float]:
         """
         RPC 5009, ``CSV_GetVMem``
+
+        .. versionremoved:: GeoCom-TPS1200
 
         Gets the voltage of the memory backup power supply.
 
@@ -340,3 +345,75 @@ class GeoComCSV(GeoComSubsystem):
                 enumparser(PowerSource)
             )
         )
+
+    def get_reflectorless_class(self) -> GeoComResponse[Reflectorless]:
+        """
+        RPC 5100, ``CSV_GetReflectorlessClass``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Gets the class of the reflectorless EDM module, if the instrument
+        is equipped with one.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `Reflectorless`: Class of the reflectorless EDM module.
+
+        """
+        return self._request(
+            5100,
+            parsers=enumparser(Reflectorless)
+        )
+
+    def get_datetime_precise(self) -> GeoComResponse[datetime]:
+        """
+        RPC 5117, ``CSV_GetDateTimeCentiSec``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Gets the current date and time set on the instrument in
+        centiseconds resolution.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `datetime`: Current date and time.
+
+        See Also
+        --------
+        get_datetime
+        set_datetime
+
+        """
+        def make_datetime(
+            params: tuple[int, int, int, int, int, int, int] | None
+        ) -> datetime | None:
+            if params is None:
+                return None
+
+            return datetime(
+                params[0],
+                int(params[1]),
+                int(params[2]),
+                int(params[3]),
+                int(params[4]),
+                int(params[5]),
+                int(params[5]) * 10000
+            )
+
+        response = self._request(
+            5117,
+            parsers=(
+                int,
+                int,
+                int,
+                int,
+                int,
+                int,
+                int
+            )
+        )
+        return response.map_params(make_datetime)

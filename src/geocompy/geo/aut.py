@@ -25,7 +25,8 @@ from ..data import (
 from .gcdata import (
     Adjust,
     ATR,
-    Position
+    Position,
+    Turn
 )
 from .gctypes import (
     GeoComSubsystem,
@@ -51,6 +52,9 @@ class GeoComAUT(GeoComSubsystem):
             The command is still available, but should not be used with
             instruments that support the new `aus.get_user_atr_state`
             command.
+
+        .. versionremoved:: GeoCom-TPS1200
+
 
         Gets whether or not the ATR mode is active.
 
@@ -87,6 +91,8 @@ class GeoComAUT(GeoComSubsystem):
             The command is still available, but should not be used with
             instruments that support the new `aus.switch_user_atr`
             command.
+
+        .. versionremoved:: GeoCom-TPS1200
 
         Activates or deactivates the ATR mode.
 
@@ -125,6 +131,8 @@ class GeoComAUT(GeoComSubsystem):
             instruments that support the new `aus.get_user_lock_state`
             command.
 
+        .. versionremoved:: GeoCom-TPS1200
+
         Gets whether or not the lock mode is active.
 
         Returns
@@ -157,6 +165,8 @@ class GeoComAUT(GeoComSubsystem):
             The command is still available, but should not be used with
             instruments that support the new `aus.switch_user_lock`
             command.
+
+        .. versionremoved:: GeoCom-TPS1200
 
         Activates or deactivates the LOCK mode.
 
@@ -741,4 +751,135 @@ class GeoComAUT(GeoComSubsystem):
         return self._request(
             9041,
             [float(width), float(height)]
+        )
+
+    def switch_powersearch_range(
+        self,
+        enable: bool
+    ) -> GeoComResponse[None]:
+        """
+        RPC 9048, ``AUT_PS_EnableRange``
+
+        Enables or disables the PowerSearch window and range limit.
+
+        Parameters
+        ----------
+        enable : bool
+            Enable predefined PowerSearch window and range limits.
+            Defaults to [0; 400] range when disabled.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+
+        See Also
+        --------
+        set_powersearch_range
+        set_search_area
+        """
+        return self._request(
+            9048,
+            [enable]
+        )
+
+    def set_powersearch_range(
+        self,
+        closest: int,
+        farthest: int
+    ) -> GeoComResponse[None]:
+        """
+        RPC 9044, ``AUT_PS_SetRange``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Sets the PowerSearch range limits.
+
+        Parameters
+        ----------
+        closest : int
+            Minimum distance to prism [0; ...].
+        farthest : int
+            Maxmimum distance to prism [closest + 10; 400].
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+                - ``IVPARAM``: Invalid parameters.
+
+        See Also
+        --------
+        switch_powersearch_range
+        powersearch_window
+        set_search_area
+        """
+        return self._request(
+            9047,
+            [closest, farthest]
+        )
+
+    def powersearch_window(self) -> GeoComResponse[None]:
+        """
+        RPC 9052, ``AUT_PS_SearchWindow``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Executes PowerSearch in the predefined search window.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+                - ``AUT_NO_WORKING_AREA``: Search window is not defined.
+                - ``AUT_NO_TARGET``: Target was not found.
+
+        See Also
+        --------
+        switch_powersearch_range
+        set_powersearch_range
+        powersearch_next
+        set_search_area
+        """
+        return self._request(9052)
+
+    def powersearch_next(
+        self,
+        direction: Turn | str,
+        swing: bool
+    ) -> GeoComResponse[None]:
+        """
+        RPC 9051, ``AUT_PS_SearchNext``
+
+        .. versionadded:: GeoCom-TPS1200
+
+        Executes 360° default PowerSearch to find the next target.
+
+        Parameters
+        ----------
+        direction : Turn | str
+            Turning direction during PowerSearch.
+        swing : bool
+            Search starts -10 GON to the given turn direction.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+                - ``AUT_NO_TARGET``: Target was not found.
+                - ``IVPARAM``: Invalid parameters.
+
+        See Also
+        --------
+        switch_powersearch_range
+        powersearch_window
+        """
+        _direction = toenum(Turn, direction)
+        return self._request(
+            9051,
+            [_direction.value, swing]
         )

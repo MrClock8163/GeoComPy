@@ -23,6 +23,8 @@ from .gctypes import (
 class GeoComCTL(GeoComSubsystem):
     """
     Control task subsystem of the GeoCom protocol.
+
+    .. versionremoved:: GeoCom-TPS1200
     """
 
     def get_wakeup_counter(self) -> GeoComResponse[tuple[int, int]]:

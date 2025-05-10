@@ -67,6 +67,8 @@ class GeoComCOM(GeoComSubsystem):
         """
         RPC 109, ``COM_SetSendDelay``
 
+        .. versionremoved:: GeoCom-TPS1200
+
         Sets response delay on the instrument.
 
         Parameters
@@ -175,6 +177,8 @@ class GeoComCOM(GeoComSubsystem):
     ) -> GeoComResponse[None]:
         """
         RPC 115, ``COM_EnableSignOff``
+
+        .. versionremoved:: GeoCom-TPS1200
 
         Enables or disables the signoff message upon operation mode
         changes.

@@ -162,6 +162,8 @@ class GeoComAUS(GeoComSubsystem):
 
         .. versionadded:: GeoCom-TPS1100-1.05
 
+        .. versionremoved:: GeoCom-TPS1200
+
         Gets the current state of the RCS search mode.
 
         Returns
@@ -187,6 +189,8 @@ class GeoComAUS(GeoComSubsystem):
         RPC 18009, ``AUS_SwitchRcsSearch``
 
         .. versionadded:: GeoCom-TPS1100-1.05
+
+        .. versionremoved:: GeoCom-TPS1200
 
         Enables or disables the RCS searching mode.
 

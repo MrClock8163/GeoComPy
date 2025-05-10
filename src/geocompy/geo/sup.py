@@ -109,6 +109,8 @@ class GeoComSUP(GeoComSubsystem):
         """
         RPC 14003, ``SUP_SwitchLowTempControl``
 
+        .. versionremoved:: GeoCom-TPS1200
+
         Enables or disables the low temperature shutdown mechanism. When
         active, the mechanism will shut the instrument down, if the
         internal temperature falls below -30 degree celsius.
