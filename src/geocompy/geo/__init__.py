@@ -18,6 +18,7 @@ Submodules
 
 - ``geocompy.geo.gcdata``
 - ``geocompy.geo.gctypes``
+- ``geocompy.geo.aus``
 - ``geocompy.geo.aut``
 - ``geocompy.geo.bap``
 - ``geocompy.geo.bmm``
@@ -46,6 +47,7 @@ from .gctypes import (
     GeoComType,
     rpcnames
 )
+from .aus import GeoComAUS
 from .aut import GeoComAUT
 from .bap import GeoComBAP
 from .bmm import GeoComBMM
@@ -141,6 +143,8 @@ class GeoCom(GeoComType):
         self._logger: Logger = logger
         self._precision = 15
 
+        self.aus: GeoComAUS = GeoComAUS(self)
+        """Alt User subsystem."""
         self.aut: GeoComAUT = GeoComAUT(self)
         """Automation subsystem."""
         self.bap: GeoComBAP = GeoComBAP(self)

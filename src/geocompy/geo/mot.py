@@ -20,7 +20,7 @@ from ..data import (
     toenum,
     enumparser
 )
-from ..data_geocom import (
+from .gcdata import (
     ATRLock,
     Controller,
     Stop

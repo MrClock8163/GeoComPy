@@ -65,6 +65,8 @@ class GeoComBMM(GeoComSubsystem):
         """
         RPC 11001, ``BMM_BeepOn``
 
+        .. versionremoved:: GeoCom-TPS1100
+
         Starts a continuous beep signal with the specified volume and
         frequency.
 
@@ -90,6 +92,8 @@ class GeoComBMM(GeoComSubsystem):
         """
         RPC 11002, ``BMM_BeepOff``
 
+        .. versionremoved:: GeoCom-TPS1100
+
         Stops continuous beep signals.
 
         See Also
@@ -99,3 +103,48 @@ class GeoComBMM(GeoComSubsystem):
         beep_normal
         """
         return self._request(11002)
+
+    def beep_start(
+        self,
+        volume: int = 100
+    ) -> GeoComResponse[None]:
+        """
+        RPC 20001, ``IOS_BeepOn``
+
+        .. versionadded:: GeoCom-TPS1100
+            Replaces the `beep_on` command.
+
+        Starts a continuous beep signal with the specified intensity.
+
+        Parameters
+        ----------
+        volume : int, optional
+            Beep signal intensity [0; 100]%, by default 100
+
+        See Also
+        --------
+        beep_stop
+        beep_alarm
+        beep_normal
+        """
+        return self._request(
+            20001,
+            [volume]
+        )
+
+    def beep_stop(self) -> GeoComResponse[None]:
+        """
+        RPC 20000, ``IOS_BeepOff``
+
+        .. versionadded:: GeoCom-TPS1100
+            Replaces the `beep_off` command.
+
+        Stops continuous beep signals.
+
+        See Also
+        --------
+        beep_start
+        beep_alarm
+        beep_normal
+        """
+        return self._request(20000)

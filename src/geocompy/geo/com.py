@@ -18,7 +18,7 @@ from ..data import (
     toenum,
     parsebool
 )
-from ..data_geocom import (
+from .gcdata import (
     Shutdown,
     Startup
 )

@@ -19,7 +19,7 @@ from ..data import (
     enumparser,
     parsebool
 )
-from ..data_geocom import AutoPower
+from .gcdata import AutoPower
 from .gctypes import (
     GeoComSubsystem,
     GeoComResponse

@@ -22,7 +22,7 @@ from ..data import (
     enumparser,
     parsebool
 )
-from ..data_geocom import (
+from .gcdata import (
     Adjust,
     ATR,
     Position
@@ -46,6 +46,11 @@ class GeoComAUT(GeoComSubsystem):
     def get_atr_status(self) -> GeoComResponse[bool]:
         """
         RPC 9019, ``AUT_GetATRStatus``
+
+        .. deprecated:: GeoCom-TPS1100-1.04
+            The command is still available, but should not be used with
+            instruments that support the new `aus.get_user_atr_state`
+            command.
 
         Gets whether or not the ATR mode is active.
 
@@ -77,6 +82,11 @@ class GeoComAUT(GeoComSubsystem):
     ) -> GeoComResponse[None]:
         """
         RPC 9018, ``AUT_SetATRStatus``
+
+        .. deprecated:: GeoCom-TPS1100-1.04
+            The command is still available, but should not be used with
+            instruments that support the new `aus.switch_user_atr`
+            command.
 
         Activates or deactivates the ATR mode.
 
@@ -110,6 +120,11 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9021, ``AUT_GetLockStatus``
 
+        .. deprecated:: GeoCom-TPS1100-1.04
+            The command is still available, but should not be used with
+            instruments that support the new `aus.get_user_lock_state`
+            command.
+
         Gets whether or not the lock mode is active.
 
         Returns
@@ -137,6 +152,11 @@ class GeoComAUT(GeoComSubsystem):
     ) -> GeoComResponse[None]:
         """
         RPC 9020, ``AUT_SetLockStatus``
+
+        .. deprecated:: GeoCom-TPS1100-1.04
+            The command is still available, but should not be used with
+            instruments that support the new `aus.switch_user_lock`
+            command.
 
         Activates or deactivates the LOCK mode.
 
@@ -578,3 +598,147 @@ class GeoComAUT(GeoComSubsystem):
         mot.get_lockon_status
         """
         return self._request(9013)
+
+    def get_search_area(
+        self
+    ) -> GeoComResponse[tuple[Angle, Angle, Angle, Angle, bool]]:
+        """
+        RPC 9042, ``AUT_GetSearchArea``
+
+        .. versionadded:: GeoCom-TPS1100-1.04
+
+        Gets current position and size of the PowerSearch window.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `Angle`: Horizontal center of window.
+                - `Angle`: Vertical center of window.
+                - `Angle`: Width of window.
+                - `Angle`: Height of window.
+                - `bool`: If window is enabled.
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+
+        See Also
+        --------
+        set_search_area
+        bap.search_target
+        """
+        return self._request(
+            9042,
+            parsers=(
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                parsebool
+            )
+        )
+
+    def set_search_area(
+        self,
+        hz: SupportsFloat,
+        v: SupportsFloat,
+        width: SupportsFloat,
+        height: SupportsFloat,
+        enabled: bool = True
+    ) -> GeoComResponse[None]:
+        """
+        RPC 9043, ``AUT_SetSearchArea``
+
+        .. versionadded:: GeoCom-TPS1100-1.04
+
+        Sets position and size of the PowerSearch window.
+
+        Parameters
+        ----------
+        hz : SupportsFloat
+            Horizontal center of search window.
+        v : SupportsFloat
+            Vertical center of search window.
+        width : SupportsFloat
+            Width of search window.
+        height : SupportsFloat
+            Height of search window.
+        enabled : bool
+            Activation state of search window.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+
+        See Also
+        --------
+        get_search_area
+        bap.search_target
+        """
+        return self._request(
+            9043,
+            [float(hz), float(v), float(width), float(height), float(enabled)]
+        )
+
+    def get_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
+        """
+        RPC 9040, ``AUT_GetUserSpiral``
+
+        .. versionadded:: GeoCom-TPS1100-1.04
+
+        Gets the size of the PowerSearch window.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `Angle`: Width of window.
+                - `Angle`: Height of window.
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+
+        See Also
+        --------
+        set_spiral
+        bap.search_target
+        """
+        return self._request(
+            9040,
+            parsers=(Angle.parse, Angle.parse)
+        )
+
+    def set_spiral(
+        self,
+        width: SupportsFloat,
+        height: SupportsFloat
+    ) -> GeoComResponse[None]:
+        """
+        RPC 9041, ``AUT_SetUserSpiral``
+
+        .. versionadded:: GeoCom-TPS1100-1.04
+
+        Sets the size of the PowerSearch window.
+
+        Parameters
+        ----------
+        width : SupportsFloat
+            Width of the search window.
+        height : SupportsFloat
+            Height of the search window.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: GeoCom Robotic license not found.
+
+        See Also
+        --------
+        get_spiral
+        bap.search_target
+        """
+        return self._request(
+            9041,
+            [float(width), float(height)]
+        )

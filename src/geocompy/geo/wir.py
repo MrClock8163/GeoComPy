@@ -18,7 +18,7 @@ from ..data import (
     enumparser,
     toenum
 )
-from ..data_geocom import Format
+from .gcdata import Format
 from .gctypes import (
     GeoComSubsystem,
     GeoComResponse

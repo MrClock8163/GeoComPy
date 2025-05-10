@@ -21,9 +21,10 @@ from ..data import (
     parsestr,
     enumparser
 )
-from ..data_geocom import (
+from .gcdata import (
     Capabilities,
-    DeviceClass
+    DeviceClass,
+    PowerSource
 )
 from .gctypes import (
     GeoComSubsystem,
@@ -80,6 +81,8 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5006, ``CSV_GetUserInstrumentName``
 
+        .. versionremoved:: GeoCom-TPS1100
+
         Gets the user defined name of the instrument.
 
         Returns
@@ -100,6 +103,8 @@ class GeoComCSV(GeoComSubsystem):
     ) -> GeoComResponse[None]:
         """
         RPC 5005, ``CSV_SetUserInstrumentName``
+
+        .. versionremoved:: GeoCom-TPS1100
 
         Parameters
         ----------
@@ -245,6 +250,10 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5009, ``CSV_GetVBat``
 
+        .. deprecated:: GeoCom-TPS1100-1.05
+            The command is still available, but should not be used with
+            instruments that support the new `check_power` command.
+
         Gets the voltage of the power supply.
 
         | 12,7 V < voltage            full
@@ -302,4 +311,32 @@ class GeoComCSV(GeoComSubsystem):
         return self._request(
             5011,
             parsers=int
+        )
+
+    def check_power(
+        self
+    ) -> GeoComResponse[tuple[int, PowerSource, PowerSource]]:
+        """
+        RPC 5039, ``CSV_CheckPower``
+
+        .. versionadded:: GeoCom-TPS1100-1.05
+
+        Gets the remaining capacity of the active power source.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `int`: Remaining capacity [%].
+                - `PowerSource`: Active power source.
+                - `PowerSource`: Suggested power source.
+
+        """
+        return self._request(
+            5039,
+            parsers=(
+                int,
+                enumparser(PowerSource),
+                enumparser(PowerSource)
+            )
         )
