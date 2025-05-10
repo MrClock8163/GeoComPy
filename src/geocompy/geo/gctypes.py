@@ -1,7 +1,27 @@
+"""
+Description
+===========
+
+Module: ``geocompy.geo.gctypes``
+
+The GeoCom types module provides type definitions and general constants,
+that are relevant to the GeoCom protocol.
+
+Types
+-----
+
+- ``GeoComCode``
+- ``GeoComResponse``
+- ``GeoComType``
+- ``GeoComSubsystem``
+"""
 from __future__ import annotations
 
 from enum import IntEnum
-from typing import TypeVar, Any, Generic, Callable
+from typing import TypeVar, Any, Generic, Callable, Iterable, overload
+from abc import ABC, abstractmethod
+
+from ..data import Angle, Byte
 
 
 _T = TypeVar("_T")
@@ -1158,6 +1178,59 @@ class GeoComResponse(Generic[_P]):
             self.trans,
             params
         )
+
+
+class GeoComType(ABC):
+    """
+    Interface definition for the GeoCom protocol handler type.
+    """
+    @overload
+    @abstractmethod
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: Callable[[str], _T] | None = None
+    ) -> GeoComResponse[_T]: ...
+
+    @overload
+    @abstractmethod
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: Iterable[Callable[[str], Any]] | None = None
+    ) -> GeoComResponse[tuple[Any, ...]]: ...
+
+    @abstractmethod
+    def request(
+        self,
+        rpc: int,
+        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        parsers: (
+            Iterable[Callable[[str], Any]]
+            | Callable[[str], Any]
+            | None
+        ) = None
+    ) -> GeoComResponse[Any]: ...
+
+
+class GeoComSubsystem:
+    """
+    Base class for GeoCom subsystems.
+    """
+
+    def __init__(self, parent: GeoComType):
+        """
+        Parameters
+        ----------
+        parent : GeoCom
+            The parent protocol instance of this subsystem.
+        """
+        self._parent: GeoComType = parent
+        """Parent protocol instance"""
+        self._request = self._parent.request
+        """Shortcut to the `request` method of the parent protocol."""
 
 
 rpcnames: dict[int, str] = {

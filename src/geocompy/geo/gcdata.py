@@ -2,7 +2,7 @@
 Description
 ===========
 
-Module: ``geocompy.data_geocom``
+Module: ``geocompy.geo.gcdata``
 
 The GeoCom data module provides utility types, that are specific to
 GeoCom protocol version.
