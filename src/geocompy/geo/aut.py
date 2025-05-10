@@ -26,7 +26,8 @@ from .gcdata import (
     Adjust,
     ATR,
     Position,
-    Turn
+    Turn,
+    Camera
 )
 from .gctypes import (
     GeoComSubsystem,
@@ -882,4 +883,93 @@ class GeoComAUT(GeoComSubsystem):
         return self._request(
             9051,
             [_direction.value, swing]
+        )
+
+    def switch_lock_onthefly(
+        self,
+        enabled: bool
+    ) -> GeoComResponse[None]:
+        """
+        RPC 9103, ``AUT_SetLockFlyMode``
+
+        .. versionadded:: GeoCom-VivaTPS
+
+        Sets the state of on-the-fly mode for the lock mode.
+
+        Parameters
+        ----------
+        enabled : bool
+            Enable on-the-fly lock mode.
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        get_lock_onthefly_status
+        """
+        return self._request(
+            9103,
+            [enabled]
+        )
+
+    def get_lock_onthefly_status(self) -> GeoComResponse[bool]:
+        """
+        RPC 9102, ``AUT_GetLockFlyMode``
+
+        .. versionadded:: GeoCom-VivaTPS
+
+        Gets the current state of the on-the-fly lock mode.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `bool`: On-the-fly lock mode is enabled.
+
+        See Also
+        --------
+        get_lock_onthefly_status
+        """
+        return self._request(
+            9102,
+            parsers=parsebool
+        )
+
+    def aim_at_pixel(
+        self,
+        x: int,
+        y: int,
+        camera: Camera | str = Camera.OVERVIEW
+    ) -> GeoComResponse[None]:
+        """
+        RPC 9081, ``AUT_CAM_PositToPixelCoord``
+
+        .. versionadded:: GeoCom-VivaTPS
+
+        Turns the instrument to face the coordinates specified in the
+        image coordinates.
+
+        Parameters
+        ----------
+        x : int
+            Horizontal pixel coordinate.
+        y : int
+            Vertical pixel coordinate.
+        camera : Camera, optional
+            Camera device, by default OVERVIEW
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: Imaging license not found.
+                - ``AUT_SIDECOVER_ERR``: Sidecover is open.
+
+        """
+        _camera = toenum(Camera, camera)
+        return self._request(
+            9081,
+            [_camera.value, x, y]
         )

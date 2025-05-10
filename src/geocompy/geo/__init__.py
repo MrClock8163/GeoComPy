@@ -22,12 +22,14 @@ Submodules
 - ``geocompy.geo.aut``
 - ``geocompy.geo.bap``
 - ``geocompy.geo.bmm``
+- ``geocompy.geo.cam``
 - ``geocompy.geo.com``
 - ``geocompy.geo.csv``
 - ``geocompy.geo.ctl``
 - ``geocompy.geo.edm``
 - ``geocompy.geo.ftr``
 - ``geocompy.geo.img``
+- ``geocompy.geo.kdm``
 - ``geocompy.geo.mot``
 - ``geocompy.geo.sup``
 - ``geocompy.geo.tmc``
@@ -53,12 +55,14 @@ from .aus import GeoComAUS
 from .aut import GeoComAUT
 from .bap import GeoComBAP
 from .bmm import GeoComBMM
+from .cam import GeoComCAM
 from .com import GeoComCOM
 from .csv import GeoComCSV
 from .ctl import GeoComCTL
 from .edm import GeoComEDM
 from .ftr import GeoComFTR
 from .img import GeoComIMG
+from .kdm import GeoComKDM
 from .mot import GeoComMOT
 from .sup import GeoComSUP
 from .tmc import GeoComTMC
@@ -159,6 +163,12 @@ class GeoCom(GeoComType):
         """Basic applications subsystem."""
         self.bmm: GeoComBMM = GeoComBMM(self)
         """Basic man-machine interface subsystem."""
+        self.cam: GeoComCAM = GeoComCAM(self)
+        """
+        Camera subsystem.
+
+        .. versionadded:: GeoCom-VivaTPS
+        """
         self.com: GeoComCOM = GeoComCOM(self)
         """Communications subsystem."""
         self.csv: GeoComCSV = GeoComCSV(self)
@@ -182,6 +192,12 @@ class GeoCom(GeoComType):
         Image processing subsystem.
 
         .. versionadded:: GeoCom-TPS1200
+        """
+        self.kdm: GeoComKDM = GeoComKDM(self)
+        """
+        Keyboard display unit subsystem.
+
+        .. versionadded:: GeoCom-VivaTPS
         """
         self.mot: GeoComMOT = GeoComMOT(self)
         """Motorization subsytem."""

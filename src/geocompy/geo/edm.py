@@ -21,7 +21,8 @@ from ..data import (
 )
 from .gcdata import (
     Tracklight,
-    Guidelight
+    Guidelight,
+    MeasurementType
 )
 from .gctypes import (
     GeoComSubsystem,
@@ -320,4 +321,60 @@ class GeoComEDM(GeoComSubsystem):
         return self._request(
             1059,
             [_intesity.value]
+        )
+
+    def is_continuous_measurement(
+        self,
+        mode: MeasurementType | str
+    ) -> GeoComResponse[bool]:
+        """
+        RPC 1070, ``EDM_IsContMeasActive``
+
+        .. versionadded:: GeoCom-VivaTPS
+
+        Checks if the continuous measurement is active in the specified
+        mode.
+
+        Parameters
+        ----------
+        mode : MeasurementType | str
+            Measurement mode.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `bool`: Continuous measurement is active.
+
+        """
+        _mode = toenum(MeasurementType, mode)
+        return self._request(
+            1070,
+            [_mode.value],
+            parsebool
+        )
+
+    def switch_boomerang_filter_new(
+        self,
+        enable: bool
+    ) -> GeoComResponse[None]:
+        """
+        RPC 1061, ``EDM_SetBoomerangFilter``
+
+        .. versionadded:: GeoCom-VivaTPS
+
+        Enables or disables the boomerang filter.
+
+        Parameters
+        ----------
+        enable : bool
+            Enable boomerang filter.
+
+        Returns
+        -------
+        GeoComResponse
+        """
+        return self._request(
+            1061,
+            [enable]
         )

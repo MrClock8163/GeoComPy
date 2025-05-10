@@ -167,3 +167,29 @@ class GeoComIMG(GeoComSubsystem):
             [_device.value],
             int
         )
+
+    def set_telescopic_exposure_time(
+        self,
+        time: int
+    ) -> GeoComResponse[None]:
+        """
+        RPC 23403, ``IMG_SetTCCExposureTime``
+
+        .. versionadded:: GeoCom-VivaTPS
+
+        Sets the exposure time for the telescopic camera.
+
+        Parameters
+        ----------
+        time : int
+            Exposure time [ms].
+
+        Returns
+        -------
+        GeoComResponse
+
+        """
+        return self._request(
+            23403,
+            [time]
+        )

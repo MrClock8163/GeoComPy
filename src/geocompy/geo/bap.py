@@ -678,3 +678,55 @@ class GeoComBAP(GeoComSubsystem):
             17037,
             [enabled]
         )
+
+    def get_precise_atr_status(self) -> GeoComResponse[bool]:
+        """
+        RPC 17039, ``BAP_GetATRPrecise``
+
+        .. versionadded:: GeoCom-VivaTPS
+
+        Gets the current state of the precise ATR mode.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `bool`: Precise ATR mode is enabled.
+
+        See Also
+        --------
+        switch_precise_atr
+        """
+        return self._request(
+            17039,
+            parsers=parsebool
+        )
+
+    def switch_precise_atr(
+        self,
+        enabled: bool
+    ) -> GeoComResponse[None]:
+        """
+        RPC 17040, ``BAP_SetATRPrecise``
+
+        .. versionadded:: GeoCom-VivaTPS
+
+        Sets the state of the precise ATR mode.
+
+        Parameters
+        ----------
+        enabled : bool
+            Precise ATR mode is enabled.
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        get_precise_atr_status
+        """
+        return self._request(
+            17040,
+            [enabled]
+        )

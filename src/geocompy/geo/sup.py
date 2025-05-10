@@ -134,3 +134,32 @@ class GeoComSUP(GeoComSubsystem):
             14003,
             [enabled]
         )
+
+    def switch_autorestart(
+        self,
+        autorestart: bool
+    ) -> GeoComResponse[None]:
+        """
+        RPC 14006, ``SUP_SetPowerFailAutoRestart``
+
+        .. versionadded:: GeoCom-VivaTPS
+
+        Configure the instrument to automatically restard if power is
+        restored after an irregular shutdown.
+
+        Parameters
+        ----------
+        autorestart : bool
+            Enable automatic restart.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``NA``: Command not available.
+
+        """
+        return self._request(
+            14006,
+            [autorestart]
+        )
