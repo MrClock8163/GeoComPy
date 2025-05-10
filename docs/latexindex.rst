@@ -24,11 +24,7 @@ API documentation
    api/index
    api/data
    api/data_gsi
-   api/data_geocom
    api/communication
    api/protocols
    api/dna/index
-   api/tps1000/index
-   api/tps1100/index
-   api/tps1200p/index
-   api/vivatps/index
+   api/geo/index

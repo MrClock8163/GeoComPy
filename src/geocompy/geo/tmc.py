@@ -459,7 +459,8 @@ class GeoComTMC(GeoComSubsystem):
 
         See Also
         --------
-        set_edm_mode
+        set_edm_mode_v1
+        set_edm_mode_v2
         get_coordinate
         get_simple_measurement
         get_angle
@@ -1103,7 +1104,7 @@ class GeoComTMC(GeoComSubsystem):
 
         See Also
         --------
-        set_edm_mode
+        set_edm_mode_v1
 
         """
         return self._request(
@@ -1133,7 +1134,7 @@ class GeoComTMC(GeoComSubsystem):
 
         See Also
         --------
-        get_edm_mode
+        get_edm_mode_v1
 
         """
         _mode = toenum(EDMModeV1, mode)
@@ -1158,7 +1159,7 @@ class GeoComTMC(GeoComSubsystem):
 
         See Also
         --------
-        set_edm_mode
+        set_edm_mode_v2
 
         """
         return self._request(
@@ -1188,7 +1189,7 @@ class GeoComTMC(GeoComSubsystem):
 
         See Also
         --------
-        get_edm_mode
+        get_edm_mode_v2
 
         """
         _mode = toenum(EDMModeV2, mode)

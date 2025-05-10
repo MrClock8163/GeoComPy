@@ -104,7 +104,7 @@ various subsystems.
     resp = tps.csv.get_firmware_version()
     print(resp)  # GeoComResponse(CSV_GetSWVersion) com: OK, rpc: OK...
 
-All GeoCom commands return a :class:`~geocompy.protocols.GeoComResponse`
+All GeoCom commands return a :class:`~geocompy.geo.gctypes.GeoComResponse`
 object, that encapsulates the return codes, as well as the optional
 returned paramters.
 

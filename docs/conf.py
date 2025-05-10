@@ -133,7 +133,7 @@ napoleon_preprocess_types = True
 napoleon_google_docstring = False
 napoleon_use_ivar = True
 napoleon_type_aliases = {
-    "GeoComResponse": "~geocompy.protocols.GeoComResponse",
+    "GeoComResponse": "~geocompy.geo.gctypes.GeoComResponse",
     "GsiOnlineResponse": "~geocompy.protocols.GsiOnlineResponse",
     "datetime": "~datetime.datetime"
 }
