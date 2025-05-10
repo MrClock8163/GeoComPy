@@ -1,4 +1,11 @@
+from __future__ import annotations
+
 from enum import IntEnum
+from typing import TypeVar, Any, Generic, Callable
+
+
+_T = TypeVar("_T")
+_P = TypeVar("_P", bound=Any)
 
 
 class GeoComCode(IntEnum):
@@ -1032,6 +1039,125 @@ class GeoComCode(IntEnum):
     """F6 button pressed"""
     WIR_SHF2_BUTTON = 5139
     """SHIFT F2 button pressed"""
+
+
+class GeoComResponse(Generic[_P]):
+    """
+    Container class for parsed GeoCom responses.
+
+    The response encapsulates the original command, that was sent, and the
+    response received, as well as the codes and parameters extracted from
+    the response.
+
+    The `params` usually takes 3 types of values:
+
+    - **None**: the response explicitly returned no values
+    - **Scalar**: the response returned a single parameter
+    - **Sequence** (usually a `tuple`): the response returned multiple
+      parameters
+
+    Warning
+    -------
+    The `params` will be also `None`, if the parameter parsing failed for
+    some reason, to signal the unsuccessful operation. This error case must
+    be handled before using the returned values.
+    """
+
+    def __init__(
+        self,
+        rpcname: str,
+        cmd: str,
+        response: str,
+        comcode: GeoComCode,
+        rpccode: GeoComCode,
+        trans: int,
+        params: _P | None = None
+    ):
+        """
+        Parameters
+        ----------
+        rpcname : str
+            Name of the GeoCom function, that corresponds to the RPC,
+            that invoked this response.
+        cmd : str
+            Full, serialized request, that invoked this response.
+        response : str
+            Full, received response.
+        comcode : GeoComCode
+            Parsed COM return code indicating the success/failure of
+            communication.
+        rpccode : GeoComCode
+            Parsed RPC return code indicating the success/failure of
+            the command.
+        trans : int
+            Parsed transaction ID.
+        params : Any | None, optional
+            Collection of parsed response parameters. The content
+            is dependent on the executed function. (default: None)
+        """
+        self.rpcname: str = rpcname
+        """Name of the GeoCom function, that correspondes to the RPC,
+            that invoked this response."""
+        self.cmd: str = cmd
+        """Full, serialized request, that invoked this response."""
+        self.response: str = response
+        """Full, received response."""
+        self.error: GeoComCode = (
+            comcode
+            if not comcode
+            else rpccode
+        )
+        """Parsed return code indicating the success/failure of the
+        request."""
+        self.trans: int = trans
+        """Parsed transaction ID."""
+        self.params: _P | None = params
+        """Collection of parsed response parameters. The content
+            is dependent on the executed function."""
+
+    def __str__(self) -> str:
+        return (
+            f"GeoComResponse({self.rpcname}) code: {self.error.name:s}, "
+            f"tr: {self.trans:d}, "
+            f"params: {self.params}, "
+            f"(cmd: '{self.cmd}', response: '{self.response}')"
+        )
+
+    def __bool__(self) -> bool:
+        return bool(self.error)
+
+    def map_params(
+        self,
+        transformer: Callable[[_P | None], _T | None]
+    ) -> GeoComResponse[_T]:
+        """
+        Returns a new response object with the metadata maintained, but
+        the parameters transformed with the supplied function.
+
+        Parameters
+        ----------
+        transformer : Callable[[_P  |  None], _T  |  None]
+            Function to transform the params to new values.
+
+        Returns
+        -------
+        GeoComResponse
+            Response with transformed parameters.
+        """
+        try:
+            params = transformer(self.params)
+        except Exception:
+            params = None
+
+        return GeoComResponse(
+            self.rpcname,
+            self.cmd,
+            self.response,
+            self.error,
+            self.error,
+            self.trans,
+            params
+        )
 
 
 rpcnames: dict[int, str] = {
