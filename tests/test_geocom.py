@@ -1,13 +1,18 @@
 from typing import Callable, Any, Iterable
 import re
 
-from geocompy.protocols import GeoComProtocol
+import pytest
+
+from geocompy.geo import GeoCom
 from geocompy.communication import Connection
-from geocompy.data import (
-    Byte
-)
+from geocompy.data import Byte
 
 from helpers import faulty_parser
+
+
+@pytest.fixture
+def instrument() -> GeoCom:
+    return GeoCom(DummyGeoComConnection())
 
 
 class DummyGeoComConnection(Connection):
@@ -38,9 +43,17 @@ class DummyGeoComConnection(Connection):
         return "%R1P,0,0:0"
 
 
-class GeoComTester:
-    @staticmethod
-    def test_parse_response(instrument: GeoComProtocol) -> None:
+class TestGeoCom:
+    def test_init(self) -> None:
+        conn_bad = Connection()
+        with pytest.raises(ConnectionError):
+            GeoCom(conn_bad, retry=1)
+
+        conn_good = DummyGeoComConnection()
+        instrument = GeoCom(conn_good)
+        assert instrument._precision == 15
+
+    def test_parse_response(self, instrument: GeoCom) -> None:
         cmd = "%R1Q,5008:"
         answer = "%R1P,0,0:0,1996,'07','19','10','13','2f'"
         parsers: Iterable[Callable[[str], Any]] = (
@@ -81,8 +94,7 @@ class GeoComTester:
         )
         assert response.params is None
 
-    @staticmethod
-    def test_request(instrument: GeoComProtocol) -> None:
+    def test_request(self, instrument: GeoCom) -> None:
         response = instrument.request(
             5008,
             parsers=(
