@@ -1,8 +1,8 @@
-Meta
-====
+Types
+=====
 
-.. automodule:: geocompy.dna.meta
-    :exclude-members: param_descriptions, word_descriptions
+.. automodule:: geocompy.gsi.gsitypes
+    :exclude-members: param_descriptions,word_descriptions
 
     Definitions
     -----------

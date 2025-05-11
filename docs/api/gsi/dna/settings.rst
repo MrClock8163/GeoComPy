@@ -1,7 +1,7 @@
 Settings
 ========
 
-.. automodule:: geocompy.dna.settings
+.. automodule:: geocompy.gsi.dna.settings
 
     Definitions
     -----------

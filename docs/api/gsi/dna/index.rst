@@ -1,9 +1,7 @@
-:icon: protocol_gsionline
-
 DNA
 ===
 
-.. automodule:: geocompy.dna
+.. automodule:: geocompy.gsi.dna
 
     Definitions
     -----------
@@ -13,6 +11,5 @@ DNA
     :maxdepth: 1
     :hidden:
 
-    meta
     settings
     measurements

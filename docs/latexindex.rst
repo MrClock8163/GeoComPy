@@ -22,9 +22,9 @@ API documentation
    :maxdepth: 3
 
    api/index
-   api/data
-   api/data_gsi
+   api/dat
    api/communication
    api/protocols
-   api/dna/index
+   api/gsi/index
+   api/gsi/dna/index
    api/geo/index

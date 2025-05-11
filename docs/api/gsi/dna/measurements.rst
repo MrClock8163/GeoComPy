@@ -1,7 +1,7 @@
 Measurements
 ============
 
-.. automodule:: geocompy.dna.measurements
+.. automodule:: geocompy.gsi.dna.measurements
 
     Definitions
     -----------
