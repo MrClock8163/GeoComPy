@@ -30,17 +30,8 @@ has been imported as ``gc``:
 Subpackages
 -----------
 
-``geocompy.tps1000``
-    Communication with instruments running TPS1000 software.
-
-``geocompy.tps1100``
-    Communication with instruments running TPS1100 software.
-
-``geocompy.tps1200p``
-    Communication with instruments running TPS1200(+) software.
-
-``geocompy.vivatps``
-    Communication with instruments running Viva(/Nova)TPS software.
+``geocompy.geo``
+    Communication through GeoCom protocol.
 
 ``geocompy.dna``
     Communication with DNA digital level instruments.
@@ -75,39 +66,20 @@ Reexports
 ``geocompy.communication.get_logger``
     Utility function to create logger objects.
 
-``geocompy.protocols.GeoComResponse``
-    GeoCom protocol response container.
-
 ``geocompy.protocols.GsiOnlineResponse``
     GSI Online protocol response container.
 
 ``geocompy.dna.DNA``
     DNA instrument implementation.
 
-``geocompy.tps1000.TPS1000``
-    TPS1000 instrument implementation.
+``geocompy.geo.GeoCom``
+    GeoCom protocol handler.
 
-``geocompy.tps1000.rc.TPS1000RC``
-    TPS1000 GeoCom return codes.
+``geocompy.geo.gctypes.GeoComCode``
+    GeoCom return codes.
 
-``geocompy.tps1100.TPS1100``
-    TPS1100 instrument implementation.
-
-``geocompy.tps1100.rc.TPS1100RC``
-    TPS1100 GeoCom return codes.
-
-``geocompy.tps1200p.TPS1200P``
-    TPS1200+ instrument implementation.
-
-``geocompy.tps1200p.grc.TPS1200PGRC``
-    TPS1200+ GeoCom return codes.
-
-``geocompy.vivatps.VivaTPS``
-    VivaTPS instrument implementation.
-
-``geocompy.vivatps.grc.VivaTPSGRC``
-    VivaTPS GeoCom return codes.
-
+``geocompy.geo.gctypes.GeoComResponse``
+    GeoCom protocol response container.
 """
 try:
     from ._version import __version__ as __version__
@@ -126,17 +98,11 @@ from .communication import (  # noqa: F401
 )
 
 from .protocols import (  # noqa: F401
-    GeoComResponse as GeoComResponse,
     GsiOnlineResponse as GsiOnlineResponse
 )
 
 from .dna import DNA as DNA  # noqa: F401
 
-from .tps1000 import TPS1000 as TPS1000  # noqa: F401
-from .tps1000.rc import TPS1000RC as TPS1000RC  # noqa: F401
-from .tps1100 import TPS1100 as TPS1100  # noqa: F401
-from .tps1100.rc import TPS1100RC as TPS1100RC  # noqa: F401
-from .tps1200p import TPS1200P as TPS1200P  # noqa: F401
-from .tps1200p.grc import TPS1200PGRC as TPS1200PGRC  # noqa: F401
-from .vivatps import VivaTPS as VivaTPS  # noqa: F401
-from .vivatps.grc import VivaTPSGRC as VivaTPSGRC  # noqa: F401
+from .geo.gctypes import GeoComResponse as GeoComResponse  # noqa: F401
+from .geo.gctypes import GeoComCode as GeoComCode  # noqa: F401
+from .geo import GeoCom as GeoCom  # noqa: F401
