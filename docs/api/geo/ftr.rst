@@ -1,3 +1,5 @@
+:icon: material/arrow-right-bottom
+
 File Transfer
 =============
 
