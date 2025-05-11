@@ -1224,7 +1224,7 @@ class GeoComSubsystem:
         """
         Parameters
         ----------
-        parent : GeoCom
+        parent : GeoComType
             The parent protocol instance of this subsystem.
         """
         self._parent: GeoComType = parent
