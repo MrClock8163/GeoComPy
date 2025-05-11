@@ -63,7 +63,7 @@ Reexports
 ``geocompy.communication.get_logger``
     Utility function to create logger objects.
 
-``geocompy.gsi.dna.DNA``
+``geocompy.gsi.dna.GsiOnlineDNA``
     DNA instrument implementation.
 
 ``geocompy.gsi.gsitypes.GsiOnlineResponse``
@@ -95,7 +95,7 @@ from .communication import (  # noqa: F401
 )
 
 from .gsi.gsitypes import GsiOnlineResponse as GsiOnlineResponse  # noqa: F401
-from .gsi.dna import DNA as DNA  # noqa: F401
+from .gsi.dna import GsiOnlineDNA as GsiOnlineDNA  # noqa: F401
 
 from .geo.gctypes import GeoComResponse as GeoComResponse  # noqa: F401
 from .geo.gctypes import GeoComCode as GeoComCode  # noqa: F401

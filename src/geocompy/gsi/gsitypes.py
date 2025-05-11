@@ -84,11 +84,11 @@ class GsiOnlineType(ABC):
     """
     @property
     @abstractmethod
-    def _gsi16(self) -> bool: ...
+    def is_client_gsi16(self) -> bool: ...
 
-    @_gsi16.setter
+    @is_client_gsi16.setter
     @abstractmethod
-    def _gsi16(self, value: bool) -> None: ...
+    def is_client_gsi16(self, value: bool) -> None: ...
 
     @abstractmethod
     def setrequest(

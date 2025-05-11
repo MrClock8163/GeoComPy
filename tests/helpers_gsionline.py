@@ -2,7 +2,7 @@ import re
 
 from geocompy.communication import Connection
 from geocompy.data import gsiword
-from geocompy.protocols import GsiOnlineProtocol
+from geocompy.gsi.gsitypes import GsiOnlineType
 
 from helpers import faulty_parser
 
@@ -53,14 +53,14 @@ class DummyGsiOnlineConnection(Connection):
 
 class GsiOnlineTester:
     @staticmethod
-    def test_request(instrument: GsiOnlineProtocol) -> None:
+    def test_request(instrument: GsiOnlineType) -> None:
         response = instrument.request("d")
         assert not response.value
         response = instrument.request("a")
         assert response.value
 
     @staticmethod
-    def test_setrequest(instrument: GsiOnlineProtocol) -> None:
+    def test_setrequest(instrument: GsiOnlineType) -> None:
         response = instrument.setrequest(0, 0)
         assert not response.value
         assert response.comment == "INSTRUMENT"
@@ -70,7 +70,7 @@ class GsiOnlineTester:
         assert response.value
 
     @staticmethod
-    def test_confrequest(instrument: GsiOnlineProtocol) -> None:
+    def test_confrequest(instrument: GsiOnlineType) -> None:
         response = instrument.confrequest(0, int)
         assert not response.value
         assert response.comment == "INSTRUMENT"
@@ -86,7 +86,7 @@ class GsiOnlineTester:
         assert response.value == 0
 
     @staticmethod
-    def test_putrequest(instrument: GsiOnlineProtocol) -> None:
+    def test_putrequest(instrument: GsiOnlineType) -> None:
         response = instrument.putrequest(0, "0.....+00000000 ")
         assert not response.value
         assert response.comment == "INSTRUMENT"
@@ -96,7 +96,7 @@ class GsiOnlineTester:
         assert response.value
 
     @staticmethod
-    def test_getrequest(instrument: GsiOnlineProtocol) -> None:
+    def test_getrequest(instrument: GsiOnlineType) -> None:
         response = instrument.getrequest("I", 0, int)
         assert response.value is None
         assert response.response == "@W427"

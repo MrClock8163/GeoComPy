@@ -10,7 +10,7 @@ available on a DNA digital level instrument.
 Types
 -----
 
-- ``DNA``
+- ``GsiOnlineDNA``
 
 Submodules
 ----------
@@ -37,15 +37,15 @@ from ...communication import Connection, get_logger
 from ...data import (
     toenum
 )
-from .settings import DNASettings
-from .measurements import DNAMeasurements
+from .settings import GsiOnlineDNASettings
+from .measurements import GsiOnlineDNAMeasurements
 
 
 _T = TypeVar("_T")
 _UNKNOWNERROR = "@E0"
 
 
-class DNA(GsiOnlineType):
+class GsiOnlineDNA(GsiOnlineType):
     """
     DNA GSI Online protocol handler.
 
@@ -58,10 +58,10 @@ class DNA(GsiOnlineType):
     Opening a simple serial connection:
 
     >>> from geocompy.communication import open_serial
-    >>> from geocompy.gsi.dna import DNA
+    >>> from geocompy.gsi.dna import GsiOnlineDNA
     >>>
     >>> with open_serial("COM1") as line:
-    ...     dna = DNA(line)
+    ...     dna = GsiOnlineDNA(line)
     ...     dna.beep('SHORT')
     ...
     >>>
@@ -70,11 +70,11 @@ class DNA(GsiOnlineType):
 
     >>> from logging import DEBUG
     >>> from geocompy.communication import open_serial, get_logger
-    >>> from geocompy.gsi.dna import DNA
+    >>> from geocompy.gsi.dna import GsiOnlineDNA
     >>>
     >>> log = get_logger("DNA", "stdout", DEBUG)
     >>> with open_serial("COM1") as line:
-    ...     dna = DNA(line, log)
+    ...     dna = GsiOnlineDNA(line, log)
     ...     dna.beep('SHORT')
     ...
     >>>
@@ -141,11 +141,12 @@ class DNA(GsiOnlineType):
         if logger is None:
             logger = get_logger("/dev/null")
         self._logger: Logger = logger
-        self._gsi16 = False
+        self.is_client_gsi16 = False
 
-        self.settings: DNASettings = DNASettings(self)
+        self.settings: GsiOnlineDNASettings = GsiOnlineDNASettings(self)
         """Instrument settings subsystem."""
-        self.measurements: DNAMeasurements = DNAMeasurements(self)
+        self.measurements: GsiOnlineDNAMeasurements = GsiOnlineDNAMeasurements(
+            self)
         """Measurements subsystem."""
 
         for i in range(retry):
@@ -165,6 +166,14 @@ class DNA(GsiOnlineType):
         self.settings.get_format()  # Sync format setting
 
         self._logger.info("Connection initialized")
+
+    @property
+    def is_client_gsi16(self) -> bool:
+        return True
+
+    @is_client_gsi16.setter
+    def is_client_gsi16(self, value: bool) -> None:
+        pass
 
     def setrequest(
         self,
