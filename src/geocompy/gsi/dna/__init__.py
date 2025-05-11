@@ -2,7 +2,7 @@
 Description
 ===========
 
-Module: ``geocompy.dna``
+Module: ``geocompy.gsi.dna``
 
 The ``dna`` package provides wrapper methods for all GSI Online commands
 available on a DNA digital level instrument.
@@ -10,14 +10,13 @@ available on a DNA digital level instrument.
 Types
 -----
 
-- ``DNA``
+- ``GsiOnlineDNA``
 
 Submodules
 ----------
 
-- ``geocompy.dna.meta``
-- ``geocompy.dna.settings``
-- ``geocompy.dna.measurements``
+- ``geocompy.gsi.dna.settings``
+- ``geocompy.gsi.dna.measurements``
 """
 from __future__ import annotations
 
@@ -25,30 +24,28 @@ from enum import IntEnum
 import re
 from typing import Callable, TypeVar
 from traceback import format_exc
-import logging
+from logging import Logger
 from time import sleep
 
-from ..protocols import (
-    GsiOnlineProtocol,
-    GsiOnlineResponse
+from ..gsitypes import (
+    GsiOnlineType,
+    GsiOnlineResponse,
+    param_descriptions,
+    word_descriptions
 )
-from ..communication import Connection
-from ..data import (
+from ...communication import Connection, get_logger
+from ...data import (
     toenum
 )
-from .meta import (
-    param_descriptions,
-    word_descriptions,
-    DNAErrors
-)
-from .settings import DNASettings
-from .measurements import DNAMeasurements
+from .settings import GsiOnlineDNASettings
+from .measurements import GsiOnlineDNAMeasurements
 
 
 _T = TypeVar("_T")
+_UNKNOWNERROR = "@E0"
 
 
-class DNA(GsiOnlineProtocol):
+class GsiOnlineDNA(GsiOnlineType):
     """
     DNA GSI Online protocol handler.
 
@@ -61,10 +58,10 @@ class DNA(GsiOnlineProtocol):
     Opening a simple serial connection:
 
     >>> from geocompy.communication import open_serial
-    >>> from geocompy.dna import DNA
+    >>> from geocompy.gsi.dna import GsiOnlineDNA
     >>>
     >>> with open_serial("COM1") as line:
-    ...     dna = DNA(line)
+    ...     dna = GsiOnlineDNA(line)
     ...     dna.beep('SHORT')
     ...
     >>>
@@ -73,11 +70,11 @@ class DNA(GsiOnlineProtocol):
 
     >>> from logging import DEBUG
     >>> from geocompy.communication import open_serial, get_logger
-    >>> from geocompy.dna import DNA
+    >>> from geocompy.gsi.dna import GsiOnlineDNA
     >>>
     >>> log = get_logger("DNA", "stdout", DEBUG)
     >>> with open_serial("COM1") as line:
-    ...     dna = DNA(line, log)
+    ...     dna = GsiOnlineDNA(line, log)
     ...     dna.beep('SHORT')
     ...
     >>>
@@ -114,7 +111,7 @@ class DNA(GsiOnlineProtocol):
     def __init__(
         self,
         connection: Connection,
-        logger: logging.Logger | None = None,
+        logger: Logger | None = None,
         retry: int = 2
     ):
         """
@@ -140,10 +137,16 @@ class DNA(GsiOnlineProtocol):
             If the connection could not be verified in the specified
             number of retries.
         """
-        super().__init__(connection, logger)
-        self.settings: DNASettings = DNASettings(self)
+        self._conn: Connection = connection
+        if logger is None:
+            logger = get_logger("/dev/null")
+        self._logger: Logger = logger
+        self.is_client_gsi16 = False
+
+        self.settings: GsiOnlineDNASettings = GsiOnlineDNASettings(self)
         """Instrument settings subsystem."""
-        self.measurements: DNAMeasurements = DNAMeasurements(self)
+        self.measurements: GsiOnlineDNAMeasurements = GsiOnlineDNAMeasurements(
+            self)
         """Measurements subsystem."""
 
         for i in range(retry):
@@ -163,6 +166,14 @@ class DNA(GsiOnlineProtocol):
         self.settings.get_format()  # Sync format setting
 
         self._logger.info("Connection initialized")
+
+    @property
+    def is_client_gsi16(self) -> bool:
+        return True
+
+    @is_client_gsi16.setter
+    def is_client_gsi16(self, value: bool) -> None:
+        pass
 
     def setrequest(
         self,
@@ -191,7 +202,7 @@ class DNA(GsiOnlineProtocol):
             answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
-            answer = DNAErrors.E_UNKNOWN.value
+            answer = _UNKNOWNERROR
             comment = "EXCHANGE"
         value = answer == "?"
         if not value:
@@ -234,7 +245,7 @@ class DNA(GsiOnlineProtocol):
             answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
-            answer = DNAErrors.E_UNKNOWN.value
+            answer = _UNKNOWNERROR
             comment = "EXCHANGE"
 
         success = bool(self._CONFPAT.match(answer))
@@ -284,7 +295,7 @@ class DNA(GsiOnlineProtocol):
             answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
-            answer = DNAErrors.E_UNKNOWN.value
+            answer = _UNKNOWNERROR
             comment = "EXCHANGE"
         value = answer == "?"
         if not value:
@@ -331,7 +342,7 @@ class DNA(GsiOnlineProtocol):
             answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
-            answer = DNAErrors.E_UNKNOWN.value
+            answer = _UNKNOWNERROR
             comment = "EXCHANGE"
 
         success = bool(self._GSIPAT.match(answer))
@@ -380,7 +391,7 @@ class DNA(GsiOnlineProtocol):
             answer = self._conn.exchange(cmd)
         except Exception:
             self._logger.error(format_exc())
-            answer = DNAErrors.E_UNKNOWN.value
+            answer = _UNKNOWNERROR
             comment = "EXCHANGE"
 
         response = GsiOnlineResponse(
@@ -460,6 +471,5 @@ class DNA(GsiOnlineProtocol):
         GsiOnlineResponse
             Success of the execution.
         """
-        response = self.request("c")
-        response.desc = "Clear"
+        response = self.request("c", "Clear")
         return response

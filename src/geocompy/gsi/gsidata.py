@@ -2,10 +2,10 @@
 Description
 ===========
 
-Module: ``geocompy.data_gsi``
+Module: ``geocompy.gsi.gsidata``
 
 The GSI Online data module provides utility types, that are specific to
-GSI Online protocol version.
+the GSI Online protocol.
 
 Enums
 -----

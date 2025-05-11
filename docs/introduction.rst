@@ -184,8 +184,9 @@ Once the connection is live, the commands can be executed.
     resp = level.measurements.get_reading()
     print(resp)  # GsiOnlineResponse(Reading) success, value: ...
 
-All GSI Online commands return a :class:`~geocompy.protocols.GsiOnlineResponse`
-object, that encapsulates command metadata and the result of the request.
+All GSI Online commands return a
+:class:`~geocompy.gsi.gsitypes.GsiOnlineResponse` object, that encapsulates
+command metadata and the result of the request.
 
 .. tip::
 

@@ -2,26 +2,26 @@
 Description
 ===========
 
-Module: ``geocompy.dna.settings``
+Module: ``geocompy.gsi.dna.settings``
 
 Definitions for the DNA settings subsystem.
 
 Types
 -----
 
-- ``DNASettings``
+- ``GsiOnlineDNASettings``
 """
 from __future__ import annotations
 
-from ..protocols import (
+from ..gsitypes import (
     GsiOnlineSubsystem,
     GsiOnlineResponse
 )
-from ..data import (
+from ...data import (
     toenum,
     enumparser
 )
-from ..data_gsi import (
+from ..gsidata import (
     Communication,
     Units,
     BeepIntensity,
@@ -33,7 +33,7 @@ from ..data_gsi import (
 )
 
 
-class DNASettings(GsiOnlineSubsystem):
+class GsiOnlineDNASettings(GsiOnlineSubsystem):
     """
     Settings subsystem of the DNA GSI Online protocol.
 
@@ -774,7 +774,7 @@ class DNASettings(GsiOnlineSubsystem):
         _format = toenum(GSIFormat, format)
         response = self._setrequest(137, _format.value)
         if response.value:
-            self._parent._gsi16 = _format == GSIFormat.GSI16
+            self._parent.is_client_gsi16 = _format == GSIFormat.GSI16
 
         return response
 
@@ -805,7 +805,7 @@ class DNASettings(GsiOnlineSubsystem):
             enumparser(GSIFormat)
         )
         if response.value:
-            self._parent._gsi16 = response.value == GSIFormat.GSI16
+            self._parent.is_client_gsi16 = response.value == GSIFormat.GSI16
         return response
 
     def set_code_recording(

@@ -38,6 +38,7 @@ Below is a list of what each of them indicate.
   - :si-icon:`material/alpha-m-box` Method
   - :si-icon:`material/alpha-a-box` Attribute
   - :si-icon:`material/alpha-f-box` Function
+  - :si-icon:`material/alpha-p-box` Property
   - :si-icon:`material/alpha-v-box` Variable
 
 Content
@@ -57,10 +58,9 @@ Content
 
    api/index
    api/data
-   api/data_gsi
    api/communication
-   api/protocols
-   api/dna/index
+   api/gsi/index
+   api/gsi/dna/index
    api/geo/index
 
 Indices
