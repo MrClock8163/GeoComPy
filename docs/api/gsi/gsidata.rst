@@ -1,7 +1,9 @@
+:icon: material/code-brackets
+
 Data
 ====
 
-.. automodule:: geocompy.geo.gcdata
+.. automodule:: geocompy.gsi.gsidata
 
     Definitions
     -----------

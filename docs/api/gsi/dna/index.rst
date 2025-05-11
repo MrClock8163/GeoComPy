@@ -1,5 +1,7 @@
-DNA
-===
+:icon: protocol_gsionline
+
+GSI Online DNA
+==============
 
 .. automodule:: geocompy.gsi.dna
 

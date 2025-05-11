@@ -15,8 +15,3 @@ GSI Online
 
     gsitypes
     gsidata
-
-.. toctree::
-   :maxdepth: 1
-
-   dna/index
