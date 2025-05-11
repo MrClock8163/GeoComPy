@@ -33,8 +33,8 @@ Subpackages
 ``geocompy.geo``
     Communication through GeoCom protocol.
 
-``geocompy.dna``
-    Communication with DNA digital level instruments.
+``geocompy.gsi``
+    Communication through GSI Online protocol.
 
 Submodules
 ----------
@@ -44,9 +44,6 @@ Submodules
 
 ``geocompy.communication``
     Communication methods.
-
-``geocompy.protocols``
-    Base definitions for command protocols and responses.
 
 Reexports
 ---------
@@ -66,11 +63,11 @@ Reexports
 ``geocompy.communication.get_logger``
     Utility function to create logger objects.
 
-``geocompy.protocols.GsiOnlineResponse``
-    GSI Online protocol response container.
-
-``geocompy.dna.DNA``
+``geocompy.gsi.dna.DNA``
     DNA instrument implementation.
+
+``geocompy.gsi.gsitypes.GsiOnlineResponse``
+    GSI Online protocol response container.
 
 ``geocompy.geo.GeoCom``
     GeoCom protocol handler.
@@ -97,11 +94,8 @@ from .communication import (  # noqa: F401
     get_logger as get_logger
 )
 
-from .protocols import (  # noqa: F401
-    GsiOnlineResponse as GsiOnlineResponse
-)
-
-from .dna import DNA as DNA  # noqa: F401
+from .gsi.gsitypes import GsiOnlineResponse as GsiOnlineResponse  # noqa: F401
+from .gsi.dna import DNA as DNA  # noqa: F401
 
 from .geo.gctypes import GeoComResponse as GeoComResponse  # noqa: F401
 from .geo.gctypes import GeoComCode as GeoComCode  # noqa: F401
