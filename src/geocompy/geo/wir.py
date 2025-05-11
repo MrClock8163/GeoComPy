@@ -29,6 +29,8 @@ class GeoComWIR(GeoComSubsystem):
     """
     Word Index registration subsystem of the GeoCom protocol.
     This subsystem is responsible for the GSI data recording operations.
+
+    .. versionremoved:: GeoCom-TPS1200
     """
 
     def get_recording_format(self) -> GeoComResponse[Format]:

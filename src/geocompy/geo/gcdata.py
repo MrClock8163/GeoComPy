@@ -5,7 +5,7 @@ Description
 Module: ``geocompy.geo.gcdata``
 
 The GeoCom data module provides utility types, that are specific to
-GeoCom protocol version.
+GeoCom protocol.
 
 
 Enums
