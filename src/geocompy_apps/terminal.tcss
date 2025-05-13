@@ -1,0 +1,26 @@
+.connect {
+    grid-size: 2;
+    grid-columns: auto 1fr;
+    grid-rows: auto;
+    grid-gutter: 1;
+}
+
+#hg_buttons {
+    height: auto;
+}
+
+#btn_test_com {
+    align: left middle;
+}
+
+#btn_connect {
+    align: center middle;
+}
+
+#btn_disconnect {
+    align: right middle;
+}
+
+#edit_cmd {
+    height: auto;
+}

@@ -57,6 +57,8 @@ linting = [
 ]
 development = [
     "pyserial",
+    "textual",
+    "rapidfuzz",
     {include-group = "linting"}
 ]
 documentation = [
