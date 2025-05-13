@@ -59,7 +59,7 @@ python -m pip install .
 
 ## Short example
 
-The below example demonstrates how to connect to a TPS1000 instrument
+The below example demonstrates how to connect to a GeoCom capable instrument
 through a serial connection. Once the connection is up and running, the
 total station is instructed to turn to horizontal 0, and position the
 telescope parallel to the ground.
@@ -68,12 +68,12 @@ telescope parallel to the ground.
 from geocompy import (
     Angle,
     open_serial,
-    TPS1000
+    GeoCom
 )
 
 
 with open_serial("COM1") as comm:
-    tps = TPS1000(comm)
+    tps = GeoCom(comm)
     tps.aut.turn_to(Angle(0), Angle(90, 'DEG'))
 ```
 

@@ -15,14 +15,14 @@ Features
 - Serial communication handler
 - Universal data types for communication
 - Automatic serialization and deserialization of parameters
-- Supported systems:
+- Commands implemented from reference manuals
 
   .. only:: html
 
     - :si-icon:`protocol_gsionline` DNA
     - :si-icon:`protocol_geocom` TPS1000
     - :si-icon:`protocol_geocom` TPS1100
-    - :si-icon:`protocol_geocom` TPS1200+
+    - :si-icon:`protocol_geocom` TPS1200(+)
     - :si-icon:`protocol_geocom` VivaTPS
 
   .. only:: latex
@@ -30,7 +30,7 @@ Features
     - DNA
     - TPS1000
     - TPS1100
-    - TPS1200+
+    - TPS1200(+)
     - VivaTPS
 
 Requirements
