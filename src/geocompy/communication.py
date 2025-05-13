@@ -169,7 +169,18 @@ class Connection:
             If the method is not implemented on the child class.
 
         """
-        raise NotImplementedError("interface does not implement 'exchange1'")
+        raise NotImplementedError("interface does not implement 'exchange'")
+
+    def close(self) -> None:
+        """
+        Closes the connection gracefully.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented on the child class.
+        """
+        raise NotImplementedError("interface does not implement 'close'")
 
 
 def open_serial(
