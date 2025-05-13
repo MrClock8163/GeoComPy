@@ -14,6 +14,7 @@ Types
 """
 from __future__ import annotations
 
+from math import pi
 from typing import SupportsFloat
 
 from ..data import (
@@ -147,9 +148,9 @@ class GeoComMOT(GeoComSubsystem):
         Parameters
         ----------
         hz : SupportsFloat
-            Horizontal angle to turn in a second [-0.79; +0.79]rad.
+            Horizontal angle to turn in a second [-pi; +pi]rad.
         v : SupportsFloat
-            Vertical angle to turn in a second [-0.79; +0.79]rad.
+            Vertical angle to turn in a second [-pi; +pi]rad.
 
         Returns
         -------
@@ -162,6 +163,12 @@ class GeoComMOT(GeoComSubsystem):
                   speed.
                 - ``NOT_IMPL``: Motorization is not available.
 
+        Note
+        ----
+        Instruments with piezo motors support velocities up to 180 deg/sec.
+        Stations with traditional motor drives support velocoties up to
+        45 deg/sec.
+
         See Also
         --------
         set_velocity
@@ -169,8 +176,8 @@ class GeoComMOT(GeoComSubsystem):
         aus.switch_user_lock
 
         """
-        _horizontal = min(0.79, max(-0.79, float(hz)))
-        _vertical = min(0.79, max(-0.79, float(v)))
+        _horizontal = min(pi, max(-pi, float(hz)))
+        _vertical = min(pi, max(-pi, float(v)))
         return self._request(
             6004,
             [_horizontal, _vertical]
