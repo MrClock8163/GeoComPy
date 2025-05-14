@@ -192,7 +192,8 @@ def open_serial(
     parity: str = PARITY_NONE,
     timeout: int = 15,
     eom: str = "\r\n",
-    eoa: str = "\r\n"
+    eoa: str = "\r\n",
+    sync_after_timeout: bool = False
 ) -> SerialConnection:
     """
     Constructs a SerialConnection with the given communication
@@ -216,10 +217,19 @@ def open_serial(
         EndOfMessage sequence, by default ``"\\r\\n"``
     eoa : str, optional
         EndOfAnswer sequence, by default ``"\\r\\n"``
+    sync_after_timeout : bool, optional
+        Attempt to re-sync the message-response que, if a timeout
+        occured in the previous exchange, by default False
 
     Returns
     -------
     SerialConnection
+
+    Warning
+    -------
+
+    The syncing feature should be used with caution! See `SerialConnection`
+    for more information!
 
     Examples
     --------
@@ -237,7 +247,12 @@ def open_serial(
 
     """
     serialport = Serial(port, speed, databits, parity, stopbits, timeout)
-    wrapper = SerialConnection(serialport, eom=eom, eoa=eoa)
+    wrapper = SerialConnection(
+        serialport,
+        eom=eom,
+        eoa=eoa,
+        sync_after_timeout=sync_after_timeout
+    )
     return wrapper
 
 
@@ -281,7 +296,8 @@ class SerialConnection(Connection):
         port: Serial,
         *,
         eom: str = "\r\n",
-        eoa: str = "\r\n"
+        eoa: str = "\r\n",
+        sync_after_timeout: bool = False
     ):
         """
         Parameters
@@ -292,6 +308,9 @@ class SerialConnection(Connection):
             EndOfMessage sequence, by default ``"\\r\\n"``
         eoa : str, optional
             EndOfAnswer sequence, by default ``"\\r\\n"``
+        sync_after_timeout : bool, optional
+            Attempt to re-sync the message-response que, if a timeout
+            occured in the previous exchange, by default False
 
         Notes
         -----
@@ -299,11 +318,26 @@ class SerialConnection(Connection):
         attempted. This might raise an exception if the port cannot
         be opened.
 
+        Warning
+        -------
+
+        The que syncing is attempted by repeatedly reading from the
+        receiving buffer, as many times as a timeout was previously
+        detected. This can only solve issues, if the connection target
+        was just slow, and not completely unresponsive. If the target
+        became truly unresponsive, but came back online later, the sync
+        attempt can cause further problems. Use with caution!
+
+        (Timeouts should be avoided when possible, use a temporary override
+        on exchanges that are expected to finish in a longer time.)
+
         """
 
         self._port: Serial = port
         self.eom: str = eom  # end of message
         self.eoa: str = eoa  # end of answer
+        self._attempt_sync: bool = sync_after_timeout
+        self._timeout_counter: int = 0
 
         if not self._port.is_open:
             self._port.open()
@@ -390,8 +424,20 @@ class SerialConnection(Connection):
             )
 
         eoabytes = self.eoa.encode("ascii")
+        if self._attempt_sync and self._timeout_counter > 0:
+            for i in range(self._timeout_counter):
+                excess = self._port.read_until(eoabytes)
+                if not excess.endswith(eoabytes):
+                    self._timeout_counter += 1
+                    raise SerialTimeoutException(
+                        "Serial connection timed on 'receive' again"
+                    )
+            else:
+                self._timeout_counter = 0
+
         answer = self._port.read_until(eoabytes)
         if not answer.endswith(eoabytes):
+            self._timeout_counter += 1
             raise SerialTimeoutException(
                 "serial connection timed out on 'receive'"
             )

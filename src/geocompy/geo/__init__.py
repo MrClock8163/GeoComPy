@@ -334,19 +334,19 @@ class GeoCom(GeoComType):
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{GeoComCode.COM_TIMEDOUT:d},"
-                f"0:{GeoComCode.OK:d}"
+                f"{trid}:{GeoComCode.OK:d}"
             )
         except SerialException:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{GeoComCode.COM_CANT_SEND:d},"
-                f"0:{GeoComCode.OK:d}"
+                f"{trid}:{GeoComCode.OK:d}"
             )
         except Exception:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{GeoComCode.COM_FAILED:d},"
-                f"0:{GeoComCode.OK:d}"
+                f"{trid}:{GeoComCode.OK:d}"
             )
 
         response = self.parse_response(
