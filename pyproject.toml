@@ -40,7 +40,8 @@ license-files = ["LICEN[CS]E*"]
 keywords = ["geocom", "surveying", "leica", "totalstation", "monitoring", "automation", "gsi"]
 
 [project.urls]
-Homepage = "https://github.com/MrClock8163/geocompy"
+Documentation = "https://geocompy.readthedocs.io"
+Repository = "https://github.com/MrClock8163/geocompy"
 Issues = "https://github.com/MrClock8163/geocompy/issues"
 
 [dependency-groups]
