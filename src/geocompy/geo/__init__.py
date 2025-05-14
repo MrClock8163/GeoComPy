@@ -70,6 +70,7 @@ from .wir import GeoComWIR
 
 
 _T = TypeVar("_T")
+_MAX_TRANSACTION = 2**15
 
 
 class GeoCom(GeoComType):
@@ -145,6 +146,9 @@ class GeoCom(GeoComType):
             If the connection could not be verified in the specified
             number of retries.
         """
+        self.transaction_counter = 0
+        """Number of command transactions started during the current
+        session."""
         self._conn: Connection = connection
         if logger is None:
             logger = get_logger("/dev/null")
@@ -321,7 +325,9 @@ class GeoCom(GeoComType):
 
             strparams.append(value)
 
-        cmd = f"%R1Q,{rpc}:{','.join(strparams)}"
+        trid = self.transaction_counter % _MAX_TRANSACTION
+        self.transaction_counter += 1
+        cmd = f"%R1Q,{rpc},{trid}:{','.join(strparams)}"
         try:
             answer = self._conn.exchange(cmd)
         except SerialTimeoutException:
@@ -400,6 +406,7 @@ class GeoCom(GeoComType):
         """
         m = self._R1P.match(response)
         rpc = int(cmd.split(":")[0].split(",")[1])
+        trid_expected = int(cmd.split(":")[0].split(",")[2])
         rpcname = rpcnames.get(rpc, str(rpc))
         if not m:
             return GeoComResponse(
@@ -412,6 +419,16 @@ class GeoCom(GeoComType):
             )
 
         groups = m.groupdict()
+        trid = int(groups.get("tr", "-1"))
+        if trid != trid_expected:
+            return GeoComResponse(
+                rpcname,
+                cmd,
+                response,
+                GeoComCode.COM_TR_ID_MISMATCH,
+                GeoComCode.OK,
+                trid
+            )
         values = groups.get("params", "")
         if values is None:
             values = ""
