@@ -27,6 +27,12 @@ class DummyGsiOnlineConnection(Connection):
     def __init__(self, gsi16: bool = False):
         self._gsi16 = gsi16
 
+    def send(self, value: str) -> None:
+        pass
+
+    def receive(self) -> str:
+        return ""
+
     def exchange(self, cmd: str) -> str:
         if self._CONF.match(cmd) and cmd != "CONF/0":
             if cmd == "CONF/137":
@@ -49,6 +55,15 @@ class DummyGsiOnlineConnection(Connection):
             return "?"
 
         return "@W427"
+
+    def reset(self) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+
+    def is_open(self) -> bool:
+        return True
 
 
 class GsiOnlineTester:

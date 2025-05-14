@@ -7,7 +7,7 @@ from geocompy.geo import GeoCom
 from geocompy.communication import Connection
 from geocompy.data import Byte
 
-from helpers import faulty_parser
+from helpers import faulty_parser, FaultyConnection
 
 
 @pytest.fixture
@@ -34,6 +34,9 @@ class DummyGeoComConnection(Connection):
     def send(self, message: str) -> None:
         return
 
+    def receive(self) -> str:
+        return ""
+
     def exchange(self, cmd: str) -> str:
         if not self._CMD.match(cmd):
             return "%R1P,0,0:2"
@@ -52,10 +55,19 @@ class DummyGeoComConnection(Connection):
 
         return f"%R1P,0,{trid}:0"
 
+    def close(self) -> None:
+        pass
+
+    def reset(self) -> None:
+        pass
+
+    def is_open(self) -> bool:
+        return True
+
 
 class TestGeoCom:
     def test_init(self) -> None:
-        conn_bad = Connection()
+        conn_bad = FaultyConnection()
         with pytest.raises(ConnectionError):
             GeoCom(conn_bad, retry=1)
 
