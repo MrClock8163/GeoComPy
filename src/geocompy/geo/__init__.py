@@ -429,9 +429,30 @@ class GeoCom(GeoComType):
                 GeoComCode.OK,
                 trid
             )
+
+        try:
+            comrc = GeoComCode(int(groups["comrc"]))
+        except Exception:
+            comrc = GeoComCode.UNDEFINED
+
+        try:
+            rc = GeoComCode(int(groups["rc"]))
+        except Exception:
+            rc = GeoComCode.UNDEFINED
+
         values = groups.get("params", "")
         if values is None:
             values = ""
+
+        if values == "":
+            return GeoComResponse(
+                rpcname,
+                cmd,
+                response,
+                comrc,
+                rc,
+                trid
+            )
 
         if parsers is None:
             parsers = ()
@@ -451,16 +472,6 @@ class GeoCom(GeoComType):
                 GeoComCode.OK,
                 0
             )
-
-        try:
-            comrc = GeoComCode(int(groups["comrc"]))
-        except Exception:
-            comrc = GeoComCode.UNDEFINED
-
-        try:
-            rc = GeoComCode(int(groups["rc"]))
-        except Exception:
-            rc = GeoComCode.UNDEFINED
 
         match len(params):
             case 0:

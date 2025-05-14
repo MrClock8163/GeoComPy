@@ -430,7 +430,8 @@ class SerialConnection(Connection):
                 if not excess.endswith(eoabytes):
                     self._timeout_counter += 1
                     raise SerialTimeoutException(
-                        "Serial connection timed on 'receive' again"
+                        "Serial connection timed on 'receive' during"
+                        "attempt to recover from a previous timeout"
                     )
             else:
                 self._timeout_counter = 0
