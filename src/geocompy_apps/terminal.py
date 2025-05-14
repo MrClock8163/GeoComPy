@@ -264,6 +264,7 @@ class CmdInput(Input):
         if not self.PAT.match(self.value):
             self.notify("Not a valid command!",
                         severity="error", title="Error")
+            self.app.bell()
             return
 
         if len(self.history) == 0 or self.value != self.history[-1]:
@@ -372,8 +373,10 @@ class GeoComTerminal(App[None]):
         if not port.is_valid:
             self.notify(
                 "Invalid port identifier given!",
-                severity="error"
+                severity="error",
+                title="Error"
             )
+            self.bell()
             return
         try:
             with open_serial(port.value) as com:
@@ -390,11 +393,14 @@ class GeoComTerminal(App[None]):
         except Exception as e:
             self.notify(
                 f"Connection test failed. ({e})",
-                severity="error"
+                severity="error",
+                title="Error"
             )
+            self.bell()
             return
 
-        self.notify("Connection test successful!")
+        self.notify("Connection test successful!", title="Success")
+        self.bell()
         return
 
     @on(Button.Pressed, "#btn_connect")
@@ -405,8 +411,10 @@ class GeoComTerminal(App[None]):
         if not port.is_valid:
             self.notify(
                 "Invalid port identifier given!",
-                severity="error"
+                severity="error",
+                title="Error"
             )
+            self.app.bell()
             return
         try:
             log = get_app_logger(self, port.value)
@@ -426,9 +434,16 @@ class GeoComTerminal(App[None]):
             self.query_one("#select_protocol", Select).disabled = True
             self.query_one("#tab_cmd", TabPane).disabled = False
 
+            self.notify("Connection successful.", title="Success")
+            self.bell()
+
         except Exception as e:
-            self.notify(f"Could not connect. ({e})", severity="error")
-            return
+            self.notify(
+                f"Could not connect. ({e})",
+                severity="error",
+                title="Error"
+            )
+            self.bell()
 
     @on(Button.Pressed, "#btn_disconnect")
     def btn_disconnect_pressed(self, event: Button.Pressed) -> None:
@@ -449,10 +464,16 @@ class GeoComTerminal(App[None]):
             self.query_one("#tab_cmd", TabPane).disabled = True
             self.sub_title = ""
         except Exception as e:
-            self.notify(f"Could not disconnect. ({e})", severity="error")
+            self.notify(
+                f"Could not disconnect. ({e})",
+                severity="error",
+                title="Error"
+            )
+            self.bell()
             return
 
-        self.notify("Disconnected.")
+        self.notify("Disconnected.", title="Success")
+        self.bell()
 
 
 class ComPort(Validator):
