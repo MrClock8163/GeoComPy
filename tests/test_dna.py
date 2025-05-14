@@ -1,12 +1,13 @@
 import pytest
 
-from geocompy.communication import Connection
 from geocompy.gsi.dna import GsiOnlineDNA
 
 from helpers_gsionline import (
     DummyGsiOnlineConnection,
     GsiOnlineTester
 )
+
+from helpers import FaultyConnection
 
 
 @pytest.fixture
@@ -16,7 +17,7 @@ def dna() -> GsiOnlineDNA:
 
 class TestDNA:
     def test_init(self) -> None:
-        conn_bad = Connection()
+        conn_bad = FaultyConnection()
         with pytest.raises(ConnectionError):
             GsiOnlineDNA(conn_bad, retry=1)
 

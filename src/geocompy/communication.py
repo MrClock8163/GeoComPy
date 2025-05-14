@@ -24,6 +24,7 @@ import logging
 from types import TracebackType
 from typing import Literal, Generator
 from contextlib import contextmanager
+from abc import ABC, abstractmethod
 
 from serial import (
     Serial,
@@ -89,98 +90,28 @@ def get_logger(
     return log
 
 
-class Connection:
+class Connection(ABC):
     """
-    Base class for all connection types. It specifies the required
-    methods of all connection implementations, to serve as a generic
-    interface.
-
+    Interface definition for connection implementations.
     """
 
-    def is_open(self) -> bool:
-        """
-        Checks if the communication channel is currently open.
+    @abstractmethod
+    def is_open(self) -> bool: ...
 
-        Returns
-        -------
-        bool
-            State of the channel.
+    @abstractmethod
+    def send(self, message: str) -> None: ...
 
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the child class.
+    @abstractmethod
+    def receive(self) -> str: ...
 
-        """
-        raise NotImplementedError("interface does not implement 'is_open'")
+    @abstractmethod
+    def exchange(self, cmd: str) -> str: ...
 
-    def send(self, message: str) -> None:
-        """
-        Sends a single serialized message through the connection.
+    @abstractmethod
+    def close(self) -> None: ...
 
-        Parameters
-        ----------
-        message : str
-            Message to send.
-
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the child class.
-
-        """
-        raise NotImplementedError("interface does not implement 'send'")
-
-    def receive(self) -> str:
-        """
-        Receives a single serialized message from the connection.
-
-        Returns
-        -------
-        str
-            Received message.
-
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the child class.
-
-        """
-        raise NotImplementedError("interface does not implement 'receive'")
-
-    def exchange(self, cmd: str) -> str:
-        """
-        Sends a message through the connection, and receives the
-        corresponding response.
-
-        Parameters
-        ----------
-        cmd : str
-            Message to send.
-
-        Returns
-        -------
-        str
-            Response to the sent message
-
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the child class.
-
-        """
-        raise NotImplementedError("interface does not implement 'exchange'")
-
-    def close(self) -> None:
-        """
-        Closes the connection gracefully.
-
-        Raises
-        ------
-        NotImplementedError
-            If the method is not implemented on the child class.
-        """
-        raise NotImplementedError("interface does not implement 'close'")
+    @abstractmethod
+    def reset(self) -> None: ...
 
 
 def open_serial(
@@ -192,7 +123,8 @@ def open_serial(
     parity: str = PARITY_NONE,
     timeout: int = 15,
     eom: str = "\r\n",
-    eoa: str = "\r\n"
+    eoa: str = "\r\n",
+    sync_after_timeout: bool = False
 ) -> SerialConnection:
     """
     Constructs a SerialConnection with the given communication
@@ -216,10 +148,19 @@ def open_serial(
         EndOfMessage sequence, by default ``"\\r\\n"``
     eoa : str, optional
         EndOfAnswer sequence, by default ``"\\r\\n"``
+    sync_after_timeout : bool, optional
+        Attempt to re-sync the message-response que, if a timeout
+        occured in the previous exchange, by default False
 
     Returns
     -------
     SerialConnection
+
+    Warning
+    -------
+
+    The syncing feature should be used with caution! See `SerialConnection`
+    for more information!
 
     Examples
     --------
@@ -237,7 +178,12 @@ def open_serial(
 
     """
     serialport = Serial(port, speed, databits, parity, stopbits, timeout)
-    wrapper = SerialConnection(serialport, eom=eom, eoa=eoa)
+    wrapper = SerialConnection(
+        serialport,
+        eom=eom,
+        eoa=eoa,
+        sync_after_timeout=sync_after_timeout
+    )
     return wrapper
 
 
@@ -281,7 +227,8 @@ class SerialConnection(Connection):
         port: Serial,
         *,
         eom: str = "\r\n",
-        eoa: str = "\r\n"
+        eoa: str = "\r\n",
+        sync_after_timeout: bool = False
     ):
         """
         Parameters
@@ -292,6 +239,9 @@ class SerialConnection(Connection):
             EndOfMessage sequence, by default ``"\\r\\n"``
         eoa : str, optional
             EndOfAnswer sequence, by default ``"\\r\\n"``
+        sync_after_timeout : bool, optional
+            Attempt to re-sync the message-response que, if a timeout
+            occured in the previous exchange, by default False
 
         Notes
         -----
@@ -299,11 +249,26 @@ class SerialConnection(Connection):
         attempted. This might raise an exception if the port cannot
         be opened.
 
+        Warning
+        -------
+
+        The que syncing is attempted by repeatedly reading from the
+        receiving buffer, as many times as a timeout was previously
+        detected. This can only solve issues, if the connection target
+        was just slow, and not completely unresponsive. If the target
+        became truly unresponsive, but came back online later, the sync
+        attempt can cause further problems. Use with caution!
+
+        (Timeouts should be avoided when possible, use a temporary override
+        on exchanges that are expected to finish in a longer time.)
+
         """
 
         self._port: Serial = port
         self.eom: str = eom  # end of message
         self.eoa: str = eoa  # end of answer
+        self._attempt_sync: bool = sync_after_timeout
+        self._timeout_counter: int = 0
 
         if not self._port.is_open:
             self._port.open()
@@ -390,8 +355,21 @@ class SerialConnection(Connection):
             )
 
         eoabytes = self.eoa.encode("ascii")
+        if self._attempt_sync and self._timeout_counter > 0:
+            for i in range(self._timeout_counter):
+                excess = self._port.read_until(eoabytes)
+                if not excess.endswith(eoabytes):
+                    self._timeout_counter += 1
+                    raise SerialTimeoutException(
+                        "Serial connection timed on 'receive' during"
+                        "attempt to recover from a previous timeout"
+                    )
+            else:
+                self._timeout_counter = 0
+
         answer = self._port.read_until(eoabytes)
         if not answer.endswith(eoabytes):
+            self._timeout_counter += 1
             raise SerialTimeoutException(
                 "serial connection timed out on 'receive'"
             )
@@ -424,6 +402,24 @@ class SerialConnection(Connection):
         """
         self.send(cmd)
         return self.receive()
+
+    def reset(self) -> None:
+        """
+        Resets the connection by clearing the incoming and outgoing
+        buffers, and resetting the internal state. This could be used
+        to recover from a desync (possibly caused by a timeout).
+
+        Warning
+        -------
+
+        Trying to recover after repeated timeouts with a hard reset can
+        cause further issues, if the reset is attempted while responses
+        were finally being received. It is recommended to wait some time
+        after the last command was sent, before resetting.
+        """
+        self._port.reset_input_buffer()
+        self._port.reset_output_buffer()
+        self._timeout_counter = 0
 
     @contextmanager
     def timeout_override(

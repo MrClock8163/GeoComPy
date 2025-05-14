@@ -7,7 +7,7 @@ from geocompy.geo import GeoCom
 from geocompy.communication import Connection
 from geocompy.data import Byte
 
-from helpers import faulty_parser
+from helpers import faulty_parser, FaultyConnection
 
 
 @pytest.fixture
@@ -26,26 +26,48 @@ class DummyGeoComConnection(Connection):
 
     _CMD = re.compile(
         r"^%R1Q,"
-        r"(?P<rpc>\d+):"
+        r"(?P<rpc>\d+)"
+        r"(?P<trid>,\d+)?:"
         r"(?:(?P<params>.*))?$"
     )
 
     def send(self, message: str) -> None:
         return
 
+    def receive(self) -> str:
+        return ""
+
     def exchange(self, cmd: str) -> str:
         if not self._CMD.match(cmd):
             return "%R1P,0,0:2"
 
-        if cmd == "%R1Q,5008:":
-            return "%R1P,0,0:0,1996,'07','19','10','13','2f'"
+        head, _ = cmd.split(":")
+        match head.split(","):
+            case [_, _, trid_str]:
+                pass
+            case _:
+                trid_str = "0"
 
-        return "%R1P,0,0:0"
+        trid = int(trid_str)
+
+        if re.match(r"%R1Q,5008,\d+:", cmd):
+            return f"%R1P,0,{trid}:0,1996,'07','19','10','13','2f'"
+
+        return f"%R1P,0,{trid}:0"
+
+    def close(self) -> None:
+        pass
+
+    def reset(self) -> None:
+        pass
+
+    def is_open(self) -> bool:
+        return True
 
 
 class TestGeoCom:
     def test_init(self) -> None:
-        conn_bad = Connection()
+        conn_bad = FaultyConnection()
         with pytest.raises(ConnectionError):
             GeoCom(conn_bad, retry=1)
 
@@ -54,7 +76,7 @@ class TestGeoCom:
         assert instrument._precision == 15
 
     def test_parse_response(self, instrument: GeoCom) -> None:
-        cmd = "%R1Q,5008:"
+        cmd = "%R1Q,5008,0:"
         answer = "%R1P,0,0:0,1996,'07','19','10','13','2f'"
         parsers: Iterable[Callable[[str], Any]] = (
             int,
@@ -113,5 +135,5 @@ class TestGeoCom:
             1,
             (1, 2.0)
         )
-        assert response.cmd == "%R1Q,1:1,2.0"
-        assert response.response == "%R1P,0,0:0"
+        assert re.match(r"%R1Q,1,\d+:1,2.0", response.cmd)
+        assert re.match(r"%R1P,0,\d+:0", response.response)

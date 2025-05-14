@@ -70,6 +70,7 @@ from .wir import GeoComWIR
 
 
 _T = TypeVar("_T")
+_MAX_TRANSACTION = 2**15
 
 
 class GeoCom(GeoComType):
@@ -145,6 +146,9 @@ class GeoCom(GeoComType):
             If the connection could not be verified in the specified
             number of retries.
         """
+        self.transaction_counter = 0
+        """Number of command transactions started during the current
+        session."""
         self._conn: Connection = connection
         if logger is None:
             logger = get_logger("/dev/null")
@@ -321,26 +325,28 @@ class GeoCom(GeoComType):
 
             strparams.append(value)
 
-        cmd = f"%R1Q,{rpc}:{','.join(strparams)}"
+        trid = self.transaction_counter % _MAX_TRANSACTION
+        self.transaction_counter += 1
+        cmd = f"%R1Q,{rpc},{trid}:{','.join(strparams)}"
         try:
             answer = self._conn.exchange(cmd)
         except SerialTimeoutException:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{GeoComCode.COM_TIMEDOUT:d},"
-                f"0:{GeoComCode.OK:d}"
+                f"{trid}:{GeoComCode.OK:d}"
             )
         except SerialException:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{GeoComCode.COM_CANT_SEND:d},"
-                f"0:{GeoComCode.OK:d}"
+                f"{trid}:{GeoComCode.OK:d}"
             )
         except Exception:
             self._logger.error(format_exc())
             answer = (
                 f"%R1P,{GeoComCode.COM_FAILED:d},"
-                f"0:{GeoComCode.OK:d}"
+                f"{trid}:{GeoComCode.OK:d}"
             )
 
         response = self.parse_response(
@@ -400,6 +406,7 @@ class GeoCom(GeoComType):
         """
         m = self._R1P.match(response)
         rpc = int(cmd.split(":")[0].split(",")[1])
+        trid_expected = int(cmd.split(":")[0].split(",")[2])
         rpcname = rpcnames.get(rpc, str(rpc))
         if not m:
             return GeoComResponse(
@@ -412,9 +419,40 @@ class GeoCom(GeoComType):
             )
 
         groups = m.groupdict()
+        trid = int(groups.get("tr", "-1"))
+        if trid != trid_expected:
+            return GeoComResponse(
+                rpcname,
+                cmd,
+                response,
+                GeoComCode.COM_TR_ID_MISMATCH,
+                GeoComCode.OK,
+                trid
+            )
+
+        try:
+            comrc = GeoComCode(int(groups["comrc"]))
+        except Exception:
+            comrc = GeoComCode.UNDEFINED
+
+        try:
+            rc = GeoComCode(int(groups["rc"]))
+        except Exception:
+            rc = GeoComCode.UNDEFINED
+
         values = groups.get("params", "")
         if values is None:
             values = ""
+
+        if values == "":
+            return GeoComResponse(
+                rpcname,
+                cmd,
+                response,
+                comrc,
+                rc,
+                trid
+            )
 
         if parsers is None:
             parsers = ()
@@ -434,16 +472,6 @@ class GeoCom(GeoComType):
                 GeoComCode.OK,
                 0
             )
-
-        try:
-            comrc = GeoComCode(int(groups["comrc"]))
-        except Exception:
-            comrc = GeoComCode.UNDEFINED
-
-        try:
-            rc = GeoComCode(int(groups["rc"]))
-        except Exception:
-            rc = GeoComCode.UNDEFINED
 
         match len(params):
             case 0:
