@@ -12,8 +12,7 @@ description = "Surveying instrument automation through GeoCom and other protocol
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pyserial",
-    "typing-extensions"
+    "pyserial"
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
