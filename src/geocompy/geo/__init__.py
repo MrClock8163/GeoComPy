@@ -540,3 +540,41 @@ class GeoCom(GeoComType):
         if not response.error:
             self._precision = digits
         return response
+
+    def abort(self) -> GeoComResponse[None]:
+        """
+        Aborts the current motorized function.
+
+        Returns
+        -------
+        GeoComResponse
+            Error codes:
+                - ``UNDEFINED``: The command was accepted, but the response
+                  indicated failed execution. Possibly nothing to abort.
+                - ``COM_FAILED``: The abort command could not be sent due
+                  to a communication issue.
+
+        Note
+        ----
+        The abort command does not actually use the GeoCom syntax, but the
+        function returns a `GeoComResponse` anyway, in order to maintain
+        the uniformity with the rest of the commands.
+        """
+        cmd = "c"
+        try:
+            ans = self._conn.exchange(cmd)
+            rpccode = GeoComCode.OK if ans == "?" else GeoComCode.UNDEFINED
+            comcode = GeoComCode.OK
+        except Exception:
+            ans = ""
+            rpccode = GeoComCode.OK
+            comcode = GeoComCode.COM_FAILED
+
+        return GeoComResponse(
+            "Abort",
+            cmd,
+            ans,
+            comcode,
+            rpccode,
+            0
+        )
