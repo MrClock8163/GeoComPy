@@ -148,3 +148,32 @@ class GeoComBMM(GeoComSubsystem):
         beep_normal
         """
         return self._request(20000)
+
+    def switch_display(
+        self,
+        enable: bool
+    ) -> GeoComResponse[None]:
+        """
+        RPC 11009, (unknown)
+
+        Activates or deactivates the display of the instrument.
+
+        Parameters
+        ----------
+        enable : bool
+            Enable the backlit display.
+
+        Returns
+        -------
+        GeoComResponse
+
+        Note
+        ----
+        This command was not found in the reference manuals, but discovered
+        by accident while testing. Version or the corresponding GeoCom
+        function name is not known. Use with caution!
+        """
+        return self._request(
+            11009,
+            [enable]
+        )
