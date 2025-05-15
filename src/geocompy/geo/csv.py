@@ -302,7 +302,7 @@ class GeoComCSV(GeoComSubsystem):
             parsers=float
         )
 
-    def get_internal_temperature(self) -> GeoComResponse[int]:
+    def get_internal_temperature(self) -> GeoComResponse[float]:
         """
         RPC 5011, ``CSV_GetIntTemp``
 
@@ -313,12 +313,12 @@ class GeoComCSV(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `int`: Internal temperature [°C].
+                - `float`: Internal temperature [°C].
 
         """
         return self._request(
             5011,
-            parsers=int
+            parsers=float
         )
 
     def check_power(
