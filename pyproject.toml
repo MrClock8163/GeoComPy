@@ -69,6 +69,9 @@ documentation = [
     "sphinx-mdinclude==0.6.2"
 ]
 
+[project.optional-dependencies]
+termnial = ["textual", "rapidfuzz"]
+
 [tool.hatch.version]
 source = "vcs"
 

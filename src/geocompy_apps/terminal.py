@@ -485,3 +485,8 @@ class ComPort(Validator):
             return self.success()
 
         return self.failure("Not a valid COM port")
+
+
+if __name__ == "__main__":
+    app = GeoComTerminal()
+    app.run()
