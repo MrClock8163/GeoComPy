@@ -70,7 +70,8 @@ documentation = [
 ]
 
 [project.optional-dependencies]
-termnial = ["textual", "rapidfuzz"]
+all = ["geocompy[terminal]"]
+terminal = ["textual", "rapidfuzz"]
 
 [tool.hatch.version]
 source = "vcs"
