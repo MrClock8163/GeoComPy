@@ -13,6 +13,7 @@ GeoComPy
    introduction
    connections
    examples
+   changelog
 
 *****************
 API documentation

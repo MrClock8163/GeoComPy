@@ -51,6 +51,7 @@ Content
    introduction
    connections
    examples
+   changelog
 
 .. toctree::
    :maxdepth: 1

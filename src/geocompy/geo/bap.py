@@ -498,7 +498,7 @@ class GeoComBAP(GeoComSubsystem):
     def get_user_prism_definition(
         self,
         name: str
-    ) -> GeoComResponse[tuple[str, float, Reflector]]:
+    ) -> GeoComResponse[tuple[float, Reflector, str]]:
         """
         RPC 17033, ``BAP_GetUserPrismDef``
 
