@@ -515,9 +515,9 @@ class GeoComBAP(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `str`: Name of the prism.
                 - `float`: Additive prism constant.
                 - `Reflector`: Reflector type.
+                - `str`: Creator of the prism definition.
             Error codes:
                 - ``IVPARAM``: Invalid prism definition.
 
@@ -532,9 +532,9 @@ class GeoComBAP(GeoComSubsystem):
             17033,
             [name],
             (
-                parsestr,
                 float,
-                enumparser(Reflector)
+                enumparser(Reflector),
+                parsestr
             )
         )
 
