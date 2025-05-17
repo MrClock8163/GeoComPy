@@ -276,7 +276,7 @@ class CmdInput(Input):
 
 
 class GeoComTerminal(App[None]):
-    CSS_PATH = "terminal.tcss"
+    CSS_PATH = "app.tcss"
     TITLE = "GeoComPy Interactive Terminal"
 
     protocol: GeoCom | GsiOnlineDNA | None = None
@@ -485,8 +485,3 @@ class ComPort(Validator):
             return self.success()
 
         return self.failure("Not a valid COM port")
-
-
-if __name__ == "__main__":
-    app = GeoComTerminal()
-    app.run()
