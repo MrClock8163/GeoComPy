@@ -15,6 +15,14 @@ GeoComPy
    examples
    changelog
 
+************
+Applications
+************
+
+.. toctree::
+
+    apps/setmeasurement
+
 *****************
 API documentation
 *****************
