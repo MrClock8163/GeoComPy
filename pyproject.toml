@@ -52,6 +52,7 @@ testing = [
 linting = [
     {include-group = "testing"},
     "types-pyserial",
+    "types-jsonschema",
     "mypy",
     "flake8"
 ]
@@ -59,6 +60,7 @@ development = [
     "pyserial",
     "textual",
     "rapidfuzz",
+    "jsonschema",
     {include-group = "linting"}
 ]
 documentation = [
@@ -70,8 +72,9 @@ documentation = [
 ]
 
 [project.optional-dependencies]
-all = ["geocompy[terminal]"]
+all = ["geocompy[terminal,schema]"]
 terminal = ["textual", "rapidfuzz"]
+schema = ["jsonschema"]
 
 [tool.hatch.version]
 source = "vcs"

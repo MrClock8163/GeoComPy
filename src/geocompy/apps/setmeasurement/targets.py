@@ -1,7 +1,13 @@
 from __future__ import annotations
 
+import os
 import json
-from typing import TypedDict, Iterator
+from typing import TypedDict, Iterator, Any
+
+try:
+    from jsonschema import validate
+except Exception:
+    validate = lambda *args: None  # noqa: E731
 
 from ...data import Coordinate
 from ...geo.gcdata import Prism
@@ -101,7 +107,19 @@ def export_targets_to_json(filepath: str, targets: TargetList) -> None:
 
 
 def load_targets_from_json(filepath: str) -> TargetList:
-    with open(filepath, "rt") as file:
+    with (
+        open(filepath, "rt") as file,
+        open(
+            os.path.join(
+                os.path.dirname(__file__),
+                "target_schema.json"
+            ),
+            "rt"
+        ) as file_schema
+    ):
         data: TargetListDict = json.load(file)
+        schema: dict[str, Any] = json.load(file_schema)
+
+    validate(data, schema)
 
     return TargetList.from_dict(data)
