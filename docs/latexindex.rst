@@ -22,6 +22,7 @@ Applications
 .. toctree::
 
     apps/setmeasurement
+    apps/terminal
 
 *****************
 API documentation

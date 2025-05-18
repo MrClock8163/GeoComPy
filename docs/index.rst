@@ -58,6 +58,7 @@ Content
     :caption: Applications
 
     apps/setmeasurement
+    apps/terminal
 
 .. toctree::
    :maxdepth: 1
