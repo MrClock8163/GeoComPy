@@ -1,0 +1,38 @@
+{
+    "title": "GeoComPy set measurement targets schema",
+    "description": "Target point records for set measurements",
+    "tpye": "object",
+    "additionalProperties": false,
+    "properties": {
+        "targets": {
+            "title": "List of targets",
+            "type": "array",
+            "items": {
+                "title": "Target point",
+                "type": "object",
+                "additionalProperties": false,
+                "unevaluatedItems": false,
+                "properties": {
+                    "name" : {
+                        "title": "Point ID",
+                        "type": "string"
+                    },
+                    "prism": {
+                        "title": "Prism type",
+                        "type": "string"
+                    },
+                    "coords": {
+                        "title": "Target coordinates",
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "unevaluatedItems": false
+                        },
+                        "minItems": 3,
+                        "maxItems": 3
+                    }
+                }
+            }
+        }
+    }
+}

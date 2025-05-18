@@ -53,6 +53,13 @@ Content
    examples
    changelog
 
+
+.. toctree::
+    :caption: Applications
+
+    apps/setmeasurement
+    apps/terminal
+
 .. toctree::
    :maxdepth: 1
    :caption: API documentation
