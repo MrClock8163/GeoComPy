@@ -1,6 +1,8 @@
 Interactive Terminal
 ====================
 
+.. versionadded:: 0.6.0
+
 .. caution::
     :class: warning
 

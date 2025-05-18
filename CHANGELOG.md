@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.6.0 (in development)
+
+### Added
+
+- `retry` option to `open_serial`
+- Interactive Terminal CLI application (`geocompy.apps.terminal`)
+- Set Measurement CLI application (`geocompy.apps.setmeasurement`)
+
 ## v0.5.1
 
 ### Added

@@ -1,6 +1,8 @@
 Set Measurements
 ================
 
+.. versionadded:: 0.6.0
+
 The set measurement CLI application provides a simple way to conduct monitoring
 measurements to a set of predefined target points, using a GeoCom capable
 total station.
