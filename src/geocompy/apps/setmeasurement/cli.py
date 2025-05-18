@@ -16,6 +16,8 @@ def run_setup(args: argparse.Namespace) -> None:
     else:
         log = get_logger("TPS")
 
+    log.info("Starting setup session")
+
     with open_serial(args.port) as com:
         tps = GeoCom(com, log)
         targets = setup_set(tps, args.output)
@@ -23,7 +25,10 @@ def run_setup(args: argparse.Namespace) -> None:
             print("Setup was cancelled or no targets were recorded.")
             return
 
-        export_targets_to_json(args.output, targets)
+    log.info("Finished setup session")
+
+    export_targets_to_json(args.output, targets)
+    log.info(f"Saved setup results at '{targets}'")
 
 
 def run_measure(args: argparse.Namespace) -> None:
@@ -32,19 +37,23 @@ def run_measure(args: argparse.Namespace) -> None:
     else:
         log = get_logger("TPS")
 
+    log.info("Starting measurement session")
+
     with open_serial(args.port) as com:
         tps = GeoCom(com, log)
         if args.sync_time:
             tps.csv.set_datetime(datetime.now())
         session = measure_set(tps, args.targets, args.twoface, args.repeat)
 
-    timestamp = session.start.time.strftime("%Y%m%d_%H%M%S")
+    log.info("Finished measurement session")
 
+    timestamp = session.start.time.strftime("%Y%m%d_%H%M%S")
     filename = os.path.join(
         args.directory,
-        f"{args.prefix}_{timestamp}.json"
+        f"{args.prefix}{timestamp}.json"
     )
     export_session_to_json(filename, session)
+    log.info(f"Saved measurement results at '{filename}'")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -103,7 +112,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser_measure.add_argument(
         "--prefix",
         type=str,
-        default="setmeasurement",
+        default="setmeasurement_",
         help="prefix to prepend to the set measurement output files"
     )
     parser_measure.add_argument(

@@ -148,6 +148,7 @@ def measure_set(
         station = resp_station[0]
 
     for i in range(count):
+        tps._logger.info(f"Starting set cycle {i + 1}")
         face: Iterable[Face] = repeat(Face.F1, len(points))
         target: Iterable[TargetPoint] = points
         if two_faces:
@@ -161,6 +162,7 @@ def measure_set(
             )
 
         for f, t in zip(face, target):
+            tps._logger.info(f"Measuring {t.name} ({f.name})")
             rel_coords = t.coords - station
             hz, v, _ = rel_coords.to_polar()
             if f == Face.F2:
@@ -175,7 +177,9 @@ def measure_set(
             resp_coords = tps.tmc.get_simple_coordinate(10000)
 
             if resp_angle.params is None or resp_coords.params is None:
-                print("> Measurement could not be completed. Repeat!")
+                tps._logger.error(
+                    f"Error during measurement ({resp_coords.error.name})"
+                )
                 continue
 
             output.add_point(
