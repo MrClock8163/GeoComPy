@@ -17,8 +17,9 @@ class PointDict(TypedDict):
 
 class SessionMetaDict(TypedDict):
     time: str
-    temperature: float
-    battery: int
+    temperature: float | None
+    battery: int | None
+    inclination: tuple[float, float] | None
 
 
 class SessionDict(TypedDict):
@@ -65,18 +66,24 @@ class SessionMeta:
     def __init__(
         self,
         time: datetime,
-        temperature: float,
-        battery: int
+        temperature: float | None,
+        battery: int | None,
+        inclination: tuple[Angle, Angle] | None
     ) -> None:
         self.time = time
         self.temperature = temperature
         self.battery = battery
+        self.inclination = inclination
 
     def to_dict(self) -> SessionMetaDict:
         return {
             "time": str(self.time),
             "temperature": self.temperature,
-            "battery": self.battery
+            "battery": self.battery,
+            "inclination": (
+                float(self.inclination[0]),
+                float(self.inclination[1])
+            ) if self.inclination is not None else None
         }
 
 

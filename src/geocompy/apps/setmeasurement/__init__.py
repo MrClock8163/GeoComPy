@@ -132,10 +132,12 @@ def measure_set(
     time = datetime.now()
     temp = tps.csv.get_internal_temperature().params
     battery = tps.csv.check_power().params
+    incline = tps.tmc.get_angle_inclination('MEASURE').params
     start = SessionMeta(
         time,
-        temp if temp is not None else -9999,
-        battery[0] if battery is not None else -1
+        temp,
+        battery[0] if battery is not None else None,
+        (incline[4], incline[5]) if incline is not None else None
     )
 
     output = Session(start)
@@ -173,6 +175,7 @@ def measure_set(
             resp_coords = tps.tmc.get_simple_coordinate(10000)
 
             if resp_angle.params is None or resp_coords.params is None:
+                print("> Measurement could not be completed. Repeat!")
                 continue
 
             output.add_point(
@@ -187,10 +190,12 @@ def measure_set(
     time = datetime.now()
     temp = tps.csv.get_internal_temperature().params
     battery = tps.csv.check_power().params
+    incline = tps.tmc.get_angle_inclination('MEASURE').params
     end = SessionMeta(
         time,
-        temp if temp is not None else -9999,
-        battery[0] if battery is not None else -1
+        temp,
+        battery[0] if battery is not None else None,
+        (incline[4], incline[5]) if incline is not None else None
     )
     output.finished(end)
 
