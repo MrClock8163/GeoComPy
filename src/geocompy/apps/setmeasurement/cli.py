@@ -18,7 +18,13 @@ def run_setup(args: argparse.Namespace) -> None:
 
     log.info("Starting setup session")
 
-    with open_serial(args.port) as com:
+    with open_serial(
+        args.port,
+        retry=args.retry,
+        sync_after_timeout=args.sync_after_timeout,
+        speed=args.baud,
+        timeout=args.timeout
+    ) as com:
         tps = GeoCom(com, log)
         targets = setup_set(tps, args.output)
         if targets is None:
@@ -39,7 +45,13 @@ def run_measure(args: argparse.Namespace) -> None:
 
     log.info("Starting measurement session")
 
-    with open_serial(args.port, retry=args.retry) as com:
+    with open_serial(
+        args.port,
+        retry=args.retry,
+        sync_after_timeout=args.sync_after_timeout,
+        speed=args.baud,
+        timeout=args.timeout
+    ) as com:
         tps = GeoCom(com, log)
         if args.sync_time:
             tps.csv.set_datetime(datetime.now())
@@ -86,6 +98,29 @@ def build_parser() -> argparse.ArgumentParser:
         "--log",
         type=str,
         help="logging file"
+    )
+    parser_setup.add_argument(
+        "--retry",
+        type=int,
+        default=1,
+        help="number of connection retry attempts"
+    )
+    parser_setup.add_argument(
+        "--timeout",
+        type=int,
+        default=15,
+        help="connection timeout to set"
+    )
+    parser_setup.add_argument(
+        "--baud",
+        type=int,
+        default=9600,
+        help="serial connection speed"
+    )
+    parser_setup.add_argument(
+        "--sync-after-timeout",
+        action="store_true",
+        help="attempt to synchronize message que after a connection timeout"
     )
     parser_setup.set_defaults(func=run_setup)
 
@@ -141,6 +176,23 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=1,
         help="number of connection retry attempts"
+    )
+    parser_measure.add_argument(
+        "--timeout",
+        type=int,
+        default=15,
+        help="connection timeout to set"
+    )
+    parser_measure.add_argument(
+        "--baud",
+        type=int,
+        default=9600,
+        help="serial connection speed"
+    )
+    parser_measure.add_argument(
+        "--sync-after-timeout",
+        action="store_true",
+        help="attempt to synchronize message que after a connection timeout"
     )
     parser_measure.set_defaults(func=run_measure)
 
