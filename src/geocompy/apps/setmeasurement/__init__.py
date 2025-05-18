@@ -127,7 +127,6 @@ def measure_set(
 ) -> Session:
     points = load_targets_from_json(filepath)
     time = datetime.now()
-    tps.csv.set_datetime(time)
     temp = tps.csv.get_internal_temperature().params
     battery = tps.csv.check_power().params
     start = SessionMeta(

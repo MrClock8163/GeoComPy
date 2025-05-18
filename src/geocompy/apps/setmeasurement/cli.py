@@ -1,5 +1,6 @@
 import os
 import argparse
+from datetime import datetime
 from logging import DEBUG
 
 from ...communication import open_serial, get_logger
@@ -33,6 +34,8 @@ def run_measure(args: argparse.Namespace) -> None:
 
     with open_serial(args.port) as com:
         tps = GeoCom(com, log)
+        if args.sync_time:
+            tps.csv.set_datetime(datetime.now())
         session = measure_set(tps, args.targets, args.twoface, args.repeat)
 
     timestamp = session.start.time.strftime("%Y%m%d_%H%M%S")
@@ -118,6 +121,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--twoface",
         action="store_true",
         help="measure in both face 1 and face 2"
+    )
+    parser_measure.add_argument(
+        "--sync-time",
+        action="store_true",
+        help="synchronize instrument time and date with the computer"
     )
     parser_measure.set_defaults(func=run_measure)
 
