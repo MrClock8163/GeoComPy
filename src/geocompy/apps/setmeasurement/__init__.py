@@ -71,7 +71,7 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
 
     log = tps._logger
     log.info("Set measurement setup started")
-    while ptid := user_input("Point ID?", str):
+    while ptid := user_input("Point ID? (or nothing to finish)", str):
         if ptid in points:
             remove = user_input(
                 f"{ptid} already exists. Overwrite? (yes/no)",
