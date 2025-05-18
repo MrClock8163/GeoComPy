@@ -39,7 +39,7 @@ def run_measure(args: argparse.Namespace) -> None:
 
     log.info("Starting measurement session")
 
-    with open_serial(args.port) as com:
+    with open_serial(args.port, retry=args.retry) as com:
         tps = GeoCom(com, log)
         if args.sync_time:
             tps.csv.set_datetime(datetime.now())
@@ -135,6 +135,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--sync-time",
         action="store_true",
         help="synchronize instrument time and date with the computer"
+    )
+    parser_measure.add_argument(
+        "--retry",
+        type=int,
+        default=1,
+        help="number of connection retry attempts"
     )
     parser_measure.set_defaults(func=run_measure)
 
