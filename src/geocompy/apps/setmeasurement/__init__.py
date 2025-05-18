@@ -86,6 +86,9 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
         if resp_target.params is None:
             print("> Could not retrieve target type. Using default.")
             target = Prism.MINI
+        elif resp_target.params == Prism.USER:
+            print("> User defined prism types are currently not supported.")
+            continue
         else:
             target = resp_target.params
 
