@@ -191,6 +191,8 @@ def measure_set(
                 )
             )
 
+    tps.aut.turn_to(0, Angle(180, 'deg'))
+
     time = datetime.now()
     temp = tps.csv.get_internal_temperature().params
     battery = tps.csv.check_power().params
@@ -202,7 +204,5 @@ def measure_set(
         (incline[4], incline[5]) if incline is not None else None
     )
     output.finished(end)
-
-    tps.aut.turn_to(0, Angle(180, 'deg'))
 
     return output
