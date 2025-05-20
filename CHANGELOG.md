@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.6.0 (in development)
+
+### Added
+
+- GeoCom `get_complete_measurement` command in `tmc` subsystem (RPC 2167)
+
 ## v0.5.1
 
 ### Added
