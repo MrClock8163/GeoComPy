@@ -246,6 +246,15 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="synchronize instrument time and date with the computer"
     )
+    group_measure_program.add_argument(
+        "-pt",
+        "--points",
+        type=str,
+        help=(
+            "targets to use from loaded target definition "
+            "(comma separated list)"
+        )
+    )
     group_measure_logging = parser_measure.add_argument_group("logging")
     group_measure_logging.add_argument(
         "-l",

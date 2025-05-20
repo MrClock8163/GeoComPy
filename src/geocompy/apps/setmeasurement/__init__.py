@@ -126,9 +126,14 @@ def measure_set(
     tps: GeoCom,
     filepath: str,
     two_faces: bool,
-    count: int = 1
+    count: int = 1,
+    pointnames: str = ""
 ) -> Session:
     points = load_targets_from_json(filepath)
+    for name in pointnames.split(","):
+        if name in points:
+            points.pop_target(name)
+
     time = datetime.now()
     temp = tps.csv.get_internal_temperature().params
     battery = tps.csv.check_power().params
