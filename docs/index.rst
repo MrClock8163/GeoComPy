@@ -57,7 +57,7 @@ Content
 .. toctree::
     :caption: Applications
 
-    apps/setmeasurement
+    apps/setmeasurement/index
     apps/terminal
 
 .. toctree::

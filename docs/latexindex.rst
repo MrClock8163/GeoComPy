@@ -21,7 +21,7 @@ Applications
 
 .. toctree::
 
-    apps/setmeasurement
+    apps/setmeasurement/index
     apps/terminal
 
 *****************
