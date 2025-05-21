@@ -11,13 +11,13 @@ from .sessions import export_session_to_json
 
 
 def make_logger(args: argparse.Namespace) -> Logger:
-    if args.log_debug:
+    if args.debug:
         loglevel = DEBUG
-    elif args.log_info:
+    elif args.info:
         loglevel = INFO
-    elif args.log_warning:
+    elif args.warning:
         loglevel = WARNING
-    elif args.log_error:
+    elif args.error:
         loglevel = ERROR
     else:
         return get_logger("TPS")
@@ -65,7 +65,13 @@ def run_measure(args: argparse.Namespace) -> None:
         tps = GeoCom(com, log)
         if args.sync_time:
             tps.csv.set_datetime(datetime.now())
-        session = measure_set(tps, args.targets, args.twoface, args.cycles)
+        session = measure_set(
+            tps,
+            args.targets,
+            args.twoface,
+            args.cycles,
+            args.points
+        )
 
     log.info("Finished measurement session")
 
@@ -136,25 +142,21 @@ def build_parser() -> argparse.ArgumentParser:
         group_setup_logging.add_mutually_exclusive_group()
     )
     group_setup_logging_levels.add_argument(
-        "--log-debug",
         "--debug",
         help="set logging level to DEBUG",
         action="store_true"
     )
     group_setup_logging_levels.add_argument(
-        "--log-info",
         "--info",
         help="set logging level to INFO",
         action="store_true"
     )
     group_setup_logging_levels.add_argument(
-        "--log-warning",
         "--warning",
         help="set logging level to WARNING",
         action="store_true"
     )
     group_setup_logging_levels.add_argument(
-        "--log-error",
         "--error",
         help="set logging level to ERROR",
         action="store_true"
@@ -267,25 +269,21 @@ def build_parser() -> argparse.ArgumentParser:
     )
     group_measure_logging_levels.add_argument(
         "--debug",
-        "--log-debug",
         help="set logging level to DEBUG",
         action="store_true"
     )
     group_measure_logging_levels.add_argument(
         "--info",
-        "--log-info",
         help="set logging level to INFO",
         action="store_true"
     )
     group_measure_logging_levels.add_argument(
         "--warning",
-        "--log-warning",
         help="set logging level to WARNING",
         action="store_true"
     )
     group_measure_logging_levels.add_argument(
         "--error",
-        "--log-error",
         help="set logging level to ERROR",
         action="store_true"
     )

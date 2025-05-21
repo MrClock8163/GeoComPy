@@ -130,9 +130,12 @@ def measure_set(
     pointnames: str = ""
 ) -> Session:
     points = load_targets_from_json(filepath)
-    for name in pointnames.split(","):
-        if name in points:
-            points.pop_target(name)
+    if pointnames != "":
+        use_points = set(pointnames.split(","))
+        loaded_points = set(points.get_target_names())
+        excluded_points = loaded_points - use_points
+        for pt in excluded_points:
+            points.pop_target(pt)
 
     time = datetime.now()
     temp = tps.csv.get_internal_temperature().params
