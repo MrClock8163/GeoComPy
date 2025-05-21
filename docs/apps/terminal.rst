@@ -3,6 +3,11 @@ Interactive Terminal
 
 .. versionadded:: 0.6.0
 
+.. code-block:: shell
+    :caption: Invoking the application
+
+    python -m geocompy.apps.terminal
+
 .. caution::
     :class: warning
 
@@ -24,10 +29,3 @@ format.
 .. only:: html
 
     .. image:: terminal_screenshot.svg
-
-Usage
------
-
-.. code-block:: shell
-    
-    python -m geocompy.apps.terminal
