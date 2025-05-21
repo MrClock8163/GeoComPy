@@ -10,7 +10,8 @@ from .targets import (
     TargetList,
     TargetPoint,
     load_targets_from_json,
-    export_targets_to_json
+    export_targets_to_json,
+    import_targets_from_csv
 )
 
 
@@ -25,7 +26,7 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
                 return None
             case "append":
                 points = load_targets_from_json(filepath)
-                print(f"> Loaded targest: {points.get_target_names()}")
+                print(f"> Loaded targets: {points.get_target_names()}")
             case _:
                 points = TargetList()
     else:
@@ -84,7 +85,7 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
     return points
 
 
-def main(args: argparse.Namespace) -> None:
+def run_setup(args: argparse.Namespace) -> None:
     log = make_logger(args)
     log.info("Starting setup session")
 
@@ -107,76 +108,137 @@ def main(args: argparse.Namespace) -> None:
     log.info(f"Saved setup results at '{targets}'")
 
 
+def run_import(args: argparse.Namespace) -> None:
+    if os.path.exists(args.output):
+        action = user_input(
+            f"{args.output} already exists. Action? (cancel/replace/append)",
+            parse_cancel_replace_append
+        )
+        match action:
+            case "cancel":
+                return None
+            case "append":
+                points = load_targets_from_json(args.output)
+                print(
+                    f"> Loaded targets: {', '.join(points.get_target_names())}"
+                )
+            case _:
+                points = TargetList()
+    else:
+        points = TargetList()
+
+    try:
+        imported_points = import_targets_from_csv(
+            args.input,
+            args.delimiter,
+            args.columns,
+            Prism[args.reflector],
+            args.skip
+        )
+    except Exception:
+        print(
+            "> Cannot import CSV data due to an error "
+            "(duplicated points, the header was not skipped or malformed data)"
+        )
+        return
+
+    conflicts = set(
+        points.get_target_names()
+    ).intersection(imported_points.get_target_names())
+
+    if len(conflicts) > 0:
+        print("> Found duplicated targets between CSV and existing JSON")
+        print(f"> Duplicates: {', '.join(sorted(list(conflicts)))}")
+        return
+
+    print(
+        f"> Imported targets: {','.join(imported_points.get_target_names())}"
+    )
+
+    for t in imported_points:
+        points.add_target(t)
+
+    export_targets_to_json(args.output, points)
+    print(f"> Saved import results at '{os.path.abspath(args.output)}'")
+
+
 def cli() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="setup",
         description="Record target definitions for set measurements.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    group_com = parser.add_argument_group("communication")
-    group_com.add_argument(
+    subparsers = parser.add_subparsers()
+    parser_measure = subparsers.add_parser(
+        "measure",
+        description="Measure target points.",
+        help="measure target points",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    group_measure_com = parser_measure.add_argument_group("communication")
+    group_measure_com.add_argument(
         "port",
         type=str,
         help="serial port (e.g. COM1)"
     )
-    group_com.add_argument(
+    group_measure_com.add_argument(
         "-b",
         "--baud",
         type=int,
         default=9600,
         help="serial connection speed"
     )
-    group_com.add_argument(
+    group_measure_com.add_argument(
         "-t",
         "--timeout",
         type=int,
         default=15,
         help="connection timeout to set"
     )
-    group_com.add_argument(
+    group_measure_com.add_argument(
         "-r",
         "--retry",
         type=int,
         default=1,
         help="number of connection retry attempts"
     )
-    group_com.add_argument(
+    group_measure_com.add_argument(
         "-sat",
         "--sync-after-timeout",
         action="store_true",
         help="attempt to synchronize message que after a connection timeout"
     )
-    group_logging = parser.add_argument_group("logging")
-    group_logging.add_argument(
+    group_measure_logging = parser_measure.add_argument_group("logging")
+    group_measure_logging.add_argument(
         "-l",
         "--log-file",
         type=str,
         help="logging file"
     )
-    group_logging_levels = (
-        group_logging.add_mutually_exclusive_group()
+    group_measure_logging_levels = (
+        group_measure_logging.add_mutually_exclusive_group()
     )
-    group_logging_levels.add_argument(
+    group_measure_logging_levels.add_argument(
         "--debug",
         help="set logging level to DEBUG",
         action="store_true"
     )
-    group_logging_levels.add_argument(
+    group_measure_logging_levels.add_argument(
         "--info",
         help="set logging level to INFO",
         action="store_true"
     )
-    group_logging_levels.add_argument(
+    group_measure_logging_levels.add_argument(
         "--warning",
         help="set logging level to WARNING",
         action="store_true"
     )
-    group_logging_levels.add_argument(
+    group_measure_logging_levels.add_argument(
         "--error",
         help="set logging level to ERROR",
         action="store_true"
     )
-    parser.add_argument(
+    parser_measure.add_argument(
         "output",
         type=str,
         help=(
@@ -184,10 +246,61 @@ def cli() -> argparse.ArgumentParser:
             "(if the file already exists, the new targets can be appended)"
         )
     )
+    parser_measure.set_defaults(func=run_setup)
+
+    parser_import = subparsers.add_parser(
+        "import",
+        description="Import points from CSV file.",
+        help="import points from CSV file",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser_import.add_argument(
+        "-d",
+        "--delimiter",
+        help="column delimiter character",
+        type=str,
+        default=","
+    )
+    parser_import.add_argument(
+        "-c",
+        "--columns",
+        help=(
+            "column spec characters "
+            "(P: point ID, E: easting, N: northing, Z: height, _: ignore)"
+        ),
+        type=str,
+        default="PENZ"
+    )
+    parser_import.add_argument(
+        "-s",
+        "--skip",
+        help="number of header rows to skip",
+        type=int,
+        default=0
+    )
+    parser_import.add_argument(
+        "reflector",
+        # metavar="reflector",
+        help="target reflector type",
+        type=str,
+        choices=[e.name for e in Prism if e.name != 'USER']
+    )
+    parser_import.add_argument(
+        "input",
+        help="CSV file to read from",
+        type=str
+    )
+    parser_import.add_argument(
+        "output",
+        help="path to JSON output",
+        type=str
+    )
+    parser_import.set_defaults(func=run_import)
 
     return parser
 
 
 if __name__ == "__main__":
     parser = cli()
-    main(parser.parse_args())
+    args = parser.parse_args()
+    args.func(args)
