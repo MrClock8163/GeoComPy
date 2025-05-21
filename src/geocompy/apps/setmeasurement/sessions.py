@@ -110,12 +110,12 @@ class Session:
 
 
 def export_session_to_json(filepath: str, session: Session) -> None:
-    with open(filepath, "wt") as file:
+    with open(filepath, "wt", encoding="utf8") as file:
         json.dump(session.to_dict(), file, indent=4)
 
 
 def export_session_to_log(filepath: str, session: Session) -> None:
-    with open(filepath, "at") as file:
+    with open(filepath, "at", encoding="utf8") as file:
         file.write(
             f"# SESSION start={session.start.time}, "
             f"temperature={session.start.temperature}C, "

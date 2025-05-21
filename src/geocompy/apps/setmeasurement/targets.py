@@ -103,19 +103,20 @@ class TargetList:
 
 
 def export_targets_to_json(filepath: str, targets: TargetList) -> None:
-    with open(filepath, "wt") as file:
+    with open(filepath, "wt", encoding="utf8") as file:
         json.dump(targets.to_dict(), file, indent=4)
 
 
 def load_targets_from_json(filepath: str) -> TargetList:
     with (
-        open(filepath, "rt") as file,
+        open(filepath, "rt", encoding="utf8") as file,
         open(
             os.path.join(
                 os.path.dirname(__file__),
                 "target_schema.json"
             ),
-            "rt"
+            "rt",
+            encoding="utf8"
         ) as file_schema
     ):
         data: TargetListDict = json.load(file)
