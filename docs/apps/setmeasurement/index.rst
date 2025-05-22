@@ -16,3 +16,4 @@ total station.
 
     setup
     measure
+    process
