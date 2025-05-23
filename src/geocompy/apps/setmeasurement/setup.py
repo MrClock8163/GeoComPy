@@ -209,12 +209,6 @@ def cli() -> argparse.ArgumentParser:
         help="attempt to synchronize message que after a connection timeout"
     )
     group_measure_logging = parser_measure.add_argument_group("logging")
-    group_measure_logging.add_argument(
-        "-l",
-        "--log-file",
-        type=str,
-        help="logging file"
-    )
     group_measure_logging_levels = (
         group_measure_logging.add_mutually_exclusive_group()
     )

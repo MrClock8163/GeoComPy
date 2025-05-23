@@ -256,12 +256,6 @@ def cli() -> argparse.ArgumentParser:
         default=""
     )
     group_logging = parser.add_argument_group("logging")
-    group_logging.add_argument(
-        "-l",
-        "--log-file",
-        type=str,
-        help="logging file"
-    )
     group_logging_levels = (
         group_logging.add_mutually_exclusive_group()
     )
