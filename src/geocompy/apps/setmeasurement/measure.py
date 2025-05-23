@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from itertools import chain, repeat
+from itertools import chain
 from typing import Iterable
 import argparse
 
@@ -11,6 +11,7 @@ from ...geo.gcdata import Face
 from . import make_logger
 from .targets import (
     TargetPoint,
+    TargetList,
     load_targets_from_json
 )
 from .sessions import (
@@ -20,10 +21,49 @@ from .sessions import (
 )
 
 
+def ordered_targets(
+    points: TargetList,
+    order: str
+) -> Iterable[tuple[Face, TargetPoint]]:
+    target_count = len(points)
+    match order:
+        case "AaBb":
+            return [
+                (f, t) for t in points for f in (Face.F1, Face.F2)
+            ]
+        case "AabB":
+            return [
+                (f, t) for i, t in enumerate(points)
+                for f in (
+                    (Face.F1, Face.F2)
+                    if i % 2 == 0 else
+                    (Face.F2, Face.F1)
+                )
+            ]
+        case "ABab":
+            return list(
+                chain(
+                    [(Face.F1, t) for t in points],
+                    [(Face.F2, t) for t in points]
+                )
+            )
+        case "ABba":
+            return list(
+                chain(
+                    [(Face.F1, t) for t in points],
+                    [(Face.F2, t) for t in reversed(points)]
+                )
+            )
+        case "ABCD":
+            return list(zip([Face.F1] * target_count, list(points)))
+
+    raise ValueError(f"Unknown measurement order: {order}")
+
+
 def measure_set(
     tps: GeoCom,
     filepath: str,
-    two_faces: bool,
+    order: str,
     count: int = 1,
     pointnames: str = ""
 ) -> Session:
@@ -54,21 +94,12 @@ def measure_set(
         station
     )
 
+    targets = ordered_targets(points, order)
+
     for i in range(count):
         tps._logger.info(f"Starting set cycle {i + 1}")
-        face: Iterable[Face] = repeat(Face.F1, len(points))
-        target: Iterable[TargetPoint] = points
-        if two_faces:
-            face = chain(
-                repeat(Face.F1, len(points)),
-                repeat(Face.F2, len(points))
-            )
-            target = chain(
-                points,
-                reversed(points)
-            )
 
-        for f, t in zip(face, target):
+        for f, t in targets:
             tps._logger.info(f"Measuring {t.name} ({f.name})")
             rel_coords = t.coords - station
             hz, v, _ = rel_coords.to_polar()
@@ -119,7 +150,7 @@ def main(args: argparse.Namespace) -> None:
         session = measure_set(
             tps,
             args.targets,
-            args.twoface,
+            args.order,
             args.cycles,
             args.points
         )
@@ -201,10 +232,12 @@ def cli() -> argparse.ArgumentParser:
         help="number of measurement cycles"
     )
     group_program.add_argument(
-        "-tf",
-        "--twoface",
-        action="store_true",
-        help="measure in both face 1 and face 2"
+        "-o",
+        "--order",
+        help="measurement order (capital letter: face 1, lower case: face 2)",
+        choices=["AaBb", "AabB", "ABab", "ABba", "ABCD"],
+        default="ABba",
+        type=str
     )
     group_program.add_argument(
         "-s",
