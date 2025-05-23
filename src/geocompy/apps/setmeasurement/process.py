@@ -5,6 +5,7 @@ from itertools import chain
 from typing import Any
 
 from .sessions import SessionDict
+from .. import make_directory
 
 
 def run_merge(args: argparse.Namespace) -> None:
@@ -27,6 +28,7 @@ def run_merge(args: argparse.Namespace) -> None:
             "points": [p for s in sessions for p in s["points"]]
         }
 
+    make_directory(args.output)
     with open(args.output, "wt", encoding="utf8") as file:
         json.dump(
             data,

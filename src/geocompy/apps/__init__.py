@@ -1,3 +1,4 @@
+import os
 from typing import Callable, TypeVar, Iterable
 
 _T = TypeVar("_T")
@@ -72,3 +73,11 @@ def parse_cancel_replace_append(value: str) -> str:
         value,
         ("cancel", "replace", "append")
     )
+
+
+def make_directory(filepath: str) -> None:
+    dirname = os.path.dirname(filepath)
+    if dirname == "":
+        return
+
+    os.makedirs(dirname, exist_ok=True)

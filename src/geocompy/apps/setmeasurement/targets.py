@@ -12,6 +12,7 @@ except Exception:
 
 from ...data import Coordinate
 from ...geo.gcdata import Prism
+from .. import make_directory
 
 
 class TargetPointDict(TypedDict):
@@ -103,6 +104,7 @@ class TargetList:
 
 
 def export_targets_to_json(filepath: str, targets: TargetList) -> None:
+    make_directory(filepath)
     with open(filepath, "wt", encoding="utf8") as file:
         json.dump(targets.to_dict(), file, indent=4)
 

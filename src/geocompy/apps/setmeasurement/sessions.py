@@ -6,6 +6,7 @@ from typing import TypedDict
 
 from ...data import Angle, Coordinate
 from ...geo.gcdata import Face
+from .. import make_directory
 
 
 class PointDict(TypedDict):
@@ -88,11 +89,13 @@ class Session:
 
 
 def export_session_to_json(filepath: str, session: Session) -> None:
+    make_directory(filepath)
     with open(filepath, "wt", encoding="utf8") as file:
         json.dump(session.to_dict(), file, indent=4)
 
 
 def export_session_to_log(filepath: str, session: Session) -> None:
+    make_directory(filepath)
     with open(filepath, "at", encoding="utf8") as file:
         file.write(
             f"# SESSION start={session.time}, "

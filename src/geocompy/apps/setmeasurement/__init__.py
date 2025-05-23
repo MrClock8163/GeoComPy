@@ -2,6 +2,7 @@ import argparse
 from logging import Logger, DEBUG, INFO, WARNING, ERROR
 
 from ...communication import get_logger
+from .. import make_directory
 
 
 def make_logger(args: argparse.Namespace) -> Logger:
@@ -19,4 +20,5 @@ def make_logger(args: argparse.Namespace) -> Logger:
     if args.log_file is None:
         return get_logger("TPS", "stdout", loglevel)
 
+    make_directory(args.log_file)
     return get_logger("TPS", "file", loglevel, file=args.log_file)
