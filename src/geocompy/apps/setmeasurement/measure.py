@@ -15,7 +15,6 @@ from .targets import (
 )
 from .sessions import (
     Session,
-    SessionMeta,
     Point,
     export_session_to_json
 )
@@ -40,19 +39,20 @@ def measure_set(
     temp = tps.csv.get_internal_temperature().params
     battery = tps.csv.check_power().params
     incline = tps.tmc.get_angle_inclination('MEASURE').params
-    start = SessionMeta(
-        time,
-        temp,
-        battery[0] if battery is not None else None,
-        (incline[4], incline[5]) if incline is not None else None
-    )
 
-    output = Session(start)
     resp_station = tps.tmc.get_station().params
     if resp_station is None:
         station = Coordinate(0, 0, 0)
     else:
         station = resp_station[0]
+
+    output = Session(
+        time,
+        battery[0] if battery is not None else None,
+        temp,
+        (incline[4], incline[5]) if incline is not None else None,
+        station
+    )
 
     for i in range(count):
         tps._logger.info(f"Starting set cycle {i + 1}")
@@ -81,11 +81,10 @@ def measure_set(
             tps.bap.set_prism_type(t.prism)
             tps.tmc.do_measurement()
             resp_angle = tps.tmc.get_simple_measurement(10000)
-            resp_coords = tps.tmc.get_simple_coordinate(10000)
 
-            if resp_angle.params is None or resp_coords.params is None:
+            if resp_angle.params is None:
                 tps._logger.error(
-                    f"Error during measurement ({resp_coords.error.name})"
+                    f"Error during measurement ({resp_angle.error.name})"
                 )
                 continue
 
@@ -93,25 +92,12 @@ def measure_set(
                 Point(
                     t.name,
                     f,
-                    resp_angle.params,
-                    resp_coords.params
+                    resp_angle.params
                 )
             )
             tps._logger.info("Done")
 
     tps.aut.turn_to(0, Angle(180, 'deg'))
-
-    time = datetime.now()
-    temp = tps.csv.get_internal_temperature().params
-    battery = tps.csv.check_power().params
-    incline = tps.tmc.get_angle_inclination('MEASURE').params
-    end = SessionMeta(
-        time,
-        temp,
-        battery[0] if battery is not None else None,
-        (incline[4], incline[5]) if incline is not None else None
-    )
-    output.finished(end)
 
     return output
 
@@ -140,7 +126,7 @@ def main(args: argparse.Namespace) -> None:
 
     log.info("Finished measurement session")
 
-    timestamp = session.start.time.strftime("%Y%m%d_%H%M%S")
+    timestamp = session.time.strftime("%Y%m%d_%H%M%S")
     filename = os.path.join(
         args.directory,
         f"{args.prefix}{timestamp}.json"
@@ -233,7 +219,8 @@ def cli() -> argparse.ArgumentParser:
         help=(
             "targets to use from loaded target definition "
             "(comma separated list)"
-        )
+        ),
+        default=""
     )
     group_logging = parser.add_argument_group("logging")
     group_logging.add_argument(

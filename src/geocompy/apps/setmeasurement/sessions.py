@@ -11,20 +11,15 @@ from ...geo.gcdata import Face
 class PointDict(TypedDict):
     name: str
     face: str
-    polar: tuple[float, float, float]
-    cartesian: tuple[float, float, float]
-
-
-class SessionMetaDict(TypedDict):
-    time: str
-    temperature: float | None
-    battery: int | None
-    inclination: tuple[float, float] | None
+    measurement: tuple[float, float, float]
 
 
 class SessionDict(TypedDict):
-    start: SessionMetaDict
-    end: SessionMetaDict
+    time: str
+    battery: float | None
+    inclination: tuple[float, float] | None
+    temperature: float | None
+    station: tuple[float, float, float]
     points: list[PointDict]
 
 
@@ -37,74 +32,57 @@ class Point:
         self,
         name: str,
         face: Face,
-        polar: tuple[Angle, Angle, float],
-        cartesian: Coordinate
+        measurement: tuple[Angle, Angle, float]
     ) -> None:
         self.name = name
         self.face = face
-        self.polar = polar
-        self.cartesian = cartesian
+        self.measurement = measurement
 
     def to_dict(self) -> PointDict:
         return {
             "name": self.name,
             "face": self.face.name,
-            "polar": (
-                float(self.polar[0]),
-                float(self.polar[1]),
-                self.polar[2]
-            ),
-            "cartesian": (
-                self.cartesian.x,
-                self.cartesian.y,
-                self.cartesian.z
+            "measurement": (
+                float(self.measurement[0]),
+                float(self.measurement[1]),
+                self.measurement[2]
             )
-        }
-
-
-class SessionMeta:
-    def __init__(
-        self,
-        time: datetime,
-        temperature: float | None,
-        battery: int | None,
-        inclination: tuple[Angle, Angle] | None
-    ) -> None:
-        self.time = time
-        self.temperature = temperature
-        self.battery = battery
-        self.inclination = inclination
-
-    def to_dict(self) -> SessionMetaDict:
-        return {
-            "time": str(self.time),
-            "temperature": self.temperature,
-            "battery": self.battery,
-            "inclination": (
-                float(self.inclination[0]),
-                float(self.inclination[1])
-            ) if self.inclination is not None else None
         }
 
 
 class Session:
     def __init__(
         self,
-        start: SessionMeta
+        time: datetime,
+        battery: float | None,
+        temperature: float | None,
+        inclination: tuple[Angle, Angle] | None,
+        station: Coordinate
     ) -> None:
-        self.start = start
+        self.time = time
+        self.battery = battery
+        self.temperature = temperature
+        self.inclination = inclination
+        self.station = station
         self.points: list[Point] = []
-
-    def finished(self, end: SessionMeta) -> None:
-        self.end = end
 
     def add_point(self, point: Point) -> None:
         self.points.append(point)
 
     def to_dict(self) -> SessionDict:
         return {
-            "start": self.start.to_dict(),
-            "end": self.end.to_dict(),
+            "time": self.time.isoformat(),
+            "battery": self.battery,
+            "inclination": (
+                float(self.inclination[0]),
+                float(self.inclination[1])
+            ) if self.inclination is not None else None,
+            "temperature": self.temperature,
+            "station": (
+                self.station.x,
+                self.station.y,
+                self.station.z
+            ),
             "points": [p.to_dict() for p in self.points]
         }
 
@@ -117,23 +95,15 @@ def export_session_to_json(filepath: str, session: Session) -> None:
 def export_session_to_log(filepath: str, session: Session) -> None:
     with open(filepath, "at", encoding="utf8") as file:
         file.write(
-            f"# SESSION start={session.start.time}, "
-            f"temperature={session.start.temperature}C, "
-            f"battery={session.start.battery}%\n"
+            f"# SESSION start={session.time}, "
+            f"temperature={session.temperature}C, "
+            f"battery={session.battery}%\n"
             "# point,face,azimut[deg],zenith[deg],slope,east,north,height\n"
         )
 
         for point in session.points:
-            hz, v, d = point.polar
-            x, y, z = point.cartesian
+            hz, v, d = point.measurement
             file.write(
                 f"{point.name},{point.face.name},"
-                f"{hz.asunit('deg')},{v.asunit('deg')},{d},"
-                f"{x},{y},{z}\n"
+                f"{hz.asunit('deg')},{v.asunit('deg')},{d}\n"
             )
-
-        file.write(
-            f"# SESSION end={session.end.time}, "
-            f"temperature={session.end.temperature}C, "
-            f"battery={session.end.battery}%\n"
-        )

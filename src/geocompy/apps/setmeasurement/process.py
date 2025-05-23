@@ -22,13 +22,8 @@ def run_merge(args: argparse.Namespace) -> None:
         data = {"sessions": sessions}
     elif args.aggregate:
         data = {
-            "station": sessions[0].get("station", [0.0, 0.0, 0.0]),
-            "start": {
-                "time": sessions[0]["start"]["time"]
-            },
-            "end": {
-                "time": sessions[-1]["end"]["time"]
-            },
+            "station": sessions[0]["station"],
+            "time": sessions[0]["time"],
             "points": [p for s in sessions for p in s["points"]]
         }
 
