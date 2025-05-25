@@ -4,8 +4,11 @@ import argparse
 from ...communication import open_serial
 from ...geo import GeoCom
 from ...geo.gcdata import Prism
-from .. import user_input, parse_yes_no, parse_cancel_replace_append
-from . import make_logger
+from .. import (
+    user_input,
+    parse_yes_no,
+    parse_cancel_replace_append
+)
 from .targets import (
     TargetList,
     TargetPoint,
@@ -23,7 +26,7 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
         )
         match action:
             case "cancel":
-                return None
+                exit(0)
             case "append":
                 points = load_targets_from_json(filepath)
                 print(f"> Loaded targets: {points.get_target_names()}")
@@ -32,8 +35,6 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
     else:
         points = TargetList()
 
-    log = tps._logger
-    log.info("Set measurement setup started")
     while ptid := user_input("Point ID? (or nothing to finish)", str):
         if ptid in points:
             remove = user_input(
@@ -80,15 +81,10 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
 
     print("> Set measurement setup finished")
 
-    log.info("Set measurement setup finished")
-
     return points
 
 
 def run_setup(args: argparse.Namespace) -> None:
-    log = make_logger(args)
-    log.info("Starting setup session")
-
     with open_serial(
         args.port,
         retry=args.retry,
@@ -96,16 +92,14 @@ def run_setup(args: argparse.Namespace) -> None:
         speed=args.baud,
         timeout=args.timeout
     ) as com:
-        tps = GeoCom(com, log)
+        tps = GeoCom(com)
         targets = setup_set(tps, args.output)
         if targets is None:
-            print("Setup was cancelled or no targets were recorded.")
-            return
-
-    log.info("Finished setup session")
+            print("> Setup was cancelled or no targets were recorded.")
+            exit(0)
 
     export_targets_to_json(args.output, targets)
-    log.info(f"Saved setup results at '{targets}'")
+    print(f"> Saved setup results at '{targets}'")
 
 
 def run_import(args: argparse.Namespace) -> None:
@@ -116,7 +110,7 @@ def run_import(args: argparse.Namespace) -> None:
         )
         match action:
             case "cancel":
-                return None
+                exit(0)
             case "append":
                 points = load_targets_from_json(args.output)
                 print(
@@ -135,12 +129,27 @@ def run_import(args: argparse.Namespace) -> None:
             Prism[args.reflector],
             args.skip
         )
-    except Exception:
+    except FileNotFoundError as fe:
+        print(
+            "> Could not find CSV file (file does not exist)"
+        )
+        print(fe)
+        exit(1103)
+    except OSError as oe:
+        print(
+            "> Cannot import CSV data due to a file operation error "
+            "(no access or other error)"
+        )
+        print(oe)
+        exit(1102)
+    except Exception as e:
         print(
             "> Cannot import CSV data due to an error "
-            "(duplicated points, the header was not skipped or malformed data)"
+            "(duplicated points, the header was not skipped, malformed data "
+            "or incorrect column spec)"
         )
-        return
+        print(e)
+        exit(1100)
 
     conflicts = set(
         points.get_target_names()
@@ -149,7 +158,7 @@ def run_import(args: argparse.Namespace) -> None:
     if len(conflicts) > 0:
         print("> Found duplicated targets between CSV and existing JSON")
         print(f"> Duplicates: {', '.join(sorted(list(conflicts)))}")
-        return
+        exit(1101)
 
     print(
         f"> Imported targets: {','.join(imported_points.get_target_names())}"
@@ -207,30 +216,6 @@ def cli() -> argparse.ArgumentParser:
         "--sync-after-timeout",
         action="store_true",
         help="attempt to synchronize message que after a connection timeout"
-    )
-    group_measure_logging = parser_measure.add_argument_group("logging")
-    group_measure_logging_levels = (
-        group_measure_logging.add_mutually_exclusive_group()
-    )
-    group_measure_logging_levels.add_argument(
-        "--debug",
-        help="set logging level to DEBUG",
-        action="store_true"
-    )
-    group_measure_logging_levels.add_argument(
-        "--info",
-        help="set logging level to INFO",
-        action="store_true"
-    )
-    group_measure_logging_levels.add_argument(
-        "--warning",
-        help="set logging level to WARNING",
-        action="store_true"
-    )
-    group_measure_logging_levels.add_argument(
-        "--error",
-        help="set logging level to ERROR",
-        action="store_true"
     )
     parser_measure.add_argument(
         "output",
