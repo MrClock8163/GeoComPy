@@ -12,6 +12,7 @@ _T = TypeVar("_T")
 EXIT_CODE_DESCRIPTIONS: dict[int, str] = {
     1: "Unknown",
     2: "Keyboard interrupt",
+    3: "Missing dependencies",
     1100: "Error in target point CSV",
     1101: "Duplicate targets between CSV and existing JSON",
     1102: "Error while opening point CSV",

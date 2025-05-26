@@ -73,9 +73,8 @@ documentation = [
 ]
 
 [project.optional-dependencies]
-all = ["geocompy[terminal,schema]"]
-terminal = ["textual", "rapidfuzz"]
-schema = ["jsonschema"]
+all = ["geocompy[apps]"]
+apps = ["textual", "rapidfuzz", "jsonschema"]
 
 [tool.hatch.version]
 source = "vcs"

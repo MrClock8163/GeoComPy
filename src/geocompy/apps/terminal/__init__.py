@@ -7,25 +7,41 @@ from typing import Any, cast, Callable
 import inspect
 from textwrap import dedent
 
-from textual import on
-from textual.suggester import Suggester
-from textual.binding import Binding
-from textual.app import App, ComposeResult
-from textual.widgets import (
-    Footer,
-    Header,
-    TabbedContent,
-    TabPane,
-    Button,
-    Input,
-    Label,
-    Select,
-    Log,
-    TextArea
-)
-from textual.containers import Grid, HorizontalGroup
-from textual.validation import Validator, ValidationResult
-from rapidfuzz import fuzz, process
+try:
+    from textual import on
+    from textual.suggester import Suggester
+    from textual.binding import Binding
+    from textual.app import App, ComposeResult
+    from textual.widgets import (
+        Footer,
+        Header,
+        TabbedContent,
+        TabPane,
+        Button,
+        Input,
+        Label,
+        Select,
+        Log,
+        TextArea
+    )
+    from textual.containers import Grid, HorizontalGroup
+    from textual.validation import Validator, ValidationResult
+    from rapidfuzz import fuzz, process
+except ModuleNotFoundError:
+    print(
+        """
+Missing dependencies. The Interactive Terminal app needs the following
+dependencies:
+- textual
+- rapidfuzz
+
+Install the missing dependencies manually, or install GeoComPy with the
+'apps' extra:
+
+pip install geocompy[appps]
+"""
+    )
+    exit(3)
 
 from geocompy import open_serial, GeoCom, GsiOnlineDNA, Angle, Coordinate
 from geocompy.communication import Connection
