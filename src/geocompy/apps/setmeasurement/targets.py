@@ -18,6 +18,7 @@ from .. import make_directory
 class TargetPointDict(TypedDict):
     name: str
     prism: str
+    height: float
     coords: tuple[float, float, float]
 
 
@@ -26,9 +27,16 @@ class TargetListDict(TypedDict):
 
 
 class TargetPoint:
-    def __init__(self, name: str, target: Prism, coords: Coordinate) -> None:
+    def __init__(
+        self,
+        name: str,
+        prism: Prism,
+        height: float,
+        coords: Coordinate
+    ) -> None:
         self.name = name
-        self.prism = target
+        self.prism = prism
+        self.height = height
         self.coords = coords
 
     @classmethod
@@ -36,6 +44,7 @@ class TargetPoint:
         return cls(
             data["name"],
             Prism[data["prism"]],
+            data["height"],
             Coordinate(*data["coords"])
         )
 
@@ -43,6 +52,7 @@ class TargetPoint:
         return {
             "name": self.name,
             "prism": self.prism.name,
+            "height": self.height,
             "coords": (self.coords.x, self.coords.y, self.coords.z)
         }
 
@@ -165,6 +175,7 @@ def import_targets_from_csv(
             point = TargetPoint(
                 fields[col_ptid],
                 reflector,
+                0.0,
                 Coordinate(
                     float(fields[col_east]),
                     float(fields[col_north]),

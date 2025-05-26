@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import TypedDict
+from typing import TypedDict, Iterable
 
 from ...data import Angle, Coordinate
 from ...geo.gcdata import Face
@@ -12,6 +12,7 @@ from .. import make_directory
 class PointDict(TypedDict):
     name: str
     face: str
+    height: float
     measurement: tuple[float, float, float]
 
 
@@ -21,6 +22,7 @@ class SessionDict(TypedDict):
     inclination: tuple[float, float] | None
     temperature: float | None
     station: tuple[float, float, float]
+    instrumentheight: float
     points: list[PointDict]
 
 
@@ -33,16 +35,19 @@ class Point:
         self,
         name: str,
         face: Face,
+        height: float,
         measurement: tuple[Angle, Angle, float]
     ) -> None:
         self.name = name
         self.face = face
+        self.height = height
         self.measurement = measurement
 
     def to_dict(self) -> PointDict:
         return {
             "name": self.name,
             "face": self.face.name,
+            "height": self.height,
             "measurement": (
                 float(self.measurement[0]),
                 float(self.measurement[1]),
@@ -58,13 +63,15 @@ class Session:
         battery: float | None,
         temperature: float | None,
         inclination: tuple[Angle, Angle] | None,
-        station: Coordinate
+        station: Coordinate,
+        instrumentheight: float
     ) -> None:
         self.time = time
         self.battery = battery
         self.temperature = temperature
         self.inclination = inclination
         self.station = station
+        self.instrumentheight = instrumentheight
         self.points: list[Point] = []
 
     def add_point(self, point: Point) -> None:
@@ -84,14 +91,24 @@ class Session:
                 self.station.y,
                 self.station.z
             ),
+            "instrumentheight": self.instrumentheight,
             "points": [p.to_dict() for p in self.points]
         }
 
 
-def export_session_to_json(filepath: str, session: Session) -> None:
+def export_sessions_to_json(
+    filepath: str,
+    sessions: Iterable[Session]
+) -> None:
     make_directory(filepath)
     with open(filepath, "wt", encoding="utf8") as file:
-        json.dump(session.to_dict(), file, indent=4)
+        json.dump(
+            {
+                "sessions": [s.to_dict() for s in sessions]
+            },
+            file,
+            indent=4
+        )
 
 
 def export_session_to_log(filepath: str, session: Session) -> None:
@@ -100,7 +117,9 @@ def export_session_to_log(filepath: str, session: Session) -> None:
         file.write(
             f"# SESSION start={session.time}, "
             f"temperature={session.temperature}C, "
-            f"battery={session.battery}%\n"
+            f"battery={session.battery}%, "
+            f"station={session.station}, "
+            f"instrumentheight={session.instrumentheight}\n"
             "# point,face,azimut[deg],zenith[deg],slope,east,north,height\n"
         )
 

@@ -19,7 +19,7 @@ from .targets import (
 from .sessions import (
     Session,
     Point,
-    export_session_to_json
+    export_sessions_to_json
 )
 
 
@@ -87,18 +87,20 @@ def measure_set(
     resp_station = tps.tmc.get_station().params
     if resp_station is None:
         station = Coordinate(0, 0, 0)
+        iheight = 0.0
         applog.warning(
-            "Could not retrieve station coordinates, using default"
+            "Could not retrieve station and instrument height, using default"
         )
     else:
-        station = resp_station[0]
+        station, iheight = resp_station
 
     output = Session(
         time,
         battery[0] if battery is not None else None,
         temp,
         (incline[4], incline[5]) if incline is not None else None,
-        station
+        station,
+        iheight
     )
 
     targets = ordered_targets(points, order)
@@ -138,6 +140,7 @@ def measure_set(
                 Point(
                     t.name,
                     f,
+                    t.height,
                     resp_angle.params
                 )
             )
@@ -178,7 +181,7 @@ def main(args: argparse.Namespace) -> None:
         args.directory,
         f"{args.prefix}{timestamp}.json"
     )
-    export_session_to_json(filename, session)
+    export_sessions_to_json(filename, [session])
     applog.info(f"Saved measurement results at '{filename}'")
 
 

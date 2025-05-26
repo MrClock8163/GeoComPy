@@ -21,6 +21,10 @@
                         "title": "Prism type",
                         "type": "string"
                     },
+                    "height": {
+                        "title": "Target height",
+                        "type": "number"
+                    },
                     "coords": {
                         "title": "Target coordinates",
                         "type": "array",

@@ -5,9 +5,9 @@ from ...communication import open_serial
 from ...geo import GeoCom
 from ...geo.gcdata import Prism
 from .. import (
-    user_input,
-    parse_yes_no,
-    parse_cancel_replace_append
+    input_free,
+    input_choice,
+    input_yes_no
 )
 from .targets import (
     TargetList,
@@ -20,26 +20,26 @@ from .targets import (
 
 def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
     if os.path.exists(filepath):
-        action = user_input(
-            f"{filepath} already exists. Action? (cancel/replace/append)",
-            parse_cancel_replace_append
+        action = input_choice(
+            f"{filepath} already exists. Action",
+            ["cancel", "replace", "append"],
+            "replace"
         )
         match action:
             case "cancel":
                 exit(0)
             case "append":
                 points = load_targets_from_json(filepath)
-                print(f"> Loaded targets: {points.get_target_names()}")
+                print(f"Loaded targets: {points.get_target_names()}")
             case _:
                 points = TargetList()
     else:
         points = TargetList()
 
-    while ptid := user_input("Point ID? (or nothing to finish)", str):
+    while ptid := input_free("Point ID? (or nothing to finish)", str):
         if ptid in points:
-            remove = user_input(
-                f"{ptid} already exists. Overwrite? (yes/no)",
-                parse_yes_no
+            remove = input_yes_no(
+                f"{ptid} already exists. Overwrite"
             )
             if remove:
                 points.pop_target(ptid)
@@ -48,38 +48,55 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
 
         resp_target = tps.bap.get_prism_type()
         if resp_target.params is None:
-            print("> Could not retrieve target type. Using default.")
-            target = Prism.MINI
-        elif resp_target.params == Prism.USER:
-            print("> User defined prism types are currently not supported.")
+            print("Could not retrieve target type.")
             continue
-        else:
-            target = resp_target.params
 
-        user_input("Aim at target, then press ENTER...", str)
+        target = resp_target.params
+        if target == Prism.USER:
+            print("User defined prism types are currently not supported.")
+            continue
+
+        user_target = input_choice(
+            "Prism type",
+            [e.name for e in Prism if e.name != 'USER'],
+            target.name
+        )
+        target = Prism[user_target]
+
+        resp_height = tps.tmc.get_target_height()
+        if resp_height.params is None:
+            print("Could not retrieve target height.")
+            continue
+
+        height = input_free(
+            "Target height",
+            float,
+            f"{resp_height.params:.4f}"
+        )
+
+        input("Aim at target, then press ENTER...")
 
         tps.aut.fine_adjust(0.5, 0.5)
         tps.tmc.do_measurement()
         resp = tps.tmc.get_simple_coordinate(10000)
         if resp.params is None:
-            print("> Could not measure target. Restart the observation!")
+            print("Could not measure target.")
             continue
 
         points.add_target(
             TargetPoint(
                 ptid,
                 target,
+                height,
                 resp.params
             )
         )
 
-        if not user_input(
-            "Do you want to add more targets? (yes/no)",
-            parse_yes_no
-        ):
+        print(f"{ptid} stored")
+        if not input_yes_no("Record more targets", True):
             break
 
-    print("> Set measurement setup finished")
+    print("Set measurement setup finished")
 
     return points
 
@@ -95,18 +112,18 @@ def run_setup(args: argparse.Namespace) -> None:
         tps = GeoCom(com)
         targets = setup_set(tps, args.output)
         if targets is None:
-            print("> Setup was cancelled or no targets were recorded.")
+            print("Setup was cancelled or no targets were recorded.")
             exit(0)
 
     export_targets_to_json(args.output, targets)
-    print(f"> Saved setup results at '{targets}'")
+    print(f"Saved setup results at '{targets}'")
 
 
 def run_import(args: argparse.Namespace) -> None:
     if os.path.exists(args.output):
-        action = user_input(
-            f"{args.output} already exists. Action? (cancel/replace/append)",
-            parse_cancel_replace_append
+        action = input_choice(
+            f"{args.output} already exists. Action",
+            ["cancel", "replace", "append"]
         )
         match action:
             case "cancel":
@@ -114,7 +131,7 @@ def run_import(args: argparse.Namespace) -> None:
             case "append":
                 points = load_targets_from_json(args.output)
                 print(
-                    f"> Loaded targets: {', '.join(points.get_target_names())}"
+                    f"Loaded targets: {', '.join(points.get_target_names())}"
                 )
             case _:
                 points = TargetList()
@@ -131,20 +148,20 @@ def run_import(args: argparse.Namespace) -> None:
         )
     except FileNotFoundError as fe:
         print(
-            "> Could not find CSV file (file does not exist)"
+            "Could not find CSV file (file does not exist)"
         )
         print(fe)
         exit(1103)
     except OSError as oe:
         print(
-            "> Cannot import CSV data due to a file operation error "
+            "Cannot import CSV data due to a file operation error "
             "(no access or other error)"
         )
         print(oe)
         exit(1102)
     except Exception as e:
         print(
-            "> Cannot import CSV data due to an error "
+            "Cannot import CSV data due to an error "
             "(duplicated points, the header was not skipped, malformed data "
             "or incorrect column spec)"
         )
@@ -156,19 +173,19 @@ def run_import(args: argparse.Namespace) -> None:
     ).intersection(imported_points.get_target_names())
 
     if len(conflicts) > 0:
-        print("> Found duplicated targets between CSV and existing JSON")
-        print(f"> Duplicates: {', '.join(sorted(list(conflicts)))}")
+        print("Found duplicated targets between CSV and existing JSON")
+        print(f"Duplicates: {', '.join(sorted(list(conflicts)))}")
         exit(1101)
 
     print(
-        f"> Imported targets: {','.join(imported_points.get_target_names())}"
+        f"Imported targets: {','.join(imported_points.get_target_names())}"
     )
 
     for t in imported_points:
         points.add_target(t)
 
     export_targets_to_json(args.output, points)
-    print(f"> Saved import results at '{os.path.abspath(args.output)}'")
+    print(f"Saved import results at '{os.path.abspath(args.output)}'")
 
 
 def cli() -> argparse.ArgumentParser:

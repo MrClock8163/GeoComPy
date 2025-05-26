@@ -21,15 +21,20 @@ EXIT_CODE_DESCRIPTIONS: dict[int, str] = {
 }
 
 
-def user_input(
+def input_free(
     prompt: str,
     parser: Callable[[str], _T],
-    newline: bool = True
+    default: str | None = "",
+    newline: bool = False
 ) -> _T:
     while True:
-        ans = input(f"> {prompt}{"\n" if newline else ""}")
+        ans = input(f"{prompt}{"\n" if newline else ""}")
+        if default is not None and ans == "":
+            ans = default
         try:
             return parser(ans)
+        except KeyboardInterrupt:
+            exit(2)
         except Exception as e:
             print(e)
 
@@ -56,8 +61,7 @@ def parse_choices_map(
         return choices[value]
     except KeyError:
         raise ValueError(
-            f"> {value} is not in the list of acceptable inputs "
-            f"({tuple(choices.keys())})"
+            f"'{value}' is not in the list of acceptable inputs"
         )
 
 
@@ -75,20 +79,52 @@ def parse_choices(
     )
 
 
-def parse_yes_no(value: str) -> bool:
-    return parse_choices_map(
-        value,
-        {
-            "yes": True,
-            "no": False
-        }
+def input_choice_map(
+    prompt: str,
+    choices: dict[str, _T],
+    default: str | None = None,
+    ignore_case: bool = True,
+    allow_short: bool = True
+) -> _T:
+    def parser(value: str) -> _T:
+        return parse_choices_map(value, choices, ignore_case, allow_short)
+
+    if default is not None and default not in choices:
+        raise ValueError("Default value is not one of the valid choices")
+
+    choices_fmt = f" ({'|'.join(choices)})"
+    default_fmt = f" [{default}]" if default is not None else ""
+    final_prompt = f"{prompt}{choices_fmt}{default_fmt}: "
+    return input_free(final_prompt, parser, default)
+
+
+def input_choice(
+    prompt: str,
+    choices: Iterable[str],
+    default: str | None = None,
+    ignore_case: bool = True,
+    allow_short: bool = True
+) -> str:
+    return input_choice_map(
+        prompt,
+        {k: k for k in choices},
+        default,
+        ignore_case,
+        allow_short
     )
 
 
-def parse_cancel_replace_append(value: str) -> str:
-    return parse_choices(
-        value,
-        ("cancel", "replace", "append")
+def input_yes_no(
+    prompt: str,
+    default: bool | None = None
+) -> bool:
+    return input_choice_map(
+        prompt,
+        {
+            "yes": True,
+            "no": False
+        },
+        None if default is None else "yes" if default else "no"
     )
 
 
