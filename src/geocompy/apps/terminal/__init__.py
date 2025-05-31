@@ -38,7 +38,7 @@ dependencies:
 Install the missing dependencies manually, or install GeoComPy with the
 'apps' extra:
 
-pip install geocompy[appps]
+pip install geocompy[apps]
 """
     )
     exit(3)

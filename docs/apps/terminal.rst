@@ -15,11 +15,11 @@ Interactive Terminal
     `Textual <https://pypi.org/project/textual/>`_ and
     `RapidFuzz <https://pypi.org/project/RapidFuzz/>`_ to be installed.
 
-    Install them manually, or install GeoComPy with the ``terminal`` extra.
+    Install them manually, or install GeoComPy with the ``apps`` extra.
 
     .. code-block:: shell
 
-        pip install geocompy[terminal]
+        pip install geocompy[apps]
 
 The interactive terminal is a TUI application for testing and
 experimentation purposes. It allows to connect to an instrument, and
