@@ -3,6 +3,7 @@
     "description": "Target point records for set measurements",
     "tpye": "object",
     "additionalProperties": false,
+    "required": ["targets"],
     "properties": {
         "targets": {
             "title": "List of targets",
@@ -12,6 +13,7 @@
                 "type": "object",
                 "additionalProperties": false,
                 "unevaluatedItems": false,
+                "required": ["name", "prism", "height", "coords"],
                 "properties": {
                     "name" : {
                         "title": "Point ID",
