@@ -2,9 +2,8 @@ import argparse
 import glob
 import json
 from itertools import chain
-from typing import Any
 
-from .sessions import SessionDict
+from .sessions import SessionDict, SessionListDict
 from .. import make_directory
 
 
@@ -12,21 +11,27 @@ def run_merge(args: argparse.Namespace) -> None:
     sessions: list[SessionDict] = []
     for path in chain.from_iterable(args.inputs):
         with open(path, "rt", encoding="utf8") as file:
-            sessions.append(json.load(file))
+            sessions.extend(json.load(file)["sessions"])
 
     if len(sessions) == 0:
-        print("> There were no sessions found to merge")
-        return
+        print("There were no sessions found to merge")
+        exit(0)
 
-    data: dict[str, Any] = {}
+    data: SessionListDict = {"sessions": []}
     if args.concatenate:
-        data = {"sessions": sessions}
+        data["sessions"] = sessions
     elif args.aggregate:
-        data = {
-            "station": sessions[0]["station"],
-            "time": sessions[0]["time"],
-            "points": [p for s in sessions for p in s["points"]]
-        }
+        data["sessions"].append(
+            {
+                "time": sessions[0]["time"],
+                "battery": sessions[0]["battery"],
+                "inclination": sessions[0]["inclination"],
+                "temperature": sessions[0]["temperature"],
+                "station": sessions[0]["station"],
+                "instrumentheight": sessions[0]["instrumentheight"],
+                "points": [p for s in sessions for p in s["points"]]
+            }
+        )
 
     make_directory(args.output)
     with open(args.output, "wt", encoding="utf8") as file:
@@ -36,7 +41,7 @@ def run_merge(args: argparse.Namespace) -> None:
             indent=4
         )
 
-    print(f"> Merged {len(sessions)} sessions")
+    print(f"Merged {len(sessions)} sessions")
 
 
 def cli() -> argparse.ArgumentParser:
@@ -81,5 +86,4 @@ def cli() -> argparse.ArgumentParser:
 if __name__ == "__main__":
     parser = cli()
     args = parser.parse_args()
-    # print(args)
     args.func(args)
