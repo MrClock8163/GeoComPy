@@ -1,9 +1,9 @@
 import os
 from datetime import datetime
-from itertools import chain
-from typing import Iterable
 import argparse
 from logging import getLogger
+from typing import Iterator
+from itertools import chain
 
 from ...data import Angle, Coordinate
 from ...communication import open_serial
@@ -23,41 +23,34 @@ from .sessions import (
 )
 
 
-def ordered_targets(
+def iter_targets(
     points: TargetList,
     order: str
-) -> Iterable[tuple[Face, TargetPoint]]:
-    target_count = len(points)
+) -> Iterator[tuple[Face, TargetPoint]]:
     match order:
         case "AaBb":
-            return [
-                (f, t) for t in points for f in (Face.F1, Face.F2)
-            ]
+            return ((f, t) for t in points for f in (Face.F1, Face.F2))
         case "AabB":
-            return [
+            return (
                 (f, t) for i, t in enumerate(points)
                 for f in (
                     (Face.F1, Face.F2)
                     if i % 2 == 0 else
                     (Face.F2, Face.F1)
                 )
-            ]
+            )
         case "ABab":
-            return list(
-                chain(
-                    [(Face.F1, t) for t in points],
-                    [(Face.F2, t) for t in points]
-                )
+            return chain(
+                ((Face.F1, t) for t in points),
+                ((Face.F2, t) for t in points)
             )
         case "ABba":
-            return list(
-                chain(
-                    [(Face.F1, t) for t in points],
-                    [(Face.F2, t) for t in reversed(points)]
-                )
+            return chain(
+                ((Face.F1, t) for t in points),
+                ((Face.F2, t) for t in reversed(points))
             )
         case "ABCD":
-            return list(zip([Face.F1] * target_count, list(points)))
+            return ((Face.F1, t) for t in points)
 
     exit(1200)
 
@@ -65,7 +58,7 @@ def ordered_targets(
 def measure_set(
     tps: GeoCom,
     filepath: str,
-    order: str,
+    order_spec: str,
     count: int = 1,
     pointnames: str = ""
 ) -> Session:
@@ -103,13 +96,10 @@ def measure_set(
         iheight
     )
 
-    targets = ordered_targets(points, order)
-    applog.debug(f"Ordered targets: {targets}")
-
     for i in range(count):
         applog.info(f"Starting set cycle {i + 1}")
 
-        for f, t in targets:
+        for f, t in iter_targets(points, order_spec):
             applog.info(f"Measuring {t.name} ({f.name})")
             rel_coords = (
                 (t.coords + Coordinate(0, 0, t.height))
