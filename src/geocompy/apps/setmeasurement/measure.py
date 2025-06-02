@@ -146,6 +146,7 @@ def measure_set(
 
 def main(args: argparse.Namespace) -> None:
     log = make_logger("APP.TPS", args)
+    log.propagate = False
     applog = getLogger("APP")
     applog.info("Starting measurement session")
 
