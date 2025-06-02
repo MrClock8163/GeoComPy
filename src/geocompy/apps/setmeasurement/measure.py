@@ -111,7 +111,10 @@ def measure_set(
 
         for f, t in targets:
             applog.info(f"Measuring {t.name} ({f.name})")
-            rel_coords = t.coords - station
+            rel_coords = (
+                (t.coords + Coordinate(0, 0, t.height))
+                - (station + Coordinate(0, 0, iheight))
+            )
             hz, v, _ = rel_coords.to_polar()
             if f == Face.F2:
                 hz = (hz + Angle(180, 'deg')).normalized()
