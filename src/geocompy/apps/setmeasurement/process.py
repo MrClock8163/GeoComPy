@@ -2,8 +2,14 @@ import argparse
 import glob
 import json
 from itertools import chain
+from typing import Literal
 
-from .sessions import SessionDict, SessionListDict
+from .sessions import (
+    SessionDict,
+    SessionListDict,
+    Session,
+    export_sessions_to_json
+)
 from .. import make_directory
 
 
@@ -29,6 +35,8 @@ def run_merge(args: argparse.Namespace) -> None:
                 "temperature": sessions[0]["temperature"],
                 "station": sessions[0]["station"],
                 "instrumentheight": sessions[0]["instrumentheight"],
+                "order": sessions[0]["order"],
+                "cycles": sum(s["cycles"] for s in sessions),
                 "points": [p for s in sessions for p in s["points"]]
             }
         )
@@ -42,6 +50,28 @@ def run_merge(args: argparse.Namespace) -> None:
         )
 
     print(f"Merged {len(sessions)} sessions")
+
+
+def run_pair(args: argparse.Namespace) -> None:
+    with open(args.input, "rt", encoding="utf8") as file:
+        data: dict[Literal['sessions'], list[SessionDict]] = json.load(file)
+
+    sessions: list[Session] = []
+    for s in data["sessions"]:
+        session = Session.from_dict(s)
+        count_points = len(session.points)
+
+        if session.order != "ABCD" and count_points % 2 != 0:
+            print(
+                f"Unexpected measurement count ({count_points}) "
+                f"for {session.order} order"
+            )
+            exit()
+
+        session.reorder_to_pairs()
+        sessions.append(session)
+
+    export_sessions_to_json(args.output, sessions)
 
 
 def cli() -> argparse.ArgumentParser:
@@ -79,6 +109,23 @@ def cli() -> argparse.ArgumentParser:
         type=glob.glob
     )
     parser_merge.set_defaults(func=run_merge)
+
+    parser_pair = subparsers.add_parser(
+        "pair",
+        description="Reorder measurements to F1-F2 pairs for processing",
+        help="reorder measurements to F1-F2 pairs for processing"
+    )
+    parser_pair.add_argument(
+        "input",
+        help="set measurement session JSON file",
+        type=str
+    )
+    parser_pair.add_argument(
+        "output",
+        help="output file",
+        type=str
+    )
+    parser_pair.set_defaults(func=run_pair)
 
     return parser
 
