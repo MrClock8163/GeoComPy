@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import argparse
 from logging import getLogger
-from typing import Iterator
+from typing import Iterator, Literal
 from itertools import chain
 
 from ...data import Angle, Coordinate
@@ -58,7 +58,7 @@ def iter_targets(
 def measure_set(
     tps: GeoCom,
     filepath: str,
-    order_spec: str,
+    order_spec: Literal['AaBb', 'AabB', 'ABab', 'ABba', 'ABCD'],
     count: int = 1,
     pointnames: str = ""
 ) -> Session:
@@ -93,6 +93,8 @@ def measure_set(
         temp,
         (incline[4], incline[5]) if incline is not None else None,
         station,
+        order_spec,
+        count,
         iheight
     )
 
