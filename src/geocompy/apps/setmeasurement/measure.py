@@ -17,9 +17,8 @@ from .targets import (
     load_targets_from_json
 )
 from .sessions import (
-    Session,
-    Point,
-    export_sessions_to_json
+    Cycle,
+    export_session_to_json
 )
 
 
@@ -61,7 +60,7 @@ def measure_set(
     order_spec: Literal['AaBb', 'AabB', 'ABab', 'ABba', 'ABCD'],
     count: int = 1,
     pointnames: str = ""
-) -> Session:
+) -> list[Cycle]:
     applog = getLogger("APP")
     points = load_targets_from_json(filepath)
     if pointnames != "":
@@ -72,11 +71,9 @@ def measure_set(
         for pt in excluded_points:
             points.pop_target(pt)
 
-    time = datetime.now()
+    incline = tps.tmc.get_angle_inclination('MEASURE').params
     temp = tps.csv.get_internal_temperature().params
     battery = tps.csv.check_power().params
-    incline = tps.tmc.get_angle_inclination('MEASURE').params
-
     resp_station = tps.tmc.get_station().params
     if resp_station is None:
         station = Coordinate(0, 0, 0)
@@ -87,19 +84,17 @@ def measure_set(
     else:
         station, iheight = resp_station
 
-    output = Session(
-        time,
-        battery[0] if battery is not None else None,
-        temp,
-        (incline[4], incline[5]) if incline is not None else None,
-        station,
-        order_spec,
-        count,
-        iheight
-    )
-
+    cycles: list[Cycle] = []
     for i in range(count):
         applog.info(f"Starting set cycle {i + 1}")
+        output = Cycle(
+            datetime.now(),
+            battery[0] if battery is not None else None,
+            temp,
+            (incline[4], incline[5]) if incline is not None else None,
+            station,
+            iheight
+        )
 
         for f, t in iter_targets(points, order_spec):
             applog.info(f"Measuring {t.name} ({f.name})")
@@ -131,24 +126,23 @@ def measure_set(
                 )
                 continue
 
-            output.add_point(
-                Point(
-                    t.name,
-                    f,
-                    t.height,
-                    resp_angle.params
-                )
+            output.add_measurement(
+                t.name,
+                f,
+                t.height,
+                resp_angle.params
             )
             applog.info("Done")
 
+        cycles.append(output)
+
     tps.aut.turn_to(0, Angle(180, 'deg'))
 
-    return output
+    return cycles
 
 
 def main(args: argparse.Namespace) -> None:
-    log = make_logger("APP.TPS", args)
-    log.propagate = False
+    log = make_logger("TPS", args)
     applog = getLogger("APP")
     applog.info("Starting measurement session")
 
@@ -162,7 +156,8 @@ def main(args: argparse.Namespace) -> None:
         tps = GeoCom(com, log)
         if args.sync_time:
             tps.csv.set_datetime(datetime.now())
-        session = measure_set(
+
+        cycles = measure_set(
             tps,
             args.targets,
             args.order,
@@ -172,12 +167,12 @@ def main(args: argparse.Namespace) -> None:
 
     applog.info("Finished measurement session")
 
-    timestamp = session.time.strftime("%Y%m%d_%H%M%S")
+    timestamp = cycles[0].time.strftime("%Y%m%d_%H%M%S")
     filename = os.path.join(
         args.directory,
         f"{args.prefix}{timestamp}.json"
     )
-    export_sessions_to_json(filename, [session])
+    export_session_to_json(filename, cycles)
     applog.info(f"Saved measurement results at '{filename}'")
 
 

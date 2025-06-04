@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import TypedDict, Iterable, Literal
+from typing import TypedDict, Iterable, NotRequired
 
 from ...data import Angle, Coordinate
 from ...geo.gcdata import Face
@@ -11,67 +11,79 @@ from .. import make_directory
 
 class PointDict(TypedDict):
     name: str
-    face: str
     height: float
-    measurement: tuple[float, float, float]
+    face1: tuple[float, float, float]
+    face2: NotRequired[tuple[float, float, float]]
 
 
-class SessionDict(TypedDict):
+class CycleDict(TypedDict):
     time: str
     battery: float | None
     inclination: tuple[float, float] | None
     temperature: float | None
     station: tuple[float, float, float]
     instrumentheight: float
-    order: Literal['AaBb', 'AabB', 'ABab', 'ABba', 'ABCD']
-    cycles: int
     points: list[PointDict]
 
 
-class SessionListDict(TypedDict):
-    sessions: list[SessionDict]
+class SessionDict(TypedDict):
+    cycles: list[CycleDict]
 
 
 class Point:
     def __init__(
         self,
         name: str,
-        face: Face,
         height: float,
-        measurement: tuple[Angle, Angle, float]
+        face1: tuple[Angle, Angle, float]
     ) -> None:
         self.name = name
-        self.face = face
         self.height = height
-        self.measurement = measurement
+        self.face1: tuple[Angle, Angle, float] = face1
+        self.face2: tuple[Angle, Angle, float] | None = None
 
     @classmethod
     def from_dict(cls, data: PointDict) -> Point:
-        return cls(
+        output = cls(
             data["name"],
-            Face[data["face"]],
             data["height"],
             (
-                Angle(data["measurement"][0]),
-                Angle(data["measurement"][1]),
-                data["measurement"][2]
+                Angle(data["face1"][0]),
+                Angle(data["face1"][1]),
+                data["face1"][2]
             )
         )
+        if data.get("face2") is not None:
+            output.face2 = (
+                Angle(data["face2"][0]),
+                Angle(data["face2"][1]),
+                data["face2"][2]
+            )
+
+        return output
 
     def to_dict(self) -> PointDict:
-        return {
+        output: PointDict = {
             "name": self.name,
-            "face": self.face.name,
             "height": self.height,
-            "measurement": (
-                float(self.measurement[0]),
-                float(self.measurement[1]),
-                self.measurement[2]
+            "face1": (
+                float(self.face1[0]),
+                float(self.face1[1]),
+                self.face1[2]
             )
         }
 
+        if self.face2 is not None:
+            output["face2"] = (
+                float(self.face2[0]),
+                float(self.face2[1]),
+                self.face2[2]
+            )
 
-class Session:
+        return output
+
+
+class Cycle:
     def __init__(
         self,
         time: datetime,
@@ -79,8 +91,6 @@ class Session:
         temperature: float | None,
         inclination: tuple[Angle, Angle] | None,
         station: Coordinate,
-        order: Literal['AaBb', 'AabB', 'ABab', 'ABba', 'ABCD'],
-        cycles: int,
         instrumentheight: float
     ) -> None:
         self.time = time
@@ -89,12 +99,10 @@ class Session:
         self.inclination = inclination
         self.station = station
         self.instrumentheight = instrumentheight
-        self.order = order
-        self.cycles = cycles
-        self.points: list[Point] = []
+        self._points: dict[str, Point] = {}
 
     @classmethod
-    def from_dict(cls, data: SessionDict) -> Session:
+    def from_dict(cls, data: CycleDict) -> Cycle:
         output = cls(
             datetime.fromisoformat(data["time"]),
             data["battery"],
@@ -104,20 +112,57 @@ class Session:
                 Angle(data["inclination"][1])
             ) if data["inclination"] is not None else None,
             Coordinate(*data["station"]),
-            data["order"],
-            data["cycles"],
             data["instrumentheight"]
         )
 
         for p in data["points"]:
-            output.add_point(Point.from_dict(p))
+            output.add_measurement(
+                p["name"],
+                Face.F1,
+                p["height"],
+                (
+                    Angle(p["face1"][0]),
+                    Angle(p["face1"][1]),
+                    p["face1"][2]
+                )
+            )
+            if p.get("face2") is None:
+                continue
+
+            output.add_measurement(
+                p["name"],
+                Face.F2,
+                p["height"],
+                (
+                    Angle(p["face2"][0]),
+                    Angle(p["face2"][1]),
+                    p["face2"][2]
+                )
+            )
 
         return output
 
-    def add_point(self, point: Point) -> None:
-        self.points.append(point)
+    def add_measurement(
+        self,
+        ptid: str,
+        face: Face,
+        height: float,
+        measurement: tuple[Angle, Angle, float]
+    ) -> None:
+        if ptid not in self._points:
+            self._points[ptid] = Point(ptid, height, measurement)
+            return
 
-    def to_dict(self) -> SessionDict:
+        if face == Face.F1:
+            raise ValueError(f"Face 1 observation already exists for {ptid}")
+
+        point = self._points[ptid]
+        if point.face2 is not None:
+            raise ValueError(f"Face 2 observation already exists for {ptid}")
+
+        point.face2 = measurement
+
+    def to_dict(self) -> CycleDict:
         return {
             "time": self.time.isoformat(),
             "battery": self.battery,
@@ -132,101 +177,20 @@ class Session:
                 self.station.z
             ),
             "instrumentheight": self.instrumentheight,
-            "order": self.order,
-            "cycles": self.cycles,
-            "points": [p.to_dict() for p in self.points]
+            "points": [p.to_dict() for p in self._points.values()]
         }
 
-    @staticmethod
-    def _reorder_cycle_to_pairs(
-        order: Literal['AaBb', 'AabB', 'ABab', 'ABba', 'ABCD'],
-        points: list[Point]
-    ) -> list[Point]:
-        match order:
-            case "ABCD" | "AaBb":
-                return points
-            case "AabB":
-                count_points = len(points)
-                pairs: list[Point] = []
-                for i in range(0, count_points, 2):
-                    if i % 2 == 0:
-                        pairs.extend(points[i:i+1])
 
-                    pairs.extend(reversed(points[i:i+1]))
-
-            case "ABab":
-                count_targets = len(points) // 2
-                face1 = points[:count_targets]
-                face2 = points[count_targets:]
-                pairs = [
-                    p for pair in zip(face1, face2) for p in pair
-                ]
-            case "ABba":
-                count_targets = len(points) // 2
-                face1 = points[:count_targets]
-                face2 = list(reversed(points[count_targets:]))
-                pairs = [
-                    p for pair in zip(face1, face2) for p in pair
-                ]
-
-            case _:
-                raise ValueError(f"Unknown measurement order {order}")
-
-        return pairs
-
-    def reorder_to_pairs(self) -> None:
-        count_points = len(self.points)
-        count_targets = count_points // self.cycles
-        pairs: list[Point] = []
-        for i in range(0, count_points, count_points // self.cycles):
-            pairs.extend(
-                self._reorder_cycle_to_pairs(
-                    self.order,
-                    self.points[i:i+count_targets]
-                )
-            )
-
-        iter_points = iter(pairs)
-        for f1, f2 in zip(iter_points, iter_points):
-            if f1.name != f2.name or f1.face != Face.F1 or f2.face != Face.F2:
-                raise ValueError(
-                    "Point names and/or faces do not match after reordering "
-                    f"to pairs ({f1.name}-{f1.face} and {f2.name}-{f2.face})"
-                )
-        self.points = pairs
-        self.order = "AaBb"
-
-
-def export_sessions_to_json(
+def export_session_to_json(
     filepath: str,
-    sessions: Iterable[Session]
+    cycles: Iterable[Cycle]
 ) -> None:
     make_directory(filepath)
     with open(filepath, "wt", encoding="utf8") as file:
         json.dump(
             {
-                "sessions": [s.to_dict() for s in sessions]
+                "cycles": [s.to_dict() for s in cycles]
             },
             file,
             indent=4
         )
-
-
-def export_session_to_log(filepath: str, session: Session) -> None:
-    make_directory(filepath)
-    with open(filepath, "at", encoding="utf8") as file:
-        file.write(
-            f"# SESSION start={session.time}, "
-            f"temperature={session.temperature}C, "
-            f"battery={session.battery}%, "
-            f"station={session.station}, "
-            f"instrumentheight={session.instrumentheight}\n"
-            "# point,face,azimut[deg],zenith[deg],slope,east,north,height\n"
-        )
-
-        for point in session.points:
-            hz, v, d = point.measurement
-            file.write(
-                f"{point.name},{point.face.name},"
-                f"{hz.asunit('deg')},{v.asunit('deg')},{d}\n"
-            )
