@@ -125,7 +125,7 @@ def load_targets_from_json(filepath: str) -> TargetList:
         open(
             os.path.join(
                 os.path.dirname(__file__),
-                "target_schema.json"
+                "schema_targets.json"
             ),
             "rt",
             encoding="utf8"
