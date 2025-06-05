@@ -823,6 +823,18 @@ class GeoComCSV(GeoComSubsystem):
             5072
         )
 
+    def list(self) -> GeoComResponse[tuple[str, str, int, int, str]]:
+        return self._request(
+            5073,
+            parsers=(
+                str,
+                str,
+                int,
+                int,
+                str
+            )
+        )
+
     def get_maintenance_end(self) -> GeoComResponse[datetime]:
         """
         RPC 5114, ``CSV_GetMaintenanceEnd``

@@ -31,6 +31,36 @@ class GeoComDNA(GeoComSubsystem):
     .. versionremoved:: GeoCom-LS
     """
 
+    def get_reading(
+        self,
+        wait: int = 5000
+    ) -> GeoComResponse[
+        tuple[
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float
+        ]
+    ]:
+        return self._request(
+            29005,
+            [wait],
+            (
+                float,  # staff reading
+                float,  # distance
+                float,
+                float,
+                float,
+                float,
+                float,
+                float
+            )
+        )
+
     def switch_staffmode(
         self,
         inverted: bool
