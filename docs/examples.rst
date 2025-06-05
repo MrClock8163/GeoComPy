@@ -13,15 +13,20 @@ message in Morse code.
 
 .. code-block:: text
 
-    usage: morse.py [-h] port intensity message
+    usage: morse.py [-h] [-b BAUD] [-t TIMEOUT] port intensity message
 
     positional arguments:
-        port        serial port
-        intensity   beep intensity [1-100]
-        message     message to encode
+      intensity             beep intensity [1-100]
+      message               message to encode
 
     options:
-        -h, --help  show this help message and exit
+      -h, --help            show this help message and exit
+
+    communication:
+      port                  serial port
+      -b BAUD, --baud BAUD  communication speed
+      -t TIMEOUT, --timeout TIMEOUT
+                            communication timeout
 
 .. seealso::
 
