@@ -250,6 +250,32 @@ class GeoComCSV(GeoComSubsystem):
             parsers=(int, int, int)
         )
 
+    def get_firmware_creation_date(self) -> GeoComResponse[datetime]:
+        """
+        RPC 5038, ``CSV_GetSWCreationDate``
+
+        Gets the creation date of the system software version running on
+        the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `datetime`: Creation date.
+
+        """
+        def transformer(value: str | None) -> datetime | None:
+            if value is None:
+                return None
+
+            return datetime.strptime(value, "%Y-%m-%d")
+
+        response = self._request(
+            5038,
+            parsers=str
+        )
+        return response.map_params(transformer)
+
     def get_voltage_battery(self) -> GeoComResponse[float]:
         """
         RPC 5009, ``CSV_GetVBat``
@@ -698,3 +724,137 @@ class GeoComCSV(GeoComSubsystem):
             5164,  # Mistyped as 5163 in the GeoCom reference
             parsers=enumparser(PowerSource)
         )
+
+    def get_datetime_new(self) -> GeoComResponse[datetime]:
+        """
+        RPC 5051, ``CSV_GetDateTime2``
+
+        Gets the current date and time set on the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `datetime`: Current date and time.
+
+        See Also
+        --------
+        set_datetime_new
+
+        """
+        def make_datetime(
+            params: tuple[int, int, int, int, int, int] | None
+        ) -> datetime | None:
+            if params is None:
+                return None
+
+            return datetime(
+                params[0],
+                params[1],
+                params[2],
+                params[3],
+                params[4],
+                params[5]
+            )
+
+        response: GeoComResponse[
+            tuple[int, int, int, int, int, int]
+        ] = self._request(
+            5051,
+            parsers=(
+                int,
+                int,
+                int,
+                int,
+                int,
+                int
+            )
+        )
+
+        return response.map_params(make_datetime)
+
+    def set_datetime_new(
+        self,
+        time: datetime
+    ) -> GeoComResponse[None]:
+        """
+        RPC 5050, ``CSV_SetDateTime2``
+
+        Sets the date and time on the instrument.
+
+        Parameters
+        ----------
+        time : datetime
+            New date and time to set.
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        get_datetime_new
+
+        """
+        return self._request(
+            5050,
+            [
+                time.year, time.month, time.day,
+                time.hour, time.minute, time.second
+            ]
+        )
+
+    def setup_listing(self) -> GeoComResponse[None]:
+        """
+        RPC 5072, ``CSV_SetupList``
+
+        Prepares listing of the jobs in memory.
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        list
+
+        """
+        return self._request(
+            5072
+        )
+
+    def get_maintenance_end(self) -> GeoComResponse[datetime]:
+        """
+        RPC 5114, ``CSV_GetMaintenanceEnd``
+
+        Gets the date when the software maintenance service ends.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `datetime`: Software maintenance end date.
+
+        """
+        def transform(
+            params: tuple[int, Byte, Byte] | None
+        ) -> datetime | None:
+            if params is None:
+                return None
+
+            return datetime(
+                params[0],
+                int(params[1]),
+                int(params[2])
+            )
+
+        response = self._request(
+            5114,
+            parsers={
+                int,
+                Byte.parse,
+                Byte.parse
+            }
+        )
+
+        return response.map_params(transform)
