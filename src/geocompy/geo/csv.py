@@ -824,6 +824,26 @@ class GeoComCSV(GeoComSubsystem):
         )
 
     def list(self) -> GeoComResponse[tuple[str, str, int, int, str]]:
+        """
+        RPC 5073, ``CSV_List``
+
+        Gets the next job listing entry.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `str`: Job name.
+                - `str`: File name (`-01`: job, `-02`: code list).
+                - `int`: Unknown.
+                - `int`: Unknown.
+                - `str`: Unknown.
+
+        See Also
+        --------
+        setup_listing
+
+        """
         return self._request(
             5073,
             parsers=(

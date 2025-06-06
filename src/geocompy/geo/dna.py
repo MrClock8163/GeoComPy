@@ -35,31 +35,60 @@ class GeoComDNA(GeoComSubsystem):
         self,
         wait: int = 5000
     ) -> GeoComResponse[
-        tuple[
-            float,
-            float,
-            float,
-            float,
-            float,
-            float,
-            float,
-            float
-        ]
+        tuple[float, float]
     ]:
-        return self._request(
+        """
+        RPC 29005, ``DNA_GetMeasResult``
+
+        Gets the current staff reading in memory. A measurement has to be
+        completed in advance.
+
+        Parameters
+        ----------
+        wait : int, optional
+            Time to wait for a measurement to complete [ms], by default 5000
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `float`: Staff reading.
+                - `float`: Staff distance.
+
+        """
+        def filter(
+            value: tuple[
+                float,
+                float,
+                int,
+                int,
+                int,
+                float,
+                int,
+                int
+            ] | None
+        ) -> tuple[float, float] | None:
+            if value is None:
+                return None
+
+            return value[0], value[1]
+
+        response = self._request(
             29005,
             [wait],
             (
                 float,  # staff reading
                 float,  # distance
-                float,
-                float,
-                float,
-                float,
-                float,
-                float
+                int,
+                int,
+                int,  # system time [ms] awake
+                float,  # distance accuracy?
+                int,
+                int
             )
         )
+
+        return response.map_params(filter)
 
     def switch_staffmode(
         self,
