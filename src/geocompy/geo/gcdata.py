@@ -768,6 +768,19 @@ class Reflectorless(Enum):
 
 
 #######
+# DNA #
+#######
+
+
+class StaffType(Enum):
+    AUTO = 0
+    GPCL2 = 3
+    """2 m invar staff"""
+    GPCL3 = 2
+    """3 m invar staff"""
+
+
+#######
 # EDM #
 #######
 

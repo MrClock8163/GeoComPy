@@ -16,8 +16,11 @@ from __future__ import annotations
 
 from ..data import (
     parsebool,
+    enumparser,
+    toenum,
     Angle
 )
+from .gcdata import StaffType
 from .gctypes import (
     GeoComSubsystem,
     GeoComResponse
@@ -289,3 +292,41 @@ class GeoComDNA(GeoComSubsystem):
 
         """
         return self._request(29110)
+
+    def set_staff_type(
+        self,
+        staff: StaffType | str
+    ) -> GeoComResponse[None]:
+        """
+        RPC 29127, ``DNA_SetStaffLength``
+
+        Sets the levelling staff length
+
+        Returns
+        -------
+        GeoComResponse
+
+        """
+        _staff = toenum(StaffType, staff)
+        return self._request(
+            29127,
+            [_staff.value]
+        )
+
+    def get_staff_type(self) -> GeoComResponse[StaffType]:
+        """
+        RPC 29126, ``DNA_GetStaffLength``
+
+        Gets the currently set levelling staff length.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `StaffType`: Staff length type.
+
+        """
+        return self._request(
+            29126,
+            parsers=enumparser(StaffType)
+        )
