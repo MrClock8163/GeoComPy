@@ -35,7 +35,8 @@ from typing import (
     Iterator,
     TypeVar,
     Self,
-    Any
+    Any,
+    SupportsFloat
 )
 
 
@@ -280,8 +281,12 @@ class Angle:
     def dms2rad(dms: str) -> float:
         """Converts DDD-MM-SS to radians.
         """
-        if not re.search(r"^[0-9]{1,3}(-[0-9]{1,2}){0,2}$", dms):
+        if not re.search(r"^-?[0-9]{1,3}(-[0-9]{1,2}){0,2}$", dms):
             raise ValueError("Angle invalid argument", dms)
+
+        sign = -1 if dms.startswith("-") else 1
+        if sign < 0:
+            dms = dms[1:]
 
         items = [float(item) for item in dms.split("-")]
         div = 1
@@ -290,7 +295,7 @@ class Angle:
             a += val / div
             div *= 60
 
-        return math.radians(a)
+        return math.radians(a) * sign
 
     @staticmethod
     def rad2gon(angle: float) -> float:
@@ -426,6 +431,42 @@ class Angle:
             return False
 
         return math.isclose(self._value, other._value)
+
+    def __gt__(self, other: SupportsFloat) -> bool:
+        if not isinstance(other, SupportsFloat):
+            raise TypeError(
+                f"unsupported operand type(s) for >: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
+
+        return float(self) > float(other)
+
+    def __lt__(self, other: SupportsFloat) -> bool:
+        if not isinstance(other, SupportsFloat):
+            raise TypeError(
+                f"unsupported operand type(s) for <: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
+
+        return float(self) < float(other)
+
+    def __ge__(self, other: SupportsFloat) -> bool:
+        if not isinstance(other, SupportsFloat):
+            raise TypeError(
+                f"unsupported operand type(s) for >=: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
+
+        return float(self) >= float(other)
+
+    def __le__(self, other: SupportsFloat) -> bool:
+        if not isinstance(other, SupportsFloat):
+            raise TypeError(
+                f"unsupported operand type(s) for <=: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
+
+        return float(self) <= float(other)
 
     def __pos__(self) -> Angle:
         return Angle(self._value)

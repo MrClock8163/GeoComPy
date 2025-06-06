@@ -1,8 +1,30 @@
+import os
 import argparse
 import glob
 import json
+import math
 from itertools import chain
 
+try:
+    from jmespath import search
+    from jsonschema import validate, ValidationError
+except ModuleNotFoundError:
+    print(
+        """
+Missing dependencies. The Set Measurement Processing app needs the following
+dependencies:
+- jmespath
+- jsonschema
+
+Install the missing dependencies manually, or install GeoComPy with the
+'apps' extra:
+
+pip install geocompy[apps]
+"""
+    )
+    exit(3)
+
+from ...data import Angle, Coordinate
 from .sessions import SessionDict
 from .. import make_directory
 
@@ -34,6 +56,142 @@ def run_merge(args: argparse.Namespace) -> None:
     )
 
 
+def calc_angles(
+    hz_f1: Angle,
+    v_f1: Angle,
+    hz_f2: Angle,
+    v_f2: Angle
+) -> tuple[Angle, Angle, Angle, Angle]:
+    temp = hz_f2 - hz_f1
+    if temp < 0:
+        collim = (temp + Angle(180, 'deg')) / 2
+    else:
+        collim = (temp - Angle(180, 'deg')) / 2
+
+    hz = hz_f1 + collim
+
+    index = (Angle(360, 'deg') - v_f1 - v_f2) / 2
+    v = v_f1 + index
+
+    return hz, v, collim, index
+
+
+def calc_coords(
+    coords: list[Coordinate]
+) -> tuple[Coordinate, Coordinate]:
+    def adjust(values: list[float]) -> tuple[float, float]:
+        n = len(values)
+        adjusted = math.fsum(values) / n
+        dev = math.sqrt(math.fsum([(v - adjusted)**2 for v in values]) / n)
+        return adjusted, dev
+
+    xi = [c.x for c in coords]
+    yi = [c.y for c in coords]
+    zi = [c.z for c in coords]
+
+    x, x_dev = adjust(xi)
+    y, y_dev = adjust(yi)
+    z, z_dev = adjust(zi)
+
+    return Coordinate(x, y, z), Coordinate(x_dev, y_dev, z_dev)
+
+
+def run_calc(args: argparse.Namespace) -> None:
+    with (
+        open(args.input, "rt", encoding="utf8") as file,
+        open(
+            os.path.join(
+                os.path.dirname(__file__),
+                "schema_session.json"
+            ),
+            "rt",
+            encoding="utf8"
+        ) as file_schema
+    ):
+        data = json.load(file)
+        schema = json.load(file_schema)
+
+    try:
+        validate(data, schema)
+    except ValidationError:
+        print("Input data does not follow the required schema")
+        exit(4)
+
+    points = {"points": search("cycles[].points[]", data)}
+    ptids = list(set(search("points[].name", points)))
+
+    station = Coordinate(
+        *search("cycles[0].station", data)
+    ) + Coordinate(
+        0,
+        0,
+        search("cycles[0].instrumentheight", data)
+    )
+    coords: dict[str, list[Coordinate]] = {}
+    for pt in ptids:
+        measurements = search(
+            f"points[?name=='{pt}'].[height, face1, face2]",
+            points
+        )
+        if pt not in coords:
+            coords[pt] = []
+        for cycle in measurements:
+            height = cycle[0]
+            hz_f1 = Angle(cycle[1][0])
+            v_f1 = Angle(cycle[1][1])
+            d_f1 = cycle[1][2]
+
+            hz_f2 = Angle(cycle[2][0])
+            v_f2 = Angle(cycle[2][1])
+            d_f2 = cycle[2][2]
+
+            hz, v, collim, index = calc_angles(
+                hz_f1,
+                v_f1,
+                hz_f2,
+                v_f2
+            )
+
+            c = station + Coordinate.from_polar(
+                hz,
+                v,
+                (d_f1 + d_f2) / 2
+            ) - Coordinate(
+                0,
+                0,
+                height
+            )
+            coords[pt].append(c)
+
+    final: list[tuple[str, Coordinate, Coordinate]] = []
+    for name, coo in coords.items():
+        coord, dev = calc_coords(coo)
+        final.append((name, coord, dev))
+
+    with open(args.output, "wt", encoding="utf8") as file:
+        if args.header:
+            file.write(
+                args.delimiter.join(
+                    ["id", "e", "n", "h", "sigma_e", "sigma_n", "sigma_h"]
+                ) + "\n"
+            )
+
+        fmt = "{0:." + str(args.precision) + "f}"
+        for name, coord, dev in final:
+            fields = [
+                name,
+                fmt.format(coord.x),
+                fmt.format(coord.y),
+                fmt.format(coord.z),
+                fmt.format(dev.x),
+                fmt.format(dev.y),
+                fmt.format(dev.z)
+            ]
+            file.write(
+                args.delimiter.join(fields) + "\n"
+            )
+
+
 def cli() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         "process",
@@ -58,6 +216,42 @@ def cli() -> argparse.ArgumentParser:
         type=glob.glob
     )
     parser_merge.set_defaults(func=run_merge)
+
+    parser_calc = subparsers.add_parser(
+        "calculate",
+        description="Calculate results from set measurements",
+        help="calculate results from set measurements"
+    )
+    parser_calc.add_argument(
+        "input",
+        help="input session file to process",
+        type=str
+    )
+    parser_calc.add_argument(
+        "output",
+        help="output CSV file",
+        type=str
+    )
+    parser_calc.add_argument(
+        "--header",
+        help="write column headers",
+        action="store_true"
+    )
+    parser_calc.add_argument(
+        "-d",
+        "--delimiter",
+        help="column delimiter character",
+        type=str,
+        default=","
+    )
+    parser_calc.add_argument(
+        "-p",
+        "--precision",
+        help="decimal precision",
+        type=int,
+        default=4
+    )
+    parser_calc.set_defaults(func=run_calc)
 
     return parser
 

@@ -53,6 +53,7 @@ linting = [
     {include-group = "testing"},
     "types-pyserial",
     "types-jsonschema",
+    "types-jmespath",
     "mypy",
     "flake8"
 ]
@@ -61,6 +62,7 @@ development = [
     "textual",
     "rapidfuzz",
     "jsonschema",
+    "jmespath",
     {include-group = "linting"}
 ]
 documentation = [
@@ -74,7 +76,7 @@ documentation = [
 
 [project.optional-dependencies]
 all = ["geocompy[apps]"]
-apps = ["textual", "rapidfuzz", "jsonschema"]
+apps = ["textual", "rapidfuzz", "jsonschema", "jmespath"]
 
 [tool.hatch.version]
 source = "vcs"
