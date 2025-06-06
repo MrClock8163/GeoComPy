@@ -490,6 +490,27 @@ class GeoComCode(IntEnum):
     CNF_APPL_OVERFLOW = 10519
     """Application table full"""
 
+    DNA_TOO_DARK = 12032
+    """Too dark or poor light"""
+    DNA_TOO_BRIGHT = 12033
+    """Too bright light"""
+    DNA_TILT = 12034
+    """Instrument is not level"""
+    DNA_COARSE_CORR = 12035
+    """
+    Coarse correlation error. Too much coverage or insufficient code length.
+    """
+    DNA_FINE_CORR = 12036
+    """
+    Fine correlation error. Too much coverage or insufficient code length.
+    """
+    DNA_BAD_DISTANCE = 12037
+    """Distance outside the permitted range."""
+    DNA_INVERTED = 12038
+    """Staff inverted or inverse mode activated."""
+    DNA_BAD_FOCUS = 12039
+    """Bad focusing."""
+
     DPL_NOCREATE = 3328
     """no file creation, fatal"""
     DPL_NOTOPEN = 3329
