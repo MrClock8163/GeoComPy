@@ -31,7 +31,7 @@ class GeoComDNA(GeoComSubsystem):
     """
     Digital level subsystem of the GeoCom protocol.
 
-    .. versionremoved:: GeoCom-LS
+    .. versionadded:: GeoCom-LS
     """
 
     def get_reading(
