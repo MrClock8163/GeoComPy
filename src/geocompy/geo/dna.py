@@ -302,6 +302,11 @@ class GeoComDNA(GeoComSubsystem):
 
         Sets the levelling staff length
 
+        Parameters
+        ----------
+        staff : StaffType | str
+            Levelling staff type.
+
         Returns
         -------
         GeoComResponse
