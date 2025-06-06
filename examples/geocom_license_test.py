@@ -26,20 +26,20 @@ def tests(tps: GeoCom) -> None:
     ):
         print("Measurements available")
     else:
-        print(f"Measurements unavailable {resp_measure.error}")
+        print(f"Measurements unavailable ({resp_measure.response})")
 
     resp_focus = tps.cam.set_focus_to_infinity()
     if resp_focus.error == GeoComCode.OK:
         print("Imaging available")
     else:
-        print(f"Imaging unavailable {resp_focus.error}")
+        print(f"Imaging unavailable ({resp_focus.response})")
 
     resp_changeface = tps.aut.change_face()
     if resp_changeface.error == GeoComCode.OK:
         print("Motorization available")
         tps.aut.change_face()
     else:
-        print(f"Mororization unavailable {resp_changeface.error}")
+        print(f"Mororization unavailable ({resp_changeface.response})")
 
 
 if __name__ == "__main__":
