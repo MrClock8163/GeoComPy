@@ -768,6 +768,24 @@ class Reflectorless(Enum):
 
 
 #######
+# DNA #
+#######
+
+
+class StaffType(Enum):
+    """
+    Digital invar levelling staff type.
+
+    .. versionadded:: GeoCom-LS
+    """
+    AUTO = 0
+    GPCL2 = 3
+    """2 m invar staff"""
+    GPCL3 = 2
+    """3 m invar staff"""
+
+
+#######
 # EDM #
 #######
 

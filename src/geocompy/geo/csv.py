@@ -250,6 +250,34 @@ class GeoComCSV(GeoComSubsystem):
             parsers=(int, int, int)
         )
 
+    def get_firmware_creation_date(self) -> GeoComResponse[str]:
+        """
+        RPC 5038, ``CSV_GetSWCreationDate``
+
+        .. versionadded:: GeoComp-TPS1200
+
+        Gets the creation date of the system software version running on
+        the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `str`: Creation date.
+
+        """
+        # def transformer(value: str | None) -> datetime | None:
+        #     if value is None:
+        #         return None
+
+        #     return datetime.strptime(value, "%Y-%m-%d")
+
+        response = self._request(
+            5038,
+            parsers=str
+        )
+        return response
+
     def get_voltage_battery(self) -> GeoComResponse[float]:
         """
         RPC 5009, ``CSV_GetVBat``
@@ -698,3 +726,173 @@ class GeoComCSV(GeoComSubsystem):
             5164,  # Mistyped as 5163 in the GeoCom reference
             parsers=enumparser(PowerSource)
         )
+
+    def get_datetime_new(self) -> GeoComResponse[datetime]:
+        """
+        RPC 5051, ``CSV_GetDateTime2``
+
+        .. versionadded:: GeoComp-TPS1200
+
+        Gets the current date and time set on the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `datetime`: Current date and time.
+
+        See Also
+        --------
+        set_datetime_new
+
+        """
+        def make_datetime(
+            params: tuple[int, int, int, int, int, int] | None
+        ) -> datetime | None:
+            if params is None:
+                return None
+
+            return datetime(
+                params[0],
+                params[1],
+                params[2],
+                params[3],
+                params[4],
+                params[5]
+            )
+
+        response: GeoComResponse[
+            tuple[int, int, int, int, int, int]
+        ] = self._request(
+            5051,
+            parsers=(
+                int,
+                int,
+                int,
+                int,
+                int,
+                int
+            )
+        )
+
+        return response.map_params(make_datetime)
+
+    def set_datetime_new(
+        self,
+        time: datetime
+    ) -> GeoComResponse[None]:
+        """
+        RPC 5050, ``CSV_SetDateTime2``
+
+        .. versionadded:: GeoComp-VivaTPS
+
+        Sets the date and time on the instrument.
+
+        Parameters
+        ----------
+        time : datetime
+            New date and time to set.
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        get_datetime_new
+
+        """
+        return self._request(
+            5050,
+            [
+                time.year, time.month, time.day,
+                time.hour, time.minute, time.second
+            ]
+        )
+
+    def setup_listing(self) -> GeoComResponse[None]:
+        """
+        RPC 5072, ``CSV_SetupList``
+
+        Prepares listing of the jobs in memory.
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        list
+
+        """
+        return self._request(
+            5072
+        )
+
+    def list(self) -> GeoComResponse[tuple[str, str, int, int, str]]:
+        """
+        RPC 5073, ``CSV_List``
+
+        Gets the next job listing entry.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `str`: Job name.
+                - `str`: File name (`-01`: job, `-02`: code list).
+                - `int`: Unknown.
+                - `int`: Unknown.
+                - `str`: Unknown.
+
+        See Also
+        --------
+        setup_listing
+
+        """
+        return self._request(
+            5073,
+            parsers=(
+                str,
+                str,
+                int,
+                int,
+                str
+            )
+        )
+
+    def get_maintenance_end(self) -> GeoComResponse[datetime]:
+        """
+        RPC 5114, ``CSV_GetMaintenanceEnd``
+
+        Gets the date when the software maintenance service ends.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `datetime`: Software maintenance end date.
+
+        """
+        def transform(
+            params: tuple[int, Byte, Byte] | None
+        ) -> datetime | None:
+            if params is None:
+                return None
+
+            return datetime(
+                params[0],
+                int(params[1]),
+                int(params[2])
+            )
+
+        response = self._request(
+            5114,
+            parsers=[
+                int,
+                Byte.parse,
+                Byte.parse
+            ]
+        )
+
+        return response.map_params(transform)

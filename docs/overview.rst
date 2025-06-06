@@ -20,6 +20,7 @@ Features
   .. only:: html
 
     - :si-icon:`protocol_gsionline` DNA
+    - :si-icon:`protocol_gsionline` :si-icon:`protocol_geocom` LS
     - :si-icon:`protocol_geocom` TPS1000
     - :si-icon:`protocol_geocom` TPS1100
     - :si-icon:`protocol_geocom` TPS1200(+)
@@ -28,6 +29,7 @@ Features
   .. only:: latex
 
     - DNA
+    - LS
     - TPS1000
     - TPS1100
     - TPS1200(+)
