@@ -1356,6 +1356,7 @@ rpcnames: dict[int, str] = {
     5011: "CSV_GetIntTemp",
     5041: "CSV_GetLaserlotIntens",
     5042: "CSV_GetLaserlotStatus",
+    5114: "CSV_GetMaintenanceEnd",
     5164: "CSV_GetPreferredPowerSource",
     5100: "CSV_GetReflectorlessClass",
     5038: "CSV_GetSWCreationDate",

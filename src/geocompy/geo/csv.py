@@ -250,9 +250,11 @@ class GeoComCSV(GeoComSubsystem):
             parsers=(int, int, int)
         )
 
-    def get_firmware_creation_date(self) -> GeoComResponse[datetime]:
+    def get_firmware_creation_date(self) -> GeoComResponse[str]:
         """
         RPC 5038, ``CSV_GetSWCreationDate``
+
+        .. versionadded:: GeoComp-TPS1200
 
         Gets the creation date of the system software version running on
         the instrument.
@@ -261,20 +263,20 @@ class GeoComCSV(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `datetime`: Creation date.
+                - `str`: Creation date.
 
         """
-        def transformer(value: str | None) -> datetime | None:
-            if value is None:
-                return None
+        # def transformer(value: str | None) -> datetime | None:
+        #     if value is None:
+        #         return None
 
-            return datetime.strptime(value, "%Y-%m-%d")
+        #     return datetime.strptime(value, "%Y-%m-%d")
 
         response = self._request(
             5038,
             parsers=str
         )
-        return response.map_params(transformer)
+        return response
 
     def get_voltage_battery(self) -> GeoComResponse[float]:
         """
@@ -729,6 +731,8 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5051, ``CSV_GetDateTime2``
 
+        .. versionadded:: GeoComp-TPS1200
+
         Gets the current date and time set on the instrument.
 
         Returns
@@ -779,6 +783,8 @@ class GeoComCSV(GeoComSubsystem):
     ) -> GeoComResponse[None]:
         """
         RPC 5050, ``CSV_SetDateTime2``
+
+        .. versionadded:: GeoComp-VivaTPS
 
         Sets the date and time on the instrument.
 
@@ -882,11 +888,11 @@ class GeoComCSV(GeoComSubsystem):
 
         response = self._request(
             5114,
-            parsers={
+            parsers=[
                 int,
                 Byte.parse,
                 Byte.parse
-            }
+            ]
         )
 
         return response.map_params(transform)
