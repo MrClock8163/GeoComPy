@@ -3,8 +3,22 @@
     "description": "Data recorded during a set measurement session",
     "type": "object",
     "additionalProperties": false,
-    "required": ["cycles"],
+    "required": ["station", "instrumentheight", "cycles"],
     "properties": {
+        "station": {
+            "description": "Station coordinates",
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+                "type": "number",
+                "unevaludatedItems": false
+            }
+        },
+        "instrumentheight": {
+            "description": "Instrument height",
+            "type": "number"
+        },
         "cycles": {
             "description": "List of measurement cycles",
             "type": "array",
@@ -13,7 +27,7 @@
                 "type": "object",
                 "unevaludatedItems": false,
                 "additionalProperties": false,
-                "required": ["time", "battery", "temperature", "inclination", "station", "instrumentheight", "points"],
+                "required": ["time", "battery", "temperature", "inclination", "points"],
                 "properties": {
                     "time": {
                         "description": "Time of cycle start",
@@ -37,20 +51,6 @@
                             "type": "number",
                             "unevaludatedItems": false
                         }
-                    },
-                    "station": {
-                        "description": "Station coordinates",
-                        "type": "array",
-                        "minItems": 3,
-                        "maxItems": 3,
-                        "items": {
-                            "type": "number",
-                            "unevaludatedItems": false
-                        }
-                    },
-                    "instrumentheight": {
-                        "description": "Instrument height",
-                        "type": "number"
                     },
                     "points": {
                         "description": "List of measurement points",

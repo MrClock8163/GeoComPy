@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import TypedDict, Iterable, NotRequired
+from typing import TypedDict, NotRequired
 
 from ...data import Angle, Coordinate
 from ...geo.gcdata import Face
@@ -21,12 +21,12 @@ class CycleDict(TypedDict):
     battery: float | None
     inclination: tuple[float, float] | None
     temperature: float | None
-    station: tuple[float, float, float]
-    instrumentheight: float
     points: list[PointDict]
 
 
 class SessionDict(TypedDict):
+    station: tuple[float, float, float]
+    instrumentheight: float
     cycles: list[CycleDict]
 
 
@@ -89,16 +89,12 @@ class Cycle:
         time: datetime,
         battery: float | None,
         temperature: float | None,
-        inclination: tuple[Angle, Angle] | None,
-        station: Coordinate,
-        instrumentheight: float
+        inclination: tuple[Angle, Angle] | None
     ) -> None:
         self.time = time
         self.battery = battery
         self.temperature = temperature
         self.inclination = inclination
-        self.station = station
-        self.instrumentheight = instrumentheight
         self._points: dict[str, Point] = {}
 
     @classmethod
@@ -110,9 +106,7 @@ class Cycle:
             (
                 Angle(data["inclination"][0]),
                 Angle(data["inclination"][1])
-            ) if data["inclination"] is not None else None,
-            Coordinate(*data["station"]),
-            data["instrumentheight"]
+            ) if data["inclination"] is not None else None
         )
 
         for p in data["points"]:
@@ -171,26 +165,51 @@ class Cycle:
                 float(self.inclination[1])
             ) if self.inclination is not None else None,
             "temperature": self.temperature,
+            "points": [p.to_dict() for p in self._points.values()]
+        }
+
+
+class Session:
+    def __init__(self, station: Coordinate, iheight: float) -> None:
+        self.station = station
+        self.iheight = iheight
+        self.cycles: list[Cycle] = []
+
+    @classmethod
+    def from_dict(cls, data: SessionDict) -> Session:
+        output = cls(
+            Coordinate(
+                data["station"][0],
+                data["station"][1],
+                data["station"][2]
+            ),
+            data["instrumentheight"]
+        )
+
+        output.cycles = [Cycle.from_dict(c) for c in data["cycles"]]
+
+        return output
+
+    def to_dict(self) -> SessionDict:
+        return {
             "station": (
                 self.station.x,
                 self.station.y,
                 self.station.z
             ),
-            "instrumentheight": self.instrumentheight,
-            "points": [p.to_dict() for p in self._points.values()]
+            "instrumentheight": self.iheight,
+            "cycles": [c.to_dict() for c in self.cycles]
         }
 
 
 def export_session_to_json(
     filepath: str,
-    cycles: Iterable[Cycle]
+    session: Session
 ) -> None:
     make_directory(filepath)
     with open(filepath, "wt", encoding="utf8") as file:
         json.dump(
-            {
-                "cycles": [s.to_dict() for s in cycles]
-            },
+            session.to_dict(),
             file,
             indent=4
         )

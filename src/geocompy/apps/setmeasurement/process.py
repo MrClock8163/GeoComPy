@@ -30,17 +30,20 @@ from .. import make_directory
 
 
 def run_merge(args: argparse.Namespace) -> None:
-    session: SessionDict = {"cycles": []}
-    count_sessions = 0
+    sessions: list[SessionDict] = []
     for path in chain.from_iterable(args.inputs):
         with open(path, "rt", encoding="utf8") as file:
-            loaded_cycles: SessionDict = json.load(file)
-            session["cycles"].extend(loaded_cycles["cycles"])
-            count_sessions += 1
+            sessions.append(json.load(file))
 
-    if len(session["cycles"]) == 0:
+    if len(sessions) == 0:
         print("There were no sessions found to merge")
         exit(0)
+
+    session: SessionDict = {
+        "station": sessions[0]["station"],
+        "instrumentheight": sessions[0]["instrumentheight"],
+        "cycles": [c for s in sessions for c in s["cycles"]]
+    }
 
     make_directory(args.output)
     with open(args.output, "wt", encoding="utf8") as file:
@@ -52,7 +55,7 @@ def run_merge(args: argparse.Namespace) -> None:
 
     print(
         f"Merged {len(session["cycles"])} cycles "
-        f"from {count_sessions} sessions"
+        f"from {len(sessions)} sessions"
     )
 
 
@@ -108,7 +111,7 @@ def run_calc(args: argparse.Namespace) -> None:
             encoding="utf8"
         ) as file_schema
     ):
-        data = json.load(file)
+        data: SessionDict = json.load(file)
         schema = json.load(file_schema)
 
     try:
@@ -121,11 +124,11 @@ def run_calc(args: argparse.Namespace) -> None:
     ptids = list(set(search("points[].name", points)))
 
     station = Coordinate(
-        *search("cycles[0].station", data)
+        *data["station"]
     ) + Coordinate(
         0,
         0,
-        search("cycles[0].instrumentheight", data)
+        data["instrumentheight"]
     )
     coords: dict[str, list[Coordinate]] = {}
     for pt in ptids:

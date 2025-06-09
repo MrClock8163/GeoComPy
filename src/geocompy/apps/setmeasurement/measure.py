@@ -17,6 +17,7 @@ from .targets import (
     load_targets_from_json
 )
 from .sessions import (
+    Session,
     Cycle,
     export_session_to_json
 )
@@ -60,7 +61,7 @@ def measure_set(
     order_spec: Literal['AaBb', 'AabB', 'ABab', 'ABba', 'ABCD'],
     count: int = 1,
     pointnames: str = ""
-) -> list[Cycle]:
+) -> Session:
     applog = getLogger("APP")
     points = load_targets_from_json(filepath)
     if pointnames != "":
@@ -84,16 +85,14 @@ def measure_set(
     else:
         station, iheight = resp_station
 
-    cycles: list[Cycle] = []
+    session = Session(station, iheight)
     for i in range(count):
         applog.info(f"Starting set cycle {i + 1}")
         output = Cycle(
             datetime.now(),
             battery[0] if battery is not None else None,
             temp,
-            (incline[4], incline[5]) if incline is not None else None,
-            station,
-            iheight
+            (incline[4], incline[5]) if incline is not None else None
         )
 
         for f, t in iter_targets(points, order_spec):
@@ -134,11 +133,11 @@ def measure_set(
             )
             applog.info("Done")
 
-        cycles.append(output)
+        session.cycles.append(output)
 
     tps.aut.turn_to(0, Angle(180, 'deg'))
 
-    return cycles
+    return session
 
 
 def main(args: argparse.Namespace) -> None:
@@ -157,7 +156,7 @@ def main(args: argparse.Namespace) -> None:
         if args.sync_time:
             tps.csv.set_datetime(datetime.now())
 
-        cycles = measure_set(
+        session = measure_set(
             tps,
             args.targets,
             args.order,
@@ -167,12 +166,12 @@ def main(args: argparse.Namespace) -> None:
 
     applog.info("Finished measurement session")
 
-    timestamp = cycles[0].time.strftime("%Y%m%d_%H%M%S")
+    timestamp = session.cycles[0].time.strftime("%Y%m%d_%H%M%S")
     filename = os.path.join(
         args.directory,
         f"{args.prefix}{timestamp}.json"
     )
-    export_session_to_json(filename, cycles)
+    export_session_to_json(filename, session)
     applog.info(f"Saved measurement results at '{filename}'")
 
 
