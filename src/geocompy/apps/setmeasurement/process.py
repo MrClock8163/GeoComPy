@@ -199,24 +199,19 @@ def calc_coords(
 
 
 def run_calc(args: argparse.Namespace) -> None:
-    with (
-        open(args.input, "rt", encoding="utf8") as file,
-        open(
-            os.path.join(
-                os.path.dirname(__file__),
-                "schema_session.json"
-            ),
-            "rt",
-            encoding="utf8"
-        ) as file_schema
-    ):
+    with open(args.input, "rt", encoding="utf8") as file:
         data: SessionDict = json.load(file)
-        schema = json.load(file_schema)
 
+    validator = SessionValidator(not args.allow_oneface)
     try:
-        validate(data, schema)
-    except ValidationError:
+        validator.validate(data)
+    except ValidationError as ve:
         print("Input data does not follow the required schema")
+        print(ve)
+        exit(4)
+    except ValueError as e:
+        print("The input data did not pass validation")
+        print(e)
         exit(4)
 
     points = {"points": search("cycles[].points[]", data)}
@@ -239,20 +234,26 @@ def run_calc(args: argparse.Namespace) -> None:
             coords[pt] = []
         for cycle in measurements:
             height = cycle[0]
-            hz_f1 = Angle(cycle[1][0])
-            v_f1 = Angle(cycle[1][1])
-            d_f1 = cycle[1][2]
+            hz = Angle(cycle[1][0])
+            v = Angle(cycle[1][1])
+            d = cycle[1][2]
 
-            hz_f2 = Angle(cycle[2][0])
-            v_f2 = Angle(cycle[2][1])
-            d_f2 = cycle[2][2]
+            if cycle[2] is not None:
+                hz_f2 = Angle(cycle[2][0])
+                v_f2 = Angle(cycle[2][1])
+                d_f2 = cycle[2][2]
 
-            hz, v, collim, index = calc_angles(
-                hz_f1,
-                v_f1,
-                hz_f2,
-                v_f2
-            )
+                hz, v, co, z = calc_angles(
+                    hz,
+                    v,
+                    hz_f2,
+                    v_f2
+                )
+
+                d = (d + d_f2) / 2
+            elif not args.allow_oneface:
+                print("Not all measurements have data for both faces")
+                exit(4)
 
             c = station + Coordinate.from_polar(
                 hz,
@@ -357,6 +358,11 @@ def cli() -> argparse.ArgumentParser:
         help="decimal precision",
         type=int,
         default=4
+    )
+    parser_calc.add_argument(
+        "--allow-oneface",
+        help="accept points with face 1 measurements only as well",
+        action="store_true"
     )
     parser_calc.set_defaults(func=run_calc)
 
