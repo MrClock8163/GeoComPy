@@ -4,6 +4,7 @@ import glob
 import json
 import math
 from itertools import chain
+from typing import Sequence
 
 try:
     from jmespath import search
@@ -29,11 +30,99 @@ from .sessions import SessionDict
 from .. import make_directory
 
 
+class SessionValidator:
+    def __init__(
+        self,
+        twoface: bool
+    ) -> None:
+        self._twoface = twoface
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                "schema_session.json"
+            ),
+            "rt",
+            encoding="utf8"
+        ) as file_schema:
+            self._schema = json.load(file_schema)
+
+    def validate(self, data: SessionDict) -> None:
+        validate(data, self._schema)
+
+        ptids = search("cycles[*].points[*].name", data)
+        if len(ptids) == 0:
+            return
+
+        first = ptids[0]
+        for ids in ptids[1:]:
+            if ids != first:
+                raise ValueError("Mismatching points between cycles")
+
+        if not self._twoface:
+            return
+
+        for i, c in enumerate(data["cycles"]):
+            for p in c["points"]:
+                if p.get("face2") is None:
+                    raise ValueError(
+                        f"Point {p["name"]} is missing face 2 "
+                        f"measurements in cycle {i + 1}"
+                    )
+
+    def validate_for_merge(self, data: Sequence[SessionDict]) -> None:
+        for s in data:
+            validate(s, self._schema)
+
+
+def run_validate(args: argparse.Namespace) -> None:
+    sessions: list[SessionDict] = []
+    for path in chain.from_iterable(args.inputs):
+        with open(path, "rt", encoding="utf8") as file:
+            sessions.append(json.load(file))
+
+    validator = SessionValidator(not args.allow_oneface)
+    if args.schema_only:
+        try:
+            validator.validate_for_merge(sessions)
+            print("Schema validation succeeded")
+            exit(0)
+        except ValidationError as ve:
+            print(
+                "One of the input files does not follow the required schema"
+            )
+            print(ve)
+            exit(4)
+
+    try:
+        for s in sessions:
+            validator.validate(s)
+
+        print("Validation succeeded")
+        exit(0)
+    except ValidationError as ve:
+        print(
+            "One of the input files does not follow the required schema"
+        )
+        print(ve)
+        exit(4)
+    except ValueError as e:
+        print(f"The merged output could not be validated ({e})")
+        exit(4)
+
+
 def run_merge(args: argparse.Namespace) -> None:
     sessions: list[SessionDict] = []
     for path in chain.from_iterable(args.inputs):
         with open(path, "rt", encoding="utf8") as file:
             sessions.append(json.load(file))
+
+    validator = SessionValidator(not args.allow_oneface)
+    try:
+        validator.validate_for_merge(sessions)
+    except ValidationError as ve:
+        print("One of the input files does not follow the required schema")
+        print(ve)
+        exit(4)
 
     if len(sessions) == 0:
         print("There were no sessions found to merge")
@@ -44,6 +133,16 @@ def run_merge(args: argparse.Namespace) -> None:
         "instrumentheight": sessions[0]["instrumentheight"],
         "cycles": [c for s in sessions for c in s["cycles"]]
     }
+
+    try:
+        validator.validate(session)
+    except ValidationError as ve:
+        print("The merging process caused a schema error")
+        print(ve)
+        exit(4)
+    except ValueError as e:
+        print(f"The merged output could not be validated ({e})")
+        exit(4)
 
     make_directory(args.output)
     with open(args.output, "wt", encoding="utf8") as file:
@@ -158,7 +257,7 @@ def run_calc(args: argparse.Namespace) -> None:
             c = station + Coordinate.from_polar(
                 hz,
                 v,
-                (d_f1 + d_f2) / 2
+                d
             ) - Coordinate(
                 0,
                 0,
@@ -218,6 +317,11 @@ def cli() -> argparse.ArgumentParser:
         nargs="+",
         type=glob.glob
     )
+    parser_merge.add_argument(
+        "--allow-oneface",
+        help="accept points with face 1 measurements only as well",
+        action="store_true"
+    )
     parser_merge.set_defaults(func=run_merge)
 
     parser_calc = subparsers.add_parser(
@@ -255,6 +359,30 @@ def cli() -> argparse.ArgumentParser:
         default=4
     )
     parser_calc.set_defaults(func=run_calc)
+
+    parser_validate = subparsers.add_parser(
+        "validate",
+        description="Validate session output files",
+        help="validate session output files"
+    )
+    parser_validate.add_argument(
+        "inputs",
+        help="set measurement session JSON files (glob notation)",
+        nargs="+",
+        type=glob.glob
+    )
+    parser_validate.add_argument(
+        "-s",
+        "--schema-only",
+        help="only validate the JSON schema",
+        action="store_true"
+    )
+    parser_validate.add_argument(
+        "--allow-oneface",
+        help="accept points with face 1 measurements only as well",
+        action="store_true"
+    )
+    parser_validate.set_defaults(func=run_validate)
 
     return parser
 
