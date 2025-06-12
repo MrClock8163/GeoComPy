@@ -490,6 +490,27 @@ class GeoComCode(IntEnum):
     CNF_APPL_OVERFLOW = 10519
     """Application table full"""
 
+    DNA_TOO_DARK = 12032
+    """Too dark or poor light"""
+    DNA_TOO_BRIGHT = 12033
+    """Too bright light"""
+    DNA_TILT = 12034
+    """Instrument is not level"""
+    DNA_COARSE_CORR = 12035
+    """
+    Coarse correlation error. Too much coverage or insufficient code length.
+    """
+    DNA_FINE_CORR = 12036
+    """
+    Fine correlation error. Too much coverage or insufficient code length.
+    """
+    DNA_BAD_DISTANCE = 12037
+    """Distance outside the permitted range."""
+    DNA_INVERTED = 12038
+    """Staff inverted or inverse mode activated."""
+    DNA_BAD_FOCUS = 12039
+    """Bad focusing."""
+
     DPL_NOCREATE = 3328
     """no file creation, fatal"""
     DPL_NOTOPEN = 3329
@@ -1327,6 +1348,7 @@ rpcnames: dict[int, str] = {
     5039: "CSV_CheckPower",
     5162: "CSV_GetCharging",
     5008: "CSV_GetDateTime",
+    5051: "CSV_GetDateTime2",
     5117: "CSV_GetDateTimeCentiSec",
     5035: "CSV_GetDeviceConfig",
     5004: "CSV_GetInstrumentName",
@@ -1334,22 +1356,41 @@ rpcnames: dict[int, str] = {
     5011: "CSV_GetIntTemp",
     5041: "CSV_GetLaserlotIntens",
     5042: "CSV_GetLaserlotStatus",
+    5114: "CSV_GetMaintenanceEnd",
     5164: "CSV_GetPreferredPowerSource",
     5100: "CSV_GetReflectorlessClass",
+    5038: "CSV_GetSWCreationDate",
     5034: "CSV_GetSWVersion",
     5156: "CSV_GetStartUpMessageMode",
     5006: "CSV_GetUserInstrumentName",
     5009: "CSV_GetVBat",
     5010: "CSV_GetVMem",
     5165: "CSV_GetVoltage",
+    5072: "CSV_List",
     5161: "CSV_SetCharging",
     5007: "CSV_SetDateTime",
+    5050: "CSV_SetDateTime2",
     5040: "CSV_SetLaserlotIntens",
     5163: "CSV_SetPreferredPowerSource",
     5155: "CSV_SetStartUpMessageMode",
+    5073: "CSV_SetupList",
     5005: "CSV_SetUserInstrumentName",
     5043: "CSV_SwitchLaserlot",
     12003: "CTL_GetUpCounter",
+    29072: "DNA_GetCompassData",
+    29108: "DNA_GetEarthCurvatureStatus",
+    29109: "DNA_GetJobNumber",
+    29005: "DNA_GetMeasResult",
+    29011: "DNA_GetRodPos",
+    29126: "DNA_GetStaffLength",
+    29104: "DNA_GetTiltL",
+    29070: "DNA_GetTiltX",
+    29010: "DNA_SetRodPos",
+    29127: "DNA_SetStaffLength",
+    29068: "DNA_StartAutofocus",
+    29036: "DNA_StartMeasurement",
+    29107: "DNA_SwitchEarthCurvature",
+    29110: "DNA_WakeUpInstrument",
     1044: "EDM_GetBumerang",
     1058: "EDM_GetEglIntensity",
     1041: "EDM_GetTrkLightBrightness",
@@ -1362,6 +1403,16 @@ rpcnames: dict[int, str] = {
     1059: "EDM_SetEglIntensity",
     1032: "EDM_SetTrkLightBrightness",
     1031: "EDM_SetTrkLightSwitch",
+    23305: "FTR_AbortDownload",
+    23308: "FTR_AbortList",
+    23309: "FTR_Delete",
+    23315: "FTR_DeleteDir",
+    23304: "FTR_Download",
+    23314: "FTR_DownloadXL",
+    23307: "FTR_List",
+    23303: "FTR_SetupDownload",
+    23313: "FTR_SetupDownloadLarge",
+    23306: "FTR_SetupList",
     23400: "IMG_GetTccConfig",
     23403: "IMG_SetExposureTime",
     23401: "IMG_SetTccConfig",

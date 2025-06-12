@@ -434,6 +434,88 @@ class GeoComTMC(GeoComSubsystem):
             )
         )
 
+    def get_complete_measurement(
+        self,
+        wait: int = 5000,
+        mode: Inclination | str = Inclination.AUTO
+    ) -> GeoComResponse[tuple[Angle, Angle, float]]:
+        """
+        RPC 2167, ``TMC_GetFullMeas``
+
+        .. versionadded:: GeoCom-TPS1200-1.50
+
+        Takes an angular measurement with the selected inclination
+        correction mode, and returns measurements with a previously
+        measured distance, as well as accuracy indicators. The distance
+        has to be measured in advance. As the distance measurement takes
+        some time to complete, a wait time can be specified for the
+        process, to wait for the completion of the measurement.
+
+        Parameters
+        ----------
+        wait : int, optional
+            Wait time for EDM process [ms], by default 5000
+        mode : Inclination | str, optional
+            Inclination correction mode, by default Inclination.AUTO
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `Angle`: Horizontal angle.
+                - `Angle`: Vertical angle.
+                - `Angle`: Angular accuracy.
+                - `Angle`: Cross inclination.
+                - `Angle`: Lengthwise inclination.
+                - `Angle`: Inclination accuracy.
+                - `float`: Slope distance.
+                - `float`: Distance measurement time [ms].
+            Warning codes:
+                - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
+                  because the measurement contains data with unverified
+                  accuracy. Coordinates are available.
+                - ``TMC_NO_FULL_CORRECTION``: Results are not corrected by
+                  all sensors. Coordinates are available. Run check
+                  commands to determine the missing correction.
+                - ``TMC_ANGLE_NO_FULL_CORRECTION``: Only angles are
+                  measured, but the accuracy cannot be guaranteed. Tilt
+                  measurement might not be available.
+                - ``TMC_ANGLE_OK``: Angles are measured, but no valid
+                  distance was found.
+                - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
+                  is valid, but the accuracy cannot be guaranteed.
+            Error codes:
+                - ``TMC_DIST_ERROR``: Error is distance measurement,
+                  target not found. Repeat sighting and measurement!
+                - ``TMC_DIST_PPM``: Wrong EDM settings.
+                - ``TMC_ANGLE_ERROR``: Angle or inclination measurement
+                  error. Check inclination mode!
+                - ``TMC_BUSY``: TMC is currently busy. Repeat measurement!
+                - ``ABORT``: Measurement aborted.
+                - ``SHUT_DOWN``: System shutdown.
+
+        See Also
+        --------
+        do_measurement
+        get_angle
+
+        """
+        _mode = toenum(Inclination, mode)
+        return self._request(
+            2167,
+            [wait, _mode.value],
+            (
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                Angle.parse,
+                float,
+                float
+            )
+        )
+
     def do_measurement(
         self,
         command: Measurement | str = Measurement.DISTANCE,
