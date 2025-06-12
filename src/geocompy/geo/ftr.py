@@ -109,8 +109,7 @@ class GeoComFTR(GeoComSubsystem):
                 - `bool`: If file is last in listing.
                 - `str`: Name of the file.
                 - `int`: File size [byte].
-                - **modified** (`datetime` | None): Date and time of last
-                  modification.
+                - `datetime` | None: Date and time of last modification.
             Error codes:
                 - ``FTR_MISSINGSETUP``: No active listing setup.
                 - ``FTR_INVALIDINPUT``: First item is missing, or last
