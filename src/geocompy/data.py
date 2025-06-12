@@ -909,3 +909,19 @@ class Coordinate(Vector):
             Angle(v, normalize=True, positive=True),
             dist
         )
+
+    def to_2d(self) -> Self:
+        """
+        Returns a copy of the coordinate with the vertical component set
+        to zero.
+
+        Returns
+        -------
+        Coordinate
+            New coordinate with 0 vertical component.
+        """
+        return type(self)(
+            self.x,
+            self.y,
+            0
+        )
