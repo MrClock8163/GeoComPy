@@ -4,7 +4,22 @@
 
 ### Added
 
-- GeoCom `get_complete_measurement` command in `tmc` subsystem (RPC 2167)
+- GeoCom
+  - Digital Level
+    - LS10/15 GeoCom support through new `dna` subsytem
+  - Central Services
+    - `get_firmware_creation_date` command (RPC 5038)
+    - `get_datetime_new` command (RPC 5051)
+    - `set_datetime_new` command (RPC 5050)
+    - `setup_listing` command (RPC 5072)
+    - `get_maintenance_end` command (RPC 5114)
+  - Theodolite Measurement and Calulcation
+    - `get_complete_measurement` command (RPC 2167)
+
+### Fixed
+
+- `morse.py` example script was not using the most up-to-date methods
+- GeoCom File Transfer subsystem commmands were missing from the command name lookup table
 
 ## v0.5.1
 
