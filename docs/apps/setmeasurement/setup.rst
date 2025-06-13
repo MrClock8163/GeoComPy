@@ -16,6 +16,9 @@ system. This module can be used to create such a definition.
     targets. If there is no predefined coordinate system, an arbitrary
     local, station centered setup can be used as well.
 
+Usage
+-----
+
 .. argparse::
     :module: geocompy.apps.setmeasurement.setup
     :func: cli
