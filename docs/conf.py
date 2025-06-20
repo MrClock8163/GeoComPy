@@ -14,6 +14,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.linkcode",
     "sphinx.ext.napoleon",
+    "sphinxarg.ext",
     "notfound.extension",
     "sphinx_last_updated_by_git",
     "sphinx_immaterial",

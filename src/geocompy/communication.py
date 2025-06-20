@@ -25,6 +25,7 @@ from types import TracebackType
 from typing import Literal, Generator
 from contextlib import contextmanager
 from abc import ABC, abstractmethod
+from time import sleep
 
 from serial import (
     Serial,
@@ -124,7 +125,8 @@ def open_serial(
     timeout: int = 15,
     eom: str = "\r\n",
     eoa: str = "\r\n",
-    sync_after_timeout: bool = False
+    sync_after_timeout: bool = False,
+    retry: int = 1
 ) -> SerialConnection:
     """
     Constructs a SerialConnection with the given communication
@@ -151,6 +153,9 @@ def open_serial(
     sync_after_timeout : bool, optional
         Attempt to re-sync the message-response que, if a timeout
         occured in the previous exchange, by default False
+    retry : int, optional
+        Number of retry attempts if the connection opening fails, by
+        default 1
 
     Returns
     -------
@@ -177,7 +182,20 @@ def open_serial(
     ...     conn.send("test")
 
     """
-    serialport = Serial(port, speed, databits, parity, stopbits, timeout)
+    exc: Exception = Exception()
+    for i in range(retry):
+        try:
+            serialport = Serial(
+                port, speed, databits, parity, stopbits, timeout
+            )
+            break
+        except Exception as e:
+            exc = e
+
+        sleep(5)
+    else:
+        raise exc
+
     wrapper = SerialConnection(
         serialport,
         eom=eom,
