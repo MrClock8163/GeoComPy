@@ -59,7 +59,9 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
         user_target = input_choice(
             "Prism type",
             [e.name for e in Prism if e.name != 'USER'],
-            target.name
+            target.name,
+            False,
+            False
         )
         target = Prism[user_target]
 
@@ -116,7 +118,7 @@ def run_setup(args: argparse.Namespace) -> None:
             exit(0)
 
     export_targets_to_json(args.output, targets)
-    print(f"Saved setup results at '{targets}'")
+    print(f"Saved setup results at '{args.output}'")
 
 
 def run_import(args: argparse.Namespace) -> None:
@@ -178,7 +180,7 @@ def run_import(args: argparse.Namespace) -> None:
         exit(1101)
 
     print(
-        f"Imported targets: {','.join(imported_points.get_target_names())}"
+        f"Imported targets: {', '.join(imported_points.get_target_names())}"
     )
 
     for t in imported_points:

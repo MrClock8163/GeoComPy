@@ -65,7 +65,7 @@ class SessionValidator:
             for p in c["points"]:
                 if p.get("face2") is None:
                     raise ValueError(
-                        f"Point {p["name"]} is missing face 2 "
+                        f"Point {p['name']} is missing face 2 "
                         f"measurements in cycle {i + 1}"
                     )
 

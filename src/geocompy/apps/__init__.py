@@ -28,8 +28,9 @@ def input_free(
     default: str | None = "",
     newline: bool = False
 ) -> _T:
+    defstr = f" [{default}]" if default is not None else ""
     while True:
-        ans = input(f"{prompt}{"\n" if newline else ""}")
+        ans = input(f"{prompt}{defstr}: {'\n' if newline else ''}")
         if default is not None and ans == "":
             ans = default
         try:
@@ -94,8 +95,7 @@ def input_choice_map(
         raise ValueError("Default value is not one of the valid choices")
 
     choices_fmt = f" ({'|'.join(choices)})"
-    default_fmt = f" [{default}]" if default is not None else ""
-    final_prompt = f"{prompt}{choices_fmt}{default_fmt}: "
+    final_prompt = f"{prompt}{choices_fmt}"
     return input_free(final_prompt, parser, default)
 
 
