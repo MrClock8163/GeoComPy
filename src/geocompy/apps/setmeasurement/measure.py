@@ -18,8 +18,7 @@ from .targets import (
 )
 from .sessions import (
     Session,
-    Cycle,
-    export_session_to_json
+    Cycle
 )
 
 
@@ -72,6 +71,7 @@ def measure_set(
         for pt in excluded_points:
             points.pop_target(pt)
 
+    tps.aut.turn_to(0, Angle(180, 'deg'))
     incline = tps.tmc.get_angle_inclination('MEASURE').params
     temp = tps.csv.get_internal_temperature().params
     battery = tps.csv.check_power().params
@@ -171,7 +171,7 @@ def main(args: argparse.Namespace) -> None:
         args.directory,
         f"{args.prefix}{timestamp}.json"
     )
-    export_session_to_json(filename, session)
+    session.export_to_json(filename)
     applog.info(f"Saved measurement results at '{filename}'")
 
 

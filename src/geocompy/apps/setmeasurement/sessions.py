@@ -34,25 +34,25 @@ class Point:
     def __init__(
         self,
         name: str,
-        height: float,
-        face1: tuple[Angle, Angle, float]
+        height: float
     ) -> None:
         self.name = name
         self.height = height
-        self.face1: tuple[Angle, Angle, float] = face1
+        self.face1: tuple[Angle, Angle, float] | None = None
         self.face2: tuple[Angle, Angle, float] | None = None
 
     @classmethod
     def from_dict(cls, data: PointDict) -> Point:
         output = cls(
             data["name"],
-            data["height"],
-            (
+            data["height"]
+        )
+        if data.get("face1") is not None:
+            output.face1 = (
                 Angle(data["face1"][0]),
                 Angle(data["face1"][1]),
                 data["face1"][2]
             )
-        )
         if data.get("face2") is not None:
             output.face2 = (
                 Angle(data["face2"][0]),
@@ -63,6 +63,9 @@ class Point:
         return output
 
     def to_dict(self) -> PointDict:
+        if self.face1 is None:
+            raise ValueError("Cannot export point due to missing F1 data")
+
         output: PointDict = {
             "name": self.name,
             "height": self.height,
@@ -144,13 +147,18 @@ class Cycle:
         measurement: tuple[Angle, Angle, float]
     ) -> None:
         if ptid not in self._points:
-            self._points[ptid] = Point(ptid, height, measurement)
-            return
-
-        if face == Face.F1:
-            raise ValueError(f"Face 1 observation already exists for {ptid}")
+            self._points[ptid] = Point(ptid, height)
 
         point = self._points[ptid]
+        if face == Face.F1:
+            if point.face1 is not None:
+                raise ValueError(
+                    f"Face 1 observation already exists for {ptid}"
+                )
+
+            point.face1 = measurement
+            return
+
         if point.face2 is not None:
             raise ValueError(f"Face 2 observation already exists for {ptid}")
 
@@ -201,15 +209,14 @@ class Session:
             "cycles": [c.to_dict() for c in self.cycles]
         }
 
-
-def export_session_to_json(
-    filepath: str,
-    session: Session
-) -> None:
-    make_directory(filepath)
-    with open(filepath, "wt", encoding="utf8") as file:
-        json.dump(
-            session.to_dict(),
-            file,
-            indent=4
-        )
+    def export_to_json(
+        self,
+        filepath: str
+    ) -> None:
+        make_directory(filepath)
+        with open(filepath, "wt", encoding="utf8") as file:
+            json.dump(
+                self.to_dict(),
+                file,
+                indent=4
+            )
