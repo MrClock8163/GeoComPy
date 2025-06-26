@@ -172,7 +172,7 @@ def run_cli_app(
 
         logger.error(
             f"Application exited with {ex.code} "
-            f"({EXIT_CODE_DESCRIPTIONS.get(cast(int, ex.code), "Unknown")})"
+            f"({EXIT_CODE_DESCRIPTIONS.get(cast(int, ex.code), 'Unknown')})"
         )
         raise ex
     except Exception:

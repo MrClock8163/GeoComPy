@@ -153,7 +153,7 @@ def run_merge(args: argparse.Namespace) -> None:
         )
 
     print(
-        f"Merged {len(session["cycles"])} cycles "
+        f"Merged {len(session['cycles'])} cycles "
         f"from {len(sessions)} sessions"
     )
 
