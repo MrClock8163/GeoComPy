@@ -29,8 +29,9 @@ def input_free(
     newline: bool = False
 ) -> _T:
     defstr = f" [{default}]" if default is not None else ""
+    endl = "\n" if newline else " "
     while True:
-        ans = input(f"{prompt}{defstr}: {'\n' if newline else ''}")
+        ans = input(f"{prompt}{defstr}:{endl}")
         if default is not None and ans == "":
             ans = default
         try:
