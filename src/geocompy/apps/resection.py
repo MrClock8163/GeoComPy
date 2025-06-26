@@ -10,36 +10,30 @@ def calculate_preliminary_station(
     measurements: Sequence[tuple[Angle, Angle, float]],
     targets: Sequence[Coordinate]
 ) -> Coordinate:
-    t1 = targets[0].to_2d()
-    t2 = targets[1].to_2d()
-    t1_3d = targets[0]
+    sorted_data = sorted(
+        zip(measurements, targets),
+        key=lambda x: x[0][0]
+    )
+    (hzs1, vs1, ds1), t1_3d = sorted_data[0]
+    (hzs2, vs2, ds2), t2_3d = sorted_data[1]
+
+    t1 = t1_3d.to_2d()
+    t2 = t2_3d.to_2d()
 
     hz12, _, d12 = (t2 - t1).to_polar()
-    hzs1, vs1, ds1 = measurements[0]
-    _, vs2, ds2 = measurements[1]
 
     r1 = math.sin(vs1) * ds1
     r2 = math.sin(vs2) * ds2
 
     alpha = Angle(math.acos((r1**2 + d12**2 - r2**2) / (2 * r1 * d12)))
+    if (hzs2 - hzs1) > Angle(180, 'deg'):
+        alpha = -alpha
 
-    station1 = t1_3d + Coordinate.from_polar(
-        hz12 - alpha,
-        Angle(180, "deg") - vs1,
-        ds1
-    )
-    station2 = t1_3d + Coordinate.from_polar(
+    return t1_3d + Coordinate.from_polar(
         hz12 + alpha,
         Angle(180, "deg") - vs1,
         ds1
     )
-
-    orient, _, _ = (t1 - station1).to_polar()
-    hzs2, _, _ = (t2 - station1).to_polar()
-    if ((orient + hzs1) - hzs2).normalized() > Angle.from_dms("0-01-00"):
-        return station2
-
-    return station1
 
 
 def stdev_to_weights(
