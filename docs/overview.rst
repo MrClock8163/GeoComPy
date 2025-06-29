@@ -35,6 +35,8 @@ Features
     - TPS1200(+)
     - VivaTPS
 
+- Command line applications
+
 Requirements
 ------------
 
@@ -66,6 +68,15 @@ Package dependencies are automatically handled.
     :caption: Installing from PyPI
 
     pip install geocompy
+
+The dependencies of the CLI applications are not installed by default.
+These either have to be installed manually, or GeoComPy has to be
+installed with the ``apps`` extra.
+
+.. code-block:: shell
+    :caption: Installing from PyPI with CLI app dependencies included
+
+    pip install geocompy[apps]
 
 From source
 ^^^^^^^^^^^
