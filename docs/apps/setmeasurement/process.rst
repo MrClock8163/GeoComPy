@@ -6,6 +6,19 @@ Process
 
     python -m geocompy.apps.setmeasurement.process -h
 
+.. caution::
+    :class: warning
+
+    The Set Measurement processing requires
+    `jsonschema <https://pypi.org/project/jsonschema/>`_ and
+    `jmespath <https://pypi.org/project/jmespath/>`_ to be installed.
+
+    Install them manually, or install GeoComPy with the ``apps`` extra.
+
+    .. code-block:: shell
+
+        pip install geocompy[apps]
+
 After set measurements are done, the results need to be processed. Thanks
 to the easily usable JSON format, this can be done with custom scripts if
 needed. For more general use cases, a few processing commands are available

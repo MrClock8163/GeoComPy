@@ -34,9 +34,14 @@ the GSI Online command set is used for communication.
 ## Requirements
 
 To use the package, Python 3.11 or higher is required.
+
 For the platform independent serial communication, GeoComPy relies on the
 [pySerial](https://pypi.org/project/pyserial/) package to provide the
 necessary abstractions.
+
+The command line applications might require additional dependencies, that
+are not installed by default. The requirements for these can be found in
+the relevant documentation.
 
 ## Installation
 

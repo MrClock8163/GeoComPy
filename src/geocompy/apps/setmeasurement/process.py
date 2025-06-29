@@ -12,7 +12,7 @@ try:
 except ModuleNotFoundError:
     print(
         """
-Missing dependencies. The Set Measurement Processing app needs the following
+Missing dependencies. The Set Measurement processing needs the following
 dependencies:
 - jmespath
 - jsonschema
