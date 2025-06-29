@@ -50,7 +50,6 @@ Content
    overview
    introduction
    connections
-   examples
    changelog
 
 
@@ -58,6 +57,7 @@ Content
     :maxdepth: 1
     :caption: Applications
 
+    apps/morse
     apps/setmeasurement/index
     apps/terminal
 

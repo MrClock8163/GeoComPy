@@ -12,7 +12,6 @@ GeoComPy
    overview
    introduction
    connections
-   examples
    changelog
 
 ************
@@ -21,6 +20,7 @@ Applications
 
 .. toctree::
 
+    apps/morse
     apps/setmeasurement/index
     apps/terminal
 
