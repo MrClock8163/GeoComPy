@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.0 (in development)
+
+### Added
+
+- Component swizzling in vectors and coordinates
+
 ## v0.7.0
 
 ### Added
