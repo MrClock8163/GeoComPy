@@ -117,7 +117,7 @@ def measure_set(
 
             tps.bap.set_prism_type(t.prism)
             tps.tmc.do_measurement()
-            resp_angle = tps.tmc.get_simple_measurement(10000)
+            resp_angle = tps.tmc.get_simple_measurement(10)
             if resp_angle.params is None:
                 applog.error(
                     f"Error during measurement ({resp_angle.error.name}), "

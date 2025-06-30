@@ -80,7 +80,7 @@ def setup_set(tps: GeoCom, filepath: str) -> TargetList | None:
 
         tps.aut.fine_adjust(0.5, 0.5)
         tps.tmc.do_measurement()
-        resp = tps.tmc.get_simple_coordinate(10000)
+        resp = tps.tmc.get_simple_coordinate(10)
         if resp.params is None:
             print("Could not measure target.")
             continue

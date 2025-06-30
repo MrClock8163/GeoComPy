@@ -36,7 +36,7 @@ class GeoComDNA(GeoComSubsystem):
 
     def get_reading(
         self,
-        wait: int = 5000
+        wait: int = 5
     ) -> GeoComResponse[
         tuple[float, float]
     ]:
@@ -49,7 +49,7 @@ class GeoComDNA(GeoComSubsystem):
         Parameters
         ----------
         wait : int, optional
-            Time to wait for a measurement to complete [ms], by default 5000
+            Time to wait for a measurement to complete [s], by default 5
 
         Returns
         -------
@@ -78,7 +78,7 @@ class GeoComDNA(GeoComSubsystem):
 
         response = self._request(
             29005,
-            [wait],
+            [int(wait * 1000)],
             (
                 float,  # staff reading
                 float,  # distance

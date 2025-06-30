@@ -6,6 +6,10 @@
 
 - Component swizzling in vectors and coordinates
 
+### Changed
+
+- Wait/delay times are now expected in seconds instead of milliseconds, where possible
+
 ## v0.7.0
 
 ### Added
