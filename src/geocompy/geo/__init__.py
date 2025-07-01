@@ -26,6 +26,7 @@ Submodules
 - ``geocompy.geo.com``
 - ``geocompy.geo.csv``
 - ``geocompy.geo.ctl``
+- ``geocompy.geo.dna``
 - ``geocompy.geo.edm``
 - ``geocompy.geo.ftr``
 - ``geocompy.geo.img``
@@ -59,6 +60,7 @@ from .cam import GeoComCAM
 from .com import GeoComCOM
 from .csv import GeoComCSV
 from .ctl import GeoComCTL
+from .dna import GeoComDNA
 from .edm import GeoComEDM
 from .ftr import GeoComFTR
 from .img import GeoComIMG
@@ -182,6 +184,12 @@ class GeoCom(GeoComType):
         Control task subsystem.
 
         .. versionremoved:: GeoCom-TPS1200
+        """
+        self.dna: GeoComDNA = GeoComDNA(self)
+        """
+        Digital level subsystem.
+
+        .. versionadded:: GeoCom-LS
         """
         self.edm: GeoComEDM = GeoComEDM(self)
         """Electronic distance measurement subsystem."""

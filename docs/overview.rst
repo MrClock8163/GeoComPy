@@ -20,6 +20,7 @@ Features
   .. only:: html
 
     - :si-icon:`protocol_gsionline` DNA
+    - :si-icon:`protocol_gsionline` :si-icon:`protocol_geocom` LS
     - :si-icon:`protocol_geocom` TPS1000
     - :si-icon:`protocol_geocom` TPS1100
     - :si-icon:`protocol_geocom` TPS1200(+)
@@ -28,10 +29,13 @@ Features
   .. only:: latex
 
     - DNA
+    - LS
     - TPS1000
     - TPS1100
     - TPS1200(+)
     - VivaTPS
+
+- Command line applications
 
 Requirements
 ------------
@@ -64,6 +68,15 @@ Package dependencies are automatically handled.
     :caption: Installing from PyPI
 
     pip install geocompy
+
+The dependencies of the CLI applications are not installed by default.
+These either have to be installed manually, or GeoComPy has to be
+installed with the ``apps`` extra.
+
+.. code-block:: shell
+    :caption: Installing from PyPI with CLI app dependencies included
+
+    pip install geocompy[apps]
 
 From source
 ^^^^^^^^^^^

@@ -1,10 +1,7 @@
 import argparse
 from time import sleep
 
-from serial import Serial
-
-from geocompy.communication import SerialConnection
-from geocompy import GeoCom
+from geocompy import open_serial, GeoCom
 
 
 def morse_beep(tps: GeoCom, message: str, intensity: int) -> None:
@@ -72,20 +69,44 @@ def morse_beep(tps: GeoCom, message: str, intensity: int) -> None:
             sleep(unit * 7)
 
 
-def cli() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("port", help="serial port", type=str)
-    parser.add_argument("intensity", help="beep intensity [1-100]", type=int)
-    parser.add_argument("message", help="message to encode", type=str)
-
-    args = parser.parse_args()
-
-    port = Serial(args.port)
-    with SerialConnection(port) as conn:
-        ts = GeoCom(conn)
-
+def main(args: argparse.Namespace) -> None:
+    with open_serial(args.port, speed=args.baud, timeout=args.timeout) as com:
+        ts = GeoCom(com)
         morse_beep(ts, args.message, args.intensity)
 
 
+def cli() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        "morse",
+        description=(
+            "Play a Morse encoded ASCII message through the beep signals "
+            "of a GeoCom capable total station."
+        ),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    group_com = parser.add_argument_group("communication")
+    group_com.add_argument("port", help="serial port", type=str)
+    group_com.add_argument(
+        "-b",
+        "--baud",
+        help="speed",
+        type=int,
+        default=9600
+    )
+    group_com.add_argument(
+        "-t",
+        "--timeout",
+        help="timeout",
+        type=int,
+        default=15
+    )
+    parser.add_argument("intensity", help="beep intensity [1-100]", type=int)
+    parser.add_argument("message", help="message to encode", type=str)
+
+    return parser
+
+
 if __name__ == "__main__":
-    cli()
+    parser = cli()
+    args = parser.parse_args()
+    main(args)

@@ -23,6 +23,7 @@ GeoCom
     com
     csv
     ctl
+    dna
     edm
     ftr
     img

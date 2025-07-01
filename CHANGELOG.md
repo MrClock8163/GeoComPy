@@ -1,10 +1,44 @@
 # Changelog
 
-## v0.6.0 (in development)
+## v0.8.0 (in development)
 
 ### Added
 
-- GeoCom `get_complete_measurement` command in `tmc` subsystem (RPC 2167)
+- Component swizzling in vectors and coordinates
+
+### Changed
+
+- Wait/delay times are now expected in seconds instead of milliseconds, where possible
+
+## v0.7.0
+
+### Added
+
+- `retry` option to `open_serial`
+- Morse CLI application (`geocompy.apps.morse`)
+- Interactive Terminal CLI application (`geocompy.apps.terminal`)
+- Set Measurement CLI applications (`geocompy.apps.setmeasurement...`)
+
+## v0.6.0
+
+### Added
+
+- GeoCom
+  - Digital Level
+    - LS10/15 GeoCom support through new `dna` subsytem (LS10/15 also responds to GSI Online DNA commands)
+  - Central Services
+    - `get_firmware_creation_date` command (RPC 5038)
+    - `get_datetime_new` command (RPC 5051)
+    - `set_datetime_new` command (RPC 5050)
+    - `setup_listing` command (RPC 5072)
+    - `get_maintenance_end` command (RPC 5114)
+  - Theodolite Measurement and Calculation
+    - `get_complete_measurement` command (RPC 2167)
+
+### Fixed
+
+- `morse.py` example script was not using the most up-to-date methods
+- GeoCom File Transfer subsystem commmands were missing from the command name lookup table
 
 ## v0.5.1
 

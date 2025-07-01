@@ -35,7 +35,8 @@ from typing import (
     Iterator,
     TypeVar,
     Self,
-    Any
+    Any,
+    SupportsFloat
 )
 
 
@@ -280,8 +281,12 @@ class Angle:
     def dms2rad(dms: str) -> float:
         """Converts DDD-MM-SS to radians.
         """
-        if not re.search(r"^[0-9]{1,3}(-[0-9]{1,2}){0,2}$", dms):
+        if not re.search(r"^-?[0-9]{1,3}(-[0-9]{1,2}){0,2}(\.\d+)?$", dms):
             raise ValueError("Angle invalid argument", dms)
+
+        sign = -1 if dms.startswith("-") else 1
+        if sign < 0:
+            dms = dms[1:]
 
         items = [float(item) for item in dms.split("-")]
         div = 1
@@ -290,7 +295,7 @@ class Angle:
             a += val / div
             div *= 60
 
-        return math.radians(a)
+        return math.radians(a) * sign
 
     @staticmethod
     def rad2gon(angle: float) -> float:
@@ -426,6 +431,42 @@ class Angle:
             return False
 
         return math.isclose(self._value, other._value)
+
+    def __gt__(self, other: SupportsFloat) -> bool:
+        if not isinstance(other, SupportsFloat):
+            raise TypeError(
+                f"unsupported operand type(s) for >: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
+
+        return float(self) > float(other)
+
+    def __lt__(self, other: SupportsFloat) -> bool:
+        if not isinstance(other, SupportsFloat):
+            raise TypeError(
+                f"unsupported operand type(s) for <: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
+
+        return float(self) < float(other)
+
+    def __ge__(self, other: SupportsFloat) -> bool:
+        if not isinstance(other, SupportsFloat):
+            raise TypeError(
+                f"unsupported operand type(s) for >=: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
+
+        return float(self) >= float(other)
+
+    def __le__(self, other: SupportsFloat) -> bool:
+        if not isinstance(other, SupportsFloat):
+            raise TypeError(
+                f"unsupported operand type(s) for <=: 'Angle' and "
+                f"'{type(other).__name__}'"
+            )
+
+        return float(self) <= float(other)
 
     def __pos__(self) -> Angle:
         return Angle(self._value)
@@ -789,6 +830,95 @@ class Vector:
 
         return self / length
 
+    def _swizzle_component(
+        self,
+        component: Literal['x', 'y', 'z', '0'],
+        flip: bool = False
+    ) -> float:
+        """
+        Get a swizzled component.
+
+        Parameters
+        ----------
+        component : Literal['x', 'y', 'z', '0']
+            Swizzle component to get.
+        flip : bool, optional
+            Flip component sign, by default False
+
+        Returns
+        -------
+        float
+            Resulting swizzled component.
+
+        Raises
+        ------
+        ValueError
+            If an invalid component name was given.
+        """
+        match component.lower():
+            case '0':
+                comp = 0.0
+            case 'x':
+                comp = self.x
+            case 'y':
+                comp = self.y
+            case 'z':
+                comp = self.z
+            case _:
+                raise ValueError(f"Unknown swizzle component: '{component}'")
+
+        return comp if not flip else -1 * comp
+
+    def swizzle(
+        self,
+        x: Literal['x', 'y', 'z', '0'],
+        y: Literal['x', 'y', 'z', '0'],
+        z: Literal['x', 'y', 'z', '0'],
+        *,
+        flip_x: bool = False,
+        flip_y: bool = False,
+        flip_z: bool = False
+    ) -> Self:
+        """
+        Returns a copy of the vector, with the components rearranged
+        according to the swizzle spec.
+
+        Parameters
+        ----------
+        x : Literal['x', 'y', 'z', '0']
+            Component to use as X component.
+        y : Literal['x', 'y', 'z', '0']
+            Component to use as Y component.
+        z : Literal['x', 'y', 'z', '0']
+            Component to use as Z component.
+        flip_x : bool, optional
+            Negate X component, by default False
+        flip_y : bool, optional
+            Negate Y component, by default False
+        flip_z : bool, optional
+            Negate Z component, by default False
+
+        Returns
+        -------
+        Self
+            Vector with swizzled components.
+
+        Example
+        -------
+
+        >>> v = Vector(1.0, 2.0, 3.0)
+        >>> v.swizzle('y', 'x', 'z')
+        Vector(2.0, 1.0, 3.0)
+        >>> v.swizzle('x', 'y', '0', flip_x=True)
+        Vector(-1.0, 2.0, 0.0)
+
+        """
+        return type(self)(
+            self._swizzle_component(x, flip_x),
+            self._swizzle_component(y, flip_y),
+            self._swizzle_component(z, flip_z)
+        )
+
 
 class Coordinate(Vector):
     """
@@ -820,6 +950,33 @@ class Coordinate(Vector):
 
     """
 
+    @property
+    def e(self) -> float:
+        """Easting (alias of x)"""
+        return self.x
+
+    @e.setter
+    def e(self, value: float) -> None:
+        self.x = value
+
+    @property
+    def n(self) -> float:
+        """Northing (alias of y)"""
+        return self.y
+
+    @n.setter
+    def n(self, value: float) -> None:
+        self.y = value
+
+    @property
+    def h(self) -> float:
+        """Height (alias of z)"""
+        return self.z
+
+    @h.setter
+    def h(self, value: float) -> None:
+        self.z = value
+
     @classmethod
     def from_polar(
         cls,
@@ -828,14 +985,14 @@ class Coordinate(Vector):
         dist: float
     ) -> Self:
         """
-        Constructs 3D cartesian coordinate from polar coordinate.
+        Constructs 3D cartesian coordinate from polar survey coordinates.
 
         Parameters
         ----------
         hz : Angle
-            Horizontal angle.
+            Whole circle bearing.
         v : Angle
-            Vertical angle.
+            Zenith angle.
         dist : float
             Slope distance.
 
@@ -852,12 +1009,12 @@ class Coordinate(Vector):
 
     def to_polar(self) -> tuple[Angle, Angle, float]:
         """
-        Converts 3D cartesian coordinates to polar coordinates.
+        Converts 3D cartesian coordinates to polar survey coordinates.
 
         Returns
         -------
         tuple
-            Horizontal and vertical angles and slope distance.
+            Whole circle bearing, zenith angle and slope distance.
         """
         dist2d = math.sqrt(self.x**2 + self.y**2)
         dist = math.sqrt(dist2d**2 + self.z**2)
@@ -867,4 +1024,20 @@ class Coordinate(Vector):
             Angle(hz, normalize=True, positive=True),
             Angle(v, normalize=True, positive=True),
             dist
+        )
+
+    def to_2d(self) -> Self:
+        """
+        Returns a copy of the coordinate with the vertical component set
+        to zero.
+
+        Returns
+        -------
+        Coordinate
+            New coordinate with 0 vertical component.
+        """
+        return type(self)(
+            self.x,
+            self.y,
+            0
         )

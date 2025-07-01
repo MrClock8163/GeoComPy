@@ -62,7 +62,7 @@ class GeoComCOM(GeoComSubsystem):
 
     def set_send_delay(
         self,
-        delay: int
+        delay: float
     ) -> GeoComResponse[None]:
         """
         RPC 109, ``COM_SetSendDelay``
@@ -73,14 +73,14 @@ class GeoComCOM(GeoComSubsystem):
 
         Parameters
         ----------
-        delay : int
+        delay : float
             Response delay [s].
 
         Returns
         -------
         GeoComResponse
         """
-        return self._request(109, [delay])
+        return self._request(109, [int(delay * 1000)])
 
     def switch_to_local(self) -> GeoComResponse[None]:
         """

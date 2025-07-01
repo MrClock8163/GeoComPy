@@ -50,8 +50,16 @@ Content
    overview
    introduction
    connections
-   examples
    changelog
+
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Applications
+
+    apps/morse
+    apps/setmeasurement/index
+    apps/terminal
 
 .. toctree::
    :maxdepth: 1

@@ -574,7 +574,7 @@ class GeoComCAM(GeoComSubsystem):
 
     def wait_for_camera_ready(
         self,
-        wait: int = 30_000,
+        wait: int = 30,
         camera: Camera | str = Camera.OVERVIEW
     ) -> GeoComResponse[None]:
         """
@@ -585,7 +585,7 @@ class GeoComCAM(GeoComSubsystem):
         Parameters
         ----------
         wait : int, optional
-            Time to wait for the camera to come online.
+            Time to wait for the camera to come online [s].
         camera : Camera | str, optional
             Camera device, by default OVERVIEW
 
@@ -606,7 +606,7 @@ class GeoComCAM(GeoComSubsystem):
         _camera = toenum(Camera, camera)
         return self._request(
             23638,
-            [_camera.value, wait]
+            [_camera.value, int(wait * 1000)]
         )
 
     def set_autofocus_position(

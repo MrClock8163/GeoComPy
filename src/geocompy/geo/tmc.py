@@ -64,7 +64,7 @@ class GeoComTMC(GeoComSubsystem):
 
     def get_coordinate(
         self,
-        wait: int = 5000,
+        wait: int = 5,
         mode: Inclination | str = Inclination.AUTO
     ) -> GeoComResponse[tuple[Coordinate, int, Coordinate, int]]:
         """
@@ -80,7 +80,7 @@ class GeoComTMC(GeoComSubsystem):
         Parameters
         ----------
         wait : int, optional
-            Wait time for EDM process [ms], by default 5000
+            Wait time for EDM process [s], by default 5
         mode : Inclination | str, optional
             Inclination correction mode, by default Inclination.AUTO
 
@@ -152,7 +152,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = toenum(Inclination, mode)
         response = self._request(
             2082,
-            [wait, _mode.value],
+            [int(wait * 1000), _mode.value],
             (
                 float,
                 float,
@@ -169,7 +169,7 @@ class GeoComTMC(GeoComSubsystem):
 
     def get_simple_measurement(
         self,
-        wait: int = 5000,
+        wait: int = 5,
         mode: Inclination | str = Inclination.AUTO
     ) -> GeoComResponse[tuple[Angle, Angle, float]]:
         """
@@ -185,7 +185,7 @@ class GeoComTMC(GeoComSubsystem):
         Parameters
         ----------
         wait : int, optional
-            Wait time for EDM process [ms], by default 5000
+            Wait time for EDM process [s], by default 5
         mode : Inclination | str, optional
             Inclination correction mode, by default Inclination.AUTO
 
@@ -229,7 +229,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = toenum(Inclination, mode)
         return self._request(
             2108,
-            [wait, _mode.value],
+            [int(wait * 1000), _mode.value],
             (
                 Angle.parse,
                 Angle.parse,
@@ -436,7 +436,7 @@ class GeoComTMC(GeoComSubsystem):
 
     def get_complete_measurement(
         self,
-        wait: int = 5000,
+        wait: int = 5,
         mode: Inclination | str = Inclination.AUTO
     ) -> GeoComResponse[tuple[Angle, Angle, float]]:
         """
@@ -454,7 +454,7 @@ class GeoComTMC(GeoComSubsystem):
         Parameters
         ----------
         wait : int, optional
-            Wait time for EDM process [ms], by default 5000
+            Wait time for EDM process [s], by default 5
         mode : Inclination | str, optional
             Inclination correction mode, by default Inclination.AUTO
 
@@ -503,7 +503,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = toenum(Inclination, mode)
         return self._request(
             2167,
-            [wait, _mode.value],
+            [int(wait * 1000), _mode.value],
             (
                 Angle.parse,
                 Angle.parse,
@@ -1282,7 +1282,7 @@ class GeoComTMC(GeoComSubsystem):
 
     def get_simple_coordinate(
         self,
-        wait: int = 5000,
+        wait: int = 5,
         inclination: Inclination | str = Inclination.AUTO
     ) -> GeoComResponse[Coordinate]:
         """
@@ -1298,7 +1298,7 @@ class GeoComTMC(GeoComSubsystem):
         Parameters
         ----------
         wait : int, optional
-            Wait time for EDM process [ms], by default 5000
+            Wait time for EDM process [s], by default 5
         inclination : Inclination | str, optional
             Inclination correction mode, by default Inclination.AUTO
 
@@ -1350,7 +1350,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = toenum(Inclination, inclination)
         response = self._request(
             2116,
-            [wait, _mode.value],
+            [int(wait * 1000), _mode.value],
             parsers=(
                 float,
                 float,
