@@ -950,6 +950,33 @@ class Coordinate(Vector):
 
     """
 
+    @property
+    def e(self) -> float:
+        """Easting (alias of x)"""
+        return self.x
+
+    @e.setter
+    def e(self, value: float) -> None:
+        self.x = value
+
+    @property
+    def n(self) -> float:
+        """Northing (alias of y)"""
+        return self.y
+
+    @n.setter
+    def n(self, value: float) -> None:
+        self.y = value
+
+    @property
+    def h(self) -> float:
+        """Height (alias of z)"""
+        return self.z
+
+    @h.setter
+    def h(self, value: float) -> None:
+        self.z = value
+
     @classmethod
     def from_polar(
         cls,
@@ -958,14 +985,14 @@ class Coordinate(Vector):
         dist: float
     ) -> Self:
         """
-        Constructs 3D cartesian coordinate from polar coordinate.
+        Constructs 3D cartesian coordinate from polar survey coordinates.
 
         Parameters
         ----------
         hz : Angle
-            Horizontal angle.
+            Whole circle bearing.
         v : Angle
-            Vertical angle.
+            Zenith angle.
         dist : float
             Slope distance.
 
@@ -982,12 +1009,12 @@ class Coordinate(Vector):
 
     def to_polar(self) -> tuple[Angle, Angle, float]:
         """
-        Converts 3D cartesian coordinates to polar coordinates.
+        Converts 3D cartesian coordinates to polar survey coordinates.
 
         Returns
         -------
         tuple
-            Horizontal and vertical angles and slope distance.
+            Whole circle bearing, zenith angle and slope distance.
         """
         dist2d = math.sqrt(self.x**2 + self.y**2)
         dist = math.sqrt(dist2d**2 + self.z**2)
