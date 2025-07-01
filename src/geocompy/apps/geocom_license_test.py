@@ -1,5 +1,7 @@
 import argparse
 
+from serial import SerialException
+
 from geocompy import open_serial, GeoCom, GeoComCode
 
 
@@ -42,8 +44,14 @@ def tests(tps: GeoCom) -> None:
         print(f"Mororization unavailable ({resp_changeface.response})")
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+def cli() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        "tester",
+        description=(
+            "Rudimetary tests for determining what GeoCom functions are "
+            "available on an instrument."
+        )
+    )
     group_com = parser.add_argument_group("communication")
     group_com.add_argument(
         "port",
@@ -65,11 +73,19 @@ if __name__ == "__main__":
         default=15
     )
 
+    return parser
+
+
+if __name__ == "__main__":
+    parser = cli()
     args = parser.parse_args()
-    with open_serial(
-        args.port,
-        speed=args.baud,
-        timeout=args.timeout
-    ) as com:
-        tps = GeoCom(com)
-        tests(tps)
+    try:
+        with open_serial(
+            args.port,
+            speed=args.baud,
+            timeout=args.timeout
+        ) as com:
+            tps = GeoCom(com)
+            tests(tps)
+    except (SerialException, ConnectionError) as e:
+        print(f"GeoCom connection was not successful ({e})")

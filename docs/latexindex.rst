@@ -20,6 +20,7 @@ Applications
 
 .. toctree::
 
+    apps/geocom_license_test
     apps/morse
     apps/setmeasurement/index
     apps/terminal
