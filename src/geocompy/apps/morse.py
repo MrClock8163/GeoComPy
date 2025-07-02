@@ -4,8 +4,8 @@ from time import sleep
 from geocompy import open_serial, GeoCom
 
 
-def morse_beep(tps: GeoCom, message: str, intensity: int) -> None:
-    def letter_beep(tps: GeoCom, letter: str, intensity: int) -> None:
+def morse_beep(tps: GeoCom, args: argparse.Namespace) -> None:
+    def letter_beep(letter: str) -> None:
         lookup = {
             "a": ".-",
             "b": "-...",
@@ -46,21 +46,27 @@ def morse_beep(tps: GeoCom, message: str, intensity: int) -> None:
         }
         code = lookup[letter]
         for i, signal in enumerate(code):
-            tps.bmm.beep_on(intensity)
+            beepstart(intensity)
             match signal:
                 case ".":
                     sleep(unit)
                 case "-":
                     sleep(unit * 3)
-            tps.bmm.beep_off()
+            beepstop()
             if i != len(code) - 1:
                 sleep(unit)
 
-    unit = 0.05
-    words = message.lower().split(" ")
+    unit = args.unit * 1e-3
+    intensity = args.intensity
+    beepstart = tps.bmm.beep_start
+    beepstop = tps.bmm.beep_stop
+    if args.compatibility == "TPS1000":
+        beepstart = tps.bmm.beep_on
+        beepstop = tps.bmm.beep_off
+    words = args.message.lower().split(" ")
     for i, word in enumerate(words):
         for j, letter in enumerate(word):
-            letter_beep(tps, letter, intensity)
+            letter_beep(letter)
 
             if j != len(word) - 1:
                 sleep(unit * 3)
@@ -72,7 +78,7 @@ def morse_beep(tps: GeoCom, message: str, intensity: int) -> None:
 def main(args: argparse.Namespace) -> None:
     with open_serial(args.port, speed=args.baud, timeout=args.timeout) as com:
         ts = GeoCom(com)
-        morse_beep(ts, args.message, args.intensity)
+        morse_beep(ts, args)
 
 
 def cli() -> argparse.ArgumentParser:
@@ -99,6 +105,20 @@ def cli() -> argparse.ArgumentParser:
         help="timeout",
         type=int,
         default=15
+    )
+    parser.add_argument(
+        "-u",
+        "--unit",
+        help="beep unit time in milliseconds",
+        type=int,
+        default=50
+    )
+    parser.add_argument(
+        "-c",
+        "--compatibility",
+        help="instrument compatibility mode",
+        type=str,
+        choices=["TPS1000"]
     )
     parser.add_argument("intensity", help="beep intensity [1-100]", type=int)
     parser.add_argument("message", help="message to encode", type=str)
