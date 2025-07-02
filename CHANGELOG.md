@@ -14,6 +14,10 @@
 
 - Wait/delay times are now expected in seconds instead of milliseconds, where possible
 
+### Fixed
+
+- The Interactive Terminal app could not be launched with Python 3.11 due to an f-string error
+
 ## v0.7.0
 
 ### Added
