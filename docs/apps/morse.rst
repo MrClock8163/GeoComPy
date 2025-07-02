@@ -18,4 +18,4 @@ Usage
 
 .. argparse::
     :module: geocompy.apps.morse
-    :func: cli
+    :func: MorseArguments

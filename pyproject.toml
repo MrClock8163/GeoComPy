@@ -64,6 +64,7 @@ development = [
     "jsonschema",
     "jmespath",
     "numpy",
+    "typed-argument-parser",
     {include-group = "linting"}
 ]
 documentation = [
@@ -77,7 +78,7 @@ documentation = [
 
 [project.optional-dependencies]
 all = ["geocompy[apps]"]
-apps = ["textual", "rapidfuzz", "jsonschema", "jmespath", "numpy"]
+apps = ["textual", "rapidfuzz", "jsonschema", "jmespath", "numpy", "typed-argument-parser"]
 
 [tool.hatch.version]
 source = "vcs"
