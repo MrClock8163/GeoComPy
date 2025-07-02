@@ -166,7 +166,7 @@ class CmdSuggester(Suggester):
                 f"\t{param.name}: {param.annotation}{default}")
 
         if len(params) > 0:
-            text += f"\n{',\n'.join(params)}\n"
+            text += "\n" + ",\n".join(params) + "\n"
 
         text += f") -> {signature.return_annotation}\n"
 
