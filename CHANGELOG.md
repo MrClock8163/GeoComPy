@@ -5,6 +5,7 @@
 ### Added
 
 - Component swizzling in vectors and coordinates
+- GeoCom testing CLI application (`geocompy.apps.geocomtest`)
 
 ### Changed
 

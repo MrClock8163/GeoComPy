@@ -57,6 +57,7 @@ Content
     :maxdepth: 1
     :caption: Applications
 
+    apps/geocomtest
     apps/morse
     apps/setmeasurement/index
     apps/terminal
