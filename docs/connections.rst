@@ -93,7 +93,7 @@ Bluetooth
 Newer instruments (particularly robotic total stations) might come with
 built-in or attachable bluetooth connection capabilities (e.g. Leica TS15
 with radio handle). These instruments communicate over Serial Port Profile
-Bluetooth Classic, that emulates a direct line serial connection.
+Bluetooth Classic (SPP), that emulates a direct line serial connection.
 
 .. note::
 
@@ -106,31 +106,152 @@ To initiate a connection like this, the instrument first has to be paired
 to the controlling computer, and the bluetooth address of the instrument
 must be bound to an RFCOMM port as well.
 
-On windows machines this can be done manually through the Devices and
-Printers in the Control Panel. These RFCOMM devices will typically get one
-of the higher numbered ports, like ``COM9``.
+.. tip::
+    :class: hint
 
-Linux systems will typically use something like
-`bluetoothctl <https://documentation.ubuntu.com/core/explanation/system-snaps/bluetooth/pairing/index.html>`_
-to handle the pairing process, and then ``rfcomm`` command to bind a device
-to an RFCOMM port.
+    Make sure, that the Bluetooth modem is active on the instrument
+    and it is discoverable!
 
-Once the pairing and binding is complete, the connection over bluetooth can
-be opened just like a normal serial line.
+Windows
+^^^^^^^
+
+On windows machines the process is relatively straight forward. New SPP devices
+can be added through the "Devices and Printers" page of the Control Panel.
+
+1. Right-click on local computer and select the Bluetooth settings
+
+.. image:: controlpanel_devices_and_printers.png
+
+2. Navigate to the COM Ports tab
+3. Click on Add
+4. Select the Outgoing connection option and click Browse
+5. Wait for the device to show up in the discovery window, then press OK
+6. Click OK in all the windows
+
+.. image:: add_device.png
+
+If the process is successful, a new device will be added to the list of
+devices. To double check, that the COM port binding was successful, open
+the properties of the new device, and check, that the SPP service is active
+and what port was assigned to it.
+
+.. image:: check_spp.png
+
+The actual device pairing will be initiated when the first actual connection
+is attempted. The pairing code is usually ``0000`` or ``1234``.
+
+Linux
+^^^^^
+
+.. note::
+
+    The Linux process might vary between systems and distributions. Here the
+    steps for setting up a Raspberry Pi will be given.
+
+To add an SPP Bluetooth connection, the Bluetooth service has to be set to
+compatibility mode, and the SPP service registered. This can be done by
+updating the config of the bluez service.
+
+.. code-block:: shell
+
+    sudo nano /etc/systemd/system/dbus-org.bluez.service
+
+Two lines have to be modified/added in the config:
+
+.. code-block:: text
+
+    ExecStart=/usr/lib/bluetooth/bluetoothd -C
+    ExecStartPost=/usr/bin/sdptool add SP
+
+.. caution::
+    :class: warning
+
+    On some devices/distributions of the Raspberry Pi OS the Bluetooth
+    service executable might be in ``/usr/libexec/...`` instead of
+    ``/usr/lib/...``. Make sure to specify the correct path!
+
+After the modifications the Bluetooth service has to be restarted (the
+cleanest solution is to simply restart the whole Raspberry Pi).
+
+Once restarted, check, that the service started without issues:
+
+.. code-block:: shell
+
+    service bluetooth status
+
+If the service started without errors, the pairing and binding can be done.
+
+Start the Bluetooth utility:
+
+.. code-block:: shell
+
+    bluetoothctl
+
+Make sure, that the device modem is powered on, the agent is active and
+start scanning:
+
+.. code-block:: shell
+
+    power on
+    agent on
+    scan on
+
+Wait for the device to appear (Bluetooth MAC address and device name), then
+turn off the scanning:
+
+.. code-block:: shell
+
+    scan off
+
+Once the MAC address is known, the device can be paired and set to trusted
+(the pairing code is usually ``0000`` or ``1234``):
+
+.. code-block:: shell
+
+    pair <MAC address>
+    0000
+    trust <MAC address>
+
+After the pairing is successful, the devices can be checked:
+
+.. code-block:: shell
+
+    paired-devices
+
+If everything is done, the utility can be closed:
+
+.. code-block:: shell
+
+    quit
+
+The final step is creating the RFCOMM binding, that allows to access the
+SPP service connection:
+
+.. code-block:: shell
+
+    sudo rfcomm bind hci0 <MAC address>
+
+The existing RFCOMM bindings can be checked if needed:
+
+.. code-block:: shell
+
+    rfcomm
+
+If the whole process was successful, the device will be accessible on the
+``/dev/rfcomm0`` port, and can be used as any direct line serial connection.
 
 .. code-block:: python
-    :caption: Opening connection through an RFCOMM port
+    :caption: Opening connection through an RFCOMM port on a Raspberry Pi
     :linenos:
 
-    from geocompy.communication import open_serial
+    from geocompy import open_serial
 
 
-    with open_serial("COM9") as com:
+    with open_serial("/dev/rfcomm0") as com:
         com.send("some message")
 
-.. seealso::
+.. warning::
 
-    https://youtu.be/6Z4PXct8Rg0?si=db53q6F6NRi2M4BF
-        Video explaining the pairing process between a Raspberry PI and
-        a windows PC. It shows how to properly add an RFCOMM device in
-        the Control Panel.
+    The RFCOMM bindings on Linux only exist while the system is running.
+    They have to be recreated after every restart either manually, or with
+    a startup script.
