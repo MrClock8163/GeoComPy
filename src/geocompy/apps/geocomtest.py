@@ -2,7 +2,7 @@ import argparse
 
 from serial import SerialException
 
-from geocompy import open_serial, GeoCom, GeoComCode
+from geocompy import open_serial, GeoCom, GeoComCode, Angle
 
 
 def tests(tps: GeoCom) -> None:
@@ -17,8 +17,10 @@ def tests(tps: GeoCom) -> None:
     )
     input("Press ENTER when ready to proceed...")
 
+    print("(Switching ATR off...)")
     tps.aut.switch_atr(False)
     tps.aus.switch_user_atr(False)
+    print("(Switching to reflectorless EDM mode...)")
     tps.bap.set_target_type('DIRECT')
     resp_measure = tps.tmc.do_measurement()
     resp_angles = tps.tmc.get_simple_measurement()
@@ -36,10 +38,9 @@ def tests(tps: GeoCom) -> None:
     else:
         print(f"Imaging unavailable ({resp_focus.response})")
 
-    resp_changeface = tps.aut.change_face()
+    resp_changeface = tps.aut.turn_to(0, Angle(180, 'deg'))
     if resp_changeface.error == GeoComCode.OK:
         print("Motorization available")
-        tps.aut.change_face()
     else:
         print(f"Mororization unavailable ({resp_changeface.response})")
 
@@ -48,7 +49,7 @@ def cli() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         "tester",
         description=(
-            "Rudimetary tests for determining what GeoCom functions are "
+            "Rudimentary tests for determining what GeoCom functions are "
             "available on an instrument."
         )
     )
@@ -61,14 +62,14 @@ def cli() -> argparse.ArgumentParser:
     group_com.add_argument(
         "-b",
         "--baud",
-        help="communication speed",
+        help="speed",
         type=int,
         default=9600
     )
     group_com.add_argument(
         "-t",
         "--timeout",
-        help="communication timeout in seconds",
+        help="timeout in seconds",
         type=int,
         default=15
     )
