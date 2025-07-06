@@ -64,6 +64,8 @@ development = [
     "jsonschema",
     "jmespath",
     "numpy",
+    "click",
+    "click-extra",
     {include-group = "linting"}
 ]
 documentation = [
@@ -72,12 +74,13 @@ documentation = [
     "sphinx-last-updated-by-git==0.3.8",
     "sphinx-immaterial==0.13.5",
     "sphinx-mdinclude==0.6.2",
-    "sphinx-argparse==0.5.2"
+    "sphinx-argparse==0.5.2",
+    "sphinx-click==6.0.0"
 ]
 
 [project.optional-dependencies]
 all = ["geocompy[apps]"]
-apps = ["textual", "rapidfuzz", "jsonschema", "jmespath", "numpy"]
+apps = ["textual", "rapidfuzz", "jsonschema", "jmespath", "numpy", "click", "click-extra"]
 
 [tool.hatch.version]
 source = "vcs"

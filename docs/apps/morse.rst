@@ -3,6 +3,9 @@ Morse
 
 .. versionadded:: 0.7.0
 
+.. versionchanged:: 0.8.0
+    The CLI is now based on Click and Click Extra
+
 .. code-block:: shell
     :caption: Invoking the application
 
@@ -16,6 +19,5 @@ of the instrument.
 Usage
 -----
 
-.. argparse::
-    :module: geocompy.apps.morse
-    :func: cli
+.. click:: geocompy.apps.morse:cli
+    :prog: morse

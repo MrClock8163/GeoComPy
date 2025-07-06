@@ -18,7 +18,8 @@ extensions = [
     "notfound.extension",
     "sphinx_last_updated_by_git",
     "sphinx_immaterial",
-    "sphinx_mdinclude"
+    "sphinx_mdinclude",
+    "sphinx_click"
 ]
 
 intersphinx_mapping = {
