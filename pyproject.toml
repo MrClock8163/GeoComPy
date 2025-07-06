@@ -44,6 +44,9 @@ Documentation = "https://geocompy.readthedocs.io"
 Repository = "https://github.com/MrClock8163/geocompy"
 Issues = "https://github.com/MrClock8163/geocompy/issues"
 
+[project.scripts]
+geocom = "geocompy.apps.__main__:cli"
+
 [dependency-groups]
 testing = [
     "pytest",
