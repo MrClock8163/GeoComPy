@@ -27,13 +27,15 @@ try:
     from textual.containers import Grid, HorizontalGroup
     from textual.validation import Validator, ValidationResult
     from rapidfuzz import fuzz, process
+    from click_extra import extra_command
 except ModuleNotFoundError:
     print(
         """
 Missing dependencies. The Interactive Terminal app needs the following
 dependencies:
-- textual
+- click-extra
 - rapidfuzz
+- textual
 
 Install the missing dependencies manually, or install GeoComPy with the
 'apps' extra:
@@ -43,8 +45,10 @@ pip install geocompy[apps]
     )
     exit(3)
 
-from geocompy import open_serial, GeoCom, GsiOnlineDNA, Angle, Coordinate
-from geocompy.communication import Connection
+from ...data import Angle, Coordinate
+from ...geo import GeoCom
+from ...gsi.dna import GsiOnlineDNA
+from ...communication import Connection, open_serial
 
 
 class DummyGeoComConnection(Connection):
@@ -501,3 +505,10 @@ class ComPort(Validator):
             return self.success()
 
         return self.failure("Not a valid COM port")
+
+
+@extra_command("terminal", params=None)  # type: ignore[misc]
+def cli() -> None:
+    """Test instrument commands in an interactive TUI."""
+    app = GeoComTerminal()
+    app.run()

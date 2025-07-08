@@ -1,5 +1,3 @@
-from . import GeoComTerminal
+from . import cli
 
-
-app = GeoComTerminal()
-app.run()
+cli()

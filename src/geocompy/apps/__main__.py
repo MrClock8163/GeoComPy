@@ -3,6 +3,7 @@ from click_extra import (
 )
 
 from . import morse
+from . import terminal
 
 
 @extra_group(
@@ -15,3 +16,4 @@ def cli() -> None:
 
 
 cli.add_command(morse.cli)
+cli.add_command(terminal.cli)
