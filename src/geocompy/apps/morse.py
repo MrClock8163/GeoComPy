@@ -102,10 +102,10 @@ def morse_message(
             )
 
             if j != len(word) - 1:
-                sleep(unit * 3)
+                sleep(unit_seconds * 3)
 
         if i != len(words) - 1:
-            sleep(unit * 7)
+            sleep(unit_seconds * 7)
 
 
 @extra_command(
