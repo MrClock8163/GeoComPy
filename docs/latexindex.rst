@@ -22,6 +22,7 @@ Applications
 
     apps/geocomtest
     apps/morse
+    apps/setup
     apps/setmeasurement/index
     apps/terminal
 

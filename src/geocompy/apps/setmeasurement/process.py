@@ -125,7 +125,11 @@ def calc_coords(
     return Coordinate(x, y, z), Coordinate(x_dev, y_dev, z_dev)
 
 
-@extra_command("merge", params=None)  # type: ignore[misc]
+@extra_command(
+    "merge",
+    params=None,
+    context_settings={"auto_envvar_prefix": None}
+)  # type: ignore[misc]
 @argument(
     "output",
     help="output file",
@@ -148,7 +152,16 @@ def cli_merge(
     inputs: tuple[pathlib.Path],
     allow_oneface: bool = False
 ) -> None:
-    """Merge the output of multiple set measurement sessions."""
+    """Merge the output of multiple set measurement sessions.
+
+    The results of every set measurement session are saved to a separate file.
+    When multiple sessions are measured using the same targets from the same
+    station, the data files need to be merged to process them together.
+
+    .. note::
+        The merge will be refused if the station information, or the target
+        points do not match between the targeted sessions.
+    """
 
     sessions: list[SessionDict] = []
     for path in inputs:
@@ -197,7 +210,11 @@ def cli_merge(
     )
 
 
-@extra_command("validate", params=None)  # type: ignore[misc]
+@extra_command(
+    "validate",
+    params=None,
+    context_settings={"auto_envvar_prefix": None}
+)  # type: ignore[misc]
 @argument(
     "inputs",
     help="set measurement session JSON files (glob notation)",
@@ -221,7 +238,11 @@ def cli_validate(
     schema_only: bool = False,
     allow_oneface: bool = False
 ) -> None:
-    """Validate session output files."""
+    """Validate session output files.
+
+    After the measurement sessions are finished, it might be useful to
+    validate, that each session succeeded, no points were skipped.
+    """
 
     sessions: list[SessionDict] = []
     for path in inputs:
@@ -258,7 +279,11 @@ def cli_validate(
         exit(4)
 
 
-@extra_command("calc", params=None)  # type: ignore[misc]
+@extra_command(
+    "calc",
+    params=None,
+    context_settings={"auto_envvar_prefix": None}
+)  # type: ignore[misc]
 @argument(
     "input",
     help="input session file to process",
@@ -301,7 +326,13 @@ def cli_calc(
     precision: int = 4,
     allow_oneface: bool = False
 ) -> None:
-    """Calculate results from set measurements."""
+    """Calculate results from set measurements.
+
+    The most common calculation needed after set measurements is the
+    determination of the target coordinates, from results of multiple
+    measurement sessions and/or cycles. The resulting coordinates (as well as
+    their deviations) are saved to a simple CSV file.
+    """
 
     with input.open("rt", encoding="utf8") as file:
         data: SessionDict = json.load(file)

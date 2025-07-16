@@ -167,7 +167,11 @@ def measure_set(
     return session
 
 
-@extra_command("measure", params=None)  # type: ignore[misc]
+@extra_command(
+    "measure",
+    params=None,
+    context_settings={"auto_envvar_prefix": None}
+)  # type: ignore[misc]
 @argument(
     "port",
     type=str,

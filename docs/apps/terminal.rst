@@ -1,12 +1,10 @@
 Interactive Terminal
 ====================
 
-.. versionadded:: 0.6.0
-
 .. code-block:: shell
     :caption: Invoking the application
 
-    python -m geocompy.apps.terminal
+    geocom terminal
 
 .. caution::
     :class: warning

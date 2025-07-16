@@ -1,17 +1,31 @@
 import os
 
-from click_extra import (
-    extra_command,
-    extra_group,
-    argument,
-    option,
-    option_group,
-    IntRange,
-    Choice,
-    prompt,
-    confirm,
-    echo
-)
+try:
+    from click_extra import (
+        extra_command,
+        extra_group,
+        argument,
+        option,
+        option_group,
+        IntRange,
+        Choice,
+        prompt,
+        confirm,
+        echo
+    )
+except ModuleNotFoundError:
+    print(
+        """
+Missing dependencies. The Setup app needs the following dependencies:
+- click-extra
+
+Install the missing dependencies manually, or install GeoComPy with the
+'apps' extra:
+
+pip install geocompy[apps]
+"""
+    )
+    exit(3)
 
 from ..communication import open_serial
 from ..geo import GeoCom
@@ -168,7 +182,17 @@ def cli_measure(
     retry: int = 1,
     sync_after_timeout: bool = False
 ) -> None:
-    """Measure target points."""
+    """Measure target points.
+
+    The program gives instructions in the terminal at each step.
+
+    .. caution::
+        :class: warning
+
+        The appropriate prism type needs to be set on the instrument before
+        recording each target point. The program will automatically request
+        the type from the instrument after the point is measured.
+    """
 
     with open_serial(
         port,
@@ -187,7 +211,11 @@ def cli_measure(
     echo_green(f"Saved setup results at '{output}'")
 
 
-@extra_command("import", params=None)  # type: ignore[misc]
+@extra_command(
+    "import",
+    params=None,
+    context_settings={"auto_envvar_prefix": None}
+)  # type: ignore[misc]
 @argument(
     "reflector",
     type=Choice([e.name for e in Prism if e.name != 'USER'])
@@ -232,7 +260,31 @@ def cli_import(
     columns: str = "PENZ",
     skip: int = 0
 ) -> None:
-    """Import target points."""
+    """Import target points.
+
+    If a coordinate list already exists with the target points, it can
+    be imported from CSV format.
+
+    As a CSV file may contain any number and types of columns, the
+    mapping to the relevant columns can be given with a column spec.
+    A column spec is a string, with each character representing a
+    column type.
+
+    - ``P``: point ID
+    - ``E``: easting
+    - ``N``: northing
+    - ``Z``: up/height
+    - ``_``: ignore/skip column
+
+    Every column spec must specify the ``PENZ`` fields in the appropriate
+    order.
+
+    Examples:
+
+    - ``PENZ``: standard column order
+    - ``P_ENZ``: skipping 2nd column containing point codes
+    - ``EN_Z_P``: mixed column order and skipping
+    """
 
     if os.path.exists(output):
         action: str = prompt(
@@ -299,7 +351,7 @@ def cli_import(
     echo_green(f"Saved import results at '{os.path.abspath(output)}'")
 
 
-@extra_group("setup", params=None)  # type: ignore[misc]
+@extra_group("targets", params=None)  # type: ignore[misc]
 def cli() -> None:
     """Record target points for later automated measurements."""
 

@@ -4,7 +4,20 @@ Measure
 .. code-block:: shell
     :caption: Invoking the application
 
-    python -m geocompy.apps.setmeasurement.measure -h
+    geocom sets measure -h
+
+.. caution::
+    :class: warning
+
+    The set measuring command requires
+    `Click Extra <https://pypi.org/project/click-extra/>`_ and
+    `Cloup <https://pypi.org/project/cloup/>`_ to be installed.
+
+    Install them manually, or install GeoComPy with the ``apps`` extra.
+
+    .. code-block:: shell
+
+        pip install geocompy[apps]
 
 Once the target definition JSON is created, the measurement sets can
 be started. In each measurement session the time, internal temperature
@@ -72,6 +85,5 @@ Examples
 Usage
 -----
 
-.. argparse::
-    :module: geocompy.apps.setmeasurement.measure
-    :func: cli
+.. click:: geocompy.apps.setmeasurement.measure:cli
+    :prog: measure

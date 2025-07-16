@@ -1,15 +1,22 @@
 Morse
 =====
 
-.. versionadded:: 0.7.0
-
-.. versionchanged:: 0.8.0
-    The CLI is now based on Click and Click Extra
-
 .. code-block:: shell
     :caption: Invoking the application
 
-    python -m geocompy.apps.morse
+    geocom morse -h
+
+.. caution::
+    :class: warning
+
+    The Morse application requires
+    `Click Extra <https://pypi.org/project/click-extra/>`_ to be installed.
+
+    Install it manually, or install GeoComPy with the ``apps`` extra.
+
+    .. code-block:: shell
+
+        pip install geocompy[apps]
 
 The Morse CLI application is a (admittedly not very useful) demo program,
 that relays a Morse encoded ASCII message through the speakers of a total
