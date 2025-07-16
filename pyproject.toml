@@ -67,6 +67,7 @@ development = [
     "jsonschema",
     "jmespath",
     "numpy",
+    "cloup",
     "click",
     "click-extra",
     {include-group = "linting"}
@@ -83,7 +84,7 @@ documentation = [
 
 [project.optional-dependencies]
 all = ["geocompy[apps]"]
-apps = ["textual", "rapidfuzz", "jsonschema", "jmespath", "numpy", "click", "click-extra"]
+apps = ["textual", "rapidfuzz", "jsonschema", "jmespath", "numpy", "click", "cloup", "click-extra"]
 
 [tool.hatch.version]
 source = "vcs"

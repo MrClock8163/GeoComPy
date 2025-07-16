@@ -1,14 +1,19 @@
 import os
-import argparse
-import glob
 import json
 import math
-from itertools import chain
 from typing import Sequence
+import pathlib
 
 try:
     from jmespath import search
     from jsonschema import validate, ValidationError
+    from click_extra import (
+        extra_command,
+        argument,
+        option,
+        IntRange,
+        file_path
+    )
 except ModuleNotFoundError:
     print(
         """
@@ -16,6 +21,7 @@ Missing dependencies. The Set Measurement processing needs the following
 dependencies:
 - jmespath
 - jsonschema
+- click-extra
 
 Install the missing dependencies manually, or install GeoComPy with the
 'apps' extra:
@@ -27,7 +33,12 @@ pip install geocompy[apps]
 
 from ...data import Angle, Coordinate
 from .sessions import SessionDict
-from .. import make_directory
+from .. import (
+    echo_red,
+    echo_green,
+    echo_yellow,
+    make_directory
+)
 
 
 class SessionValidator:
@@ -74,90 +85,6 @@ class SessionValidator:
             validate(s, self._schema)
 
 
-def run_validate(args: argparse.Namespace) -> None:
-    sessions: list[SessionDict] = []
-    for path in chain.from_iterable(args.inputs):
-        with open(path, "rt", encoding="utf8") as file:
-            sessions.append(json.load(file))
-
-    validator = SessionValidator(not args.allow_oneface)
-    if args.schema_only:
-        try:
-            validator.validate_for_merge(sessions)
-            print("Schema validation succeeded")
-            exit(0)
-        except ValidationError as ve:
-            print(
-                "One of the input files does not follow the required schema"
-            )
-            print(ve)
-            exit(4)
-
-    try:
-        for s in sessions:
-            validator.validate(s)
-
-        print("Validation succeeded")
-        exit(0)
-    except ValidationError as ve:
-        print(
-            "One of the input files does not follow the required schema"
-        )
-        print(ve)
-        exit(4)
-    except ValueError as e:
-        print(f"The merged output could not be validated ({e})")
-        exit(4)
-
-
-def run_merge(args: argparse.Namespace) -> None:
-    sessions: list[SessionDict] = []
-    for path in chain.from_iterable(args.inputs):
-        with open(path, "rt", encoding="utf8") as file:
-            sessions.append(json.load(file))
-
-    validator = SessionValidator(not args.allow_oneface)
-    try:
-        validator.validate_for_merge(sessions)
-    except ValidationError as ve:
-        print("One of the input files does not follow the required schema")
-        print(ve)
-        exit(4)
-
-    if len(sessions) == 0:
-        print("There were no sessions found to merge")
-        exit(0)
-
-    session: SessionDict = {
-        "station": sessions[0]["station"],
-        "instrumentheight": sessions[0]["instrumentheight"],
-        "cycles": [c for s in sessions for c in s["cycles"]]
-    }
-
-    try:
-        validator.validate(session)
-    except ValidationError as ve:
-        print("The merging process caused a schema error")
-        print(ve)
-        exit(4)
-    except ValueError as e:
-        print(f"The merged output could not be validated ({e})")
-        exit(4)
-
-    make_directory(args.output)
-    with open(args.output, "wt", encoding="utf8") as file:
-        json.dump(
-            session,
-            file,
-            indent=4
-        )
-
-    print(
-        f"Merged {len(session['cycles'])} cycles "
-        f"from {len(sessions)} sessions"
-    )
-
-
 def calc_angles(
     hz_f1: Angle,
     v_f1: Angle,
@@ -198,20 +125,197 @@ def calc_coords(
     return Coordinate(x, y, z), Coordinate(x_dev, y_dev, z_dev)
 
 
-def run_calc(args: argparse.Namespace) -> None:
-    with open(args.input, "rt", encoding="utf8") as file:
+@extra_command("merge", params=None)  # type: ignore[misc]
+@argument(
+    "output",
+    help="output file",
+    type=file_path()
+)
+@argument(
+    "inputs",
+    help="set measurement session JSON files (glob notation)",
+    type=file_path(exists=True),
+    nargs=-1,
+    required=True
+)
+@option(
+    "--allow-oneface",
+    help="accept points with face 1 measurements only as well",
+    is_flag=True
+)
+def cli_merge(
+    output: pathlib.Path,
+    inputs: tuple[pathlib.Path],
+    allow_oneface: bool = False
+) -> None:
+    """Merge the output of multiple set measurement sessions."""
+
+    sessions: list[SessionDict] = []
+    for path in inputs:
+        with path.open("rt", encoding="utf8") as file:
+            sessions.append(json.load(file))
+
+    validator = SessionValidator(not allow_oneface)
+    try:
+        validator.validate_for_merge(sessions)
+    except ValidationError as ve:
+        echo_red("One of the input files does not follow the required schema")
+        echo_red(ve)
+        exit(4)
+
+    if len(sessions) == 0:
+        echo_yellow("There were no sessions found to merge")
+        exit(0)
+
+    session: SessionDict = {
+        "station": sessions[0]["station"],
+        "instrumentheight": sessions[0]["instrumentheight"],
+        "cycles": [c for s in sessions for c in s["cycles"]]
+    }
+
+    try:
+        validator.validate(session)
+    except ValidationError as ve:
+        echo_red("The merging process caused a schema error")
+        echo_red(ve)
+        exit(4)
+    except ValueError as e:
+        echo_red(f"The merged output could not be validated ({e})")
+        exit(4)
+
+    make_directory(str(output))
+    with open(output, "wt", encoding="utf8") as file:
+        json.dump(
+            session,
+            file,
+            indent=4
+        )
+
+    echo_green(
+        f"Merged {len(session['cycles'])} cycles "
+        f"from {len(sessions)} sessions"
+    )
+
+
+@extra_command("validate", params=None)  # type: ignore[misc]
+@argument(
+    "inputs",
+    help="set measurement session JSON files (glob notation)",
+    nargs=-1,
+    required=True,
+    type=file_path(exists=True)
+)
+@option(
+    "-s",
+    "--schema-only",
+    help="only validate the JSON schema",
+    is_flag=True
+)
+@option(
+    "--allow-oneface",
+    help="accept points with face 1 measurements only as well",
+    is_flag=True
+)
+def cli_validate(
+    inputs: tuple[pathlib.Path],
+    schema_only: bool = False,
+    allow_oneface: bool = False
+) -> None:
+    """Validate session output files."""
+
+    sessions: list[SessionDict] = []
+    for path in inputs:
+        with path.open("rt", encoding="utf8") as file:
+            sessions.append(json.load(file))
+
+    validator = SessionValidator(not allow_oneface)
+    if schema_only:
+        try:
+            validator.validate_for_merge(sessions)
+            echo_green("Schema validation succeeded")
+            exit(0)
+        except ValidationError as ve:
+            echo_red(
+                "One of the input files does not follow the required schema"
+            )
+            echo_red(ve)
+            exit(4)
+
+    try:
+        for s in sessions:
+            validator.validate(s)
+
+        echo_green("Validation succeeded")
+        exit(0)
+    except ValidationError as ve:
+        echo_red(
+            "One of the input files does not follow the required schema"
+        )
+        echo_red(ve)
+        exit(4)
+    except ValueError as e:
+        echo_red(f"The merged output could not be validated ({e})")
+        exit(4)
+
+
+@extra_command("calc", params=None)  # type: ignore[misc]
+@argument(
+    "input",
+    help="input session file to process",
+    type=file_path(exists=True)
+)
+@argument(
+    "output",
+    help="output CSV file",
+    type=file_path(readable=False)
+)
+@option(
+    "--header",
+    help="write column headers",
+    is_flag=True
+)
+@option(
+    "-d",
+    "--delimiter",
+    help="column delimiter character",
+    type=str,
+    default=","
+)
+@option(
+    "-p",
+    "--precision",
+    help="decimal precision",
+    type=IntRange(min=0),
+    default=4
+)
+@option(
+    "--allow-oneface",
+    help="accept points with face 1 measurements only as well",
+    is_flag=True
+)
+def cli_calc(
+    input: pathlib.Path,
+    output: pathlib.Path,
+    header: bool = False,
+    delimiter: str = ",",
+    precision: int = 4,
+    allow_oneface: bool = False
+) -> None:
+    """Calculate results from set measurements."""
+
+    with input.open("rt", encoding="utf8") as file:
         data: SessionDict = json.load(file)
 
-    validator = SessionValidator(not args.allow_oneface)
+    validator = SessionValidator(not allow_oneface)
     try:
         validator.validate(data)
     except ValidationError as ve:
-        print("Input data does not follow the required schema")
-        print(ve)
+        echo_red("Input data does not follow the required schema")
+        echo_red(ve)
         exit(4)
     except ValueError as e:
-        print("The input data did not pass validation")
-        print(e)
+        echo_red("The input data did not pass validation")
+        echo_red(e)
         exit(4)
 
     points = {"points": search("cycles[].points[]", data)}
@@ -251,8 +355,8 @@ def run_calc(args: argparse.Namespace) -> None:
                 )
 
                 d = (d + d_f2) / 2
-            elif not args.allow_oneface:
-                print("Not all measurements have data for both faces")
+            elif not allow_oneface:
+                echo_red("Not all measurements have data for both faces")
                 exit(4)
 
             c = station + Coordinate.from_polar(
@@ -271,15 +375,15 @@ def run_calc(args: argparse.Namespace) -> None:
         coord, dev = calc_coords(coo)
         final.append((name, coord, dev))
 
-    with open(args.output, "wt", encoding="utf8") as file:
-        if args.header:
+    with output.open("wt", encoding="utf8") as file:
+        if header:
             file.write(
-                args.delimiter.join(
+                delimiter.join(
                     ["id", "e", "n", "h", "sigma_e", "sigma_n", "sigma_h"]
                 ) + "\n"
             )
 
-        fmt = "{0:." + str(args.precision) + "f}"
+        fmt = "{0:." + str(precision) + "f}"
         for name, coord, dev in final:
             fields = [
                 name,
@@ -291,109 +395,5 @@ def run_calc(args: argparse.Namespace) -> None:
                 fmt.format(dev.z)
             ]
             file.write(
-                args.delimiter.join(fields) + "\n"
+                delimiter.join(fields) + "\n"
             )
-
-
-def cli() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        "process",
-        description="Process the results of set measurements.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    subparsers = parser.add_subparsers()
-    parser_merge = subparsers.add_parser(
-        "merge",
-        description="Merge the output of multiple set measurement sessions.",
-        help="merge the output of multiple set measurement sessions"
-    )
-    parser_merge.add_argument(
-        "output",
-        help="output file",
-        type=str
-    )
-    parser_merge.add_argument(
-        "inputs",
-        help="set measurement session JSON files (glob notation)",
-        nargs="+",
-        type=glob.glob
-    )
-    parser_merge.add_argument(
-        "--allow-oneface",
-        help="accept points with face 1 measurements only as well",
-        action="store_true"
-    )
-    parser_merge.set_defaults(func=run_merge)
-
-    parser_calc = subparsers.add_parser(
-        "calculate",
-        description="Calculate results from set measurements",
-        help="calculate results from set measurements"
-    )
-    parser_calc.add_argument(
-        "input",
-        help="input session file to process",
-        type=str
-    )
-    parser_calc.add_argument(
-        "output",
-        help="output CSV file",
-        type=str
-    )
-    parser_calc.add_argument(
-        "--header",
-        help="write column headers",
-        action="store_true"
-    )
-    parser_calc.add_argument(
-        "-d",
-        "--delimiter",
-        help="column delimiter character",
-        type=str,
-        default=","
-    )
-    parser_calc.add_argument(
-        "-p",
-        "--precision",
-        help="decimal precision",
-        type=int,
-        default=4
-    )
-    parser_calc.add_argument(
-        "--allow-oneface",
-        help="accept points with face 1 measurements only as well",
-        action="store_true"
-    )
-    parser_calc.set_defaults(func=run_calc)
-
-    parser_validate = subparsers.add_parser(
-        "validate",
-        description="Validate session output files",
-        help="validate session output files"
-    )
-    parser_validate.add_argument(
-        "inputs",
-        help="set measurement session JSON files (glob notation)",
-        nargs="+",
-        type=glob.glob
-    )
-    parser_validate.add_argument(
-        "-s",
-        "--schema-only",
-        help="only validate the JSON schema",
-        action="store_true"
-    )
-    parser_validate.add_argument(
-        "--allow-oneface",
-        help="accept points with face 1 measurements only as well",
-        action="store_true"
-    )
-    parser_validate.set_defaults(func=run_validate)
-
-    return parser
-
-
-if __name__ == "__main__":
-    parser = cli()
-    args = parser.parse_args()
-    args.func(args)

@@ -1,16 +1,43 @@
 import os
 from datetime import datetime
-import argparse
 from logging import getLogger
 from typing import Iterator, Literal
 from itertools import chain
+import pathlib
+
+try:
+    from click_extra import (
+        extra_command,
+        argument,
+        option,
+        option_group,
+        Choice,
+        IntRange,
+        file_path,
+        dir_path
+    )
+    from cloup.constraints import mutually_exclusive
+except ModuleNotFoundError:
+    print(
+        """
+Missing dependencies. The Set Measurement needs the following dependencies:
+- cloup
+- click-extra
+
+Install the missing dependencies manually, or install GeoComPy with the
+'apps' extra:
+
+pip install geocompy[apps]
+"""
+    )
+    exit(3)
 
 from ...data import Angle, Coordinate
 from ...communication import open_serial
 from ...geo import GeoCom
 from ...geo.gctypes import GeoComCode
 from ...geo.gcdata import Face
-from .. import make_logger, run_cli_app
+from .. import make_logger
 from ..targets import (
     TargetPoint,
     TargetList,
@@ -140,163 +167,158 @@ def measure_set(
     return session
 
 
-def main(args: argparse.Namespace) -> None:
-    log = make_logger("TPS", args)
-    applog = getLogger("APP")
+@extra_command("measure", params=None)  # type: ignore[misc]
+@argument(
+    "port",
+    type=str,
+    help="serial port (e.g. COM1)"
+)
+@argument(
+    "targets",
+    type=file_path(exists=True),
+    help="JSON file containing target definitions"
+)
+@argument(
+    "directory",
+    type=dir_path(),
+    help="directory to save measurement output to"
+)
+@option_group(
+    "Connection options",
+    "Options related to the serial connection",
+    option(
+        "-b",
+        "--baud",
+        help="serial speed",
+        type=int,
+        default=9600
+    ),
+    option(
+        "-t",
+        "--timeout",
+        help="serial timeout",
+        type=IntRange(min=0),
+        default=15
+    ),
+    option(
+        "-r",
+        "--retry",
+        help="number of connection retry attempts",
+        type=IntRange(min=0, max=10),
+        default=1
+    ),
+    option(
+        "--sync-after-timeout",
+        help="attempt to synchronize message que after a connection timeout",
+        is_flag=True
+    )
+)
+@option(
+    "--prefix",
+    type=str,
+    default="setmeasurement_",
+    help="prefix to prepend to the set measurement output files"
+)
+@option(
+    "-c",
+    "--cycles",
+    type=IntRange(min=1),
+    default=1,
+    help="number of measurement cycles"
+)
+@option(
+    "-o",
+    "--order",
+    help="measurement order (capital letter: face 1, lower case: face 2)",
+    type=Choice(["AaBb", "AabB", "ABab", "ABba", "ABCD"]),
+    default="ABba"
+)
+@option(
+    "-s",
+    "--sync-time",
+    help="synchronize instrument time and date with the computer",
+    is_flag=True
+)
+@option(
+    "-p",
+    "--points",
+    type=str,
+    help=(
+        "targets to use from loaded target definition "
+        "(comma separated list, empty to use all)"
+    ),
+    default=""
+)
+@option_group(
+    "Logging options",
+    "Options related to the logging functionalities.",
+    option(
+        "--debug",
+        is_flag=True
+    ),
+    option(
+        "--info",
+        is_flag=True
+    ),
+    option(
+        "--warning",
+        is_flag=True
+    ),
+    option(
+        "--error",
+        is_flag=True
+    ),
+    constraint=mutually_exclusive
+)
+def cli(
+    port: str,
+    targets: pathlib.Path,
+    directory: pathlib.Path,
+    baud: int = 9600,
+    timeout: int = 15,
+    retry: int = 1,
+    sync_after_timeout: bool = False,
+    prefix: str = "setmeasurement_",
+    cycles: int = 1,
+    order: Literal['AaBb', 'AabB', 'ABab', 'ABba', 'ABCD'] = "ABba",
+    sync_time: bool = True,
+    points: str = "",
+    debug: bool = False,
+    info: bool = False,
+    warning: bool = False,
+    error: bool = False,
+) -> None:
+    """Run sets of measurements to predefined targets."""
+
+    log = make_logger("TPS", debug, info, warning, error)
+    applog = make_logger("APP", debug, info, warning, error)
     applog.info("Starting measurement session")
 
     with open_serial(
-        args.port,
-        retry=args.retry,
-        sync_after_timeout=args.sync_after_timeout,
-        speed=args.baud,
-        timeout=args.timeout
+        port,
+        retry=retry,
+        sync_after_timeout=sync_after_timeout,
+        speed=baud,
+        timeout=timeout
     ) as com:
         tps = GeoCom(com, log)
-        if args.sync_time:
+        if sync_time:
             tps.csv.set_datetime(datetime.now())
 
         session = measure_set(
             tps,
-            args.targets,
-            args.order,
-            args.cycles,
-            args.points
+            str(targets),
+            order,
+            cycles,
+            points
         )
 
     applog.info("Finished measurement session")
 
     timestamp = session.cycles[0].time.strftime("%Y%m%d_%H%M%S")
     filename = os.path.join(
-        args.directory,
-        f"{args.prefix}{timestamp}.json"
+        directory,
+        f"{prefix}{timestamp}.json"
     )
     session.export_to_json(filename)
     applog.info(f"Saved measurement results at '{filename}'")
-
-
-def cli() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="measure",
-        description="Conduct sets of measurements to target points.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-
-    group_com = parser.add_argument_group("communication")
-    group_com.add_argument(
-        "port",
-        type=str,
-        help="serial port (e.g. COM1)"
-    )
-    group_com.add_argument(
-        "-b",
-        "--baud",
-        type=int,
-        default=9600,
-        help="serial connection speed"
-    )
-    group_com.add_argument(
-        "-t",
-        "--timeout",
-        type=int,
-        default=15,
-        help="connection timeout to set"
-    )
-    group_com.add_argument(
-        "-r",
-        "--retry",
-        type=int,
-        default=1,
-        help="number of connection retry attempts"
-    )
-    group_com.add_argument(
-        "-sat",
-        "--sync-after-timeout",
-        action="store_true",
-        help="attempt to synchronize message que after a connection timeout"
-    )
-    group_program = parser.add_argument_group("program")
-    group_program.add_argument(
-        "targets",
-        type=str,
-        help="JSON file containing target definitions"
-    )
-    group_program.add_argument(
-        "directory",
-        type=str,
-        help="directory to save measurement output to"
-    )
-    group_program.add_argument(
-        "-p",
-        "--prefix",
-        type=str,
-        default="setmeasurement_",
-        help="prefix to prepend to the set measurement output files"
-    )
-    group_program.add_argument(
-        "-c",
-        "--cycles",
-        type=int,
-        default=1,
-        help="number of measurement cycles"
-    )
-    group_program.add_argument(
-        "-o",
-        "--order",
-        help="measurement order (capital letter: face 1, lower case: face 2)",
-        choices=["AaBb", "AabB", "ABab", "ABba", "ABCD"],
-        default="ABba",
-        type=str
-    )
-    group_program.add_argument(
-        "-s",
-        "--sync-time",
-        action="store_true",
-        help="synchronize instrument time and date with the computer"
-    )
-    group_program.add_argument(
-        "-pt",
-        "--points",
-        type=str,
-        help=(
-            "targets to use from loaded target definition "
-            "(comma separated list, empty to use all)"
-        ),
-        default=""
-    )
-    group_logging = parser.add_argument_group("logging")
-    group_logging_levels = (
-        group_logging.add_mutually_exclusive_group()
-    )
-    group_logging_levels.add_argument(
-        "--debug",
-        help="set logging level to DEBUG",
-        action="store_true"
-    )
-    group_logging_levels.add_argument(
-        "--info",
-        help="set logging level to INFO",
-        action="store_true"
-    )
-    group_logging_levels.add_argument(
-        "--warning",
-        help="set logging level to WARNING",
-        action="store_true"
-    )
-    group_logging_levels.add_argument(
-        "--error",
-        help="set logging level to ERROR",
-        action="store_true"
-    )
-
-    return parser
-
-
-if __name__ == "__main__":
-    parser = cli()
-    args = parser.parse_args()
-    run_cli_app(
-        "SETMEASUREMENT.MEASURE",
-        main,
-        args
-    )

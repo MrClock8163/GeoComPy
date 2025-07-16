@@ -302,7 +302,6 @@ def cli_import(
 @extra_group("setup", params=None)  # type: ignore[misc]
 def cli() -> None:
     """Record target points for later automated measurements."""
-    pass
 
 
 cli.add_command(cli_measure)

@@ -1,7 +1,6 @@
 import os
 from logging import DEBUG, ERROR, INFO, WARNING, Logger
 from typing import Callable, Any, cast
-import argparse
 
 from click_extra import echo, style, Color
 
@@ -69,14 +68,20 @@ def make_directory(filepath: str) -> None:
     os.makedirs(dirname, exist_ok=True)
 
 
-def make_logger(name: str, args: argparse.Namespace) -> Logger:
-    if args.debug:
+def make_logger(
+    name: str,
+    debug: bool = False,
+    info: bool = False,
+    warning: bool = False,
+    error: bool = False
+) -> Logger:
+    if debug:
         loglevel = DEBUG
-    elif args.info:
+    elif info:
         loglevel = INFO
-    elif args.warning:
+    elif warning:
         loglevel = WARNING
-    elif args.error:
+    elif error:
         loglevel = ERROR
     else:
         return get_logger(name)
@@ -87,9 +92,9 @@ def make_logger(name: str, args: argparse.Namespace) -> Logger:
 def run_cli_app(
     name: str,
     runner: Callable[..., Any],
-    args: argparse.Namespace
+    *args: Any
 ) -> None:
-    logger = make_logger("APP", args)
+    logger = make_logger("APP", info=True)
     try:
         logger.info(f"Starting '{name}' application")
         runner(args)
