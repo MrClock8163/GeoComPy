@@ -11,7 +11,7 @@ from ...geo import GeoCom
 from ...geo.gctypes import GeoComCode
 from ...geo.gcdata import Face
 from .. import make_logger, run_cli_app
-from .targets import (
+from ..targets import (
     TargetPoint,
     TargetList,
     load_targets_from_json

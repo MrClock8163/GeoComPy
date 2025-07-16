@@ -10,9 +10,9 @@ try:
 except Exception:
     validate = lambda *args: None  # noqa: E731
 
-from ...data import Coordinate
-from ...geo.gcdata import Prism
-from .. import make_directory
+from ..data import Coordinate
+from ..geo.gcdata import Prism
+from . import make_directory
 
 
 class TargetPointDict(TypedDict):

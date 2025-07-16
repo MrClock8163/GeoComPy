@@ -3,6 +3,8 @@ from logging import DEBUG, ERROR, INFO, WARNING, Logger
 from typing import Callable, TypeVar, Iterable, Any, cast
 import argparse
 
+from click_extra import echo, style, Color
+
 from ..communication import get_logger
 
 
@@ -20,6 +22,46 @@ EXIT_CODE_DESCRIPTIONS: dict[int, str] = {
     1103: "Target CSV file does not exist",
     1200: "Unknown measurement order"
 }
+
+
+def echo_color(
+    message: Any,
+    color: str,
+    newline: bool = True,
+    error: bool = False
+) -> None:
+    echo(
+        style(
+            message,
+            color
+        ),
+        nl=newline,
+        err=error
+    )
+
+
+def echo_red(
+    message: Any,
+    newline: bool = True,
+    error: bool = False
+) -> None:
+    echo_color(message, Color.red, newline, error)
+
+
+def echo_green(
+    message: Any,
+    newline: bool = True,
+    error: bool = False
+) -> None:
+    echo_color(message, Color.green, newline, error)
+
+
+def echo_yellow(
+    message: Any,
+    newline: bool = True,
+    error: bool = False
+) -> None:
+    echo_color(message, Color.yellow, newline, error)
 
 
 def input_free(
