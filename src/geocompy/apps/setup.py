@@ -130,7 +130,11 @@ def measure_targets(tps: GeoCom, filepath: str) -> TargetList | None:
     return points
 
 
-@extra_command("measure", params=None)  # type: ignore[misc]
+@extra_command(
+    "measure",
+    params=None,
+    context_settings={"auto_envvar_prefix": None}
+)  # type: ignore[misc]
 @argument(
     "port",
     help="serial port (e.g. COM1)",

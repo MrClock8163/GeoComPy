@@ -6,6 +6,7 @@ from . import morse
 from . import terminal
 from . import setup
 from . import setmeasurement
+from . import geocomtest
 
 
 @extra_group(
@@ -21,3 +22,4 @@ cli.add_command(morse.cli)
 cli.add_command(terminal.cli)
 cli.add_command(setup.cli)
 cli.add_command(setmeasurement.cli)
+cli.add_command(geocomtest.cli)
