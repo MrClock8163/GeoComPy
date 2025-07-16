@@ -37,7 +37,7 @@ from ...communication import open_serial
 from ...geo import GeoCom
 from ...geo.gctypes import GeoComCode
 from ...geo.gcdata import Face
-from .. import make_logger
+from ..utils import make_logger
 from ..targets import (
     TargetPoint,
     TargetList,

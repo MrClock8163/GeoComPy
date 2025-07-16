@@ -45,7 +45,7 @@ Repository = "https://github.com/MrClock8163/geocompy"
 Issues = "https://github.com/MrClock8163/geocompy/issues"
 
 [project.scripts]
-geocom = "geocompy.apps.__main__:cli"
+geocom = "geocompy.apps:cli"
 
 [dependency-groups]
 testing = [

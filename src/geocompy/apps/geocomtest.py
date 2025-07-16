@@ -27,9 +27,9 @@ from ..data import Angle
 from ..geo import GeoCom
 from ..geo.gctypes import GeoComCode
 from ..communication import open_serial
-from . import (
-    echo_green,
+from .utils import (
     echo_red,
+    echo_green,
     echo_yellow
 )
 

@@ -33,7 +33,7 @@ pip install geocompy[apps]
 
 from ...data import Angle, Coordinate
 from .sessions import SessionDict
-from .. import (
+from ..utils import (
     echo_red,
     echo_green,
     echo_yellow,

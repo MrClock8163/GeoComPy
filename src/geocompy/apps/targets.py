@@ -12,7 +12,7 @@ except Exception:
 
 from ..data import Coordinate
 from ..geo.gcdata import Prism
-from . import make_directory
+from .utils import make_directory
 
 
 class TargetPointDict(TypedDict):

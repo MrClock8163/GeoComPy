@@ -6,7 +6,7 @@ from typing import TypedDict, NotRequired
 
 from ...data import Angle, Coordinate
 from ...geo.gcdata import Face
-from .. import make_directory
+from ..utils import make_directory
 
 
 class PointDict(TypedDict):
