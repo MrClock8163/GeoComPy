@@ -114,8 +114,19 @@ def morse_message(
     context_settings={"auto_envvar_prefix": None}
 )  # type: ignore[misc]
 @version_option()
-@argument("port", type=str)
-@argument("message", type=str)
+@argument(
+    "port",
+    help=(
+        "serial port that the instrument is connected to (must be a valid "
+        "identifier like COM1 or /dev/usbtty0)"
+    ),
+    type=str
+)
+@argument(
+    "message",
+    help="message to relay as a string of ASCII characters",
+    type=str
+)
 @option(
     "-i",
     "--intensity",
@@ -166,11 +177,6 @@ def cli(
 ) -> None:
     """Play a Morse encoded ASCII message through the beep signals
         of a GeoCom capable total station.
-
-        PORT is the serial port, that the instrument is connected to. It
-        must be a valid identifier as a string (e.g. COM1 or /dev/usbtty0).
-
-        MESSAGE is the message to relay, as a string of ASCII characters.
         """
     with open_serial(port, speed=baud, timeout=timeout) as com:
         ts = GeoCom(com)
