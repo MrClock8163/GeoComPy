@@ -218,10 +218,14 @@ def measure_set(
     )
 )
 @option(
-    "--prefix",
+    "-f",
+    "--format",
     type=str,
-    default="setmeasurement_",
-    help="prefix to prepend to the set measurement output files"
+    default="setmeasurement_{time}.json",
+    help=(
+        "session output file name format with placeholders "
+        "(`{time}`: timestamp, `{order}`: order, `{cycle}`: cycles)"
+    )
 )
 @option(
     "-c",
@@ -282,7 +286,7 @@ def cli(
     timeout: int = 15,
     retry: int = 1,
     sync_after_timeout: bool = False,
-    prefix: str = "setmeasurement_",
+    format: str = "setmeasurement_{time}.json",
     cycles: int = 1,
     order: Literal['AaBb', 'AabB', 'ABab', 'ABba', 'ABCD'] = "ABba",
     sync_time: bool = True,
@@ -322,7 +326,7 @@ def cli(
     timestamp = session.cycles[0].time.strftime("%Y%m%d_%H%M%S")
     filename = os.path.join(
         directory,
-        f"{prefix}{timestamp}.json"
+        format.format(time=timestamp, order=order, cycle=cycles)
     )
     session.export_to_json(filename)
     applog.info(f"Saved measurement results at '{filename}'")
