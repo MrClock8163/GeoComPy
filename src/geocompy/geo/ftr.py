@@ -135,12 +135,13 @@ class GeoComFTR(GeoComSubsystem):
                 params[1],
                 params[2],
                 datetime(
-                    int(params[3]) + 2000,
+                    int(params[9]) + 2000,
+                    int(params[8]),
+                    int(params[7]),
+                    int(params[3]),
                     int(params[4]),
                     int(params[5]),
-                    int(params[6]),
-                    int(params[7]),
-                    int(params[8]) * 10000
+                    int(params[6]) * 10000
                 ) if params[1] != "" else None
             )
 
