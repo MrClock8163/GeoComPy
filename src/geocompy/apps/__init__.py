@@ -1,14 +1,11 @@
 import os
 from logging import DEBUG, ERROR, INFO, WARNING, Logger
-from typing import Callable, TypeVar, Iterable, Any, cast
+from typing import Callable, Any, cast
 import argparse
 
 from click_extra import echo, style, Color
 
 from ..communication import get_logger
-
-
-_T = TypeVar("_T")
 
 
 EXIT_CODE_DESCRIPTIONS: dict[int, str] = {
@@ -62,114 +59,6 @@ def echo_yellow(
     error: bool = False
 ) -> None:
     echo_color(message, Color.yellow, newline, error)
-
-
-def input_free(
-    prompt: str,
-    parser: Callable[[str], _T],
-    default: str | None = "",
-    newline: bool = False
-) -> _T:
-    defstr = f" [{default}]" if default is not None else ""
-    endl = "\n" if newline else " "
-    while True:
-        ans = input(f"{prompt}{defstr}:{endl}")
-        if default is not None and ans == "":
-            ans = default
-        try:
-            return parser(ans)
-        except KeyboardInterrupt:
-            exit(2)
-        except Exception as e:
-            print(e)
-
-
-def parse_choices_map(
-    value: str,
-    choices: dict[str, _T],
-    ignore_case: bool = True,
-    allow_short: bool = True
-) -> _T:
-    if ignore_case:
-        value = value.lower()
-        choices.update({(k.lower(), v) for k, v in choices.items()})
-
-    try:
-        if allow_short:
-            possible = list(
-                filter(lambda k: k.startswith(value), choices.keys())
-            )
-            if len(possible) != 1:
-                raise KeyError()
-            value = possible[0]
-
-        return choices[value]
-    except KeyError:
-        raise ValueError(
-            f"'{value}' is not in the list of acceptable inputs"
-        )
-
-
-def parse_choices(
-    value: str,
-    choices: Iterable[str],
-    ignore_case: bool = True,
-    allow_short: bool = True
-) -> str:
-    return parse_choices_map(
-        value,
-        {k: k for k in choices},
-        ignore_case,
-        allow_short
-    )
-
-
-def input_choice_map(
-    prompt: str,
-    choices: dict[str, _T],
-    default: str | None = None,
-    ignore_case: bool = True,
-    allow_short: bool = True
-) -> _T:
-    def parser(value: str) -> _T:
-        return parse_choices_map(value, choices, ignore_case, allow_short)
-
-    if default is not None and default not in choices:
-        raise ValueError("Default value is not one of the valid choices")
-
-    choices_fmt = f" ({'|'.join(choices)})"
-    final_prompt = f"{prompt}{choices_fmt}"
-    return input_free(final_prompt, parser, default)
-
-
-def input_choice(
-    prompt: str,
-    choices: Iterable[str],
-    default: str | None = None,
-    ignore_case: bool = True,
-    allow_short: bool = True
-) -> str:
-    return input_choice_map(
-        prompt,
-        {k: k for k in choices},
-        default,
-        ignore_case,
-        allow_short
-    )
-
-
-def input_yes_no(
-    prompt: str,
-    default: bool | None = None
-) -> bool:
-    return input_choice_map(
-        prompt,
-        {
-            "yes": True,
-            "no": False
-        },
-        None if default is None else "yes" if default else "no"
-    )
 
 
 def make_directory(filepath: str) -> None:
