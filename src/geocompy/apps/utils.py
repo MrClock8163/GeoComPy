@@ -1,7 +1,7 @@
 from logging import DEBUG, ERROR, INFO, WARNING, Logger
 import os
 
-from click_extra import Color, echo, style
+from click_extra import Color, echo, style, option, Choice, IntRange
 from typing import Any, Callable, cast
 
 from geocompy.communication import get_logger
@@ -18,6 +18,39 @@ EXIT_CODE_DESCRIPTIONS: dict[int, str] = {
     1103: "Target CSV file does not exist",
     1200: "Unknown measurement order"
 }
+
+
+com_timeout_option = option(
+    "-t",
+    "--timeout",
+    help="serial timeout",
+    type=IntRange(min=0),
+    default=15
+)
+
+
+com_baud_option = option(
+    "-b",
+    "--baud",
+    help="serial speed",
+    type=Choice(
+        [
+            "1200",
+            "2400",
+            "4800",
+            "9600",
+            "19200",
+            "38400",
+            "56000",
+            "57600",
+            "115200",
+            "230400",
+            "921600"
+        ]
+    ),
+    callback=lambda ctx, param, value: int(value),
+    default="9600"
+)
 
 
 def echo_color(

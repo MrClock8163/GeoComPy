@@ -1,4 +1,5 @@
 from time import sleep
+from typing import Callable, Any
 
 try:
     from click_extra import (
@@ -6,7 +7,6 @@ try:
         option,
         option_group,
         argument,
-        version_option,
         Choice,
         IntRange,
         progressbar
@@ -27,7 +27,12 @@ pip install geocompy[apps]
 
 from ..geo import GeoCom
 from ..communication import open_serial
-from .utils import echo_red, echo_green
+from .utils import (
+    echo_red,
+    echo_green,
+    com_baud_option,
+    com_timeout_option
+)
 
 
 MORSE_TABLE = {
@@ -101,26 +106,12 @@ def encode_message(
     return " ".join(words)
 
 
-def morse_message(
-    tps: GeoCom,
+def relay_message(
+    beepstart: Callable[[], Any],
+    beepstop: Callable[[], Any],
     message: str,
-    intensity: int,
-    unit: float,
-    compatibility: str
+    unittime: float
 ) -> None:
-    unit_seconds = unit * 1e-3
-
-    beepstart = tps.bmm.beep_start
-    beepstop = tps.bmm.beep_stop
-    match compatibility.lower():
-        case "tps1000":
-            beepstart = tps.bmm.beep_on
-            beepstop = tps.bmm.beep_off
-        case "none":
-            pass
-        case _:
-            raise ValueError(f"Unknown compatibility option: {compatibility}")
-
     encoded = encode_message(message)
     with progressbar(
         encoded,
@@ -130,19 +121,19 @@ def morse_message(
         for char in stream:
             match char:
                 case ".":
-                    beepstart(intensity)
-                    sleep(unit_seconds)
+                    beepstart()
+                    sleep(unittime)
                     beepstop()
                 case "-":
-                    beepstart(intensity)
-                    sleep(3 * unit_seconds)
+                    beepstart()
+                    sleep(3 * unittime)
                     beepstop()
                 case "|":
-                    sleep(unit_seconds)
+                    sleep(unittime)
                 case "_":
-                    sleep(3 * unit_seconds)
+                    sleep(3 * unittime)
                 case " ":
-                    sleep(7 * unit_seconds)
+                    sleep(7 * unittime)
                 case _:
                     raise ValueError(
                         f"Invalid morse stream character: '{char}'"
@@ -154,7 +145,6 @@ def morse_message(
     params=None,
     context_settings={"auto_envvar_prefix": None}
 )  # type: ignore[misc]
-@version_option()
 @argument(
     "port",
     help=(
@@ -177,7 +167,7 @@ def morse_message(
 )
 @option(
     "-u",
-    "--unit",
+    "--unittime",
     help="beep unit time in milliseconds [ms]",
     type=IntRange(min=50),
     default=50
@@ -189,50 +179,53 @@ def morse_message(
     type=Choice(["none", "TPS1000"], case_sensitive=False),
     default="none"
 )
+@option(
+    "--ignore-non-ascii",
+    help="suppress encoding errors and skip non-ASCII characters",
+    is_flag=True
+)
 @option_group(
     "Connection options",
     "Options related to the serial connection",
-    option(
-        "-b",
-        "--baud",
-        help="serial speed",
-        type=int,
-        default=9600
-    ),
-    option(
-        "-t",
-        "--timeout",
-        help="serial timeout",
-        type=IntRange(min=0),
-        default=15
-    )
+    com_baud_option,
+    com_timeout_option
 )
 def cli(
     port: str,
     message: str,
     intensity: int = 100,
+    ignore_non_ascii: bool = False,
     baud: int = 9600,
     timeout: int = 15,
-    unit: int = 50,
+    unittime: int = 50,
     compatibility: str = "none",
 ) -> None:
     """Play a Morse encoded ASCII message through the beep signals
         of a GeoCom capable total station.
         """
-    try:
-        message.casefold().encode("ascii")
-    except UnicodeEncodeError:
-        echo_red("The message contains non-ASCII characters.")
-        exit(1)
+    if not ignore_non_ascii:
+        try:
+            message.casefold().encode("ascii")
+        except UnicodeEncodeError:
+            echo_red("The message contains non-ASCII characters.")
+            exit(1)
 
     with open_serial(port, speed=baud, timeout=timeout) as com:
-        ts = GeoCom(com)
-        morse_message(
-            ts,
+        tps = GeoCom(com)
+        beepstart = tps.bmm.beep_start
+        beepstop = tps.bmm.beep_stop
+        match compatibility.lower():
+            case "tps1000":
+                beepstart = tps.bmm.beep_on
+                beepstop = tps.bmm.beep_off
+            case "none":
+                pass
+
+        relay_message(
+            lambda: beepstart(intensity),
+            beepstop,
             message,
-            intensity,
-            unit,
-            compatibility
+            unittime * 1e-3
         )
         echo_green("Message complete.")
 
