@@ -33,7 +33,9 @@ from ..geo.gcdata import Prism
 from .utils import (
     echo_red,
     echo_green,
-    echo_yellow
+    echo_yellow,
+    com_baud_option,
+    com_timeout_option
 )
 from .targets import (
     TargetList,
@@ -151,20 +153,8 @@ def measure_targets(tps: GeoCom, filepath: str) -> TargetList | None:
 @option_group(
     "Connection options",
     "Options related to the serial connection",
-    option(
-        "-b",
-        "--baud",
-        help="serial speed",
-        type=int,
-        default=9600
-    ),
-    option(
-        "-t",
-        "--timeout",
-        help="serial timeout",
-        type=IntRange(min=0),
-        default=15
-    ),
+    com_baud_option,
+    com_timeout_option,
     option(
         "-r",
         "--retry",

@@ -2,8 +2,6 @@ try:
     from click_extra import (
         extra_command,
         argument,
-        option,
-        IntRange,
         echo,
         prompt
     )
@@ -30,7 +28,9 @@ from ..communication import open_serial
 from .utils import (
     echo_red,
     echo_green,
-    echo_yellow
+    echo_yellow,
+    com_baud_option,
+    com_timeout_option
 )
 
 
@@ -84,20 +84,8 @@ def tests(tps: GeoCom) -> None:
     type=str,
     help="serial port (e.g. COM1)"
 )
-@option(
-    "-b",
-    "--baud",
-    help="serial speed",
-    type=int,
-    default=9600
-)
-@option(
-    "-t",
-    "--timeout",
-    help="serial timeout",
-    type=IntRange(min=0),
-    default=15
-)
+@com_baud_option
+@com_timeout_option
 def cli(
     port: str,
     baud: int = 9600,

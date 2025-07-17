@@ -37,7 +37,11 @@ from ...communication import open_serial
 from ...geo import GeoCom
 from ...geo.gctypes import GeoComCode
 from ...geo.gcdata import Face
-from ..utils import make_logger
+from ..utils import (
+    make_logger,
+    com_baud_option,
+    com_timeout_option
+)
 from ..targets import (
     TargetPoint,
     TargetList,
@@ -190,20 +194,8 @@ def measure_set(
 @option_group(
     "Connection options",
     "Options related to the serial connection",
-    option(
-        "-b",
-        "--baud",
-        help="serial speed",
-        type=int,
-        default=9600
-    ),
-    option(
-        "-t",
-        "--timeout",
-        help="serial timeout",
-        type=IntRange(min=0),
-        default=15
-    ),
+    com_baud_option,
+    com_timeout_option,
     option(
         "-r",
         "--retry",
