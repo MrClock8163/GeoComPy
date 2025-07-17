@@ -1,74 +1,104 @@
 from time import sleep
-from typing import Callable, Any
 
-from click_extra import (
-    extra_command,
-    option,
-    option_group,
-    argument,
-    version_option,
-    Choice,
-    IntRange
-)
+try:
+    from click_extra import (
+        extra_command,
+        option,
+        option_group,
+        argument,
+        version_option,
+        Choice,
+        IntRange,
+        progressbar
+    )
+except ModuleNotFoundError:
+    print(
+        """
+Missing dependencies. The Morse app needs the following dependencies:
+- click-extra
 
-from geocompy import open_serial, GeoCom
+Install the missing dependencies manually, or install GeoComPy with the
+'apps' extra:
+
+pip install geocompy[apps]
+"""
+    )
+    exit(3)
+
+from ..geo import GeoCom
+from ..communication import open_serial
+from .utils import echo_red, echo_green
 
 
-def morse_character(
-    letter: str,
-    unit: float,
-    beepstart: Callable[[], Any],
-    beepstop: Callable[[], Any]
-) -> None:
-    lookup = {
-        "a": ".-",
-        "b": "-...",
-        "c": "-.-.",
-        "d": "-..",
-        "e": ".",
-        "f": "..-.",
-        "g": "--.",
-        "h": "....",
-        "i": "..",
-        "j": ".---",
-        "k": "-.-",
-        "l": ".-..",
-        "m": "--",
-        "n": "-.",
-        "o": "---",
-        "p": ".--.",
-        "q": "--.-",
-        "r": ".-.",
-        "s": "...",
-        "t": "-",
-        "u": "..-",
-        "v": "...-",
-        "w": ".--",
-        "x": "-..-",
-        "y": "-.--",
-        "z": "--..",
-        "1": ".----",
-        "2": "..---",
-        "3": "...--",
-        "4": "....-",
-        "5": ".....",
-        "6": "-....",
-        "7": "--...",
-        "8": "---..",
-        "9": "----.",
-        "0": "-----"
-    }
-    code = lookup[letter]
-    for i, signal in enumerate(code):
-        beepstart()
-        match signal:
-            case ".":
-                sleep(unit)
-            case "-":
-                sleep(unit * 3)
-        beepstop()
-        if i != len(code) - 1:
-            sleep(unit)
+MORSE_TABLE = {
+    "a": ".-",
+    "b": "-...",
+    "c": "-.-.",
+    "d": "-..",
+    "e": ".",
+    "f": "..-.",
+    "g": "--.",
+    "h": "....",
+    "i": "..",
+    "j": ".---",
+    "k": "-.-",
+    "l": ".-..",
+    "m": "--",
+    "n": "-.",
+    "o": "---",
+    "p": ".--.",
+    "q": "--.-",
+    "r": ".-.",
+    "s": "...",
+    "t": "-",
+    "u": "..-",
+    "v": "...-",
+    "w": ".--",
+    "x": "-..-",
+    "y": "-.--",
+    "z": "--..",
+    "1": ".----",
+    "2": "..---",
+    "3": "...--",
+    "4": "....-",
+    "5": ".....",
+    "6": "-....",
+    "7": "--...",
+    "8": "---..",
+    "9": "----.",
+    "0": "-----",
+    "&": ".-...",
+    "'": ".----.",
+    "@": ".--.-.",
+    "(": "-.--.",
+    ")": "-.--.-",
+    ":": "---...",
+    ",": "--..--",
+    "=": "-...-",
+    "!": "-.-.--",
+    ".": ".-.-.-",
+    "-": "-....-",
+    "%": "------..-.-----",
+    "+": ".-.-.",
+    "\"": ".-..-.",
+    "?": "..--..",
+    "/": "-..-.",
+    "\n": ".-.-"
+}
+
+
+def encode_message(
+    message: str
+) -> str:
+    words: list[str] = []
+    for word in message.lower().split(" "):
+        w: list[str] = []
+        for letter in word:
+            w.append("|".join(MORSE_TABLE.get(letter, "")))
+
+        words.append("_".join(w))
+
+    return " ".join(words)
 
 
 def morse_message(
@@ -91,21 +121,32 @@ def morse_message(
         case _:
             raise ValueError(f"Unknown compatibility option: {compatibility}")
 
-    words = message.lower().split(" ")
-    for i, word in enumerate(words):
-        for j, letter in enumerate(word):
-            morse_character(
-                letter,
-                unit_seconds,
-                lambda: beepstart(intensity),
-                beepstop
-            )
-
-            if j != len(word) - 1:
-                sleep(unit_seconds * 3)
-
-        if i != len(words) - 1:
-            sleep(unit_seconds * 7)
+    encoded = encode_message(message)
+    with progressbar(
+        encoded,
+        label="Relaying message",
+        show_eta=False
+    ) as stream:
+        for char in stream:
+            match char:
+                case ".":
+                    beepstart(intensity)
+                    sleep(unit_seconds)
+                    beepstop()
+                case "-":
+                    beepstart(intensity)
+                    sleep(3 * unit_seconds)
+                    beepstop()
+                case "|":
+                    sleep(unit_seconds)
+                case "_":
+                    sleep(3 * unit_seconds)
+                case " ":
+                    sleep(7 * unit_seconds)
+                case _:
+                    raise ValueError(
+                        f"Invalid morse stream character: '{char}'"
+                    )
 
 
 @extra_command(
@@ -178,6 +219,12 @@ def cli(
     """Play a Morse encoded ASCII message through the beep signals
         of a GeoCom capable total station.
         """
+    try:
+        message.casefold().encode("ascii")
+    except UnicodeEncodeError:
+        echo_red("The message contains non-ASCII characters.")
+        exit(1)
+
     with open_serial(port, speed=baud, timeout=timeout) as com:
         ts = GeoCom(com)
         morse_message(
@@ -187,6 +234,7 @@ def cli(
             unit,
             compatibility
         )
+        echo_green("Message complete.")
 
 
 if __name__ == "__main__":
