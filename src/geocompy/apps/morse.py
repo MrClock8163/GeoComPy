@@ -31,7 +31,8 @@ from .utils import (
     echo_red,
     echo_green,
     com_baud_option,
-    com_timeout_option
+    com_timeout_option,
+    com_port_argument
 )
 
 
@@ -145,14 +146,7 @@ def relay_message(
     params=None,
     context_settings={"auto_envvar_prefix": None}
 )  # type: ignore[misc]
-@argument(
-    "port",
-    help=(
-        "serial port that the instrument is connected to (must be a valid "
-        "identifier like COM1 or /dev/usbtty0)"
-    ),
-    type=str
-)
+@com_port_argument()
 @argument(
     "message",
     help="message to relay as a string of ASCII characters",
@@ -187,8 +181,8 @@ def relay_message(
 @option_group(
     "Connection options",
     "Options related to the serial connection",
-    com_baud_option,
-    com_timeout_option
+    com_baud_option(),
+    com_timeout_option()
 )
 def cli(
     port: str,

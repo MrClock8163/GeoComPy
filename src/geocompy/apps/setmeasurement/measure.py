@@ -40,7 +40,8 @@ from ...geo.gcdata import Face
 from ..utils import (
     make_logger,
     com_baud_option,
-    com_timeout_option
+    com_timeout_option,
+    com_port_argument
 )
 from ..targets import (
     TargetPoint,
@@ -176,11 +177,7 @@ def measure_set(
     params=None,
     context_settings={"auto_envvar_prefix": None}
 )  # type: ignore[misc]
-@argument(
-    "port",
-    type=str,
-    help="serial port (e.g. COM1)"
-)
+@com_port_argument()
 @argument(
     "targets",
     type=file_path(exists=True),
@@ -194,8 +191,8 @@ def measure_set(
 @option_group(
     "Connection options",
     "Options related to the serial connection",
-    com_baud_option,
-    com_timeout_option,
+    com_baud_option(),
+    com_timeout_option(),
     option(
         "-r",
         "--retry",

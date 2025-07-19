@@ -35,7 +35,8 @@ from .utils import (
     echo_green,
     echo_yellow,
     com_baud_option,
-    com_timeout_option
+    com_timeout_option,
+    com_port_argument
 )
 from .targets import (
     TargetList,
@@ -137,11 +138,7 @@ def measure_targets(tps: GeoCom, filepath: str) -> TargetList | None:
     params=None,
     context_settings={"auto_envvar_prefix": None}
 )  # type: ignore[misc]
-@argument(
-    "port",
-    help="serial port (e.g. COM1)",
-    type=str
-)
+@com_port_argument()
 @argument(
     "output",
     help=(
@@ -153,8 +150,8 @@ def measure_targets(tps: GeoCom, filepath: str) -> TargetList | None:
 @option_group(
     "Connection options",
     "Options related to the serial connection",
-    com_baud_option,
-    com_timeout_option,
+    com_baud_option(),
+    com_timeout_option(),
     option(
         "-r",
         "--retry",

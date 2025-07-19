@@ -1,7 +1,6 @@
 try:
     from click_extra import (
         extra_command,
-        argument,
         echo,
         prompt
     )
@@ -30,7 +29,8 @@ from .utils import (
     echo_green,
     echo_yellow,
     com_baud_option,
-    com_timeout_option
+    com_timeout_option,
+    com_port_argument
 )
 
 
@@ -79,13 +79,9 @@ def tests(tps: GeoCom) -> None:
     params=None,
     context_settings={"auto_envvar_prefix": None}
 )  # type: ignore[misc]
-@argument(
-    "port",
-    type=str,
-    help="serial port (e.g. COM1)"
-)
-@com_baud_option
-@com_timeout_option
+@com_port_argument()
+@com_baud_option()
+@com_timeout_option()
 def cli(
     port: str,
     baud: int = 9600,

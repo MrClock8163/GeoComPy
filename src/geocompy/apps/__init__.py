@@ -1,6 +1,4 @@
-from click_extra import (
-    extra_group,
-)
+from click_extra import extra_group
 
 from . import morse
 from . import terminal

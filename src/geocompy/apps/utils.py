@@ -1,10 +1,13 @@
 from logging import DEBUG, ERROR, INFO, WARNING, Logger
 import os
 
-from click_extra import Color, echo, style, option, Choice, IntRange
-from typing import Any, Callable, cast
+from click_extra import Color, echo, style, option, argument, Choice, IntRange
+from typing import Any, Callable, cast, TypeVar
 
 from geocompy.communication import get_logger
+
+
+F = TypeVar('F', bound=Callable[..., Any])
 
 
 EXIT_CODE_DESCRIPTIONS: dict[int, str] = {
@@ -20,37 +23,50 @@ EXIT_CODE_DESCRIPTIONS: dict[int, str] = {
 }
 
 
-com_timeout_option = option(
-    "-t",
-    "--timeout",
-    help="serial timeout",
-    type=IntRange(min=0),
-    default=15
-)
+def com_port_argument() -> Callable[[F], F]:
+    return argument(
+        "port",
+        help=(
+            "serial port that the instrument is connected to (must be a valid "
+            "identifier like COM1 or /dev/usbtty0)"
+        ),
+        type=str
+    )
 
 
-com_baud_option = option(
-    "-b",
-    "--baud",
-    help="serial speed",
-    type=Choice(
-        [
-            "1200",
-            "2400",
-            "4800",
-            "9600",
-            "19200",
-            "38400",
-            "56000",
-            "57600",
-            "115200",
-            "230400",
-            "921600"
-        ]
-    ),
-    callback=lambda ctx, param, value: int(value),
-    default="9600"
-)
+def com_timeout_option() -> Callable[[F], F]:
+    return option(
+        "-t",
+        "--timeout",
+        help="serial timeout",
+        type=IntRange(min=0),
+        default=15
+    )
+
+
+def com_baud_option() -> Callable[[F], F]:
+    return option(
+        "-b",
+        "--baud",
+        help="serial speed",
+        type=Choice(
+            [
+                "1200",
+                "2400",
+                "4800",
+                "9600",
+                "19200",
+                "38400",
+                "56000",
+                "57600",
+                "115200",
+                "230400",
+                "921600"
+            ]
+        ),
+        callback=lambda ctx, param, value: int(value),
+        default="9600"
+    )
 
 
 def echo_color(
