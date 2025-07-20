@@ -381,7 +381,7 @@ class Resolution(Enum):
     R2560X1920 = 0
     R1280X960 = 3
     R640X480 = 4
-    R720X240 = 5
+    R320X240 = 5
 
 
 class Zoom(Enum):
