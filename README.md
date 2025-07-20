@@ -4,7 +4,7 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/geocompy)](https://pypi.org/project/geocompy/)
 [![Python Version](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FMrClock8163%2FGeoComPy%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)](https://pypi.org/project/geocompy/)
-[![GPLv3](https://img.shields.io/github/license/mrclock8163/geocompy)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![MIT](https://img.shields.io/github/license/mrclock8163/geocompy)](https://opensource.org/license/mit)
 [![Tests status](https://img.shields.io/github/actions/workflow/status/mrclock8163/geocompy/run-tests.yml?label=tests)](https://github.com/MrClock8163/GeoComPy)
 [![Docs status](https://app.readthedocs.org/projects/geocompy/badge/?version=latest)](https://geocompy.readthedocs.io/latest/)
 [![Typed](https://img.shields.io/pypi/types/geocompy)](https://pypi.org/project/geocompy/)
