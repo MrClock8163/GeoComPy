@@ -11,10 +11,8 @@ release = __version__
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.doctest",
     "sphinx.ext.linkcode",
     "sphinx.ext.napoleon",
-    "sphinxarg.ext",
     "notfound.extension",
     "sphinx_last_updated_by_git",
     "sphinx_immaterial",
@@ -161,7 +159,8 @@ nitpick_ignore_regex = {
 }
 
 
-def linkcode_resolve(domain, info):  # GitHub source linking
+# GitHub source linking
+def linkcode_resolve(domain: str, info: dict[str, str]) -> str | None:
     if domain != 'py':
         return None
     if not info['module']:

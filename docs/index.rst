@@ -52,16 +52,6 @@ Content
    connections
    changelog
 
-
-.. toctree::
-    :maxdepth: 1
-    :caption: Applications
-
-    apps/geocomtest
-    apps/morse
-    apps/setmeasurement/index
-    apps/terminal
-
 .. toctree::
    :maxdepth: 1
    :caption: API documentation

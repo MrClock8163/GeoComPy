@@ -52,18 +52,10 @@ testing = [
 linting = [
     {include-group = "testing"},
     "types-pyserial",
-    "types-jsonschema",
-    "types-jmespath",
     "mypy",
     "flake8"
 ]
 development = [
-    "pyserial",
-    "textual",
-    "rapidfuzz",
-    "jsonschema",
-    "jmespath",
-    "numpy",
     {include-group = "linting"}
 ]
 documentation = [
@@ -71,13 +63,8 @@ documentation = [
     "sphinx-notfound-page==1.1.0",
     "sphinx-last-updated-by-git==0.3.8",
     "sphinx-immaterial==0.13.5",
-    "sphinx-mdinclude==0.6.2",
-    "sphinx-argparse==0.5.2"
+    "sphinx-mdinclude==0.6.2"
 ]
-
-[project.optional-dependencies]
-all = ["geocompy[apps]"]
-apps = ["textual", "rapidfuzz", "jsonschema", "jmespath", "numpy"]
 
 [tool.hatch.version]
 source = "vcs"
