@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.8.0 (in development)
+## v0.8.0
 
 All CLI applications were migrated to a new package called
 [Instrumentman](https://github.com/MrClock8163/Instrumentman). Further

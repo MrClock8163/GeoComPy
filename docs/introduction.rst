@@ -221,14 +221,59 @@ Some examples of the information logged on various levels:
 - all unexpected exceptions
 - all command responses
 
-Application development
------------------------
+Error handling and development
+------------------------------
 
 As described in the previous sections, under normal conditions, all commands
 return response wrapper objects. If an error occured it is indicated by the
 error code in the response object and/or the lack of parsed parameters. These
 errors have to be explicitly handled in the application.
 
-The command line programs implemented in the
-`Instrumentman <https://github.com/MrClock8163/Instrumentman>`_ package can be
-used as reference examples.
+The simplest solution is to check if the error code is simple ``OK``:
+
+.. code-block:: python
+
+    response = tps.ftr.setup_listing()
+    if response.error != GeoComCode.OK:
+        # handle error
+
+When static type checkers are involved, it might be necessary check for both
+the error code and the existence of the parsed parameters.
+
+.. code-block:: python
+
+    response = tps.ftr.setup_listing()
+    if response.error != GeoComCode.OK and response.params is not None:
+        # handle error
+
+Different commands return different errors signaling the various issues.
+Some errors might be recoverable, some might not.
+
+.. code-block:: python
+
+    response = tps.aut.fine_adjust(1, 1)
+    if response.error == GeoComCode.AUT_NOT_ENABLED:
+        response = tps.aus.switch_user_atr(True)
+        if response.error == GeoComCode.OK:
+            reponse = tps.aut.fine_adjust(1, 1)
+        else:
+            print("Cannot activate ATR")
+            exit(1)
+    
+    if response.error == GeoComCode.AUT_NO_TARGET:
+        response_ps = tps.aut.powersearch_next('CLOCKWISE', True)
+        if response_ps.error != GeoComCode.OK:
+            print("Could not find target")
+            exit(1)
+        else:
+            response = tps.aut.fine_adjust(1, 1)
+
+    if response.error != GeoComCode.OK:
+        print("ATR fine adjustment failed, and could not reackquire target")
+        exit(1)
+
+.. note::
+
+    The command line programs implemented in the
+    `Instrumentman <https://github.com/MrClock8163/Instrumentman>`_ package can
+    be used as reference examples for development.
