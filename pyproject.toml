@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 dynamic = ["version"]
 name = "geocompy"
 authors = [
-  { name="MrClock", email="mrclock8163@gmail.com" },
+    {name="MrClock", email="mrclock8163@gmail.com"},
 ]
 description = "Surveying instrument automation through GeoCom and other protocols."
 readme = "README.md"
@@ -43,6 +43,7 @@ keywords = ["geocom", "surveying", "leica", "totalstation", "monitoring", "autom
 Documentation = "https://geocompy.readthedocs.io"
 Repository = "https://github.com/MrClock8163/geocompy"
 Issues = "https://github.com/MrClock8163/geocompy/issues"
+Changelog = "https://geocompy.readthedocs.io/latest/changelog"
 
 [dependency-groups]
 testing = [
