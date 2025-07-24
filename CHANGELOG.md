@@ -2,21 +2,18 @@
 
 ## v0.8.0 (in development)
 
+All CLI applications were migrated to a new package called
+[Instrumentman](https://github.com/MrClock8163/Instrumentman). Further
+development happens there.
+
 ### Added
 
 - Component swizzling in vectors and coordinates
-- GeoCom testing CLI application (`geocompy.apps.geocomtest`)
-- Morse CLI application:
-  - beep unit time option
-  - instrument compatibility option
 
 ### Changed
 
-- Wait/delay times are now expected in seconds instead of milliseconds, where possible
-
-### Fixed
-
-- The Interactive Terminal app could not be launched with Python 3.11 due to an f-string error
+- Wait/delay times are now expected in seconds instead of milliseconds,
+  where possible
 
 ## v0.7.0
 
@@ -33,7 +30,8 @@
 
 - GeoCom
   - Digital Level
-    - LS10/15 GeoCom support through new `dna` subsytem (LS10/15 also responds to GSI Online DNA commands)
+    - LS10/15 GeoCom support through new `dna` subsytem (LS10/15 also responds
+      to GSI Online DNA commands)
   - Central Services
     - `get_firmware_creation_date` command (RPC 5038)
     - `get_datetime_new` command (RPC 5051)
@@ -46,7 +44,8 @@
 ### Fixed
 
 - `morse.py` example script was not using the most up-to-date methods
-- GeoCom File Transfer subsystem commmands were missing from the command name lookup table
+- GeoCom File Transfer subsystem commmands were missing from the command name
+  lookup table
 
 ## v0.5.1
 

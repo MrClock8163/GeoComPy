@@ -54,6 +54,12 @@ Content
 
 .. toctree::
    :maxdepth: 1
+   :caption: External references
+
+   Instrumentman package <https://instrumentman.readthedocs.io>
+
+.. toctree::
+   :maxdepth: 1
    :caption: API documentation
 
    api/index

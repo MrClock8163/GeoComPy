@@ -22,6 +22,11 @@ the GSI Online command set is used for communication.
 - **Source:** https://github.com/MrClock8163/GeoComPy
 - **Bug reports:** https://github.com/MrClock8163/GeoComPy/issues
 
+>[!TIP]
+>Command line applications using GeoComPy are available as a separate
+>complimentary package called
+>[Instrumentman](https://github.com/MrClock8163/Instrumentman).
+
 ## Main features
 
 - Pure Python implementation
