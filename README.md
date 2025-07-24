@@ -22,6 +22,11 @@ the GSI Online command set is used for communication.
 - **Source:** https://github.com/MrClock8163/GeoComPy
 - **Bug reports:** https://github.com/MrClock8163/GeoComPy/issues
 
+>[!TIP]
+>Command line applications using GeoComPy are available as a separate
+>complimentary package called
+>[Instrumentman](https://github.com/MrClock8163/Instrumentman).
+
 ## Main features
 
 - Pure Python implementation
@@ -29,7 +34,6 @@ the GSI Online command set is used for communication.
 - Primitives for relevant data
 - Command building and parsing through function calls
 - Multiple supported protocols (e.g. GeoCom, GSI Online)
-- Command line applications
 
 ## Requirements
 
@@ -39,10 +43,6 @@ For the platform independent serial communication, GeoComPy relies on the
 [pySerial](https://pypi.org/project/pyserial/) package to provide the
 necessary abstractions.
 
-The command line applications might require additional dependencies, that
-are not installed by default. The requirements for these can be found in
-the relevant documentation.
-
 ## Installation
 
 The preferred method to install GeoComPy is through PyPI, where both wheel
@@ -50,14 +50,6 @@ and source distributions are made available.
 
 ```shell
 python -m pip install geocompy
-```
-
-The dependencies of the command line applications are not installed by
-default. To make the CLI apps usable either install the dependencies
-manually, or install GeoComPy with the ``apps`` extra.
-
-```shell
-python -m pip install geocompy[apps]
 ```
 
 If not yet published changes/fixes are needed, that are only available in

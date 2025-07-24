@@ -80,12 +80,11 @@ communication parameters are syncronized.
     :caption: Initializing instrument connection with GeoCom
     :linenos:
 
-    from geocompy.communication import open_serial
-    from geocompy.tps1200p import TPS1200P
+    from geocompy import GeoCom, open_serial
 
 
-    with open_serial("COM1", timeout=10) as conn:
-        tps = TPS1200P(conn)
+    with open_serial("COM1", timeout=10) as com:
+        tps = GeoCom(com)
 
 .. note::
 
@@ -162,12 +161,11 @@ parameters are syncronized.
     :caption: Initializing instrument connection with GSI Online
     :linenos:
 
-    from geocompy.communication import open_serial
-    from geocompy.dna import DNA
+    from geocompy import GsiOnlineDNA, open_serial
 
 
-    with open_serial("COM1", timeout=10) as conn:
-        level = DNA(conn)
+    with open_serial("COM1", timeout=10) as com:
+        level = GsiOnlineDNA(com)
 
 .. note::
 
@@ -208,13 +206,12 @@ used to create a simple logger.
 
     from logging import DEBUG
 
-    from geocompy.communication import open_serial, get_logger
-    from geocompy.dna import DNA
+    from geocompy import GsiOnlineDNA, open_serial, get_logger
 
 
     log = get_logger("DNA", "stdout", DEBUG)
-    with open_serial("COM1", timeout=15) as conn:
-        level = DNA(conn, log)
+    with open_serial("COM1", timeout=15) as com:
+        level = GsiOnlineDNA(com, log)
 
 Some examples of the information logged on various levels:
 
@@ -223,3 +220,15 @@ Some examples of the information logged on various levels:
 - instrument shutdown
 - all unexpected exceptions
 - all command responses
+
+Application development
+-----------------------
+
+As described in the previous sections, under normal conditions, all commands
+return response wrapper objects. If an error occured it is indicated by the
+error code in the response object and/or the lack of parsed parameters. These
+errors have to be explicitly handled in the application.
+
+The command line programs implemented in the
+`Instrumentman <https://github.com/MrClock8163/Instrumentman>`_ package can be
+used as reference examples.

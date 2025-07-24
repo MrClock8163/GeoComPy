@@ -1,3 +1,5 @@
+:orphan:
+
 ######################
 GeoComPy documentation
 ######################
@@ -13,17 +15,6 @@ GeoComPy
    introduction
    connections
    changelog
-
-************
-Applications
-************
-
-.. toctree::
-
-    apps/geocomtest
-    apps/morse
-    apps/setmeasurement/index
-    apps/terminal
 
 *****************
 API documentation

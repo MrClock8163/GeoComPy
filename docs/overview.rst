@@ -35,7 +35,10 @@ Features
     - TPS1200(+)
     - VivaTPS
 
-- Command line applications
+.. tip::
+
+    Command line applications are available in a separate package called
+    `Instrumentman <https://github.com/MrClock8163/Instrumentman>`_.
 
 Requirements
 ------------
@@ -52,7 +55,7 @@ The installed package and subpackages can be imported from the
 .. code-block:: python
     :caption: Import example
 
-    from geocompy.tps1200p import TPS1200P
+    from geocompy import GeoCom
 
 As with any Python package, it might be advisable to install GeoComPy
 in an isolated enviroment, like a virtual enviroment for more complex
@@ -68,15 +71,6 @@ Package dependencies are automatically handled.
     :caption: Installing from PyPI
 
     pip install geocompy
-
-The dependencies of the CLI applications are not installed by default.
-These either have to be installed manually, or GeoComPy has to be
-installed with the ``apps`` extra.
-
-.. code-block:: shell
-    :caption: Installing from PyPI with CLI app dependencies included
-
-    pip install geocompy[apps]
 
 From source
 ^^^^^^^^^^^

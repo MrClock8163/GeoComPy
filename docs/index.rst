@@ -52,15 +52,11 @@ Content
    connections
    changelog
 
-
 .. toctree::
-    :maxdepth: 1
-    :caption: Applications
+   :maxdepth: 1
+   :caption: External references
 
-    apps/geocomtest
-    apps/morse
-    apps/setmeasurement/index
-    apps/terminal
+   Instrumentman package <https://instrumentman.readthedocs.io>
 
 .. toctree::
    :maxdepth: 1

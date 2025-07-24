@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 dynamic = ["version"]
 name = "geocompy"
 authors = [
-  { name="MrClock", email="mrclock8163@gmail.com" },
+    {name="MrClock", email="mrclock8163@gmail.com"},
 ]
 description = "Surveying instrument automation through GeoCom and other protocols."
 readme = "README.md"
@@ -43,6 +43,7 @@ keywords = ["geocom", "surveying", "leica", "totalstation", "monitoring", "autom
 Documentation = "https://geocompy.readthedocs.io"
 Repository = "https://github.com/MrClock8163/geocompy"
 Issues = "https://github.com/MrClock8163/geocompy/issues"
+Changelog = "https://geocompy.readthedocs.io/latest/changelog"
 
 [dependency-groups]
 testing = [
@@ -52,18 +53,10 @@ testing = [
 linting = [
     {include-group = "testing"},
     "types-pyserial",
-    "types-jsonschema",
-    "types-jmespath",
     "mypy",
     "flake8"
 ]
 development = [
-    "pyserial",
-    "textual",
-    "rapidfuzz",
-    "jsonschema",
-    "jmespath",
-    "numpy",
     {include-group = "linting"}
 ]
 documentation = [
@@ -71,13 +64,8 @@ documentation = [
     "sphinx-notfound-page==1.1.0",
     "sphinx-last-updated-by-git==0.3.8",
     "sphinx-immaterial==0.13.5",
-    "sphinx-mdinclude==0.6.2",
-    "sphinx-argparse==0.5.2"
+    "sphinx-mdinclude==0.6.2"
 ]
-
-[project.optional-dependencies]
-all = ["geocompy[apps]"]
-apps = ["textual", "rapidfuzz", "jsonschema", "jmespath", "numpy"]
 
 [tool.hatch.version]
 source = "vcs"
