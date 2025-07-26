@@ -51,6 +51,7 @@ class GeoComMOT(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `ATRLock`: ATR lock status.
+
             Error codes:
                 - ``NOT_IMPL``: Motorization not available.
 

@@ -196,6 +196,7 @@ class GeoComTMC(GeoComSubsystem):
                 - `Angle`: Horizontal angle.
                 - `Angle`: Vertical angle.
                 - `float`: Slope distance.
+
             Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
@@ -210,6 +211,7 @@ class GeoComTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
+
             Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
@@ -271,6 +273,7 @@ class GeoComTMC(GeoComSubsystem):
                 - `Angle`: Inclination accuracy.
                 - `int`: Time of inclination measurement.
                 - `Face`: Instrument face.
+
             Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
@@ -285,6 +288,7 @@ class GeoComTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
+
             Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
@@ -339,6 +343,7 @@ class GeoComTMC(GeoComSubsystem):
             Params:
                 - `Angle`: Horizontal angle.
                 - `Angle`: Vertical angle.
+
             Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
@@ -353,6 +358,7 @@ class GeoComTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
+
             Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
@@ -393,6 +399,7 @@ class GeoComTMC(GeoComSubsystem):
                 - `Angle`: Horizontal angle.
                 - `Angle`: Vertical angle.
                 - `float`: Slope distance.
+
             Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
@@ -407,6 +414,7 @@ class GeoComTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
+
             Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
@@ -470,6 +478,7 @@ class GeoComTMC(GeoComSubsystem):
                 - `Angle`: Inclination accuracy.
                 - `float`: Slope distance.
                 - `float`: Distance measurement time [ms].
+
             Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
@@ -484,6 +493,7 @@ class GeoComTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
+
             Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
@@ -1070,6 +1080,7 @@ class GeoComTMC(GeoComSubsystem):
             Params:
                 - `float`: Return signal intensity [%].
                 - `int`: Time of the signal measurement.
+
             Error codes:
                 - ``TMC_SIGNAL_ERROR``: Error in signal measurement.
                 - ``ABORT``: Measurement was aborted.
@@ -1306,7 +1317,8 @@ class GeoComTMC(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `COORDINATE`: Calculated coordinate.
+                - `Coordinate`: Calculated coordinate.
+
             Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified

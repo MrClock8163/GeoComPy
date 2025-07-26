@@ -59,6 +59,7 @@ class GeoComBAP(GeoComSubsystem):
             Params:
                 - `int`: Last error, warning or info number.
                 - `int`: Corresponding GSI error number.
+
             Error codes:
                 - ``IVRESULT``: No error was displayed since last call.
 
@@ -219,6 +220,7 @@ class GeoComBAP(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `Prism`: Current prism type.
+
             Error codes:
                 - ``IVRESULT``: EDM is set to reflectorless mode.
 
@@ -287,6 +289,7 @@ class GeoComBAP(GeoComSubsystem):
                 - `str`: Name of the prism.
                 - `float`: Additive prism constant.
                 - `Reflector`: Reflector type.
+
             Error codes:
                 - ``IVPARAM``: Invalid prism type.
 
@@ -518,6 +521,7 @@ class GeoComBAP(GeoComSubsystem):
                 - `float`: Additive prism constant.
                 - `Reflector`: Reflector type.
                 - `str`: Creator of the prism definition.
+
             Error codes:
                 - ``IVPARAM``: Invalid prism definition.
 

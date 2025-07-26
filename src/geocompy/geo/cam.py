@@ -98,6 +98,7 @@ class GeoComCAM(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `Zoom`: Current zoom level.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 
@@ -186,6 +187,7 @@ class GeoComCAM(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `Coordinate`: Viewing vector.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 
@@ -241,6 +243,7 @@ class GeoComCAM(GeoComSubsystem):
             Params:
                 - `Angle`: Horizontal field of view.
                 - `Angle`: Vertical field of view.
+
             Error codes:
                 - ``IVPARAM``: Invalid parameter.
                 - ``NA``: Imaging license not found.
@@ -521,6 +524,7 @@ class GeoComCAM(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `bool`: Camera is powered and active.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 
@@ -649,6 +653,7 @@ class GeoComCAM(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `int`: Autofocus motor position.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 
@@ -789,6 +794,7 @@ class GeoComCAM(GeoComSubsystem):
             Params:
                 - `float`: Sensor width.
                 - `float`: Sensor height.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 
@@ -815,6 +821,7 @@ class GeoComCAM(GeoComSubsystem):
             Params:
                 - `int`: Horizontal position.
                 - `int`: Vertical position.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 
@@ -849,6 +856,7 @@ class GeoComCAM(GeoComSubsystem):
                 - `float`: Vertical position of principal point.
                 - `float`: Focus length.
                 - `float`: Pixel size.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 
@@ -886,6 +894,7 @@ class GeoComCAM(GeoComSubsystem):
                 - `Angle`: Azimut angle.
                 - `Angle`: Zenith angle.
                 - `Angle`: Tilt angle.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 

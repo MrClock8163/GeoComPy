@@ -120,6 +120,7 @@ class GeoComEDM(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `bool`: Boomerang filtering is enabled.
+
             Error codes:
                 - ``IVRESULT``: Wrong result due to error.
                 - ``SYSBUSY``: EDM is already busy.
@@ -184,6 +185,7 @@ class GeoComEDM(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `Tracklight`: Tracklight brightness.
+
             Error codes:
                 - ``NOT_IMPL``: Tracklight is not available.
         """
@@ -233,6 +235,7 @@ class GeoComEDM(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `bool`: Tracklight is on.
+
             Error codes:
                 - ``NOT_IMPL``: Tracklight is not available.
         """
@@ -283,6 +286,7 @@ class GeoComEDM(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `Guidelight`: Current intensity mode.
+
             Error codes:
                 - ``EDM_DEV_NOT_INSTALLED``: Instrument has no
                   EGL.

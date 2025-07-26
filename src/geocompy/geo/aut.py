@@ -629,6 +629,7 @@ class GeoComAUT(GeoComSubsystem):
                 - `Angle`: Width of window.
                 - `Angle`: Height of window.
                 - `bool`: If window is enabled.
+
             Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 
@@ -706,6 +707,7 @@ class GeoComAUT(GeoComSubsystem):
             Params:
                 - `Angle`: Width of window.
                 - `Angle`: Height of window.
+
             Error codes:
                 - ``NA``: GeoCom Robotic license not found.
 

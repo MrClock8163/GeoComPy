@@ -61,6 +61,7 @@ class GeoComIMG(GeoComSubsystem):
                 - `int`: JPEG compression quality [0; 100]%
                 - `CameraFunctions`: Current camera function combination.
                 - `str`: File name prefix.
+
             Error codes:
                 - ``FATAL``: CF card is not available, or config file does
                   not exist.
@@ -150,6 +151,7 @@ class GeoComIMG(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `int`: Number of new image.
+
             Error codes:
                 - ``IVRESULT``: Not supported by telescope firmware.
                 - ``FATAL``: CF card is not available or is full.

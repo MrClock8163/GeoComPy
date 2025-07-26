@@ -110,6 +110,7 @@ class GeoComFTR(GeoComSubsystem):
                 - `str`: Name of the file.
                 - `int`: File size [byte].
                 - `datetime` | None: Date and time of last modification.
+
             Error codes:
                 - ``FTR_MISSINGSETUP``: No active listing setup.
                 - ``FTR_INVALIDINPUT``: First item is missing, or last
@@ -210,6 +211,7 @@ class GeoComFTR(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `int`: Number of download blocks needed.
+
             Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
@@ -252,6 +254,7 @@ class GeoComFTR(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `str`: Data block as hexadecimal byte string.
+
             Error codes:
                 - ``FTR_MISSINGSETUP``: No active download setup.
                 - ``FTR_INVALIDINPUT``: First block is missing.
@@ -317,6 +320,7 @@ class GeoComFTR(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `int`: Number of files deleted.
+
             Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
@@ -375,6 +379,7 @@ class GeoComFTR(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `int`: Number of directories deleted.
+
             Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
@@ -436,6 +441,7 @@ class GeoComFTR(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `int`: Number of download blocks needed.
+
             Error codes:
                 - ``IVPARAM``: Memory device unavailable, or cannot find
                   file path.
@@ -480,6 +486,7 @@ class GeoComFTR(GeoComSubsystem):
         GeoComResponse
             Params:
                 - `str`: Data block as hexadecimal byte string.
+
             Error codes:
                 - ``FTR_MISSINGSETUP``: No active download setup.
                 - ``FTR_INVALIDINPUT``: First block is missing.

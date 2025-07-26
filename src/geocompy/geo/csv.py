@@ -139,6 +139,7 @@ class GeoComCSV(GeoComSubsystem):
             Params:
                 - `DeviceClass`: Class of the instrument.
                 - `Capabilities`: Configuration of the components.
+
             Error codes:
                 - ``UNDEFINED``: Precision class is undefined.
 
