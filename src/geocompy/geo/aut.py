@@ -690,7 +690,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         return self._request(
             9043,
-            [float(hz), float(v), float(width), float(height), float(enabled)]
+            [float(hz), float(v), float(width), float(height), enabled]
         )
 
     def get_spiral(self) -> GeoComResponse[tuple[Angle, Angle]]:
