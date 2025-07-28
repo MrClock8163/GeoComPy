@@ -19,7 +19,8 @@ from ..gsitypes import (
 )
 from ...data import (
     toenum,
-    enumparser
+    enumparser,
+    parsebool
 )
 from ..gsidata import (
     Communication,
@@ -448,7 +449,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             75,
-            bool
+            parsebool
         )
 
     def set_recorder(
@@ -660,7 +661,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             106,
-            bool
+            parsebool
         )
 
     def set_curvature_correction(
@@ -701,7 +702,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             125,
-            bool
+            parsebool
         )
 
     def set_staff_mode(
@@ -743,7 +744,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._confrequest(
             127,
-            bool
+            parsebool
         )
 
     def set_format(
