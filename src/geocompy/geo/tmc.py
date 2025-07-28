@@ -1099,7 +1099,7 @@ class GeoComTMC(GeoComSubsystem):
             )
         )
 
-    def get_angle_correction_status(
+    def get_angle_correction(
         self
     ) -> GeoComResponse[tuple[bool, bool, bool, bool]]:
         """
@@ -1118,7 +1118,7 @@ class GeoComTMC(GeoComSubsystem):
 
         See Also
         --------
-        switch_angle_correction
+        set_angle_correction
 
         """
         return self._request(
@@ -1418,7 +1418,7 @@ class GeoComTMC(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def switch_angle_correction(
+    def set_angle_correction(
         self,
         inclinecorr: bool,
         stdaxiscorr: bool,
@@ -1450,7 +1450,7 @@ class GeoComTMC(GeoComSubsystem):
         See Also
         --------
         do_measurement
-        get_angle_correction_status
+        get_angle_correction
 
         """
         return self._request(
