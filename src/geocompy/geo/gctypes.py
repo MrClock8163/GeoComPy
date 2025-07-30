@@ -1205,6 +1205,15 @@ class GeoComType(ABC):
     """
     Interface definition for the GeoCom protocol handler type.
     """
+
+    @property
+    @abstractmethod
+    def precision(self) -> float: ...
+
+    @precision.setter
+    @abstractmethod
+    def precision(self, value: float) -> None: ...
+
     @overload
     @abstractmethod
     def request(

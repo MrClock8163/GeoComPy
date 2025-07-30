@@ -73,7 +73,7 @@ class TestGeoCom:
 
         conn_good = DummyGeoComConnection()
         instrument = GeoCom(conn_good)
-        assert instrument._precision == 15
+        assert instrument.precision == 15
 
     def test_parse_response(self, instrument: GeoCom) -> None:
         cmd = "%R1Q,5008,0:"

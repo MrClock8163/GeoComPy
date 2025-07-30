@@ -155,7 +155,7 @@ class GeoCom(GeoComType):
         if logger is None:
             logger = get_logger("/dev/null")
         self._logger: Logger = logger
-        self._precision = 15
+        self.precision = 15
 
         self.aus: GeoComAUS = GeoComAUS(self)
         """
@@ -239,14 +239,14 @@ class GeoCom(GeoComType):
                 "could not establish connection to instrument"
             )
 
-        resp = self.get_double_precision()
+        resp = self.com.get_double_precision()
         if resp.params is not None:
-            self._precision = resp.params
-            self._logger.info(f"Synced double precision: {self._precision}")
+            self.precision = resp.params
+            self._logger.info(f"Synced double precision: {self.precision}")
         else:
             self._logger.error(
                 f"Could not syncronize double precision, "
-                f"defaulting to {self._precision:d}"
+                f"defaulting to {self.precision:d}"
             )
 
         self._logger.info("Connection initialized")
@@ -258,6 +258,18 @@ class GeoCom(GeoComType):
             f"(firmware: v{firmware[0]}.{firmware[1]}.{firmware[2]}, "
             f"geocom: v{geocom[0]}.{geocom[1]}.{geocom[2]})"
         )
+
+    @property
+    def precision(self) -> int:
+        """Decimal precision in serial communication."""
+        return self._precision
+
+    @precision.setter
+    def precision(self, value: int) -> None:
+        if not isinstance(value, int):
+            raise TypeError(f"Precision must be a number not '{type(value)}'")
+
+        self._precision = value
 
     @overload
     def request(
@@ -498,56 +510,6 @@ class GeoCom(GeoComType):
             int(groups["tr"]),
             params_final
         )
-
-    def get_double_precision(self) -> GeoComResponse[int]:
-        """
-        RPC 108, ``COM_GetDoublePrecision``
-
-        Gets the current ASCII communication floating point precision of
-        the instrument.
-
-        Returns
-        -------
-        GeoComResponse
-            Params:
-                - `int`: Floating point decimal places.
-
-        See Also
-        --------
-        set_double_precision
-        """
-        return self.request(
-            108,
-            parsers=int
-        )
-
-    def set_double_precision(
-        self,
-        digits: int
-    ) -> GeoComResponse[None]:
-        """
-        RPC 107, ``COM_SetDoublePrecision``
-
-        Sets the ASCII communication floating point precision of the
-        instrument.
-
-        Parameters
-        ----------
-        digits: int
-            Floating points decimal places.
-
-        Returns
-        -------
-        GeoComResponse
-
-        See Also
-        --------
-        get_double_precision
-        """
-        response: GeoComResponse[None] = self.request(107, [digits])
-        if not response.error:
-            self._precision = digits
-        return response
 
     def abort(self) -> GeoComResponse[None]:
         """

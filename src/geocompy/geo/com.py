@@ -37,6 +37,56 @@ class GeoComCOM(GeoComSubsystem):
 
     """
 
+    def get_double_precision(self) -> GeoComResponse[int]:
+        """
+        RPC 108, ``COM_GetDoublePrecision``
+
+        Gets the current ASCII communication floating point precision of
+        the instrument.
+
+        Returns
+        -------
+        GeoComResponse
+            Params:
+                - `int`: Floating point decimal places.
+
+        See Also
+        --------
+        set_double_precision
+        """
+        return self._request(
+            108,
+            parsers=int
+        )
+
+    def set_double_precision(
+        self,
+        digits: int
+    ) -> GeoComResponse[None]:
+        """
+        RPC 107, ``COM_SetDoublePrecision``
+
+        Sets the ASCII communication floating point precision of the
+        instrument.
+
+        Parameters
+        ----------
+        digits: int
+            Floating points decimal places.
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        get_double_precision
+        """
+        response: GeoComResponse[None] = self._request(107, [digits])
+        if not response.error:
+            self._parent.precision = digits
+        return response
+
     def get_geocom_version(self) -> GeoComResponse[tuple[int, int, int]]:
         """
         RPC 110, ``COM_GetSWVersion``
