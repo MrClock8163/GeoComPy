@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.8.1
+
+### Added
+
+- new methods for `SerialConnection` wrapper:
+  - `send_binary`
+  - `receive_binary`
+  - `exchange_binary`
+- `precision` property for the GeoCom definition
+
+### Changed
+
+- GeoCom TMC `get_angle_correction_status` was renamed to
+  `get_angle_correction`
+- GeoCom TMC `switch_angle_correction` was renamed to `set_angle_correction`
+- GeoCom `get_double_precision` was moved to COM
+- GeoCom `set_double_precision` was moved to COM
+
+### Fixed
+
+- method docstrings were rendered wrong in some cases due to missing new lines
+- GSI Online DNA settings commands were parsing boolean value incorrectly
+- GeoCom AUT `set_search_area` command would not execute due to incorrect
+  parameter serialization when sending the request to the instrument
+
 ## v0.8.0
 
 All CLI applications were migrated to a new package called
