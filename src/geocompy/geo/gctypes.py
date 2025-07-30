@@ -1208,11 +1208,11 @@ class GeoComType(ABC):
 
     @property
     @abstractmethod
-    def precision(self) -> float: ...
+    def precision(self) -> int: ...
 
     @precision.setter
     @abstractmethod
-    def precision(self, value: float) -> None: ...
+    def precision(self, value: int) -> None: ...
 
     @overload
     @abstractmethod
