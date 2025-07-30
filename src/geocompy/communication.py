@@ -284,7 +284,9 @@ class SerialConnection(Connection):
 
         self._port: Serial = port
         self.eom: str = eom  # end of message
+        self.eombytes: bytes = eom.encode("ascii")
         self.eoa: str = eoa  # end of answer
+        self.eoabytes: bytes = eoa.encode("ascii")
         self._attempt_sync: bool = sync_after_timeout
         self._timeout_counter: int = 0
 
@@ -323,6 +325,31 @@ class SerialConnection(Connection):
         """
         return self._port.is_open
 
+    def send_binary(self, data: bytes) -> None:
+        """
+        Writes a single message to the serial line.
+
+        Parameters
+        ----------
+        data : bytes
+            Data to send.
+
+        Raises
+        ------
+        ~serial.SerialException
+            If the serial port is not open.
+
+        """
+        if not self._port.is_open:
+            raise SerialException(
+                "serial port is not open"
+            )
+
+        if not data.endswith(self.eombytes):
+            data += self.eombytes
+
+        self._port.write(data)
+
     def send(self, message: str) -> None:
         """
         Writes a single message to the serial line.
@@ -338,25 +365,16 @@ class SerialConnection(Connection):
             If the serial port is not open.
 
         """
-        if not self._port.is_open:
-            raise SerialException(
-                "serial port is not open"
-            )
+        self.send_binary(message.encode("ascii", "ignore"))
 
-        if not message.endswith(self.eom):
-            message += self.eom
-
-        payload = message.encode('ascii', 'ignore')
-        self._port.write(payload)
-
-    def receive(self) -> str:
+    def receive_binary(self) -> bytes:
         """
-        Reads a single message from the serial line.
+        Reads a single binary data block from the serial line.
 
         Returns
         -------
-        str
-            Received message.
+        bytes
+            Received data.
 
         Raises
         ------
@@ -379,8 +397,8 @@ class SerialConnection(Connection):
                 if not excess.endswith(eoabytes):
                     self._timeout_counter += 1
                     raise SerialTimeoutException(
-                        "Serial connection timed on 'receive' during"
-                        "attempt to recover from a previous timeout"
+                        "Serial connection timed out on 'receive_binary' "
+                        "during an attempt to recover from a previous timeout"
                     )
             else:
                 self._timeout_counter = 0
@@ -389,10 +407,58 @@ class SerialConnection(Connection):
         if not answer.endswith(eoabytes):
             self._timeout_counter += 1
             raise SerialTimeoutException(
-                "serial connection timed out on 'receive'"
+                "serial connection timed out on 'receive_binary'"
             )
 
-        return answer.decode("ascii").removesuffix(self.eoa)
+        return answer.removesuffix(eoabytes)
+
+    def receive(self) -> str:
+        """
+        Reads a single message from the serial line.
+
+        Returns
+        -------
+        str
+            Received message.
+
+        Raises
+        ------
+        ~serial.SerialException
+            If the serial port is not open.
+        ~serial.SerialTimeoutException
+            If the connection timed out before receiving the
+            EndOfAnswer sequence.
+
+        """
+
+        return self.receive_binary().decode("ascii")
+
+    def exchange_binary(self, data: bytes) -> bytes:
+        """
+        Writes a block of data to the serial line, and receives the
+        corresponding response.
+
+        Parameters
+        ----------
+        data : bytes
+            Message to send.
+
+        Returns
+        -------
+        bytes
+            Response to the sent data
+
+        Raises
+        ------
+        ~serial.SerialException
+            If the serial port is not open.
+        ~serial.SerialTimeoutException
+            If the connection timed out before receiving the
+            EndOfAnswer sequence for one of the responses.
+
+        """
+        self.send_binary(data)
+        return self.receive_binary()
 
     def exchange(self, cmd: str) -> str:
         """
@@ -418,8 +484,9 @@ class SerialConnection(Connection):
             EndOfAnswer sequence for one of the responses.
 
         """
-        self.send(cmd)
-        return self.receive()
+        return self.exchange_binary(
+            cmd.encode("ascii", "ignore")
+        ).decode("ascii")
 
     def reset(self) -> None:
         """
