@@ -12,7 +12,7 @@ description = "Surveying instrument automation through GeoCom and other protocol
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pyserial"
+    "pyserial ~= 3.5.0"
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -47,24 +47,23 @@ Changelog = "https://geocompy.readthedocs.io/latest/changelog"
 
 [dependency-groups]
 testing = [
-    "pytest",
-    "pytest-mock",
+    "pytest ~= 8.4.1"
 ]
 linting = [
     {include-group = "testing"},
-    "types-pyserial",
-    "mypy",
-    "flake8"
+    "types-pyserial ~= 3.5.0.20250326",
+    "mypy >= 1.17.1",
+    "flake8 >= 7.3.0"
 ]
 development = [
     {include-group = "linting"}
 ]
 documentation = [
-    "sphinx==8.2.3",
-    "sphinx-notfound-page==1.1.0",
-    "sphinx-last-updated-by-git==0.3.8",
-    "sphinx-immaterial==0.13.5",
-    "sphinx-mdinclude==0.6.2"
+    "sphinx ~= 8.2.3",
+    "sphinx-notfound-page ~= 1.1.0",
+    "sphinx-last-updated-by-git ~= 0.3.8",
+    "sphinx-immaterial ~= 0.13.5",
+    "sphinx-mdinclude ~= 0.6.2"
 ]
 
 [tool.hatch.version]
@@ -79,7 +78,6 @@ version-file = "src/geocompy/_version.py"
 [tool.pytest.ini_options]
 addopts = ["-ra", "-v", "--color=yes"]
 testpaths = ["tests"]
-required_plugins = "pytest-mock"
 
 [tool.mypy]
 strict = true
