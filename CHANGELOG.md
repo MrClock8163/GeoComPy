@@ -1,6 +1,11 @@
 # Changelog
 
-## v0.8.1
+All notable changes in the GeoComPy project will be documented in this
+file.
+
+The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## v0.8.1 (2025-07-30)
 
 ### Added
 
@@ -25,7 +30,7 @@
 - GeoCom AUT `set_search_area` command would not execute due to incorrect
   parameter serialization when sending the request to the instrument
 
-## v0.8.0
+## v0.8.0 (2025-07-24)
 
 All CLI applications were migrated to a new package called
 [Instrumentman](https://github.com/MrClock8163/Instrumentman). Further
@@ -40,7 +45,7 @@ development happens there.
 - Wait/delay times are now expected in seconds instead of milliseconds,
   where possible
 
-## v0.7.0
+## v0.7.0 (2025-06-29)
 
 ### Added
 
@@ -49,7 +54,7 @@ development happens there.
 - Interactive Terminal CLI application (`geocompy.apps.terminal`)
 - Set Measurement CLI applications (`geocompy.apps.setmeasurement...`)
 
-## v0.6.0
+## v0.6.0 (2025-06-12)
 
 ### Added
 
@@ -72,7 +77,7 @@ development happens there.
 - GeoCom File Transfer subsystem commmands were missing from the command name
   lookup table
 
-## v0.5.1
+## v0.5.1 (2025-05-16)
 
 ### Added
 
@@ -85,7 +90,7 @@ development happens there.
 - GeoCom `get_internal_temperature` returned `int` instead of `float`
 - GeoCom `get_user_prism_definition` had incorrect return param parsers
 
-## v0.5.0
+## v0.5.0 (2025-05-15)
 
 Initial release on PyPI.
 
