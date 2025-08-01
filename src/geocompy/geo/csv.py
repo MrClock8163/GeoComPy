@@ -497,7 +497,7 @@ class GeoComCSV(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def switch_laserlot(
+    def switch_laserplummet(
         self,
         active: bool
     ) -> GeoComResponse[None]:
@@ -506,12 +506,12 @@ class GeoComCSV(GeoComSubsystem):
 
         .. versionadded:: GeoCom-VivaTPS
 
-        Sets the state of the laserlot.
+        Sets the state of the laser plummet.
 
         Parameters
         ----------
         active : bool
-            Activate laserlot.
+            Activate laser plummet.
 
         Returns
         -------
@@ -523,19 +523,19 @@ class GeoComCSV(GeoComSubsystem):
             [active]
         )
 
-    def get_laserlot_status(self) -> GeoComResponse[bool]:
+    def get_laserplummet_status(self) -> GeoComResponse[bool]:
         """
         RPC 5042, ``CSV_GetLaserlotStatus``
 
         .. versionadded:: GeoCom-VivaTPS
 
-        Gets the current state of the laserlot.
+        Gets the current state of the laser plummet.
 
         Returns
         -------
         GeoComResponse
             Params:
-                - `bool`: Laserlot is active.
+                - `bool`: Laser plummet is active.
 
         """
         return self._request(
@@ -543,7 +543,7 @@ class GeoComCSV(GeoComSubsystem):
             parsers=parsebool
         )
 
-    def set_laserlot_intensity(
+    def set_laserplummet_intensity(
         self,
         intensity: int
     ) -> GeoComResponse[None]:
@@ -552,12 +552,12 @@ class GeoComCSV(GeoComSubsystem):
 
         .. versionadded:: GeoCom-VivaTPS
 
-        Sets the intensity of the laserlot.
+        Sets the intensity of the laser plummet.
 
         Parameters
         ----------
         intensity : int
-            New laserlot intensity to set.
+            New laser plummet intensity to set.
 
         Returns
         -------
@@ -569,19 +569,19 @@ class GeoComCSV(GeoComSubsystem):
             [intensity]
         )
 
-    def get_laserlot_intensity(self) -> GeoComResponse[int]:
+    def get_laserplummet_intensity(self) -> GeoComResponse[int]:
         """
         RPC 5041, ``CSV_GetLaserlotIntens``
 
         .. versionadded:: GeoCom-VivaTPS
 
-        Gets the current intensity of the laserlot.
+        Gets the current intensity of the laser plummet.
 
         Returns
         -------
         GeoComResponse
             Params:
-                - `int`: Current laserlot intensity.
+                - `int`: Current laser plummet intensity.
 
         """
         return self._request(

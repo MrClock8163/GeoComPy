@@ -5,6 +5,21 @@ file.
 
 The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v0.9.0 (2025-08-01)
+
+Starting with this version, the package is in beta stage. The public API is
+not going to drastically change from this point. Small changes, and
+developments are still to come.
+
+### Changed
+
+- GeoCom CSV `get_laserlot_status` was renamed to `get_laserplummet_status`
+- GeoCom CSV `switch_laserlot` was renamed to `switch_laserplummet`
+- GeoCom CSV `get_laserlot_intensity` was renamed to
+`get_laserplummet_intensity`
+- GeoCom CSV `set_laserlot_intensity` was renamed to
+`set_laserplummet_intensity`
+
 ## v0.8.1 (2025-07-30)
 
 ### Added
