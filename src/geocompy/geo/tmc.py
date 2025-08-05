@@ -14,6 +14,7 @@ Types
 
 """
 from __future__ import annotations
+from typing import SupportsFloat
 
 from ..data import (
     Angle,
@@ -752,7 +753,7 @@ class GeoComTMC(GeoComSubsystem):
 
     def set_orientation(
         self,
-        azimut: float
+        azimut: SupportsFloat
     ) -> GeoComResponse[None]:
         """
         RPC 2113, ``TMC_SetOrientation``
@@ -763,7 +764,7 @@ class GeoComTMC(GeoComSubsystem):
 
         Parameters
         ----------
-        azimut : Angle
+        azimut : SupportsFloat
             Azimut angle to set.
 
         Returns
@@ -802,7 +803,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         return self._request(
             2113,
-            [azimut]
+            [float(azimut)]
         )
 
     def get_prism_correction(self) -> GeoComResponse[float]:
