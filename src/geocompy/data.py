@@ -572,6 +572,34 @@ class Angle:
         """
         return Angle(self._value, 'rad', True, positive)
 
+    def relative_to(self, other: SupportsFloat) -> Angle:
+        """
+        Returns an angle relative to a reference angle in the [-180;+180] deg
+        range.
+
+        The calculated relative angle is positive in the clockwise, and
+        negative in the counter clockwise-direction. Value is always between
+        -180 degrees and +180 degrees.
+
+        Parameters
+        ----------
+        other : SupportsFloat
+            Reference angle.
+
+        Returns
+        -------
+        Angle
+            Relative angle.
+        """
+
+        diff = float(self) - float(other)
+        if diff > math.pi:
+            return Angle(diff - PI2)
+        elif diff < -math.pi:
+            return Angle(diff + PI2)
+
+        return Angle(diff)
+
 
 class Byte:
     """

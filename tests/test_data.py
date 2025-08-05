@@ -87,6 +87,22 @@ class TestAngle:
             == approx(Angle(370, 'deg').normalized().asunit('deg'))
         )
 
+    def test_relative(self) -> None:
+        a1 = Angle(355, 'deg')
+        a2 = Angle(5, 'deg')
+        a3 = Angle(175, 'deg')
+        a4 = Angle(195, 'deg')
+
+        a_10 = float(Angle(10, 'deg'))
+        a_170 = float(Angle(170, 'deg'))
+
+        assert float(a1.relative_to(a2)) == approx(-a_10)
+        assert float(a2.relative_to(a1)) == approx(a_10)
+        assert float(a3.relative_to(a2)) == approx(a_170)
+        assert float(a2.relative_to(a3)) == approx(-a_170)
+        assert float(a4.relative_to(a2)) == approx(-a_170)
+        assert float(a2.relative_to(a4)) == approx(a_170)
+
     def test_arithmetic(self) -> None:
         a1 = Angle(90, 'deg')
         a2 = Angle(90, 'deg')
