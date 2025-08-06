@@ -310,15 +310,16 @@ class Angle:
         return math.degrees(angle)
 
     @staticmethod
-    def rad2dms(angle: float) -> str:
+    def rad2dms(angle: float, precision: int = 0) -> str:
         """Converts radians to DDD-MM-SS.
         """
         signum = "-" if angle < 0 else ""
-        secs = round(abs(angle) * RO)
+        secs = abs(angle) * RO
         mi, sec = divmod(secs, 60)
-        deg, mi = divmod(mi, 60)
+        deg, mi = divmod(int(mi), 60)
         deg = int(deg)
-        return f"{signum:s}{deg:d}-{mi:02d}-{sec:02d}"
+        fmt = f"{{:02.{precision}f}}"
+        return f"{signum:s}{deg:d}-{mi:02d}-{fmt.format(sec)}"
 
     @staticmethod
     def normalize_rad(angle: float, positive: bool = False) -> float:
@@ -516,7 +517,7 @@ class Angle:
     def __float__(self) -> float:
         return self._value
 
-    def to_dms(self) -> str:
+    def to_dms(self, precision: int = 0) -> str:
         """
         Returns the represented angle as a formatted DDD-MM-SS string.
 
@@ -525,7 +526,7 @@ class Angle:
         str
             Angle in DMS notation.
         """
-        return self.rad2dms(self._value)
+        return self.rad2dms(self._value, precision)
 
     def asunit(self, unit: _AngleUnit = 'rad') -> float:
         """
