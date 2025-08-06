@@ -5,6 +5,19 @@ file.
 
 The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Added `relative_to` method to the `Angle` type
+- Added precision option to DMS angle formatting
+
+### Changed
+
+- Renamed GeoCom TMC `set_orientation` to `set_azimuth` to make its purpose more
+  obvious
+- Changed input parameter type of `set_azimuth` to be more permissive
+
 ## v0.9.0 (2025-08-01)
 
 Starting with this version, the package is in beta stage. The public API is
