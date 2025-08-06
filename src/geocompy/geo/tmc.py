@@ -751,9 +751,9 @@ class GeoComTMC(GeoComSubsystem):
             [wavelength, pressure, drytemp, wettemp]
         )
 
-    def set_orientation(
+    def set_azimuth(
         self,
-        azimut: SupportsFloat
+        azimuth: SupportsFloat
     ) -> GeoComResponse[None]:
         """
         RPC 2113, ``TMC_SetOrientation``
@@ -764,8 +764,8 @@ class GeoComTMC(GeoComSubsystem):
 
         Parameters
         ----------
-        azimut : SupportsFloat
-            Azimut angle to set.
+        azimuth : SupportsFloat
+            Azimuth angle to set.
 
         Returns
         -------
@@ -803,7 +803,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         return self._request(
             2113,
-            [float(azimut)]
+            [float(azimuth)]
         )
 
     def get_prism_correction(self) -> GeoComResponse[float]:
