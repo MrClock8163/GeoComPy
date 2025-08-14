@@ -11,6 +11,8 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Added discovered GeoCom RPC 5074 (unknown true function name, implemented as
   `abort_listing` in CSV subsystem)
+- Added `logger` optional parameter to `open_serial`
+- Added `logger` optional parameter to `SerialConnection`
 
 ### Changed
 
