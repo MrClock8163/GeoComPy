@@ -76,7 +76,7 @@ class GeoComFTR(GeoComSubsystem):
         See Also
         --------
         list
-        abort_list
+        abort_listing
 
         """
         _device = toenum(Device, device)
@@ -119,7 +119,7 @@ class GeoComFTR(GeoComSubsystem):
         See Also
         --------
         setup_listing
-        abort_list
+        abort_listing
 
         """
         def transform(
@@ -164,7 +164,7 @@ class GeoComFTR(GeoComSubsystem):
         )
         return response.map_params(transform)
 
-    def abort_list(self) -> GeoComResponse[None]:
+    def abort_listing(self) -> GeoComResponse[None]:
         """
         RPC 23308, ``FTR_AbortList``
 

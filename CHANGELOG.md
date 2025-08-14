@@ -12,6 +12,10 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added discovered GeoCom RPC 5074 (unknown true function name, implemented as
   `abort_listing` in CSV subsystem)
 
+### Changed
+
+- Renamed GeoCom FTR `abort_list` to `abort_listing`
+
 ### Fixed
 
 - GeoCom CSV `list` command did not properly parse returned string parameters
