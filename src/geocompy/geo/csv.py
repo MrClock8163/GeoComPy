@@ -868,7 +868,7 @@ class GeoComCSV(GeoComSubsystem):
 
     def abort_listing(self) -> GeoComResponse[None]:
         """
-        RPC 5074, (unknown)
+        RPC 5074, (unknown, most likely ``CSV_AbortList``)
 
         Aborts current job listing setup.
 
