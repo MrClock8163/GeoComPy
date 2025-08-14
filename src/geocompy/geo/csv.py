@@ -820,10 +820,14 @@ class GeoComCSV(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
+            Error codes:
+                - ``NOTOK``: Setup already exists, previous setup was not
+                  aborted.
 
         See Also
         --------
         list
+        abort_listing
 
         """
         return self._request(
@@ -861,6 +865,30 @@ class GeoComCSV(GeoComSubsystem):
                 parsestr
             )
         )
+
+    def abort_listing(self) -> GeoComResponse[None]:
+        """
+        RPC 5074, (unknown)
+
+        Aborts current job listing setup.
+
+        Returns
+        -------
+        GeoComResponse
+
+        See Also
+        --------
+        setup_listing
+        list
+
+        Note
+        ----
+        This command was not found in the reference manuals, but discovered
+        by accident while testing. Version or the corresponding GeoCom
+        function name is not known. Use with caution!
+
+        """
+        return self._request(5074)
 
     def get_maintenance_end(self) -> GeoComResponse[datetime]:
         """
