@@ -102,7 +102,8 @@ def open_serial(
     eom: str = "\r\n",
     eoa: str = "\r\n",
     sync_after_timeout: bool = False,
-    retry: int = 1
+    retry: int = 1,
+    logger: logging.Logger | None = None
 ) -> SerialConnection:
     """
     Constructs a SerialConnection with the given communication
@@ -132,6 +133,9 @@ def open_serial(
     retry : int, optional
         Number of retry attempts if the connection opening fails, by
         default 1
+    logger : logging.Logger | None, optional
+        Logger instance to use to log connection related events. Defaults
+        to a dummy logger when not specified, by default None
 
     Returns
     -------
@@ -158,6 +162,15 @@ def open_serial(
     ...     conn.send("test")
 
     """
+    logger = logger or DUMMYLOGGER
+    logger.info(f"Opening connection on {port}")
+    logger.debug(
+        f"Connection parameters: "
+        f"baud={speed:d}, timeout={timeout:d}, "
+        f"sync_after_timeout={str(sync_after_timeout)}, tries={retry:d}, "
+        f"databits={databits:d}, stopbits={stopbits:d}, parity={parity}, "
+        f"eom={eom.encode('ascii')!r}, eoa={eoa.encode('ascii')!r}"
+    )
     exc: Exception = Exception()
     for i in range(retry):
         try:
@@ -166,6 +179,9 @@ def open_serial(
             )
             break
         except Exception as e:
+            logger.error(
+                f"Failed to open connection, {retry-i} trie(s) remains..."
+            )
             exc = e
 
         sleep(5)
@@ -176,7 +192,8 @@ def open_serial(
         serialport,
         eom=eom,
         eoa=eoa,
-        sync_after_timeout=sync_after_timeout
+        sync_after_timeout=sync_after_timeout,
+        logger=logger
     )
     return wrapper
 
@@ -222,7 +239,8 @@ class SerialConnection(Connection):
         *,
         eom: str = "\r\n",
         eoa: str = "\r\n",
-        sync_after_timeout: bool = False
+        sync_after_timeout: bool = False,
+        logger: logging.Logger | None = None
     ):
         """
         Parameters
@@ -236,6 +254,9 @@ class SerialConnection(Connection):
         sync_after_timeout : bool, optional
             Attempt to re-sync the message-response que, if a timeout
             occured in the previous exchange, by default False
+        logger : logging.Logger | None, optional
+            Logger instance to use to log connection related events. Defaults
+            to a dummy logger when not specified, by default None
 
         Notes
         -----
@@ -265,6 +286,7 @@ class SerialConnection(Connection):
         self.eoabytes: bytes = eoa.encode("ascii")
         self._attempt_sync: bool = sync_after_timeout
         self._timeout_counter: int = 0
+        self._logger: logging.Logger = logger or DUMMYLOGGER
 
         if not self._port.is_open:
             self._port.open()
@@ -281,13 +303,14 @@ class SerialConnection(Connection):
         exc_value: BaseException,
         exc_tb: TracebackType
     ) -> None:
-        self._port.close()
+        self.close()
 
     def close(self) -> None:
         """
         Closes the serial port.
         """
         self._port.close()
+        self._logger.info(f"Closed connection on {self._port.port}")
 
     def is_open(self) -> bool:
         """
@@ -481,6 +504,7 @@ class SerialConnection(Connection):
         self._port.reset_input_buffer()
         self._port.reset_output_buffer()
         self._timeout_counter = 0
+        self._logger.debug("Reset connection")
 
     @contextmanager
     def timeout_override(
@@ -527,6 +551,8 @@ class SerialConnection(Connection):
 
         try:
             self._port.timeout = timeout
+            self._logger.debug(f"Temporary timeout override to {timeout}")
             yield
         finally:
             self._port.timeout = saved_timeout
+            self._logger.debug(f"Restored timeout to {saved_timeout}")
