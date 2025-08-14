@@ -854,11 +854,11 @@ class GeoComCSV(GeoComSubsystem):
         return self._request(
             5073,
             parsers=(
-                str,
-                str,
+                parsestr,
+                parsestr,
                 int,
                 int,
-                str
+                parsestr
             )
         )
 
