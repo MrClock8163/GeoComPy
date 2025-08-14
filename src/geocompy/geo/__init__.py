@@ -45,7 +45,7 @@ from typing import Any, Callable, Iterable, overload, TypeVar
 from serial import SerialException, SerialTimeoutException
 
 from geocompy.data import Angle, Byte
-from geocompy.communication import Connection, get_logger
+from geocompy.communication import Connection, DUMMYLOGGER
 from .gctypes import (
     GeoComCode,
     GeoComResponse,
@@ -98,13 +98,17 @@ class GeoCom(GeoComType):
 
     Passing a logger:
 
-    >>> from logging import DEBUG
-    >>> from geocompy.communication import open_serial, get_logger
+    >>> from sys import stdout
+    >>> from logging import getLogger, DEBUG, StreamHandler
+    >>>
+    >>> from geocompy.communication import open_serial
     >>> from geocompy.geo import GeoCom
     >>>
-    >>> log = get_logger("Viva", "stdout", DEBUG)
+    >>> logger = getLogger("TPS")
+    >>> logger.addHandler(StreamHandler(stdout))
+    >>> logger.setLevel(DEBUG)
     >>> with open_serial("COM1") as line:
-    ...     tps = GeoCom(line, log)
+    ...     tps = GeoCom(line, logger)
     ...     tps.com.nullprocess()
     ...
     >>>
@@ -153,7 +157,7 @@ class GeoCom(GeoComType):
         session."""
         self._conn: Connection = connection
         if logger is None:
-            logger = get_logger("/dev/null")
+            logger = DUMMYLOGGER
         self._logger: Logger = logger
         self.precision = 15
 

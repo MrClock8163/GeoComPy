@@ -9,8 +9,13 @@ Implementations of connection methods.
 Functions
 ---------
 
-- ``get_logger``
+- ``get_dummy_logger``
 - ``open_serial``
+
+Constants
+---------
+
+- ``DUMMYLOGGER``
 
 Types
 -----
@@ -89,6 +94,33 @@ def get_logger(
             log.addHandler(shandler)
 
     return log
+
+
+def get_dummy_logger(name: str = "geocompy.dummy") -> logging.Logger:
+    """
+    Utility function that sets up a dummy logger instance, that does not
+    propagate records, and logs to the nulldevice.
+
+    Parameters
+    ----------
+    name : str
+        Logger name.
+
+    Returns
+    -------
+    logging.Logger
+        Dummy logger.
+    """
+    logger = logging.getLogger(name)
+    if len(logger.handlers) < 0:
+        logger.addHandler(logging.NullHandler())
+
+    logger.propagate = False
+    return logger
+
+
+DUMMYLOGGER = get_dummy_logger()
+"""Dummy logger instance to use when no logger is actually needed."""
 
 
 class Connection(ABC):

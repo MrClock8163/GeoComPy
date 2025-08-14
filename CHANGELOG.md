@@ -20,6 +20,10 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - GeoCom CSV `list` command did not properly parse returned string parameters
 
+### Removed
+
+- Removed `get_logger` utility function
+
 ## v0.10.0 (2025-08-08)
 
 ### Added

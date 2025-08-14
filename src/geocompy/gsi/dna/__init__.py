@@ -33,7 +33,7 @@ from ..gsitypes import (
     param_descriptions,
     word_descriptions
 )
-from ...communication import Connection, get_logger
+from ...communication import Connection, DUMMYLOGGER
 from ...data import (
     toenum
 )
@@ -68,13 +68,17 @@ class GsiOnlineDNA(GsiOnlineType):
 
     Passing a logger:
 
-    >>> from logging import DEBUG
-    >>> from geocompy.communication import open_serial, get_logger
+    >>> from sys import stdout
+    >>> from logging import getLogger, DEBUG, StreamHandler
+    >>>
+    >>> from geocompy.communication import open_serial
     >>> from geocompy.gsi.dna import GsiOnlineDNA
     >>>
-    >>> log = get_logger("DNA", "stdout", DEBUG)
+    >>> logger = getLogger("TPS")
+    >>> logger.addHandler(StreamHandler(stdout))
+    >>> logger.setLevel(DEBUG)
     >>> with open_serial("COM1") as line:
-    ...     dna = GsiOnlineDNA(line, log)
+    ...     dna = GsiOnlineDNA(line, logger)
     ...     dna.beep('SHORT')
     ...
     >>>
@@ -139,7 +143,7 @@ class GsiOnlineDNA(GsiOnlineType):
         """
         self._conn: Connection = connection
         if logger is None:
-            logger = get_logger("/dev/null")
+            logger = DUMMYLOGGER
         self._logger: Logger = logger
         self.is_client_gsi16 = False
 

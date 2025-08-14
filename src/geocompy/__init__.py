@@ -60,9 +60,6 @@ Reexports
 ``geocompy.communication.open_serial``
     Serial connection context manager function.
 
-``geocompy.communication.get_logger``
-    Utility function to create logger objects.
-
 ``geocompy.gsi.dna.GsiOnlineDNA``
     DNA instrument implementation.
 
@@ -89,10 +86,7 @@ from .data import (  # noqa: F401
     Coordinate as Coordinate
 )
 
-from .communication import (  # noqa: F401
-    open_serial as open_serial,
-    get_logger as get_logger
-)
+from .communication import open_serial as open_serial  # noqa: F401
 
 from .gsi.gsitypes import GsiOnlineResponse as GsiOnlineResponse  # noqa: F401
 from .gsi.dna import GsiOnlineDNA as GsiOnlineDNA  # noqa: F401

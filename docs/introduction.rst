@@ -197,21 +197,23 @@ Logging
 For debugging purposes it might be very useful to have a log of certain events,
 errors and debug information. To support this, the instrument classes all take
 an optional :class:`~logging.Logger` object, that they use to log specific
-events. The :func:`~geocompy.communication.get_logger` utility function can be
-used to create a simple logger.
+events.
 
 .. code-block:: python
     :caption: Passing a console logger
     :linenos:
 
-    from logging import DEBUG
+    from sys import stdout
+    from logging import getLogger, DEBUG, StreamHandler
 
-    from geocompy import GsiOnlineDNA, open_serial, get_logger
+    from geocompy import GsiOnlineDNA, open_serial
 
 
-    log = get_logger("DNA", "stdout", DEBUG)
+    logger = getLogger("TPS")
+    logger.addHandler(StreamHandler(stdout))
+    logger.setLevel(DEBUG)
     with open_serial("COM1", timeout=15) as com:
-        level = GsiOnlineDNA(com, log)
+        level = GsiOnlineDNA(com, logger)
 
 Some examples of the information logged on various levels:
 
