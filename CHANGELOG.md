@@ -5,6 +5,17 @@ file.
 
 The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Added discovered GeoCom RPC 5074 (unknown true function name, implemented as
+  `abort_listing` in CSV subsystem)
+
+### Fixed
+
+- GeoCom CSV `list` command did not properly parse returned string parameters
+
 ## v0.10.0 (2025-08-08)
 
 ### Added
