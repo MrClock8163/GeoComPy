@@ -26,15 +26,15 @@ class GsiInputMode(Enum):
 
 class GsiUnit(Enum):
     NONE = -1
-    MILLIMETER = 0
-    MILLIFEET = 1
+    MILLI = 0  # 0.001(m)
+    MILLIFEET = 1  # 0.001ft
     GON = 2  # 400gon/360deg
     DEG = 3
     DMS = 4
     MIL = 5  # 6400mil/360deg
-    DECIMM = 6  # 0.0001m
-    DECIMF = 7  # 0.0001ft
-    CENTIMM = 8  # 0.00001m
+    DECIMILLI = 6  # 0.0001(m)
+    DECIMILLIFEET = 7  # 0.0001ft
+    CENTIMILLI = 8  # 0.00001(m)
 
 
 def _regex_distance(wi: int | None = None) -> Pattern[str]:
@@ -431,15 +431,15 @@ class GsiDistanceWord(GsiWord):
         unit = GsiUnit(int(value[5]))
         data = int(value[6:-1])
         match unit:
-            case GsiUnit.MILLIMETER:
+            case GsiUnit.MILLI:
                 dist = data * 1e-3
             case GsiUnit.MILLIFEET:
                 dist = data * 3.048e-4
-            case GsiUnit.DECIMM:
+            case GsiUnit.DECIMILLI:
                 dist = data * 1e-4
-            case GsiUnit.DECIMF:
+            case GsiUnit.DECIMILLIFEET:
                 dist = data * 3.048e-5
-            case GsiUnit.CENTIMM:
+            case GsiUnit.CENTIMILLI:
                 dist = data * 1e-5
             case _:
                 raise ValueError(f"Invalid distance unit: '{unit}'")
@@ -456,15 +456,15 @@ class GsiDistanceWord(GsiWord):
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
         match distunit:
-            case GsiUnit.MILLIMETER:
+            case GsiUnit.MILLI:
                 value = self.value * 1e3
             case GsiUnit.MILLIFEET:
                 value = self.value / 3.048e-4
-            case GsiUnit.DECIMM:
+            case GsiUnit.DECIMILLI:
                 value = self.value * 1e4
-            case GsiUnit.DECIMF:
+            case GsiUnit.DECIMILLIFEET:
                 value = self.value / 3.048e-5
-            case GsiUnit.CENTIMM:
+            case GsiUnit.CENTIMILLI:
                 value = self.value * 1e5
             case _:
                 raise ValueError(f"Unknown distance unit: '{distunit}'")
@@ -573,6 +573,22 @@ class GsiInfo8Word(GsiCodeWord):
     @property
     def wi(self) -> int:
         return 49
+
+
+class GsiPrismConstantWord(GsiDistanceWord):
+    _GSI = _regex_distance(58)
+
+    @property
+    def wi(self) -> int:
+        return 58
+
+
+class GsiPPMWord(GsiDistanceWord):
+    _GSI = _regex_distance(59)
+
+    @property
+    def wi(self) -> int:
+        return 59
 
 
 class GsiRemark1Word(GsiValueWord):
@@ -711,6 +727,143 @@ class GsiInstrumentHeightWord(GsiDistanceWord):
         return 88
 
 
+class GsiTemperatureWord(GsiDistanceWord):
+    _GSI = _regex_distance(95)
+
+    @property
+    def wi(self) -> int:
+        return 95
+
+
+class GsiPressureWord(GsiDistanceWord):
+    _GSI = _regex_distance(531)
+
+    @property
+    def wi(self) -> int:
+        return 531
+
+
+class GsiRefractionCoefWord(GsiDistanceWord):
+    _GSI = _regex_distance(538)
+
+    @property
+    def wi(self) -> int:
+        return 538
+
+
+class GsiNewTimeWord(GsiValueWord):
+    _GSI = compile(r"^560\.{2}6\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 560
+
+    def __init__(self, time: datetime):
+        self.value: datetime
+        super().__init__(time)
+
+    @classmethod
+    def parse(cls, value: str) -> Self:
+        cls._check_format(value)
+
+        return cls(
+            datetime(
+                1,
+                1,
+                1,
+                int(value[-7:-5]),
+                int(value[-5:-3]),
+                int(value[-3:-1])
+            )
+        )
+
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
+        return self.format(
+            self.wi,
+            self.value.strftime("%H%M%S"),
+            "6",
+            gsi16=gsi16
+        )
+
+
+class GsiNewDateWord(GsiValueWord):
+    _GSI = compile(r"^561\.{2}6\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 561
+
+    def __init__(self, time: datetime):
+        self.value: datetime
+        super().__init__(time)
+
+    @classmethod
+    def parse(cls, value: str) -> Self:
+        cls._check_format(value)
+
+        return cls(
+            datetime(
+                1,
+                int(value[-7:-5]),
+                int(value[-5:-3])
+            )
+        )
+
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
+        return self.format(
+            self.wi,
+            self.value.strftime("%m%d00"),
+            "6",
+            gsi16=gsi16
+        )
+
+
+class GsiNewYearWord(GsiValueWord):
+    _GSI = compile(r"^562\.{3}\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 562
+
+    def __init__(self, time: datetime):
+        self.value: datetime
+        super().__init__(time)
+
+    @classmethod
+    def parse(cls, value: str) -> Self:
+        cls._check_format(value)
+
+        return cls(
+            datetime(
+                int(value[-5:-1]),
+                1,
+                1
+            )
+        )
+
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
+        return self.format(
+            self.wi,
+            self.value.strftime("%Y"),
+            gsi16=gsi16
+        )
+
+
 class GsiStaffDistanceWord(GsiDistanceWord):
     _GSI = _regex_distance(32)
 
@@ -783,6 +936,108 @@ class GsiF2StaffReadingWord(GsiDistanceWord):
         return 336
 
 
+class GsiAppVersionWord(GsiValueWord):
+    _GSI = compile(r"^590\.{2}6\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 590
+
+    def __init__(self, major: int, minor: int):
+        self.value: tuple[int, int]
+        if (major > 99 or major < 0) or (minor > 99 or minor < 0):
+            raise ValueError(f"Version numbers out of range: v{major}.{minor}")
+
+        super().__init__((major, minor))
+
+    @classmethod
+    def parse(cls, value: str) -> Self:
+        cls._check_format(value)
+
+        return cls(
+            int(value[7:-5]),
+            int(value[-5:-3])
+        )
+
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
+        major, minor = self.value
+        return self.format(
+            self.wi,
+            f"{major:02d}{minor:02d}00",
+            "6",
+            gsi16=gsi16
+        )
+
+
+class GsiOSVersionWord(GsiAppVersionWord):
+    _GSI = compile(r"^591\.{2}6\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 591
+
+
+class GsiOSInterfaceVersionWord(GsiAppVersionWord):
+    _GSI = compile(r"^592\.{2}6\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 592
+
+
+class GsiGeoComVersionWord(GsiAppVersionWord):
+    _GSI = compile(r"^593\.{2}6\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 593
+
+
+class GsiVersionWord(GsiAppVersionWord):
+    _GSI = compile(r"^594\.{2}6\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 594
+
+
+class GsiEDMVersionWord(GsiAppVersionWord):
+    _GSI = compile(r"^595\.{2}6\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 595
+
+
+class GsiSoftwareVersionWord(GsiAppVersionWord):
+    _GSI = compile(r"^599\.{2}6\+[0-9]{8,16} $")
+
+    @property
+    def wi(self) -> int:
+        return 599
+
+
+class GsiJobWord(GsiRemark1Word):
+    _GSI = _regex_note(913)
+
+    @property
+    def wi(self) -> int:
+        return 913
+
+
+class GsiOperatorWord(GsiRemark1Word):
+    _GSI = _regex_note(914)
+
+    @property
+    def wi(self) -> int:
+        return 914
+
+
 _WI_TO_TYPE: dict[int, type[GsiWord]] = {
     11: GsiPointNameWord,
     12: GsiSerialnumberWord,
@@ -793,9 +1048,28 @@ _WI_TO_TYPE: dict[int, type[GsiWord]] = {
     21: GsiHorizontalAngleWord,
     22: GsiVerticalAngleWord,
     31: GsiSlopeDistanceWord,
-    32: GsiHorizontalAngleWord,
+    32: GsiHorizontalDistanceWord,
     33: GsiVerticalDistanceWord,
     41: GsiCodeWord,
+    42: GsiInfo1Word,
+    43: GsiInfo2Word,
+    44: GsiInfo3Word,
+    45: GsiInfo4Word,
+    46: GsiInfo5Word,
+    47: GsiInfo6Word,
+    48: GsiInfo7Word,
+    49: GsiInfo8Word,
+    58: GsiPrismConstantWord,
+    59: GsiPPMWord,
+    71: GsiRemark1Word,
+    72: GsiRemark2Word,
+    73: GsiRemark3Word,
+    74: GsiRemark4Word,
+    75: GsiRemark5Word,
+    76: GsiRemark6Word,
+    77: GsiRemark7Word,
+    78: GsiRemark8Word,
+    79: GsiRemark9Word,
     81: GsiEastingWord,
     82: GsiNorthingWord,
     83: GsiNorthingWord,
@@ -803,22 +1077,51 @@ _WI_TO_TYPE: dict[int, type[GsiWord]] = {
     85: GsiStationNorthingWord,
     86: GsiStationHeightWord,
     87: GsiTargetHeightWord,
-    88: GsiInstrumentHeightWord
+    88: GsiInstrumentHeightWord,
+    531: GsiPressureWord,
+    538: GsiRefractionCoefWord,
+    560: GsiNewTimeWord,
+    561: GsiNewDateWord,
+    562: GsiNewYearWord,
+    590: GsiAppVersionWord,
+    591: GsiOSVersionWord,
+    592: GsiOSInterfaceVersionWord,
+    593: GsiGeoComVersionWord,
+    594: GsiVersionWord,
+    595: GsiEDMVersionWord,
+    912: GsiJobWord,
+    913: GsiOperatorWord
 }
 _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
     11: GsiPointNameWord,
     12: GsiSerialnumberWord,
     13: GsiInstrumentTypeWord,
+    17: GsiDateWord,
+    19: GsiTimeWord,
     32: GsiStaffDistanceWord,
     41: GsiCodeWord,
+    42: GsiInfo1Word,
+    43: GsiInfo2Word,
+    44: GsiInfo3Word,
+    45: GsiInfo4Word,
+    46: GsiInfo5Word,
+    47: GsiInfo6Word,
+    48: GsiInfo7Word,
+    49: GsiInfo8Word,
+    71: GsiRemark1Word,
     83: GsiBenchmarkHeightWord,
+    95: GsiTemperatureWord,
     330: GsiSimpleStaffReadingWord,
     331: GsiB1StaffReadingWord,
     332: GsiF1StaffReadingWord,
     333: GsiIntermediateStaffReadingWord,
     334: GsiStakeoutStaffReadingWord,
     335: GsiB2StaffReadingWord,
-    336: GsiF2StaffReadingWord
+    336: GsiF2StaffReadingWord,
+    560: GsiNewTimeWord,
+    561: GsiNewDateWord,
+    562: GsiNewYearWord,
+    599: GsiSoftwareVersionWord
 }
 
 
@@ -927,7 +1230,7 @@ class GsiBlock:
         self,
         gsi16: bool = False,
         angleunit: GsiUnit = GsiUnit.DEG,
-        distunit: GsiUnit = GsiUnit.DECIMM
+        distunit: GsiUnit = GsiUnit.DECIMILLI
     ) -> str:
         match self.type:
             case "measurement":
