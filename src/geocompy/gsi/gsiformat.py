@@ -31,6 +31,7 @@ class GsiInputModeDNA(Enum):
 
 
 class GsiUnit(Enum):
+    NONE = -1
     MILLIMETER = 0
     MILLIFEET = 1
     GON = 2  # 400gon/360deg
@@ -48,10 +49,17 @@ class GsiWord(ABC):
 
     @classmethod
     @abstractmethod
-    def parse(cls, value: str) -> GsiWord: ...
+    def parse(cls, value: str) -> GsiWord:
+        raise NotImplementedError()
 
     @abstractmethod
-    def serialize(self, gsi16: bool = False) -> str: ...
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
+        raise NotImplementedError()
 
     def __str__(self) -> str:
         return self.serialize(True)
@@ -82,25 +90,6 @@ class GsiWord(ABC):
             data = f"{data[-8:]:>.8s}".zfill(8)
 
         return f"{header:6.6s}{sign}{data} "
-
-    @classmethod
-    def format_with_address(
-        cls,
-        wordindex: int,
-        data: str,
-        address: int,
-        negative: bool = False,
-        gsi16: bool = False
-    ) -> str:
-        value = cls.format(
-            wordindex,
-            data,
-            "",
-            negative,
-            gsi16
-        )
-
-        return f"{value[:2]}{address % 10000:04d}{value[6:]}"
 
     @classmethod
     def _check_format(cls, value: str) -> None:
@@ -142,7 +131,12 @@ class GsiUnknown(GsiWord):
             negative
         )
 
-    def serialize(self, gsi16: bool = False) -> str:
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
         return self.format(
             self.wi,
             self.data,
@@ -159,7 +153,12 @@ class GsiPointName(GsiWord):
     def __init__(self, name: str):
         self.name = name
 
-    def serialize(self, gsi16: bool = False) -> str:
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
         return self.format(
             self._WI,
             self.name,
@@ -184,7 +183,12 @@ class GsiSerialNumber(GsiWord):
     def __init__(self, serialnumber: str):
         self.serialnumber = serialnumber
 
-    def serialize(self, gsi16: bool = False) -> str:
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
         return self.format(
             self._WI,
             self.serialnumber,
@@ -204,7 +208,12 @@ class GsiInstrumentType(GsiWord):
     def __init__(self, name: str):
         self.name = name
 
-    def serialize(self, gsi16: bool = False) -> str:
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
         return self.format(
             self._WI,
             self.name,
@@ -241,7 +250,12 @@ class GsiDate(GsiWord):
             )
         )
 
-    def serialize(self, gsi16: bool = False) -> str:
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
         return self.format(
             self._WI,
             self.date.strftime("%d%m%Y"),
@@ -270,7 +284,12 @@ class GsiTime(GsiWord):
             )
         )
 
-    def serialize(self, gsi16: bool = False) -> str:
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
         return self.format(
             self._WI,
             self.time.strftime("%m%d%H%M"),
@@ -309,16 +328,9 @@ class GsiAngle(GsiWord):
                 data = float(f"{value[7:10]}.{value[10:]}")
                 angle = Angle(data, 'deg')
             case GsiUnit.DMS:
-                deg = int(value[7:10])
-                min = int(value[10:12])
-                sec = float(f"{value[12:14]}.{value[14:]}")
-                angle = Angle(
-                    (
-                        deg
-                        + min / 60
-                        + sec / 3600
-                    ),
-                    'deg'
+                angle = Angle.from_dms(
+                    f"{value[7:10]}-{value[10:12]}-{value[12:14]}."
+                    f"{value[14:-1]}"
                 )
             case GsiUnit.MIL:
                 data = float(f"{value[7:11]}.{value[11:]}")
@@ -333,13 +345,35 @@ class GsiAngle(GsiWord):
             angletype
         )
 
-    def serialize(self, gsi16: bool = False) -> str:
-        data = f"{self.angle.normalized().asunit('deg'):.5f}".replace(".", "")
-        if gsi16:
-            data = f"{self.angle.normalized().asunit('deg'):.13f}".replace(
-                ".",
-                ""
-            )
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.DEG,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
+        match angleunit:
+            case GsiUnit.DEG | GsiUnit.GON:
+                value = self.angle.normalized().asunit('deg')
+                if angleunit is GsiUnit.GON:
+                    value *= 400 / 360
+
+                if gsi16:
+                    data = f"{value:.13f}".replace(".", "")
+                else:
+                    data = f"{value:.5f}".replace(".", "")
+            case GsiUnit.DMS:
+                dms = self.angle.normalized().to_dms(9 if gsi16 else 1)
+                data = dms.replace("-", "").replace(".", "")
+
+            case GsiUnit.MIL:
+                value = self.angle.normalized().asunit('deg') * 6400 / 360
+                if gsi16:
+                    data = f"{value:.12f}".replace(".", "")
+                else:
+                    data = f"{value:.4f}".replace(".", "")
+
+            case _:
+                raise ValueError(f"Invalid angle unit: '{angleunit}'")
 
         return self.format(
             21 if self.type == 'hz' else 22,
@@ -403,18 +437,27 @@ class GsiDistance(GsiWord):
     def serialize(
         self,
         gsi16: bool = False,
-        precision: Literal[3, 4, 5] = 4
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
-        unit = {
-            3: GsiUnit.MILLIMETER,
-            4: GsiUnit.DECIMM,
-            5: GsiUnit.CENTIMM
-        }[precision]
+        match distunit:
+            case GsiUnit.MILLIMETER:
+                value = self.value * 1e3
+            case GsiUnit.MILLIFEET:
+                value = self.value / 3.048e-4
+            case GsiUnit.DECIMM:
+                value = self.value * 1e4
+            case GsiUnit.DECIMF:
+                value = self.value / 3.048e-5
+            case GsiUnit.CENTIMM:
+                value = self.value * 1e5
+            case _:
+                raise ValueError(f"Unknown distance unit: '{distunit}'")
 
         return self.format(
             self._TYPE_TO_WI[self.type],
-            f"{abs(self.value * 10**precision):.0f}",
-            f"{self.source.value:d}{unit.value:d}",
+            f"{abs(value):.0f}",
+            f"{self.source.value:d}{distunit.value:d}",
             self.value < 0,
             gsi16
         )
@@ -500,18 +543,27 @@ class GsiDistanceDNA(GsiWord):
     def serialize(
         self,
         gsi16: bool = False,
-        precision: Literal[3, 4, 5] = 4
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
-        unit = {
-            3: GsiUnit.MILLIMETER,
-            4: GsiUnit.DECIMM,
-            5: GsiUnit.CENTIMM
-        }[precision]
+        match distunit:
+            case GsiUnit.MILLIMETER:
+                value = self.value * 1e3
+            case GsiUnit.MILLIFEET:
+                value = self.value / 3.048e-4
+            case GsiUnit.DECIMM:
+                value = self.value * 1e4
+            case GsiUnit.DECIMF:
+                value = self.value / 3.048e-5
+            case GsiUnit.CENTIMM:
+                value = self.value * 1e5
+            case _:
+                raise ValueError(f"Unknown distance unit: '{distunit}'")
 
         return self.format(
             self._TYPE_TO_WI[self.type],
-            f"{abs(self.value * 10**precision):.0f}",
-            f"{self.source.value:d}{unit.value:d}",
+            f"{abs(value):.0f}",
+            f"{self.source.value:d}{distunit.value:d}",
             self.value < 0,
             gsi16
         )
@@ -663,7 +715,9 @@ class GsiBlock:
 
     def serialize(
         self,
-        gsi16: bool = False
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.DEG,
+        distunit: GsiUnit = GsiUnit.DECIMM
     ) -> str:
         match self.type:
             case "measurement":
@@ -676,7 +730,9 @@ class GsiBlock:
         if self.address is not None:
             header = f"{header[:2]}{self.address % 10000:04d}{header[6:]}"
 
-        output = header + "".join([w.serialize(gsi16) for w in self.words])
+        output = header + "".join(
+            [w.serialize(gsi16, angleunit, distunit) for w in self.words]
+        )
 
         if gsi16:
             output = "*" + output
