@@ -384,7 +384,7 @@ class GsiAngle(GsiWord):
 
 
 class GsiDistance(GsiWord):
-    _GSI = compile(r"^(?:3[123])\.\.\d{2}[\+-](?:[0-9]{8,16}) $")
+    _GSI = compile(r"^(?:3[123])\.\.[\d\.]\d[\+-](?:[0-9]{8,16}) $")
 
     _WI_TO_TYPE = {
         31: "slope",
@@ -396,7 +396,7 @@ class GsiDistance(GsiWord):
     def __init__(
         self,
         value: float,
-        source: GsiInputMode,
+        source: GsiInputMode | None,
         type: str
     ):
         self.value = value
@@ -411,7 +411,11 @@ class GsiDistance(GsiWord):
         cls._check_format(value)
 
         disttype = cls._WI_TO_TYPE[int(value[:3].rstrip("."))]
-        source = GsiInputMode(int(value[4]))
+        source = (
+            GsiInputMode(int(value[4]))
+            if value[4] != "."
+            else None
+        )
         unit = GsiUnit(int(value[5]))
         data = int(value[6:-1])
         match unit:
@@ -454,17 +458,18 @@ class GsiDistance(GsiWord):
             case _:
                 raise ValueError(f"Unknown distance unit: '{distunit}'")
 
+        source = f"{self.source.value:d}" if self.source is not None else ""
         return self.format(
             self._TYPE_TO_WI[self.type],
             f"{abs(value):.0f}",
-            f"{self.source.value:d}{distunit.value:d}",
+            f"{source}{distunit.value:d}",
             self.value < 0,
             gsi16
         )
 
 
 class GsiCoordinate(GsiDistance):
-    _GSI = compile(r"^(?:8[123456])\.\.\d{2}[\+-](?:[0-9]{8,16}) $")
+    _GSI = compile(r"^(?:8[123456])\.\.[\d\.]\d[\+-](?:[0-9]{8,16}) $")
 
     _WI_TO_TYPE = {
         81: "easting",
@@ -478,7 +483,7 @@ class GsiCoordinate(GsiDistance):
 
 
 class GsiEquipmentHeight(GsiDistance):
-    _GSI = compile(r"^(?:8[78])\.\.\d{2}[\+-](?:[0-9]{8,16}) $")
+    _GSI = compile(r"^(?:8[78])\.\.[\d\.]\d[\+-](?:[0-9]{8,16}) $")
 
     _WI_TO_TYPE = {
         87: "instrument",
@@ -652,6 +657,9 @@ class GsiBlock:
             f"{len(self.words)} word(s)"
         )
 
+    def __repr__(self) -> str:
+        return str(self)
+
     @classmethod
     def parse(cls, data: str, dna: bool = False) -> Self:
         wordsize = 16
@@ -659,11 +667,17 @@ class GsiBlock:
             wordsize = 24
             data = data[1:]
 
+        # Sometimes the last space before the linebreak is missing
+        if data[-1] != " ":
+            data += " "
+
         if len(data) < wordsize:
             raise ValueError("Block must be at least one word long")
 
         if (len(data) % wordsize) != 0:
-            raise ValueError("Block length does not match expected wordsizes")
+            raise ValueError(
+                f"Block length does not match expected wordsizes: {len(data)}"
+            )
 
         wi = int(data[:2])
         match wi:
