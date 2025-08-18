@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from re import compile
-from datetime import datetime  # , time
+from datetime import datetime
 from enum import Enum
 from typing import Literal, Self
 
@@ -156,19 +156,10 @@ class GsiPointName(GsiWord):
     _GSI = compile(r"^11[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
     _WI = 11
 
-    def __init__(self, name: str, address: int | None = None):
+    def __init__(self, name: str):
         self.name = name
-        self.address = address
 
     def serialize(self, gsi16: bool = False) -> str:
-        if self.address is not None:
-            return self.format_with_address(
-                self._WI,
-                self.name,
-                self.address,
-                gsi16
-            )
-
         return self.format(
             self._WI,
             self.name,
@@ -179,6 +170,11 @@ class GsiPointName(GsiWord):
     def parse(cls, value: str) -> GsiPointName:
         cls._check_format(value)
         return cls(value[7:-1].lstrip("0"))
+
+
+class GsiCode(GsiPointName):
+    _GSI = compile(r"^41[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _WI = 41
 
 
 class GsiSerialNumber(GsiWord):
@@ -548,6 +544,7 @@ _WI_TO_TYPE: dict[int, type[GsiWord]] = {
     31: GsiDistance,
     32: GsiDistance,
     33: GsiDistance,
+    41: GsiCode,
     81: GsiCoordinate,
     82: GsiCoordinate,
     83: GsiCoordinate,
@@ -562,6 +559,7 @@ _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
     12: GsiSerialNumber,
     13: GsiInstrumentType,
     32: GsiDistanceDNA,
+    41: GsiCode,
     83: GsiDistanceDNA,
     330: GsiStaffReading,
     331: GsiStaffReading,
@@ -573,48 +571,120 @@ _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
 }
 
 
-def parse_gsi_block(block: str, dna: bool = False) -> list[GsiWord]:
-    wordsize = 16
-    if block[0] == "*":
-        wordsize = 24
-        block = block[1:]
+class GsiBlock:
+    _TYPE_TO_WI = {
+        "measurement": 11,
+        "code": 41
+    }
+    _WI_TO_TYPE = {v: k for k, v in _TYPE_TO_WI.items()}
 
-    if (len(block) % wordsize) != 0:
-        raise ValueError("Block length does not match expected wordsizes")
+    def __init__(
+        self,
+        name: str,
+        type: str,
+        address: int | None = None
+    ):
+        if type not in self._TYPE_TO_WI:
+            raise ValueError(f"Unknown GSI block type: '{type}'")
 
-    mapping = _WI_TO_TYPE
-    if dna:
-        mapping = _WI_TO_TYPE_DNA
+        self.name = name
+        self.type = type
+        self.address: int | None = address
+        self.words: list[GsiWord] = []
 
-    words: list[GsiWord] = []
-    for i in range(0, len(block), wordsize):
-        word = block[i:i+wordsize]
+    def __str__(self) -> str:
+        return (
+            f"GSI {self.type} block '{self.name}': "
+            f"{len(self.words)} word(s)"
+        )
 
-        # GSI blocks start with WI11 or WI41 words, and these also contain the
-        # line address number intermingled with the WI and meta positions. This
-        # requires special handling. (e.g. 110001+... instead of 11....+...)
-        wi = word[:3].rstrip(".")
-        if wi.startswith("11"):
-            wi = "11"
-        elif wi.startswith("42"):
-            wi = "41"
+    @classmethod
+    def parse(cls, data: str, dna: bool = False) -> Self:
+        wordsize = 16
+        if data[0] == "*":
+            wordsize = 24
+            data = data[1:]
 
-        wordtype = mapping.get(int(wi), GsiUnknown)
-        try:
-            words.append(wordtype.parse(word))
-        except Exception:
-            words.append(GsiUnknown.parse(word))
+        if len(data) < wordsize:
+            raise ValueError("Block must be at least one word long")
 
-    return words
+        if (len(data) % wordsize) != 0:
+            raise ValueError("Block length does not match expected wordsizes")
 
+        wi = int(data[:2])
+        match wi:
+            case 11:
+                try:
+                    header = GsiPointName.parse(data[:wordsize])
+                except Exception:
+                    raise ValueError(
+                        "First word in measurement block must be point name"
+                    )
+                type = "measurement"
+            case 41:
+                try:
+                    header = GsiCode.parse(data[:wordsize])
+                except Exception:
+                    raise ValueError(
+                        "First word in code block must be code word"
+                    )
+                type = "code"
+            case _:
+                raise ValueError(
+                    f"Unsupported block header word type: '{wi:d}'"
+                )
 
-def serialize_gsi_block(
-    words: list[GsiWord],
-    gsi16: bool = False
-) -> str:
-    values = [w.serialize(gsi16) for w in words]
-    output = "".join(values)
-    if not gsi16:
+        address: int | None = None
+        if data[2:6].isdigit():
+            address = int(data[2:6])
+
+        mapping = _WI_TO_TYPE
+        if dna:
+            mapping = _WI_TO_TYPE_DNA
+
+        output = cls(header.name, type, address)
+        indices: set[int] = {11}
+        for i in range(wordsize, len(data), wordsize):
+            word = data[i:i+wordsize]
+
+            wi = int(word[:3].rstrip("."))
+            if wi in indices:
+                raise ValueError(f"Duplicate word type in block: '{wi:d}'")
+
+            indices.add(wi)
+
+            wordtype = mapping.get(wi, GsiUnknown)
+            try:
+                output.words.append(wordtype.parse(word))
+            except Exception:
+                output.words.append(GsiUnknown.parse(word))
+
         return output
 
-    return "*" + output
+    def serialize(
+        self,
+        gsi16: bool = False
+    ) -> str:
+        match self.type:
+            case "measurement":
+                header = GsiPointName(self.name).serialize(gsi16)
+            case "code":
+                header = GsiCode(self.name).serialize(gsi16)
+            case _:
+                raise ValueError(f"Unknown block type: '{self.type}'")
+
+        if self.address is not None:
+            header = f"{header[:2]}{self.address % 10000:04d}{header[6:]}"
+
+        output = header + "".join([w.serialize(gsi16) for w in self.words])
+
+        if gsi16:
+            output = "*" + output
+
+        return output
+
+    def drop_unknowns(self) -> None:
+        keep = [w for w in self.words if not isinstance(w, GsiUnknown)]
+        self.words.clear()
+        for w in keep:
+            self.words.append(w)
