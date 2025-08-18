@@ -322,10 +322,10 @@ class GsiAngle(GsiWord):
         unit = GsiUnit(int(value[5]))
         match unit:
             case GsiUnit.GON:
-                data = float(f"{value[7:10]}.{value[10:]}")
+                data = float(f"{value[7:10]}.{value[10:-1]}")
                 angle = Angle(data * 360 / 400, 'deg')
             case GsiUnit.DEG:
-                data = float(f"{value[7:10]}.{value[10:]}")
+                data = float(f"{value[7:10]}.{value[10:-1]}")
                 angle = Angle(data, 'deg')
             case GsiUnit.DMS:
                 angle = Angle.from_dms(
@@ -333,7 +333,7 @@ class GsiAngle(GsiWord):
                     f"{value[14:-1]}"
                 )
             case GsiUnit.MIL:
-                data = float(f"{value[7:11]}.{value[11:]}")
+                data = float(f"{value[7:11]}.{value[11:-1]}")
                 angle = Angle(data * 360 / 6400, 'deg')
             case _:
                 raise ValueError(f"Invalid angle unit: '{unit}'")
