@@ -448,8 +448,81 @@ class GsiEquipmentHeight(GsiDistance):
     _TYPE_TO_WI = {v: k for k, v in _WI_TO_TYPE.items()}
 
 
-class GsiStaffReading(GsiDistance):
-    _GSI = compile(r"^(?:33[0123456])\.\d{2}[\+-](?:[0-9]{8,16}) $")
+class GsiDistanceDNA(GsiWord):
+    _GSI = compile(r"^(?:32|83)\.\.[\d\.]\d[\+-](?:[0-9]{8,16}) $")
+
+    _WI_TO_TYPE = {
+        32: "staffdist"
+    }
+    _TYPE_TO_WI = {v: k for k, v in _WI_TO_TYPE.items()}
+
+    def __init__(
+        self,
+        value: float,
+        source: GsiInputModeDNA,
+        type: str
+    ):
+        self.value = value
+        if type not in self._TYPE_TO_WI:
+            raise ValueError(f"Unknown distance type: '{type}'")
+
+        self.type = type
+        self.source = source
+
+    @classmethod
+    def parse(cls, value: str) -> Self:
+        cls._check_format(value)
+
+        disttype = cls._WI_TO_TYPE[int(value[:3].rstrip("."))]
+        source = (
+            GsiInputModeDNA(int(value[4]))
+            if value[4] != "."
+            else GsiInputModeDNA.MEASURED_CURVCORR_OFF
+        )
+        unit = GsiUnit(int(value[5]))
+        data = int(value[6:-1])
+        match unit:
+            case GsiUnit.MILLIMETER:
+                dist = data * 1e-3
+            case GsiUnit.MILLIFEET:
+                dist = data * 3.048e-4
+            case GsiUnit.DECIMM:
+                dist = data * 1e-4
+            case GsiUnit.DECIMF:
+                dist = data * 3.048e-5
+            case GsiUnit.CENTIMM:
+                dist = data * 1e-5
+            case _:
+                raise ValueError(f"Invalid distance unit: '{unit}'")
+
+        return cls(
+            dist,
+            source,
+            disttype
+        )
+
+    def serialize(
+        self,
+        gsi16: bool = False,
+        precision: Literal[3, 4, 5] = 4
+    ) -> str:
+        unit = {
+            3: GsiUnit.MILLIMETER,
+            4: GsiUnit.DECIMM,
+            5: GsiUnit.CENTIMM
+        }[precision]
+
+        return self.format(
+            self._TYPE_TO_WI[self.type],
+            f"{abs(self.value * 10**precision):.0f}",
+            f"{self.source.value:d}{unit.value:d}",
+            self.value < 0,
+            gsi16
+        )
+
+
+class GsiStaffReading(GsiDistanceDNA):
+    _GSI = compile(r"^(?:33[123456])\.\d{2}[\+-](?:[0-9]{8,16}) $")
 
     _WI_TO_TYPE = {
         330: "simple",
@@ -461,3 +534,87 @@ class GsiStaffReading(GsiDistance):
         336: "f2"
     }
     _TYPE_TO_WI = {v: k for k, v in _WI_TO_TYPE.items()}
+
+
+_WI_TO_TYPE: dict[int, type[GsiWord]] = {
+    11: GsiPointName,
+    12: GsiSerialNumber,
+    13: GsiInstrumentType,
+    16: GsiStationName,
+    17: GsiDate,
+    19: GsiTime,
+    21: GsiAngle,
+    22: GsiAngle,
+    31: GsiDistance,
+    32: GsiDistance,
+    33: GsiDistance,
+    81: GsiCoordinate,
+    82: GsiCoordinate,
+    83: GsiCoordinate,
+    84: GsiCoordinate,
+    85: GsiCoordinate,
+    86: GsiCoordinate,
+    87: GsiEquipmentHeight,
+    88: GsiEquipmentHeight
+}
+_WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
+    11: GsiPointName,
+    12: GsiSerialNumber,
+    13: GsiInstrumentType,
+    32: GsiDistanceDNA,
+    83: GsiDistanceDNA,
+    330: GsiStaffReading,
+    331: GsiStaffReading,
+    332: GsiStaffReading,
+    333: GsiStaffReading,
+    334: GsiStaffReading,
+    335: GsiStaffReading,
+    336: GsiStaffReading
+}
+
+
+def parse_gsi_block(block: str, dna: bool = False) -> list[GsiWord]:
+    wordsize = 16
+    if block[0] == "*":
+        wordsize = 24
+        block = block[1:]
+
+    if (len(block) % wordsize) != 0:
+        raise ValueError("Block length does not match expected wordsizes")
+
+    mapping = _WI_TO_TYPE
+    if dna:
+        mapping = _WI_TO_TYPE_DNA
+
+    words: list[GsiWord] = []
+    for i in range(0, len(block), wordsize):
+        word = block[i:i+wordsize]
+
+        # GSI blocks start with WI11 or WI41 words, and these also contain the
+        # line address number intermingled with the WI and meta positions. This
+        # requires special handling. (e.g. 110001+... instead of 11....+...)
+        wi = word[:3].rstrip(".")
+        if wi.startswith("11"):
+            wi = "11"
+        elif wi.startswith("42"):
+            wi = "41"
+
+        wordtype = mapping.get(int(wi), GsiUnknown)
+        try:
+            words.append(wordtype.parse(word))
+        except Exception:
+            words.append(GsiUnknown.parse(word))
+
+    return words
+
+
+def serialize_gsi_block(
+    words: list[GsiWord],
+    gsi16: bool = False
+) -> str:
+    values = [w.serialize(gsi16) for w in words]
+    output = "".join(values)
+    if not gsi16:
+        return output
+
+    return "*" + output
