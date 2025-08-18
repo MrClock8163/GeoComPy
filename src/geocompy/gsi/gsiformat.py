@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from re import compile
 from datetime import datetime
 from enum import Enum
-from typing import Literal, Self, Any
+from typing import Self, Any
 
 from ..data import Angle
 
@@ -181,7 +181,7 @@ class GsiValueWord(GsiWord):
         )
 
 
-class GsiPointnameWord(GsiValueWord):
+class GsiPointNameWord(GsiValueWord):
     _GSI = compile(r"^11[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
 
     @property
@@ -203,7 +203,7 @@ class GsiSerialnumberWord(GsiValueWord):
         super().__init__(serialnumber)
 
 
-class GsiInstrumenttypeWord(GsiValueWord):
+class GsiInstrumentTypeWord(GsiValueWord):
     _GSI = compile(r"^13[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
 
     @property
@@ -211,7 +211,7 @@ class GsiInstrumenttypeWord(GsiValueWord):
         return 13
 
 
-class GsiStationnameWord(GsiPointnameWord):
+class GsiStationNameWord(GsiPointNameWord):
     _GSI = compile(r"^16[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
 
     @property
@@ -294,32 +294,22 @@ class GsiTimeWord(GsiValueWord):
 
 
 class GsiAngleWord(GsiWord):
-    _GSI = compile(r"^2[12]\.\d{3}\+(?:[0-9]{8,16}) $")
-
-    @property
-    def wi(self) -> int:
-        if self.type == 'hz':
-            return 21
-
-        return 22
+    _GSI = compile(r"^\d{2}\.\d{3}\+(?:[0-9]{8,16}) $")
 
     def __init__(
         self,
         angle: Angle,
         index: GsiIndexMode,
-        source: GsiInputMode,
-        type: Literal['hz', 'v'] = "hz"
+        source: GsiInputMode
     ):
-        self.angle = angle
-        self.indexmode = index
-        self.source = source
-        self.type = type
+        self.value: Angle = angle
+        self.indexmode: GsiIndexMode = index
+        self.source: GsiInputMode = source
 
     @classmethod
-    def parse(cls, value: str) -> GsiAngleWord:
+    def parse(cls, value: str) -> Self:
         cls._check_format(value)
 
-        angletype: Literal['hz', 'v'] = "hz" if value[:2] == "21" else "v"
         index = GsiIndexMode(int(value[3]))
         source = GsiInputMode(int(value[4]))
         unit = GsiUnit(int(value[5]))
@@ -344,8 +334,7 @@ class GsiAngleWord(GsiWord):
         return cls(
             angle,
             index,
-            source,
-            angletype
+            source
         )
 
     def serialize(
@@ -356,7 +345,7 @@ class GsiAngleWord(GsiWord):
     ) -> str:
         match angleunit:
             case GsiUnit.DEG | GsiUnit.GON:
-                value = self.angle.normalized().asunit('deg')
+                value = self.value.normalized().asunit('deg')
                 if angleunit is GsiUnit.GON:
                     value *= 400 / 360
 
@@ -365,11 +354,11 @@ class GsiAngleWord(GsiWord):
                 else:
                     data = f"{value:.5f}".replace(".", "")
             case GsiUnit.DMS:
-                dms = self.angle.normalized().to_dms(9 if gsi16 else 1)
+                dms = self.value.normalized().to_dms(9 if gsi16 else 1)
                 data = dms.replace("-", "").replace(".", "")
 
             case GsiUnit.MIL:
-                value = self.angle.normalized().asunit('deg') * 6400 / 360
+                value = self.value.normalized().asunit('deg') * 6400 / 360
                 if gsi16:
                     data = f"{value:.12f}".replace(".", "")
                 else:
@@ -379,11 +368,27 @@ class GsiAngleWord(GsiWord):
                 raise ValueError(f"Invalid angle unit: '{angleunit}'")
 
         return self.format(
-            21 if self.type == 'hz' else 22,
+            self.wi,
             data,
             f"{self.indexmode.value:d}{self.source.value:d}3",
             gsi16=gsi16
         )
+
+
+class GsiHorizontalAngleWord(GsiAngleWord):
+    _GSI = compile(r"^21\.\d{3}\+(?:[0-9]{8,16}) $")
+
+    @property
+    def wi(self) -> int:
+        return 21
+
+
+class GsiVerticalAngleWord(GsiAngleWord):
+    _GSI = compile(r"^22\.\d{3}\+(?:[0-9]{8,16}) $")
+
+    @property
+    def wi(self) -> int:
+        return 22
 
 
 class GsiDistanceWord(GsiWord):
@@ -476,7 +481,7 @@ class GsiDistanceWord(GsiWord):
 
 
 class GsiCodeWord(GsiValueWord):
-    _GSI = compile(r"^41[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = compile(r"^41[\d\.]{4}\+(?:[a-zA-Z0-9\.\?\-\_\+]{8,16}) $")
 
     @property
     def wi(self) -> int:
@@ -747,14 +752,14 @@ class GsiStaffReadingWord(GsiDistanceDNAWord):
 
 
 _WI_TO_TYPE: dict[int, type[GsiWord]] = {
-    11: GsiPointnameWord,
+    11: GsiPointNameWord,
     12: GsiSerialnumberWord,
-    13: GsiInstrumenttypeWord,
-    16: GsiStationnameWord,
+    13: GsiInstrumentTypeWord,
+    16: GsiStationNameWord,
     17: GsiDateWord,
     19: GsiTimeWord,
-    21: GsiAngleWord,
-    22: GsiAngleWord,
+    21: GsiHorizontalAngleWord,
+    22: GsiVerticalAngleWord,
     31: GsiDistanceWord,
     32: GsiDistanceWord,
     33: GsiDistanceWord,
@@ -769,9 +774,9 @@ _WI_TO_TYPE: dict[int, type[GsiWord]] = {
     88: GsiEquipmentHeightWord
 }
 _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
-    11: GsiPointnameWord,
+    11: GsiPointNameWord,
     12: GsiSerialnumberWord,
-    13: GsiInstrumenttypeWord,
+    13: GsiInstrumentTypeWord,
     32: GsiDistanceDNAWord,
     41: GsiCodeWord,
     83: GsiDistanceDNAWord,
@@ -838,7 +843,7 @@ class GsiBlock:
         match wi:
             case 11:
                 try:
-                    header: GsiValueWord = GsiPointnameWord.parse(
+                    header: GsiValueWord = GsiPointNameWord.parse(
                         data[:wordsize]
                     )
                 except Exception:
@@ -894,7 +899,7 @@ class GsiBlock:
     ) -> str:
         match self.type:
             case "measurement":
-                header = GsiPointnameWord(self.name).serialize(gsi16)
+                header = GsiPointNameWord(self.name).serialize(gsi16)
             case "code":
                 header = GsiCodeWord(self.name).serialize(gsi16)
             case _:
