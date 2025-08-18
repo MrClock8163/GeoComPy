@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from re import compile
+from re import compile, Pattern
 from datetime import datetime
 from enum import Enum
 from typing import Self, Any
@@ -16,18 +16,12 @@ class GsiIndexMode(Enum):
 
 
 class GsiInputMode(Enum):
-    TRANSFERRED = 0
-    MANUAL = 1
-    MEASURED_HZCORR_ON = 2
-    MEASURED_HZCORR_OFF = 3
-    SPECIAL = 4
-
-
-class GsiInputModeDNA(Enum):
-    MEASURED_CURVCORR_OFF = 0
-    MANUAL_CURVCORR_OFF = 1
-    MEASURED_CURVCORR_ON = 2
-    MANUAL_CURVCORR_ON = 5
+    TPS_TRANSFERRED_DNA_MEASURED_CURVCORR_OFF = 0
+    TPS_MANUAL_DNA_MANUAL_CURVCORR_OFF = 1
+    TPS_MEASURED_HZCORR_ON_DNA_MEASURED_CURVCORR_ON = 2
+    TPS_MEASURED_HZCORR_OFF = 3
+    TPS_COMPUTED = 4
+    DNA_MANUAL_CURVCORR_ON = 5
 
 
 class GsiUnit(Enum):
@@ -43,9 +37,32 @@ class GsiUnit(Enum):
     CENTIMM = 8  # 0.00001m
 
 
+def _regex_distance(wi: int | None = None) -> Pattern[str]:
+    if wi is not None and (wi > 999 or wi < 0):
+        raise ValueError("Invalid wordindex")
+
+    if wi is None:
+        idx = r"\d{2}[\d\.]"
+    else:
+        idx = str(wi).ljust(3, ".")
+
+    return compile(rf"^{idx}\.[\d\.]\d[\+\-][0-9]{{8,16}} $")
+
+
+def _regex_note(wi: int | None = None) -> Pattern[str]:
+    if wi is not None and (wi > 999 or wi < 0):
+        raise ValueError("Invalid wordindex")
+
+    if wi is None:
+        idx = r"\d{2}[\d\.]"
+    else:
+        idx = str(wi).ljust(3, ".")
+
+    return compile(rf"^{idx}[\d\.]{{3}}\+[\w\.\?\-\+]{{8,16}} $")
+
+
 class GsiWord(ABC):
     _GSI = compile(r"^[\d\.]{6}(?:\+|-)[a-zA-Z0-9\.\?]{8,16} $")
-    # _WI = 1
 
     @classmethod
     @abstractmethod
@@ -155,7 +172,7 @@ class GsiUnknownWord(GsiWord):
 
 
 class GsiValueWord(GsiWord):
-    _GSI = compile(r"^\d{2}\.{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note()
 
     def __init__(self, value: Any):
         self.value: Any = value
@@ -182,7 +199,7 @@ class GsiValueWord(GsiWord):
 
 
 class GsiPointNameWord(GsiValueWord):
-    _GSI = compile(r"^11[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(11)
 
     @property
     def wi(self) -> int:
@@ -193,7 +210,7 @@ class GsiPointNameWord(GsiValueWord):
 
 
 class GsiSerialnumberWord(GsiValueWord):
-    _GSI = compile(r"^12[\d\.]{4}\+(?:[0-9]{8,16}) $")
+    _GSI = compile(r"^12[\d\.]{4}\+[0-9]{8,16} $")
 
     @property
     def wi(self) -> int:
@@ -204,7 +221,7 @@ class GsiSerialnumberWord(GsiValueWord):
 
 
 class GsiInstrumentTypeWord(GsiValueWord):
-    _GSI = compile(r"^13[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(13)
 
     @property
     def wi(self) -> int:
@@ -212,7 +229,7 @@ class GsiInstrumentTypeWord(GsiValueWord):
 
 
 class GsiStationNameWord(GsiPointNameWord):
-    _GSI = compile(r"^16[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(16)
 
     @property
     def wi(self) -> int:
@@ -220,7 +237,7 @@ class GsiStationNameWord(GsiPointNameWord):
 
 
 class GsiDateWord(GsiValueWord):
-    _GSI = compile(r"^17[\d\.]{4}\+(?:[0-9]{8,16}) $")
+    _GSI = compile(r"^17[\d\.]{4}\+[0-9]{8,16} $")
 
     @property
     def wi(self) -> int:
@@ -256,7 +273,7 @@ class GsiDateWord(GsiValueWord):
 
 
 class GsiTimeWord(GsiValueWord):
-    _GSI = compile(r"^19[\d\.]{4}\+(?:[0-9]{8,16}) $")
+    _GSI = compile(r"^19[\d\.]{4}\+[0-9]{8,16} $")
 
     @property
     def wi(self) -> int:
@@ -294,7 +311,7 @@ class GsiTimeWord(GsiValueWord):
 
 
 class GsiAngleWord(GsiWord):
-    _GSI = compile(r"^\d{2}\.\d{3}\+(?:[0-9]{8,16}) $")
+    _GSI = compile(r"^\d{2}\.\d{3}\+[0-9]{8,16} $")
 
     def __init__(
         self,
@@ -376,7 +393,7 @@ class GsiAngleWord(GsiWord):
 
 
 class GsiHorizontalAngleWord(GsiAngleWord):
-    _GSI = compile(r"^21\.\d{3}\+(?:[0-9]{8,16}) $")
+    _GSI = compile(r"^21\.\d{3}\+[0-9]{8,16} $")
 
     @property
     def wi(self) -> int:
@@ -384,7 +401,7 @@ class GsiHorizontalAngleWord(GsiAngleWord):
 
 
 class GsiVerticalAngleWord(GsiAngleWord):
-    _GSI = compile(r"^22\.\d{3}\+(?:[0-9]{8,16}) $")
+    _GSI = compile(r"^22\.\d{3}\+[0-9]{8,16} $")
 
     @property
     def wi(self) -> int:
@@ -392,37 +409,20 @@ class GsiVerticalAngleWord(GsiAngleWord):
 
 
 class GsiDistanceWord(GsiWord):
-    _GSI = compile(r"^(?:3[123])\.\.[\d\.]\d[\+-](?:[0-9]{8,16}) $")
-
-    _WI_TO_TYPE = {
-        31: "slope",
-        32: "horizontal",
-        33: "vertical"
-    }
-    _TYPE_TO_WI = {v: k for k, v in _WI_TO_TYPE.items()}
-
-    @property
-    def wi(self) -> int:
-        return self._TYPE_TO_WI[self.type]
+    _GSI = _regex_distance()
 
     def __init__(
         self,
         value: float,
-        source: GsiInputMode | None,
-        type: str
+        source: GsiInputMode | None
     ):
         self.value = value
-        if type not in self._TYPE_TO_WI:
-            raise ValueError(f"Unknown distance type: '{type}'")
-
-        self.type = type
         self.source = source
 
     @classmethod
     def parse(cls, value: str) -> Self:
         cls._check_format(value)
 
-        disttype = cls._WI_TO_TYPE[int(value[:3].rstrip("."))]
         source = (
             GsiInputMode(int(value[4]))
             if value[4] != "."
@@ -446,8 +446,7 @@ class GsiDistanceWord(GsiWord):
 
         return cls(
             dist,
-            source,
-            disttype
+            source
         )
 
     def serialize(
@@ -472,7 +471,7 @@ class GsiDistanceWord(GsiWord):
 
         source = f"{self.source.value:d}" if self.source is not None else ""
         return self.format(
-            self._TYPE_TO_WI[self.type],
+            self.wi,
             f"{abs(value):.0f}",
             f"{source}{distunit.value:d}",
             self.value < 0,
@@ -480,8 +479,32 @@ class GsiDistanceWord(GsiWord):
         )
 
 
+class GsiSlopeDistanceWord(GsiDistanceWord):
+    _GSI = _regex_distance(31)
+
+    @property
+    def wi(self) -> int:
+        return 31
+
+
+class GsiHorizontalDistanceWord(GsiDistanceWord):
+    _GSI = _regex_distance(32)
+
+    @property
+    def wi(self) -> int:
+        return 32
+
+
+class GsiVerticalDistanceWord(GsiDistanceWord):
+    _GSI = _regex_distance(33)
+
+    @property
+    def wi(self) -> int:
+        return 33
+
+
 class GsiCodeWord(GsiValueWord):
-    _GSI = compile(r"^41[\d\.]{4}\+(?:[a-zA-Z0-9\.\?\-\_\+]{8,16}) $")
+    _GSI = _regex_note(41)
 
     @property
     def wi(self) -> int:
@@ -489,7 +512,7 @@ class GsiCodeWord(GsiValueWord):
 
 
 class GsiInfo1Word(GsiCodeWord):
-    _GSI = compile(r"^42[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(42)
 
     @property
     def wi(self) -> int:
@@ -497,7 +520,7 @@ class GsiInfo1Word(GsiCodeWord):
 
 
 class GsiInfo2Word(GsiCodeWord):
-    _GSI = compile(r"^43[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(43)
 
     @property
     def wi(self) -> int:
@@ -505,7 +528,7 @@ class GsiInfo2Word(GsiCodeWord):
 
 
 class GsiInfo3Word(GsiCodeWord):
-    _GSI = compile(r"^44[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(44)
 
     @property
     def wi(self) -> int:
@@ -513,7 +536,7 @@ class GsiInfo3Word(GsiCodeWord):
 
 
 class GsiInfo4Word(GsiCodeWord):
-    _GSI = compile(r"^45[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(45)
 
     @property
     def wi(self) -> int:
@@ -521,7 +544,7 @@ class GsiInfo4Word(GsiCodeWord):
 
 
 class GsiInfo5Word(GsiCodeWord):
-    _GSI = compile(r"^46[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(46)
 
     @property
     def wi(self) -> int:
@@ -529,7 +552,7 @@ class GsiInfo5Word(GsiCodeWord):
 
 
 class GsiInfo6Word(GsiCodeWord):
-    _GSI = compile(r"^47[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(47)
 
     @property
     def wi(self) -> int:
@@ -537,7 +560,7 @@ class GsiInfo6Word(GsiCodeWord):
 
 
 class GsiInfo7Word(GsiCodeWord):
-    _GSI = compile(r"^48[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(48)
 
     @property
     def wi(self) -> int:
@@ -545,7 +568,7 @@ class GsiInfo7Word(GsiCodeWord):
 
 
 class GsiInfo8Word(GsiCodeWord):
-    _GSI = compile(r"^49[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(49)
 
     @property
     def wi(self) -> int:
@@ -553,7 +576,7 @@ class GsiInfo8Word(GsiCodeWord):
 
 
 class GsiRemark1Word(GsiValueWord):
-    _GSI = compile(r"^71[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(71)
 
     @property
     def wi(self) -> int:
@@ -561,7 +584,7 @@ class GsiRemark1Word(GsiValueWord):
 
 
 class GsiRemark2Word(GsiRemark1Word):
-    _GSI = compile(r"^72[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(72)
 
     @property
     def wi(self) -> int:
@@ -569,7 +592,7 @@ class GsiRemark2Word(GsiRemark1Word):
 
 
 class GsiRemark3Word(GsiRemark1Word):
-    _GSI = compile(r"^73[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(73)
 
     @property
     def wi(self) -> int:
@@ -577,7 +600,7 @@ class GsiRemark3Word(GsiRemark1Word):
 
 
 class GsiRemark4Word(GsiRemark1Word):
-    _GSI = compile(r"^74[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(74)
 
     @property
     def wi(self) -> int:
@@ -585,7 +608,7 @@ class GsiRemark4Word(GsiRemark1Word):
 
 
 class GsiRemark5Word(GsiRemark1Word):
-    _GSI = compile(r"^75[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(75)
 
     @property
     def wi(self) -> int:
@@ -593,7 +616,7 @@ class GsiRemark5Word(GsiRemark1Word):
 
 
 class GsiRemark6Word(GsiRemark1Word):
-    _GSI = compile(r"^76[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(76)
 
     @property
     def wi(self) -> int:
@@ -601,7 +624,7 @@ class GsiRemark6Word(GsiRemark1Word):
 
 
 class GsiRemark7Word(GsiRemark1Word):
-    _GSI = compile(r"^77[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(77)
 
     @property
     def wi(self) -> int:
@@ -609,7 +632,7 @@ class GsiRemark7Word(GsiRemark1Word):
 
 
 class GsiRemark8Word(GsiRemark1Word):
-    _GSI = compile(r"^78[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(78)
 
     @property
     def wi(self) -> int:
@@ -617,138 +640,147 @@ class GsiRemark8Word(GsiRemark1Word):
 
 
 class GsiRemark9Word(GsiRemark1Word):
-    _GSI = compile(r"^79[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
+    _GSI = _regex_note(79)
 
     @property
     def wi(self) -> int:
         return 79
 
 
-class GsiCoordinateWord(GsiDistanceWord):
-    _GSI = compile(r"^(?:8[123456])\.\.[\d\.]\d[\+-](?:[0-9]{8,16}) $")
-
-    _WI_TO_TYPE = {
-        81: "easting",
-        82: "northing",
-        83: "height",
-        84: "stationeasting",
-        85: "stationnorthing",
-        86: "stationheight"
-    }
-    _TYPE_TO_WI = {v: k for k, v in _WI_TO_TYPE.items()}
-
-
-class GsiEquipmentHeightWord(GsiDistanceWord):
-    _GSI = compile(r"^(?:8[78])\.\.[\d\.]\d[\+-](?:[0-9]{8,16}) $")
-
-    _WI_TO_TYPE = {
-        87: "instrument",
-        88: "target"
-    }
-    _TYPE_TO_WI = {v: k for k, v in _WI_TO_TYPE.items()}
-
-
-class GsiDistanceDNAWord(GsiWord):
-    _GSI = compile(r"^(?:32|83)\.\.[\d\.]\d[\+-](?:[0-9]{8,16}) $")
-
-    _WI_TO_TYPE = {
-        32: "staffdist",
-        83: "benchmarkheight"
-    }
-    _TYPE_TO_WI = {v: k for k, v in _WI_TO_TYPE.items()}
+class GsiEastingWord(GsiDistanceWord):
+    _GSI = _regex_distance(81)
 
     @property
     def wi(self) -> int:
-        return self._TYPE_TO_WI[self.type]
-
-    def __init__(
-        self,
-        value: float,
-        source: GsiInputModeDNA | None,
-        type: str
-    ):
-        self.value = value
-        if type not in self._TYPE_TO_WI:
-            raise ValueError(f"Unknown distance type: '{type}'")
-
-        self.type = type
-        self.source = source
-
-    @classmethod
-    def parse(cls, value: str) -> Self:
-        cls._check_format(value)
-
-        disttype = cls._WI_TO_TYPE[int(value[:3].rstrip("."))]
-        source = (
-            GsiInputModeDNA(int(value[4]))
-            if value[4] != "."
-            else None
-        )
-        unit = GsiUnit(int(value[5]))
-        data = int(value[6:-1])
-        match unit:
-            case GsiUnit.MILLIMETER:
-                dist = data * 1e-3
-            case GsiUnit.MILLIFEET:
-                dist = data * 3.048e-4
-            case GsiUnit.DECIMM:
-                dist = data * 1e-4
-            case GsiUnit.DECIMF:
-                dist = data * 3.048e-5
-            case GsiUnit.CENTIMM:
-                dist = data * 1e-5
-            case _:
-                raise ValueError(f"Invalid distance unit: '{unit}'")
-
-        return cls(
-            dist,
-            source,
-            disttype
-        )
-
-    def serialize(
-        self,
-        gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
-    ) -> str:
-        match distunit:
-            case GsiUnit.MILLIMETER:
-                value = self.value * 1e3
-            case GsiUnit.MILLIFEET:
-                value = self.value / 3.048e-4
-            case GsiUnit.DECIMM:
-                value = self.value * 1e4
-            case GsiUnit.DECIMF:
-                value = self.value / 3.048e-5
-            case GsiUnit.CENTIMM:
-                value = self.value * 1e5
-            case _:
-                raise ValueError(f"Unknown distance unit: '{distunit}'")
-
-        source = f"{self.source.value:d}" if self.source is not None else ""
-        return self.format(
-            self._TYPE_TO_WI[self.type],
-            f"{abs(value):.0f}",
-            f"{source}{distunit.value:d}",
-            self.value < 0,
-            gsi16
-        )
+        return 81
 
 
-class GsiStaffReadingWord(GsiDistanceDNAWord):
-    _GSI = compile(r"^(?:33[123456])\.\d{2}[\+-](?:[0-9]{8,16}) $")
+class GsiNorthingWord(GsiDistanceWord):
+    _GSI = _regex_distance(82)
 
-    _WI_TO_TYPE = {
-        330: "simple",
-        331: "b1",
-        332: "f1",
-        333: "intermediate",
-        334: "setout",
-        335: "b2",
-        336: "f2"
-    }
-    _TYPE_TO_WI = {v: k for k, v in _WI_TO_TYPE.items()}
+    @property
+    def wi(self) -> int:
+        return 82
+
+
+class GsiHeightWord(GsiDistanceWord):
+    _GSI = _regex_distance(83)
+
+    @property
+    def wi(self) -> int:
+        return 83
+
+
+class GsiStationEastingWord(GsiDistanceWord):
+    _GSI = _regex_distance(84)
+
+    @property
+    def wi(self) -> int:
+        return 84
+
+
+class GsiStationNorthingWord(GsiDistanceWord):
+    _GSI = _regex_distance(85)
+
+    @property
+    def wi(self) -> int:
+        return 85
+
+
+class GsiStationHeightWord(GsiDistanceWord):
+    _GSI = _regex_distance(86)
+
+    @property
+    def wi(self) -> int:
+        return 86
+
+
+class GsiTargetHeightWord(GsiDistanceWord):
+    _GSI = _regex_distance(87)
+
+    @property
+    def wi(self) -> int:
+        return 87
+
+
+class GsiInstrumentHeightWord(GsiDistanceWord):
+    _GSI = _regex_distance(88)
+
+    @property
+    def wi(self) -> int:
+        return 88
+
+
+class GsiStaffDistanceWord(GsiDistanceWord):
+    _GSI = _regex_distance(32)
+
+    @property
+    def wi(self) -> int:
+        return 32
+
+
+class GsiBenchmarkHeightWord(GsiDistanceWord):
+    _GSI = _regex_distance(83)
+
+    @property
+    def wi(self) -> int:
+        return 83
+
+
+class GsiSimpleStaffReadingWord(GsiDistanceWord):
+    _GSI = _regex_distance(330)
+
+    @property
+    def wi(self) -> int:
+        return 330
+
+
+class GsiB1StaffReadingWord(GsiDistanceWord):
+    _GSI = _regex_distance(331)
+
+    @property
+    def wi(self) -> int:
+        return 331
+
+
+class GsiF1StaffReadingWord(GsiDistanceWord):
+    _GSI = _regex_distance(332)
+
+    @property
+    def wi(self) -> int:
+        return 332
+
+
+class GsiIntermediateStaffReadingWord(GsiDistanceWord):
+    _GSI = _regex_distance(333)
+
+    @property
+    def wi(self) -> int:
+        return 333
+
+
+class GsiStakeoutStaffReadingWord(GsiDistanceWord):
+    _GSI = _regex_distance(334)
+
+    @property
+    def wi(self) -> int:
+        return 334
+
+
+class GsiB2StaffReadingWord(GsiDistanceWord):
+    _GSI = _regex_distance(335)
+
+    @property
+    def wi(self) -> int:
+        return 335
+
+
+class GsiF2StaffReadingWord(GsiDistanceWord):
+    _GSI = _regex_distance(336)
+
+    @property
+    def wi(self) -> int:
+        return 336
 
 
 _WI_TO_TYPE: dict[int, type[GsiWord]] = {
@@ -760,33 +792,33 @@ _WI_TO_TYPE: dict[int, type[GsiWord]] = {
     19: GsiTimeWord,
     21: GsiHorizontalAngleWord,
     22: GsiVerticalAngleWord,
-    31: GsiDistanceWord,
-    32: GsiDistanceWord,
-    33: GsiDistanceWord,
+    31: GsiSlopeDistanceWord,
+    32: GsiHorizontalAngleWord,
+    33: GsiVerticalDistanceWord,
     41: GsiCodeWord,
-    81: GsiCoordinateWord,
-    82: GsiCoordinateWord,
-    83: GsiCoordinateWord,
-    84: GsiCoordinateWord,
-    85: GsiCoordinateWord,
-    86: GsiCoordinateWord,
-    87: GsiEquipmentHeightWord,
-    88: GsiEquipmentHeightWord
+    81: GsiEastingWord,
+    82: GsiNorthingWord,
+    83: GsiNorthingWord,
+    84: GsiStationEastingWord,
+    85: GsiStationNorthingWord,
+    86: GsiStationHeightWord,
+    87: GsiTargetHeightWord,
+    88: GsiInstrumentHeightWord
 }
 _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
     11: GsiPointNameWord,
     12: GsiSerialnumberWord,
     13: GsiInstrumentTypeWord,
-    32: GsiDistanceDNAWord,
+    32: GsiStaffDistanceWord,
     41: GsiCodeWord,
-    83: GsiDistanceDNAWord,
-    330: GsiStaffReadingWord,
-    331: GsiStaffReadingWord,
-    332: GsiStaffReadingWord,
-    333: GsiStaffReadingWord,
-    334: GsiStaffReadingWord,
-    335: GsiStaffReadingWord,
-    336: GsiStaffReadingWord
+    83: GsiBenchmarkHeightWord,
+    330: GsiSimpleStaffReadingWord,
+    331: GsiB1StaffReadingWord,
+    332: GsiF1StaffReadingWord,
+    333: GsiIntermediateStaffReadingWord,
+    334: GsiStakeoutStaffReadingWord,
+    335: GsiB2StaffReadingWord,
+    336: GsiF2StaffReadingWord
 }
 
 
