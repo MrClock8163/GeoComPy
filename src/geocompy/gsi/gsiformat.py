@@ -491,14 +491,15 @@ class GsiDistanceDNA(GsiWord):
     _GSI = compile(r"^(?:32|83)\.\.[\d\.]\d[\+-](?:[0-9]{8,16}) $")
 
     _WI_TO_TYPE = {
-        32: "staffdist"
+        32: "staffdist",
+        83: "benchmarkheight"
     }
     _TYPE_TO_WI = {v: k for k, v in _WI_TO_TYPE.items()}
 
     def __init__(
         self,
         value: float,
-        source: GsiInputModeDNA,
+        source: GsiInputModeDNA | None,
         type: str
     ):
         self.value = value
@@ -516,7 +517,7 @@ class GsiDistanceDNA(GsiWord):
         source = (
             GsiInputModeDNA(int(value[4]))
             if value[4] != "."
-            else GsiInputModeDNA.MEASURED_CURVCORR_OFF
+            else None
         )
         unit = GsiUnit(int(value[5]))
         data = int(value[6:-1])
@@ -560,10 +561,11 @@ class GsiDistanceDNA(GsiWord):
             case _:
                 raise ValueError(f"Unknown distance unit: '{distunit}'")
 
+        source = f"{self.source.value:d}" if self.source is not None else ""
         return self.format(
             self._TYPE_TO_WI[self.type],
             f"{abs(value):.0f}",
-            f"{self.source.value:d}{distunit.value:d}",
+            f"{source}{distunit.value:d}",
             self.value < 0,
             gsi16
         )
