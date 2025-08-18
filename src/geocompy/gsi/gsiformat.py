@@ -59,7 +59,7 @@ class GsiWord(ABC):
     @staticmethod
     def format(
         wordindex: int,
-        data: str = "",
+        data: str,
         meta: str = "",
         negative: bool = False,
         gsi16: bool = False
@@ -67,7 +67,7 @@ class GsiWord(ABC):
         if wordindex >= 1000 or wordindex < 0:
             raise ValueError(f"GSI word index out of range ({wordindex})")
 
-        if not meta.isdigit() or len(meta) > 3:
+        if meta != "" and (not meta.isdigit() or len(meta) > 3):
             raise ValueError(f"GSI word meta data is invalid ({meta})")
 
         wi = str(wordindex)
@@ -82,6 +82,25 @@ class GsiWord(ABC):
             data = f"{data[-8:]:>.8s}".zfill(8)
 
         return f"{header:6.6s}{sign}{data} "
+
+    @classmethod
+    def format_with_address(
+        cls,
+        wordindex: int,
+        data: str,
+        address: int,
+        negative: bool = False,
+        gsi16: bool = False
+    ) -> str:
+        value = cls.format(
+            wordindex,
+            data,
+            "",
+            negative,
+            gsi16
+        )
+
+        return f"{value[:2]}{address % 10000:04d}{value[6:]}"
 
     @classmethod
     def _check_format(cls, value: str) -> None:
@@ -137,10 +156,19 @@ class GsiPointName(GsiWord):
     _GSI = compile(r"^11[\d\.]{4}\+(?:[a-zA-Z0-9]{8,16}) $")
     _WI = 11
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, address: int | None = None):
         self.name = name
+        self.address = address
 
     def serialize(self, gsi16: bool = False) -> str:
+        if self.address is not None:
+            return self.format_with_address(
+                self._WI,
+                self.name,
+                self.address,
+                gsi16
+            )
+
         return self.format(
             self._WI,
             self.name,
@@ -352,7 +380,7 @@ class GsiDistance(GsiWord):
     def parse(cls, value: str) -> Self:
         cls._check_format(value)
 
-        disttype = cls._WI_TO_TYPE[int(value[:2])]
+        disttype = cls._WI_TO_TYPE[int(value[:3].rstrip("."))]
         source = GsiInputMode(int(value[4]))
         unit = GsiUnit(int(value[5]))
         data = int(value[6:-1])
