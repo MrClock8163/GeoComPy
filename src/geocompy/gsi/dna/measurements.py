@@ -13,13 +13,21 @@ Types
 """
 from __future__ import annotations
 
-from datetime import time, datetime
+from datetime import datetime
+from typing import Any
 
 from ..gsitypes import (
     GsiOnlineSubsystem,
     GsiOnlineResponse
 )
-from ...data import gsiword
+from .. import gsiformat as gsi
+
+
+def _word_value(value: gsi.GsiValueWord | None) -> Any:
+    if value is None:
+        return None
+
+    return value.value
 
 
 class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
@@ -30,7 +38,7 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
     (both get and set) is done through GSI data words.
     """
 
-    def get_point_id(self) -> GsiOnlineResponse[str | None]:
+    def get_point_id(self) -> GsiOnlineResponse[str]:
         """
         ``GET 11``
 
@@ -40,17 +48,11 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         -------
         GsiOnlineResponse
             Point ID.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
         return self._getrequest(
             "M",
-            11,
-            lambda v: v.strip("* ")[7:].lstrip("0")
-        )
+            gsi.GsiPointNameWord
+        ).map_value(_word_value)
 
     def set_point_id(
         self,
@@ -71,15 +73,10 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        wi = 11
-        word = gsiword(wi, ptid, gsi16=self._parent.is_client_gsi16)
 
-        return self._putrequest(
-            wi,
-            word
-        )
+        return self._putrequest(gsi.GsiPointNameWord(ptid))
 
-    def get_note(self) -> GsiOnlineResponse[str | None]:
+    def get_note(self) -> GsiOnlineResponse[str]:
         """
         ``GET 71``
 
@@ -89,17 +86,11 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         -------
         GsiOnlineResponse
             Point note.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
         return self._getrequest(
             "M",
-            71,
-            lambda v: v.strip("* ")[7:].lstrip("0")
-        )
+            gsi.GsiRemark1Word
+        ).map_value(_word_value)
 
     def set_note(
         self,
@@ -120,15 +111,10 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        wi = 71
-        word = gsiword(wi, note, gsi16=self._parent.is_client_gsi16)
 
-        return self._putrequest(
-            wi,
-            word
-        )
+        return self._putrequest(gsi.GsiRemark1Word(note))
 
-    def get_time(self) -> GsiOnlineResponse[time | None]:
+    def get_time(self) -> GsiOnlineResponse[datetime]:
         """
         ``GET 560``
 
@@ -137,39 +123,27 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         Returns
         -------
         GsiOnlineResponse
-            Current time.
+            Current time wrapped in a datetime object
+            (year, month and day should be ignored).
 
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
-        def parsetime(value: str) -> time:
-            value = value.strip("* ")
-            return time(
-                int(value[-6:-4]),
-                int(value[-4:-2]),
-                int(value[-2:])
-            )
-
         return self._getrequest(
             "I",
-            560,
-            parsetime
-        )
+            gsi.GsiNewTimeWord
+        ).map_value(_word_value)
 
     def set_time(
         self,
-        value: time
+        time: datetime
     ) -> GsiOnlineResponse[bool]:
         """
         ``PUT 560``
 
-        Sets the time on the instrument.
+        Sets the hours, minutes and seconds on the instrument.
 
         Parameters
         ----------
-        value : time
+        time : datetime
             New time to set.
 
         Returns
@@ -177,20 +151,9 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         GsiOnlineResponse
             Success of the change.
         """
-        wi = 560
-        word = gsiword(
-            wi,
-            f"{value.hour:02d}{value.minute:02d}{value.second:02d}",
-            info="6",
-            gsi16=self._parent.is_client_gsi16
-        )
+        return self._putrequest(gsi.GsiNewTimeWord(time))
 
-        return self._putrequest(
-            wi,
-            word
-        )
-
-    def get_date(self) -> GsiOnlineResponse[tuple[int, int] | None]:
+    def get_date(self) -> GsiOnlineResponse[datetime]:
         """
         ``GET 561``
 
@@ -199,27 +162,17 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         Returns
         -------
         GsiOnlineResponse
-            Current month and day.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
+            Current month and day wrapped in a datetime object
+            (year should be ignored).
         """
-        def parsedate(value: str) -> tuple[int, int]:
-            value = value.strip("* ")
-            return int(value[-6:-4]), int(value[-4:-2])
-
         return self._getrequest(
             "I",
-            561,
-            parsedate
-        )
+            gsi.GsiNewDateWord
+        ).map_value(_word_value)
 
     def set_date(
         self,
-        month: int,
-        day: int
+        date: datetime
     ) -> GsiOnlineResponse[bool]:
         """
         ``PUT 561``
@@ -228,28 +181,16 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
 
         Parameters
         ----------
-        month : int
-        day : int
+        date : datetime
 
         Returns
         -------
         GsiOnlineResponse
             Success of the change.
         """
-        wi = 561
-        word = gsiword(
-            wi,
-            f"{month:02d}{day:02d}00",
-            info="6",
-            gsi16=self._parent.is_client_gsi16
-        )
+        return self._putrequest(gsi.GsiNewDateWord(date))
 
-        return self._putrequest(
-            wi,
-            word
-        )
-
-    def get_year(self) -> GsiOnlineResponse[int | None]:
+    def get_year(self) -> GsiOnlineResponse[datetime]:
         """
         ``GET 562``
 
@@ -258,22 +199,18 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         Returns
         -------
         GsiOnlineResponse
-            Current year.
+            Current year wrapped in a datetime object
+            (month and day should be ignored).
 
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
         return self._getrequest(
             "I",
-            562,
-            lambda v: int(v.strip("* ")[7:].lstrip("0"))
-        )
+            gsi.GsiNewYearWord
+        ).map_value(_word_value)
 
     def set_year(
         self,
-        year: int
+        year: datetime
     ) -> GsiOnlineResponse[bool]:
         """
         ``PUT 562``
@@ -282,121 +219,65 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
 
         Parameters
         ----------
-        year : int
+        year : datetime
 
         Returns
         -------
         GsiOnlineResponse
             Success of the change.
         """
-        wi = 562
-        word = gsiword(
-            wi,
-            str(year),
-            gsi16=self._parent.is_client_gsi16
-        )
 
-        return self._putrequest(
-            wi,
-            word
-        )
+        return self._putrequest(gsi.GsiNewYearWord(year))
 
-    def get_distance(self) -> GsiOnlineResponse[float | None]:
+    def get_distance(self) -> GsiOnlineResponse[float]:
         """
         ``GET 32``
 
-        Measures the distance from the aimed levelling staff in the
-        currently set distance unit.
+        Measures the distance from the aimed levelling staff in meters.
 
         Returns
         -------
         GsiOnlineResponse
             Distance.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
-        def parsedist(value: str) -> float:
-            value = value.strip("* ")
-            data = float(value[6:])
-            match value[5]:
-                case "0" | "1":
-                    data /= 1000
-                case "6" | "7":
-                    data /= 10000
-                case "8":
-                    data /= 100000
-
-            return data
-
         return self._getrequest(
             "M",
-            32,
-            parsedist
-        )
+            gsi.GsiStaffDistanceWord
+        ).map_value(_word_value)
 
-    def get_reading(self) -> GsiOnlineResponse[float | None]:
+    def get_reading(self) -> GsiOnlineResponse[float]:
         """
         ``GET 330``
 
-        Takes a reading on the aimed levelling staff in the currently set
-        distance unit.
+        Takes a reading on the aimed levelling staff in meters.
 
         Returns
         -------
         GsiOnlineResponse
             Staff reading.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
-        def parsereading(value: str) -> float:
-            value = value.strip("* ")
-            data = float(value[6:])
-            match value[5]:
-                case "0" | "1":
-                    data /= 1000
-                case "6" | "7":
-                    data /= 10000
-                case "8":
-                    data /= 100000
-
-            return data
-
         return self._getrequest(
             "M",
-            330,
-            parsereading
-        )
+            gsi.GsiSimpleStaffReadingWord
+        ).map_value(_word_value)
 
-    def get_temperature(self) -> GsiOnlineResponse[float | None]:
+    def get_temperature(self) -> GsiOnlineResponse[float]:
         """
         ``GET 95``
 
-        Measures and returns the internal temperature in the currently set
-        temperature units.
+        Measures and returns the internal temperature in Celsius degrees.
 
         Returns
         -------
         GsiOnlineResponse
             Internal temperature.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
         return self._getrequest(
             "M",
-            95,
-            lambda v: int(v.strip("* ")[6:]) / 10000
-        )
+            gsi.GsiTemperatureWord
+        ).map_value(_word_value)
 
-    def get_serialnumber(self) -> GsiOnlineResponse[str | None]:
+    def get_serialnumber(self) -> GsiOnlineResponse[str]:
         """
         ``GET 12``
 
@@ -406,41 +287,29 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         -------
         GsiOnlineResponse
             Serial number.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
         return self._getrequest(
             "I",
-            12,
-            lambda v: v.strip("* ")[7:].lstrip("0")
-        )
+            gsi.GsiSerialnumberWord
+        ).map_value(_word_value)
 
-    def get_instrument_type(self) -> GsiOnlineResponse[str | None]:
+    def get_instrument_type(self) -> GsiOnlineResponse[str]:
         """
         ``GET 13``
 
-        Gets the instrument type.
+        Gets the instrument type name.
 
         Returns
         -------
         GsiOnlineResponse
             Instrument type.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
         return self._getrequest(
             "I",
-            13,
-            lambda v: v.strip("* ")[7:].lstrip("0")
-        )
+            gsi.GsiInstrumentTypeWord
+        ).map_value(_word_value)
 
-    def get_full_date(self) -> GsiOnlineResponse[datetime | None]:
+    def get_full_date(self) -> GsiOnlineResponse[datetime]:
         """
         ``GET 17``
 
@@ -450,27 +319,13 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         -------
         GsiOnlineResponse
             Full date.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
         """
-        def parsedate(value: str) -> datetime:
-            value = value.strip("* ")
-            return datetime(
-                int(value[-4:]),
-                int(value[-6:-4]),
-                int(value[-8:-6])
-            )
-
         return self._getrequest(
             "I",
-            17,
-            parsedate
-        )
+            gsi.GsiDateWord
+        ).map_value(_word_value)
 
-    def get_day_time(self) -> GsiOnlineResponse[tuple[int, int, time] | None]:
+    def get_day_time(self) -> GsiOnlineResponse[datetime]:
         """
         ``GET 19``
 
@@ -479,33 +334,17 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         Returns
         -------
         GsiOnlineResponse
-            Month, day and time.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
+            Month, day and time wrapped in a datetime object
+            (year should be ignored).
         """
-        def parse(value: str) -> tuple[int, int, time]:
-            value = value.strip("* ")
-            return (
-                int(value[-8:-6]),
-                int(value[-6:-4]),
-                time(
-                    int(value[-4:-2]),
-                    int(value[-2:])
-                )
-            )
-
         return self._getrequest(
             "I",
-            19,
-            parse
-        )
+            gsi.GsiTimeWord
+        ).map_value(_word_value)
 
     def get_software_version(
         self
-    ) -> GsiOnlineResponse[tuple[int, int] | None]:
+    ) -> GsiOnlineResponse[float]:
         """
         ``GET 599``
 
@@ -514,19 +353,11 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
         Returns
         -------
         GsiOnlineResponse
-            Software version.
-
-        Note
-        ----
-        The value in the response is ``None`` if the value could not be
-        retrieved (i.e. an error occured during the request).
+            Software version as float
+            (integer part is major,
+            fractional part is minor version with 4 decimals maximum).
         """
-        def parse(value: str) -> tuple[int, int]:
-            value = value.strip("* ")[7:]
-            return int(value[:-4]), int(value[-4:])
-
         return self._getrequest(
             "I",
-            599,
-            parse
-        )
+            gsi.GsiSoftwareVersionWord
+        ).map_value(_word_value)
