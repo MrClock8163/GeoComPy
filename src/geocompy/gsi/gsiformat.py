@@ -316,7 +316,7 @@ class GsiTimeWord(GsiValueWord):
         )
 
 
-class GsiAngleWord(GsiWord):
+class GsiAngleWord(GsiValueWord):
     _GSI = compile(r"^\d{2}\.\d{3}\+[0-9]{8,16} $")
 
     def __init__(
@@ -325,7 +325,8 @@ class GsiAngleWord(GsiWord):
         index: GsiIndexMode,
         source: GsiInputMode
     ):
-        self.value: Angle = angle
+        self.value: Angle
+        super().__init__(angle)
         self.indexmode: GsiIndexMode = index
         self.source: GsiInputMode = source
 
@@ -414,7 +415,7 @@ class GsiVerticalAngleWord(GsiAngleWord):
         return 22
 
 
-class GsiDistanceWord(GsiWord):
+class GsiDistanceWord(GsiValueWord):
     _GSI = _regex_distance()
 
     def __init__(
@@ -422,7 +423,8 @@ class GsiDistanceWord(GsiWord):
         value: float,
         source: GsiInputMode | None
     ):
-        self.value = value
+        self.value: float
+        super().__init__(value)
         self.source = source
 
     @classmethod
