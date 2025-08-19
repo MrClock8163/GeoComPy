@@ -37,7 +37,7 @@ class GsiUnit(Enum):
     CENTIMILLI = 8  # 0.00001(m)
 
 
-def _regex_distance(wi: int | None = None) -> Pattern[str]:
+def _regex_measurement(wi: int | None = None) -> Pattern[str]:
     if wi is not None and (wi > 999 or wi < 0):
         raise ValueError("Invalid wordindex")
 
@@ -71,7 +71,8 @@ class GsiWord(ABC):
 
     @classmethod
     @abstractmethod
-    def wi(cls) -> int: ...
+    def wi(cls) -> int:
+        raise NotImplementedError()
 
     @abstractmethod
     def serialize(
@@ -317,25 +318,33 @@ class GsiTimeWord(GsiValueWord):
 
 
 class GsiAngleWord(GsiValueWord):
-    _GSI = compile(r"^\d{2}\.\d{3}\+[0-9]{8,16} $")
+    _GSI = _regex_measurement()
 
     def __init__(
         self,
         angle: Angle,
-        index: GsiIndexMode,
-        source: GsiInputMode
+        index: GsiIndexMode | None,
+        source: GsiInputMode | None
     ):
         self.value: Angle
         super().__init__(angle)
-        self.indexmode: GsiIndexMode = index
-        self.source: GsiInputMode = source
+        self.indexmode: GsiIndexMode | None = index
+        self.source: GsiInputMode | None = source
 
     @classmethod
     def parse(cls, value: str) -> Self:
         cls._check_format(value)
 
-        index = GsiIndexMode(int(value[3]))
-        source = GsiInputMode(int(value[4]))
+        index = (
+            GsiIndexMode(int(value[3]))
+            if value[3] != "."
+            else None
+        )
+        source = (
+            GsiInputMode(int(value[4]))
+            if value[4] != "."
+            else None
+        )
         unit = GsiUnit(int(value[5]))
         match unit:
             case GsiUnit.GON:
@@ -391,16 +400,18 @@ class GsiAngleWord(GsiValueWord):
             case _:
                 raise ValueError(f"Invalid angle unit: '{angleunit}'")
 
+        index = str(self.indexmode.value) if self.indexmode is not None else ""
+        source = str(self.source.value) if self.source is not None else ""
         return self.format(
             self.wi(),
             data,
-            f"{self.indexmode.value:d}{self.source.value:d}3",
+            f"{index}{source}{angleunit.value:d}",
             gsi16=gsi16
         )
 
 
 class GsiHorizontalAngleWord(GsiAngleWord):
-    _GSI = compile(r"^21\.\d{3}\+[0-9]{8,16} $")
+    _GSI = _regex_measurement(21)
 
     @classmethod
     def wi(cls) -> int:
@@ -408,7 +419,7 @@ class GsiHorizontalAngleWord(GsiAngleWord):
 
 
 class GsiVerticalAngleWord(GsiAngleWord):
-    _GSI = compile(r"^22\.\d{3}\+[0-9]{8,16} $")
+    _GSI = _regex_measurement(22)
 
     @classmethod
     def wi(cls) -> int:
@@ -416,7 +427,7 @@ class GsiVerticalAngleWord(GsiAngleWord):
 
 
 class GsiDistanceWord(GsiValueWord):
-    _GSI = _regex_distance()
+    _GSI = _regex_measurement()
 
     def __init__(
         self,
@@ -488,7 +499,7 @@ class GsiDistanceWord(GsiValueWord):
 
 
 class GsiSlopeDistanceWord(GsiDistanceWord):
-    _GSI = _regex_distance(31)
+    _GSI = _regex_measurement(31)
 
     @classmethod
     def wi(cls) -> int:
@@ -496,7 +507,7 @@ class GsiSlopeDistanceWord(GsiDistanceWord):
 
 
 class GsiHorizontalDistanceWord(GsiDistanceWord):
-    _GSI = _regex_distance(32)
+    _GSI = _regex_measurement(32)
 
     @classmethod
     def wi(cls) -> int:
@@ -504,7 +515,7 @@ class GsiHorizontalDistanceWord(GsiDistanceWord):
 
 
 class GsiVerticalDistanceWord(GsiDistanceWord):
-    _GSI = _regex_distance(33)
+    _GSI = _regex_measurement(33)
 
     @classmethod
     def wi(cls) -> int:
@@ -588,7 +599,7 @@ class GsiInfo8Word(GsiCodeWord):
 
 
 class GsiPrismConstantWord(GsiDistanceWord):
-    _GSI = _regex_distance(58)
+    _GSI = _regex_measurement(58)
 
     @classmethod
     def wi(cls) -> int:
@@ -596,7 +607,7 @@ class GsiPrismConstantWord(GsiDistanceWord):
 
 
 class GsiPPMWord(GsiDistanceWord):
-    _GSI = _regex_distance(59)
+    _GSI = _regex_measurement(59)
 
     @classmethod
     def wi(cls) -> int:
@@ -676,7 +687,7 @@ class GsiRemark9Word(GsiRemark1Word):
 
 
 class GsiEastingWord(GsiDistanceWord):
-    _GSI = _regex_distance(81)
+    _GSI = _regex_measurement(81)
 
     @classmethod
     def wi(cls) -> int:
@@ -684,7 +695,7 @@ class GsiEastingWord(GsiDistanceWord):
 
 
 class GsiNorthingWord(GsiDistanceWord):
-    _GSI = _regex_distance(82)
+    _GSI = _regex_measurement(82)
 
     @classmethod
     def wi(cls) -> int:
@@ -692,7 +703,7 @@ class GsiNorthingWord(GsiDistanceWord):
 
 
 class GsiHeightWord(GsiDistanceWord):
-    _GSI = _regex_distance(83)
+    _GSI = _regex_measurement(83)
 
     @classmethod
     def wi(cls) -> int:
@@ -700,7 +711,7 @@ class GsiHeightWord(GsiDistanceWord):
 
 
 class GsiStationEastingWord(GsiDistanceWord):
-    _GSI = _regex_distance(84)
+    _GSI = _regex_measurement(84)
 
     @classmethod
     def wi(cls) -> int:
@@ -708,7 +719,7 @@ class GsiStationEastingWord(GsiDistanceWord):
 
 
 class GsiStationNorthingWord(GsiDistanceWord):
-    _GSI = _regex_distance(85)
+    _GSI = _regex_measurement(85)
 
     @classmethod
     def wi(cls) -> int:
@@ -716,7 +727,7 @@ class GsiStationNorthingWord(GsiDistanceWord):
 
 
 class GsiStationHeightWord(GsiDistanceWord):
-    _GSI = _regex_distance(86)
+    _GSI = _regex_measurement(86)
 
     @classmethod
     def wi(cls) -> int:
@@ -724,7 +735,7 @@ class GsiStationHeightWord(GsiDistanceWord):
 
 
 class GsiTargetHeightWord(GsiDistanceWord):
-    _GSI = _regex_distance(87)
+    _GSI = _regex_measurement(87)
 
     @classmethod
     def wi(cls) -> int:
@@ -732,7 +743,7 @@ class GsiTargetHeightWord(GsiDistanceWord):
 
 
 class GsiInstrumentHeightWord(GsiDistanceWord):
-    _GSI = _regex_distance(88)
+    _GSI = _regex_measurement(88)
 
     @classmethod
     def wi(cls) -> int:
@@ -740,7 +751,7 @@ class GsiInstrumentHeightWord(GsiDistanceWord):
 
 
 class GsiTemperatureWord(GsiDistanceWord):
-    _GSI = _regex_distance(95)
+    _GSI = _regex_measurement(95)
 
     @classmethod
     def wi(cls) -> int:
@@ -748,7 +759,7 @@ class GsiTemperatureWord(GsiDistanceWord):
 
 
 class GsiPressureWord(GsiDistanceWord):
-    _GSI = _regex_distance(531)
+    _GSI = _regex_measurement(531)
 
     @classmethod
     def wi(cls) -> int:
@@ -756,7 +767,7 @@ class GsiPressureWord(GsiDistanceWord):
 
 
 class GsiRefractionCoefWord(GsiDistanceWord):
-    _GSI = _regex_distance(538)
+    _GSI = _regex_measurement(538)
 
     @classmethod
     def wi(cls) -> int:
@@ -877,7 +888,7 @@ class GsiNewYearWord(GsiValueWord):
 
 
 class GsiStaffDistanceWord(GsiDistanceWord):
-    _GSI = _regex_distance(32)
+    _GSI = _regex_measurement(32)
 
     @classmethod
     def wi(cls) -> int:
@@ -885,7 +896,7 @@ class GsiStaffDistanceWord(GsiDistanceWord):
 
 
 class GsiBenchmarkHeightWord(GsiDistanceWord):
-    _GSI = _regex_distance(83)
+    _GSI = _regex_measurement(83)
 
     @classmethod
     def wi(cls) -> int:
@@ -893,7 +904,7 @@ class GsiBenchmarkHeightWord(GsiDistanceWord):
 
 
 class GsiSimpleStaffReadingWord(GsiDistanceWord):
-    _GSI = _regex_distance(330)
+    _GSI = _regex_measurement(330)
 
     @classmethod
     def wi(cls) -> int:
@@ -901,7 +912,7 @@ class GsiSimpleStaffReadingWord(GsiDistanceWord):
 
 
 class GsiB1StaffReadingWord(GsiDistanceWord):
-    _GSI = _regex_distance(331)
+    _GSI = _regex_measurement(331)
 
     @classmethod
     def wi(cls) -> int:
@@ -909,7 +920,7 @@ class GsiB1StaffReadingWord(GsiDistanceWord):
 
 
 class GsiF1StaffReadingWord(GsiDistanceWord):
-    _GSI = _regex_distance(332)
+    _GSI = _regex_measurement(332)
 
     @classmethod
     def wi(cls) -> int:
@@ -917,7 +928,7 @@ class GsiF1StaffReadingWord(GsiDistanceWord):
 
 
 class GsiIntermediateStaffReadingWord(GsiDistanceWord):
-    _GSI = _regex_distance(333)
+    _GSI = _regex_measurement(333)
 
     @classmethod
     def wi(cls) -> int:
@@ -925,7 +936,7 @@ class GsiIntermediateStaffReadingWord(GsiDistanceWord):
 
 
 class GsiStakeoutStaffReadingWord(GsiDistanceWord):
-    _GSI = _regex_distance(334)
+    _GSI = _regex_measurement(334)
 
     @classmethod
     def wi(cls) -> int:
@@ -933,7 +944,7 @@ class GsiStakeoutStaffReadingWord(GsiDistanceWord):
 
 
 class GsiB2StaffReadingWord(GsiDistanceWord):
-    _GSI = _regex_distance(335)
+    _GSI = _regex_measurement(335)
 
     @classmethod
     def wi(cls) -> int:
@@ -941,7 +952,7 @@ class GsiB2StaffReadingWord(GsiDistanceWord):
 
 
 class GsiF2StaffReadingWord(GsiDistanceWord):
-    _GSI = _regex_distance(336)
+    _GSI = _regex_measurement(336)
 
     @classmethod
     def wi(cls) -> int:
@@ -1278,3 +1289,16 @@ class GsiBlock:
         self.words.clear()
         for w in keep:
             self.words.append(w)
+
+    def words_map(self) -> dict[int, GsiWord]:
+        mapping: dict[int, GsiWord] = {}
+        match self.type:
+            case "measurement":
+                mapping[11] = GsiPointNameWord(self.name)
+            case "code":
+                mapping[41] = GsiCodeWord(self.name)
+
+        for word in self.words:
+            mapping[word.wi()] = word
+
+        return mapping
