@@ -66,12 +66,12 @@ class GsiWord(ABC):
 
     @classmethod
     @abstractmethod
-    def parse(cls, value: str) -> GsiWord:
+    def parse(cls, value: str) -> Self:
         raise NotImplementedError()
 
-    @property
+    @classmethod
     @abstractmethod
-    def wi(self) -> int: ...
+    def wi(cls) -> int: ...
 
     @abstractmethod
     def serialize(
@@ -137,9 +137,9 @@ class GsiUnknownWord(GsiWord):
         self.data = data
         self.negative = negative
 
-    @property
+    @classmethod
     def wi(self) -> int:
-        return self._wi
+        return 0
 
     @classmethod
     def parse(cls, value: str) -> GsiUnknownWord:
@@ -163,7 +163,7 @@ class GsiUnknownWord(GsiWord):
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
         return self.format(
-            self.wi,
+            self._wi,
             self.data,
             self.info,
             self.negative,
@@ -192,7 +192,7 @@ class GsiValueWord(GsiWord):
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
         return self.format(
-            self.wi,
+            self.wi(),
             str(self.value),
             gsi16=gsi16
         )
@@ -201,46 +201,52 @@ class GsiValueWord(GsiWord):
 class GsiPointNameWord(GsiValueWord):
     _GSI = _regex_note(11)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 11
 
     def __init__(self, name: str):
+        self.value: str
         super().__init__(name)
 
 
 class GsiSerialnumberWord(GsiValueWord):
     _GSI = compile(r"^12[\d\.]{4}\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 12
 
     def __init__(self, serialnumber: str):
+        self.value: str
         super().__init__(serialnumber)
 
 
 class GsiInstrumentTypeWord(GsiValueWord):
     _GSI = _regex_note(13)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 13
+
+    def __init__(self, name: str):
+        self.value: str
+        super().__init__(name)
 
 
 class GsiStationNameWord(GsiPointNameWord):
     _GSI = _regex_note(16)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 16
 
 
 class GsiDateWord(GsiValueWord):
     _GSI = compile(r"^17[\d\.]{4}\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 17
 
     def __init__(self, date: datetime):
@@ -266,7 +272,7 @@ class GsiDateWord(GsiValueWord):
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
         return self.format(
-            self.wi,
+            self.wi(),
             self.value.strftime("%d%m%Y"),
             gsi16=gsi16
         )
@@ -275,8 +281,8 @@ class GsiDateWord(GsiValueWord):
 class GsiTimeWord(GsiValueWord):
     _GSI = compile(r"^19[\d\.]{4}\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 19
 
     def __init__(self, time: datetime):
@@ -304,7 +310,7 @@ class GsiTimeWord(GsiValueWord):
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
         return self.format(
-            self.wi,
+            self.wi(),
             self.value.strftime("%m%d%H%M"),
             gsi16=gsi16
         )
@@ -385,7 +391,7 @@ class GsiAngleWord(GsiWord):
                 raise ValueError(f"Invalid angle unit: '{angleunit}'")
 
         return self.format(
-            self.wi,
+            self.wi(),
             data,
             f"{self.indexmode.value:d}{self.source.value:d}3",
             gsi16=gsi16
@@ -395,16 +401,16 @@ class GsiAngleWord(GsiWord):
 class GsiHorizontalAngleWord(GsiAngleWord):
     _GSI = compile(r"^21\.\d{3}\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 21
 
 
 class GsiVerticalAngleWord(GsiAngleWord):
     _GSI = compile(r"^22\.\d{3}\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 22
 
 
@@ -471,7 +477,7 @@ class GsiDistanceWord(GsiWord):
 
         source = f"{self.source.value:d}" if self.source is not None else ""
         return self.format(
-            self.wi,
+            self.wi(),
             f"{abs(value):.0f}",
             f"{source}{distunit.value:d}",
             self.value < 0,
@@ -482,280 +488,284 @@ class GsiDistanceWord(GsiWord):
 class GsiSlopeDistanceWord(GsiDistanceWord):
     _GSI = _regex_distance(31)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 31
 
 
 class GsiHorizontalDistanceWord(GsiDistanceWord):
     _GSI = _regex_distance(32)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 32
 
 
 class GsiVerticalDistanceWord(GsiDistanceWord):
     _GSI = _regex_distance(33)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 33
 
 
 class GsiCodeWord(GsiValueWord):
     _GSI = _regex_note(41)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 41
+
+    def __init__(self, value: str):
+        self.value: str
+        super().__init__(value)
 
 
 class GsiInfo1Word(GsiCodeWord):
     _GSI = _regex_note(42)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 42
 
 
 class GsiInfo2Word(GsiCodeWord):
     _GSI = _regex_note(43)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 43
 
 
 class GsiInfo3Word(GsiCodeWord):
     _GSI = _regex_note(44)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 44
 
 
 class GsiInfo4Word(GsiCodeWord):
     _GSI = _regex_note(45)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 45
 
 
 class GsiInfo5Word(GsiCodeWord):
     _GSI = _regex_note(46)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 46
 
 
 class GsiInfo6Word(GsiCodeWord):
     _GSI = _regex_note(47)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 47
 
 
 class GsiInfo7Word(GsiCodeWord):
     _GSI = _regex_note(48)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 48
 
 
 class GsiInfo8Word(GsiCodeWord):
     _GSI = _regex_note(49)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 49
 
 
 class GsiPrismConstantWord(GsiDistanceWord):
     _GSI = _regex_distance(58)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 58
 
 
 class GsiPPMWord(GsiDistanceWord):
     _GSI = _regex_distance(59)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 59
 
 
-class GsiRemark1Word(GsiValueWord):
+class GsiRemark1Word(GsiCodeWord):
     _GSI = _regex_note(71)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 71
 
 
 class GsiRemark2Word(GsiRemark1Word):
     _GSI = _regex_note(72)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 72
 
 
 class GsiRemark3Word(GsiRemark1Word):
     _GSI = _regex_note(73)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 73
 
 
 class GsiRemark4Word(GsiRemark1Word):
     _GSI = _regex_note(74)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 74
 
 
 class GsiRemark5Word(GsiRemark1Word):
     _GSI = _regex_note(75)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 75
 
 
 class GsiRemark6Word(GsiRemark1Word):
     _GSI = _regex_note(76)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 76
 
 
 class GsiRemark7Word(GsiRemark1Word):
     _GSI = _regex_note(77)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 77
 
 
 class GsiRemark8Word(GsiRemark1Word):
     _GSI = _regex_note(78)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 78
 
 
 class GsiRemark9Word(GsiRemark1Word):
     _GSI = _regex_note(79)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 79
 
 
 class GsiEastingWord(GsiDistanceWord):
     _GSI = _regex_distance(81)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 81
 
 
 class GsiNorthingWord(GsiDistanceWord):
     _GSI = _regex_distance(82)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 82
 
 
 class GsiHeightWord(GsiDistanceWord):
     _GSI = _regex_distance(83)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 83
 
 
 class GsiStationEastingWord(GsiDistanceWord):
     _GSI = _regex_distance(84)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 84
 
 
 class GsiStationNorthingWord(GsiDistanceWord):
     _GSI = _regex_distance(85)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 85
 
 
 class GsiStationHeightWord(GsiDistanceWord):
     _GSI = _regex_distance(86)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 86
 
 
 class GsiTargetHeightWord(GsiDistanceWord):
     _GSI = _regex_distance(87)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 87
 
 
 class GsiInstrumentHeightWord(GsiDistanceWord):
     _GSI = _regex_distance(88)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 88
 
 
 class GsiTemperatureWord(GsiDistanceWord):
     _GSI = _regex_distance(95)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 95
 
 
 class GsiPressureWord(GsiDistanceWord):
     _GSI = _regex_distance(531)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 531
 
 
 class GsiRefractionCoefWord(GsiDistanceWord):
     _GSI = _regex_distance(538)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 538
 
 
 class GsiNewTimeWord(GsiValueWord):
     _GSI = compile(r"^560\.{2}6\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 560
 
     def __init__(self, time: datetime):
@@ -784,7 +794,7 @@ class GsiNewTimeWord(GsiValueWord):
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
         return self.format(
-            self.wi,
+            self.wi(),
             self.value.strftime("%H%M%S"),
             "6",
             gsi16=gsi16
@@ -794,8 +804,8 @@ class GsiNewTimeWord(GsiValueWord):
 class GsiNewDateWord(GsiValueWord):
     _GSI = compile(r"^561\.{2}6\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 561
 
     def __init__(self, time: datetime):
@@ -821,7 +831,7 @@ class GsiNewDateWord(GsiValueWord):
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
         return self.format(
-            self.wi,
+            self.wi(),
             self.value.strftime("%m%d00"),
             "6",
             gsi16=gsi16
@@ -831,8 +841,8 @@ class GsiNewDateWord(GsiValueWord):
 class GsiNewYearWord(GsiValueWord):
     _GSI = compile(r"^562\.{3}\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 562
 
     def __init__(self, time: datetime):
@@ -858,7 +868,7 @@ class GsiNewYearWord(GsiValueWord):
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
         return self.format(
-            self.wi,
+            self.wi(),
             self.value.strftime("%Y"),
             gsi16=gsi16
         )
@@ -867,97 +877,91 @@ class GsiNewYearWord(GsiValueWord):
 class GsiStaffDistanceWord(GsiDistanceWord):
     _GSI = _regex_distance(32)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 32
 
 
 class GsiBenchmarkHeightWord(GsiDistanceWord):
     _GSI = _regex_distance(83)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 83
 
 
 class GsiSimpleStaffReadingWord(GsiDistanceWord):
     _GSI = _regex_distance(330)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 330
 
 
 class GsiB1StaffReadingWord(GsiDistanceWord):
     _GSI = _regex_distance(331)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 331
 
 
 class GsiF1StaffReadingWord(GsiDistanceWord):
     _GSI = _regex_distance(332)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 332
 
 
 class GsiIntermediateStaffReadingWord(GsiDistanceWord):
     _GSI = _regex_distance(333)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 333
 
 
 class GsiStakeoutStaffReadingWord(GsiDistanceWord):
     _GSI = _regex_distance(334)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 334
 
 
 class GsiB2StaffReadingWord(GsiDistanceWord):
     _GSI = _regex_distance(335)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 335
 
 
 class GsiF2StaffReadingWord(GsiDistanceWord):
     _GSI = _regex_distance(336)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 336
 
 
 class GsiAppVersionWord(GsiValueWord):
     _GSI = compile(r"^590\.{2}6\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 590
 
-    def __init__(self, major: int, minor: int):
-        self.value: tuple[int, int]
-        if (major > 99 or major < 0) or (minor > 99 or minor < 0):
-            raise ValueError(f"Version numbers out of range: v{major}.{minor}")
-
-        super().__init__((major, minor))
+    def __init__(self, version: float):
+        self.value: float
+        super().__init__(version)
 
     @classmethod
     def parse(cls, value: str) -> Self:
         cls._check_format(value)
 
-        return cls(
-            int(value[7:-5]),
-            int(value[-5:-3])
-        )
+        return cls(float(value[7:-1]) * 1e-4)
 
     def serialize(
         self,
@@ -965,10 +969,14 @@ class GsiAppVersionWord(GsiValueWord):
         angleunit: GsiUnit = GsiUnit.NONE,
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
-        major, minor = self.value
+        if self.value > 9999:
+            raise ValueError(
+                f"Cannot serialize version larger than 9999 ({self.value:.4f})"
+            )
+
         return self.format(
-            self.wi,
-            f"{major:02d}{minor:02d}00",
+            self.wi(),
+            f"{self.value * 1e4:.0f}",
             "6",
             gsi16=gsi16
         )
@@ -977,64 +985,64 @@ class GsiAppVersionWord(GsiValueWord):
 class GsiOSVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^591\.{2}6\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 591
 
 
 class GsiOSInterfaceVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^592\.{2}6\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 592
 
 
 class GsiGeoComVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^593\.{2}6\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 593
 
 
 class GsiVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^594\.{2}6\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 594
 
 
 class GsiEDMVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^595\.{2}6\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 595
 
 
 class GsiSoftwareVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^599\.{2}6\+[0-9]{8,16} $")
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 599
 
 
 class GsiJobWord(GsiRemark1Word):
     _GSI = _regex_note(913)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 913
 
 
 class GsiOperatorWord(GsiRemark1Word):
     _GSI = _regex_note(914)
 
-    @property
-    def wi(self) -> int:
+    @classmethod
+    def wi(cls) -> int:
         return 914
 
 
