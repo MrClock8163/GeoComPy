@@ -1082,7 +1082,7 @@ _WI_TO_TYPE: dict[int, type[GsiWord]] = {
     79: GsiRemark9Word,
     81: GsiEastingWord,
     82: GsiNorthingWord,
-    83: GsiNorthingWord,
+    83: GsiHeightWord,
     84: GsiStationEastingWord,
     85: GsiStationNorthingWord,
     86: GsiStationHeightWord,
@@ -1166,7 +1166,12 @@ class GsiBlock:
         return str(self)
 
     @classmethod
-    def parse(cls, data: str, dna: bool = False) -> Self:
+    def parse(
+        cls,
+        data: str,
+        dna: bool = False,
+        keep_unknowns: bool = False
+    ) -> Self:
         wordsize = 16
         if data[0] == "*":
             wordsize = 24
@@ -1227,12 +1232,18 @@ class GsiBlock:
                 raise ValueError(f"Duplicate word type in block: '{wi:d}'")
 
             indices.add(wi)
+            wordtype = mapping.get(wi)
+            if wordtype is None:
+                if keep_unknowns:
+                    wordtype = GsiUnknownWord
+                else:
+                    continue
 
-            wordtype = mapping.get(wi, GsiUnknownWord)
             try:
                 output.words.append(wordtype.parse(word))
             except Exception:
-                output.words.append(GsiUnknownWord.parse(word))
+                if keep_unknowns:
+                    output.words.append(GsiUnknownWord.parse(word))
 
         return output
 
