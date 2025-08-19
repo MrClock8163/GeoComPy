@@ -14,11 +14,17 @@ Types
 - ``GsiOnlineType``
 - ``GsiOnlineSubsystem``
 """
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Callable, Literal
 
+from .gsiformat import GsiWord
+
 
 _T = TypeVar("_T")
+_P = TypeVar("_P")
+_G = TypeVar("_G", bound=GsiWord)
 
 
 class GsiOnlineResponse(Generic[_T]):
@@ -133,22 +139,20 @@ class GsiOnlineType(ABC):
         self,
         param: int,
         parser: Callable[[str], _T]
-    ) -> GsiOnlineResponse[_T | None]: ...
+    ) -> GsiOnlineResponse[_T]: ...
 
     @abstractmethod
     def putrequest(
         self,
-        wordindex: int,
-        word: str
+        word: _G
     ) -> GsiOnlineResponse[bool]: ...
 
     @abstractmethod
     def getrequest(
         self,
         mode: Literal['I', 'M', 'C'],
-        wordindex: int,
-        parser: Callable[[str], _T]
-    ) -> GsiOnlineResponse[_T | None]: ...
+        wordtype: type[_G]
+    ) -> GsiOnlineResponse[_G]: ...
 
     @abstractmethod
     def request(
