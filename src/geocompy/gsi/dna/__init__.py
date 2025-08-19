@@ -147,7 +147,7 @@ class GsiOnlineDNA(GsiOnlineType):
         if logger is None:
             logger = DUMMYLOGGER
         self._logger: Logger = logger
-        self.is_client_gsi16 = False
+        self._is_client_gsi16 = False
 
         self.settings: GsiOnlineDNASettings = GsiOnlineDNASettings(self)
         """Instrument settings subsystem."""
@@ -175,11 +175,11 @@ class GsiOnlineDNA(GsiOnlineType):
 
     @property
     def is_client_gsi16(self) -> bool:
-        return True
+        return self._is_client_gsi16
 
     @is_client_gsi16.setter
     def is_client_gsi16(self, value: bool) -> None:
-        pass
+        self._is_client_gsi16 = value
 
     def setrequest(
         self,
