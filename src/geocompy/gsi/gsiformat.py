@@ -46,7 +46,7 @@ def _regex_distance(wi: int | None = None) -> Pattern[str]:
     else:
         idx = str(wi).ljust(3, ".")
 
-    return compile(rf"^{idx}\.[\d\.]\d[\+\-][0-9]{{8,16}} $")
+    return compile(rf"^{idx}[\d\.]{{2}}\d[\+\-][0-9]{{8,16}} $")
 
 
 def _regex_note(wi: int | None = None) -> Pattern[str]:
