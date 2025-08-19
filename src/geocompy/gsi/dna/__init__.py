@@ -292,7 +292,8 @@ class GsiOnlineDNA(GsiOnlineType):
         GsiOnlineResponse
             Success of the change.
         """
-        cmd = f"PUT/{word.serialize(self.is_client_gsi16):s}"
+        asterisk = "*" if self.is_client_gsi16 else ""
+        cmd = f"PUT/{asterisk}{word.serialize(self.is_client_gsi16):s}"
         comment = ""
         try:
             answer = self._conn.exchange(cmd)
@@ -349,7 +350,7 @@ class GsiOnlineDNA(GsiOnlineType):
         value: _G | None = None
         if success:
             try:
-                value = wordtype.parse(answer)
+                value = wordtype.parse(answer.lstrip("*"))
             except Exception:
                 comment = "PARSE"
         else:
