@@ -77,6 +77,37 @@ class GsiOnlineResponse(Generic[_T]):
     def __bool__(self) -> bool:
         return self.value is not None
 
+    def map_value(
+        self,
+        transformer: Callable[[_T | None], _P | None]
+    ) -> GsiOnlineResponse[_P]:
+        """
+        Returns a new response object with the metadata maintained, but
+        the value transformed with the supplied function.
+
+        Parameters
+        ----------
+        transformer : Callable[[_T  |  None], _P  |  None]
+            Function to transform the value to a new value.
+
+        Returns
+        -------
+        GeoComResponse
+            Response with transformed value.
+        """
+        try:
+            value = transformer(self.value)
+        except Exception:
+            value = None
+
+        return GsiOnlineResponse(
+            self.desc,
+            self.cmd,
+            self.response,
+            value,
+            self.comment
+        )
+
 
 class GsiOnlineType(ABC):
     """
