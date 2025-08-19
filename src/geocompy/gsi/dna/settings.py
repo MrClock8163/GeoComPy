@@ -66,7 +66,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         _status = toenum(BeepIntensity, intensity)
         return self._setrequest(30, _status.value)
 
-    def get_beep(self) -> GsiOnlineResponse[BeepIntensity | None]:
+    def get_beep(self) -> GsiOnlineResponse[BeepIntensity]:
         """
         ``CONF 30``
 
@@ -87,7 +87,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
             enumparser(BeepIntensity)
         )
 
-    def get_illumination(self) -> GsiOnlineResponse[Illumination | None]:
+    def get_illumination(self) -> GsiOnlineResponse[Illumination]:
         """
         ``CONF 31``
 
@@ -129,7 +129,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._setrequest(32, contrast)
 
-    def get_contrast(self) -> GsiOnlineResponse[int | None]:
+    def get_contrast(self) -> GsiOnlineResponse[int]:
         """
         ``CONF 32``
 
@@ -172,7 +172,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         _unit = toenum(Units.Distance, unit)
         return self._setrequest(41, _unit.value)
 
-    def get_distance_unit(self) -> GsiOnlineResponse[Units.Distance | None]:
+    def get_distance_unit(self) -> GsiOnlineResponse[Units.Distance]:
         """
         ``CONF 41``
 
@@ -217,7 +217,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
 
     def get_temperature_unit(
         self
-    ) -> GsiOnlineResponse[Units.Temperature | None]:
+    ) -> GsiOnlineResponse[Units.Temperature]:
         """
         ``CONF 42``
 
@@ -259,7 +259,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._setrequest(51, decimals)
 
-    def get_decimals(self) -> GsiOnlineResponse[int | None]:
+    def get_decimals(self) -> GsiOnlineResponse[int]:
         """
         ``CONF 51``
 
@@ -302,7 +302,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         _baud = toenum(Communication.Baud, baud)
         return self._setrequest(70, _baud.value)
 
-    def get_baud(self) -> GsiOnlineResponse[Communication.Baud | None]:
+    def get_baud(self) -> GsiOnlineResponse[Communication.Baud]:
         """
         ``CONF 70``
 
@@ -345,7 +345,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         _parity = toenum(Communication.Parity, parity)
         return self._setrequest(71, _parity.value)
 
-    def get_parity(self) -> GsiOnlineResponse[Communication.Parity | None]:
+    def get_parity(self) -> GsiOnlineResponse[Communication.Parity]:
         """
         ``CONF 71``
 
@@ -390,7 +390,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
 
     def get_terminator(
         self
-    ) -> GsiOnlineResponse[Communication.Terminator | None]:
+    ) -> GsiOnlineResponse[Communication.Terminator]:
         """
         ``CONF 73``
 
@@ -431,7 +431,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._setrequest(75, enabled)
 
-    def get_protocol(self) -> GsiOnlineResponse[bool | None]:
+    def get_protocol(self) -> GsiOnlineResponse[bool]:
         """
         ``CONF 75``
 
@@ -474,7 +474,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         _recorder = toenum(Recorder, recorder)
         return self._setrequest(76, _recorder.value)
 
-    def get_recorder(self) -> GsiOnlineResponse[Recorder | None]:
+    def get_recorder(self) -> GsiOnlineResponse[Recorder]:
         """
         ``CONF 76``
 
@@ -517,7 +517,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._setrequest(78, delay)
 
-    def get_delay(self) -> GsiOnlineResponse[int | None]:
+    def get_delay(self) -> GsiOnlineResponse[int]:
         """
         ``CONF 78``
 
@@ -538,7 +538,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
             int
         )
 
-    def get_battery(self) -> GsiOnlineResponse[int | None]:
+    def get_battery(self) -> GsiOnlineResponse[int]:
         """
         ``CONF 90``
 
@@ -559,7 +559,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
             int
         )
 
-    def get_temperature(self) -> GsiOnlineResponse[int | None]:
+    def get_temperature(self) -> GsiOnlineResponse[int]:
         """
         ``CONF 91``
 
@@ -602,7 +602,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         _mode = toenum(AutoOff, status)
         return self._setrequest(95, _mode.value)
 
-    def get_autooff(self) -> GsiOnlineResponse[AutoOff | None]:
+    def get_autooff(self) -> GsiOnlineResponse[AutoOff]:
         """
         ``CONF 95``
 
@@ -643,7 +643,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._setrequest(106, enabled)
 
-    def get_display_heater(self) -> GsiOnlineResponse[bool | None]:
+    def get_display_heater(self) -> GsiOnlineResponse[bool]:
         """
         ``CONF 106``
 
@@ -684,7 +684,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._setrequest(125, enabled)
 
-    def get_curvature_correction(self) -> GsiOnlineResponse[bool | None]:
+    def get_curvature_correction(self) -> GsiOnlineResponse[bool]:
         """
         ``CONF 125``
 
@@ -726,7 +726,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
         """
         return self._setrequest(127, inverted)
 
-    def get_staff_mode(self) -> GsiOnlineResponse[bool | None]:
+    def get_staff_mode(self) -> GsiOnlineResponse[bool]:
         """
         ``CONF 127``
 
@@ -779,7 +779,7 @@ class GsiOnlineDNASettings(GsiOnlineSubsystem):
 
         return response
 
-    def get_format(self) -> GsiOnlineResponse[GSIFormat | None]:
+    def get_format(self) -> GsiOnlineResponse[GSIFormat]:
         """
         ``CONF 137``
 
