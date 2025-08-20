@@ -1336,6 +1336,7 @@ class GsiBlock:
     def serialize(
         self,
         gsi16: bool = False,
+        endl: bool = True,
         angleunit: GsiUnit = GsiUnit.DEG,
         distunit: GsiUnit = GsiUnit.DECIMILLI
     ) -> str:
@@ -1357,7 +1358,7 @@ class GsiBlock:
         if gsi16:
             output = "*" + output
 
-        return output
+        return output + ("\n" if endl else "")
 
     def drop_unknowns(self) -> None:
         keep = [w for w in self.words if not isinstance(w, GsiUnknownWord)]
