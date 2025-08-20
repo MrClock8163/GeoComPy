@@ -347,19 +347,19 @@ class GsiAngleWord(GsiValueWord):
         )
         unit = GsiUnit(int(value[5]))
         match unit:
-            case GsiUnit.GON:
-                data = float(f"{value[7:10]}.{value[10:-1]}")
-                angle = Angle(data * 360 / 400, 'deg')
-            case GsiUnit.DEG:
-                data = float(f"{value[7:10]}.{value[10:-1]}")
+            case GsiUnit.GON | GsiUnit.DEG:
+                data = float(f"{value[7:-6]}.{value[-6:-1]}")
+                if unit is GsiUnit.GON:
+                    data *= 360 / 400
+
                 angle = Angle(data, 'deg')
             case GsiUnit.DMS:
                 angle = Angle.from_dms(
-                    f"{value[7:10]}-{value[10:12]}-{value[12:14]}."
-                    f"{value[14:-1]}"
+                    f"{value[-9:-6]}-{value[-6:-4]}-{value[-4:-2]}."
+                    f"{value[-2]}"
                 )
             case GsiUnit.MIL:
-                data = float(f"{value[7:11]}.{value[11:-1]}")
+                data = float(f"{value[7:-5]}.{value[-5:-1]}")
                 angle = Angle(data * 360 / 6400, 'deg')
             case _:
                 raise ValueError(f"Invalid angle unit: '{unit}'")
@@ -382,20 +382,13 @@ class GsiAngleWord(GsiValueWord):
                 if angleunit is GsiUnit.GON:
                     value *= 400 / 360
 
-                if gsi16:
-                    data = f"{value:.13f}".replace(".", "")
-                else:
-                    data = f"{value:.5f}".replace(".", "")
+                data = f"{value:.5f}".replace(".", "")
             case GsiUnit.DMS:
-                dms = self.value.normalized().to_dms(9 if gsi16 else 1)
+                dms = self.value.normalized().to_dms(1)
                 data = dms.replace("-", "").replace(".", "")
-
             case GsiUnit.MIL:
                 value = self.value.normalized().asunit('deg') * 6400 / 360
-                if gsi16:
-                    data = f"{value:.12f}".replace(".", "")
-                else:
-                    data = f"{value:.4f}".replace(".", "")
+                data = f"{value:.4f}".replace(".", "")
 
             case _:
                 raise ValueError(f"Invalid angle unit: '{angleunit}'")
