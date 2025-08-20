@@ -591,6 +591,55 @@ class GsiInfo8Word(GsiCodeWord):
         return 49
 
 
+class GsiPPMPrismConstantWord(GsiValueWord):
+    _GSI = compile(r"^51[\d\.]{3}$")
+
+    @classmethod
+    def wi(cls) -> int:
+        return 51
+
+    def __init__(self, ppm: int, constant: int):
+        self.value: tuple[int, int]
+        super().__init__((ppm, constant))
+
+    @classmethod
+    def parse(
+        cls,
+        value: str
+    ) -> Self:
+        ppm = int(value[6:-5])
+        constant = int(value[-5:-1])
+
+        return cls(
+            ppm,
+            constant
+        )
+
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit = GsiUnit.NONE,
+        distunit: GsiUnit = GsiUnit.NONE
+    ) -> str:
+        ppm, constant = self.value
+        if (ppm > 9999 or ppm < 0) or (constant > 999 or constant < 0):
+            raise ValueError(
+                "Cannot serialize GSI word because ppm or constant are out "
+                f"of range ({ppm:d}, {constant:d})"
+            )
+
+        constant_str = (
+            ("+" if constant >= 0 else "-")
+            + str(abs(constant)).zfill(3)
+        )
+        return self.format(
+            self.wi(),
+            f"{abs(ppm):d}{constant_str}",
+            negative=ppm < 0,
+            gsi16=gsi16
+        )
+
+
 class GsiPrismConstantWord(GsiDistanceWord):
     _GSI = _regex_measurement(58)
 
@@ -1053,89 +1102,95 @@ class GsiOperatorWord(GsiRemark1Word):
 
 
 _WI_TO_TYPE: dict[int, type[GsiWord]] = {
-    11: GsiPointNameWord,
-    12: GsiSerialnumberWord,
-    13: GsiInstrumentTypeWord,
-    16: GsiStationNameWord,
-    17: GsiDateWord,
-    19: GsiTimeWord,
-    21: GsiHorizontalAngleWord,
-    22: GsiVerticalAngleWord,
-    31: GsiSlopeDistanceWord,
-    32: GsiHorizontalDistanceWord,
-    33: GsiVerticalDistanceWord,
-    41: GsiCodeWord,
-    42: GsiInfo1Word,
-    43: GsiInfo2Word,
-    44: GsiInfo3Word,
-    45: GsiInfo4Word,
-    46: GsiInfo5Word,
-    47: GsiInfo6Word,
-    48: GsiInfo7Word,
-    49: GsiInfo8Word,
-    58: GsiPrismConstantWord,
-    59: GsiPPMWord,
-    71: GsiRemark1Word,
-    72: GsiRemark2Word,
-    73: GsiRemark3Word,
-    74: GsiRemark4Word,
-    75: GsiRemark5Word,
-    76: GsiRemark6Word,
-    77: GsiRemark7Word,
-    78: GsiRemark8Word,
-    79: GsiRemark9Word,
-    81: GsiEastingWord,
-    82: GsiNorthingWord,
-    83: GsiHeightWord,
-    84: GsiStationEastingWord,
-    85: GsiStationNorthingWord,
-    86: GsiStationHeightWord,
-    87: GsiTargetHeightWord,
-    88: GsiInstrumentHeightWord,
-    531: GsiPressureWord,
-    538: GsiRefractionCoefWord,
-    560: GsiNewTimeWord,
-    561: GsiNewDateWord,
-    562: GsiNewYearWord,
-    590: GsiAppVersionWord,
-    591: GsiOSVersionWord,
-    592: GsiOSInterfaceVersionWord,
-    593: GsiGeoComVersionWord,
-    594: GsiVersionWord,
-    595: GsiEDMVersionWord,
-    912: GsiJobWord,
-    913: GsiOperatorWord
+    t.wi(): t for t in (
+        GsiPointNameWord,
+        GsiSerialnumberWord,
+        GsiInstrumentTypeWord,
+        GsiStationNameWord,
+        GsiDateWord,
+        GsiTimeWord,
+        GsiHorizontalAngleWord,
+        GsiVerticalAngleWord,
+        GsiSlopeDistanceWord,
+        GsiHorizontalDistanceWord,
+        GsiVerticalDistanceWord,
+        GsiCodeWord,
+        GsiInfo1Word,
+        GsiInfo2Word,
+        GsiInfo3Word,
+        GsiInfo4Word,
+        GsiInfo5Word,
+        GsiInfo6Word,
+        GsiInfo7Word,
+        GsiInfo8Word,
+        GsiPPMPrismConstantWord,
+        GsiPrismConstantWord,
+        GsiPPMWord,
+        GsiRemark1Word,
+        GsiRemark2Word,
+        GsiRemark3Word,
+        GsiRemark4Word,
+        GsiRemark5Word,
+        GsiRemark6Word,
+        GsiRemark7Word,
+        GsiRemark8Word,
+        GsiRemark9Word,
+        GsiEastingWord,
+        GsiNorthingWord,
+        GsiHeightWord,
+        GsiStationEastingWord,
+        GsiStationNorthingWord,
+        GsiStationHeightWord,
+        GsiTargetHeightWord,
+        GsiInstrumentHeightWord,
+        GsiPressureWord,
+        GsiRefractionCoefWord,
+        GsiNewTimeWord,
+        GsiNewDateWord,
+        GsiNewYearWord,
+        GsiAppVersionWord,
+        GsiOSVersionWord,
+        GsiOSInterfaceVersionWord,
+        GsiGeoComVersionWord,
+        GsiVersionWord,
+        GsiEDMVersionWord,
+        GsiJobWord,
+        GsiOperatorWord
+    )
 }
+
 _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
-    11: GsiPointNameWord,
-    12: GsiSerialnumberWord,
-    13: GsiInstrumentTypeWord,
-    17: GsiDateWord,
-    19: GsiTimeWord,
-    32: GsiStaffDistanceWord,
-    41: GsiCodeWord,
-    42: GsiInfo1Word,
-    43: GsiInfo2Word,
-    44: GsiInfo3Word,
-    45: GsiInfo4Word,
-    46: GsiInfo5Word,
-    47: GsiInfo6Word,
-    48: GsiInfo7Word,
-    49: GsiInfo8Word,
-    71: GsiRemark1Word,
-    83: GsiBenchmarkHeightWord,
-    95: GsiTemperatureWord,
-    330: GsiSimpleStaffReadingWord,
-    331: GsiB1StaffReadingWord,
-    332: GsiF1StaffReadingWord,
-    333: GsiIntermediateStaffReadingWord,
-    334: GsiStakeoutStaffReadingWord,
-    335: GsiB2StaffReadingWord,
-    336: GsiF2StaffReadingWord,
-    560: GsiNewTimeWord,
-    561: GsiNewDateWord,
-    562: GsiNewYearWord,
-    599: GsiSoftwareVersionWord
+    t.wi(): t for t in (
+        GsiPointNameWord,
+        GsiSerialnumberWord,
+        GsiInstrumentTypeWord,
+        GsiDateWord,
+        GsiTimeWord,
+        GsiStaffDistanceWord,
+        GsiCodeWord,
+        GsiInfo1Word,
+        GsiInfo2Word,
+        GsiInfo3Word,
+        GsiInfo4Word,
+        GsiInfo5Word,
+        GsiInfo6Word,
+        GsiInfo7Word,
+        GsiInfo8Word,
+        GsiRemark1Word,
+        GsiBenchmarkHeightWord,
+        GsiTemperatureWord,
+        GsiSimpleStaffReadingWord,
+        GsiB1StaffReadingWord,
+        GsiF1StaffReadingWord,
+        GsiIntermediateStaffReadingWord,
+        GsiStakeoutStaffReadingWord,
+        GsiB2StaffReadingWord,
+        GsiF2StaffReadingWord,
+        GsiNewTimeWord,
+        GsiNewDateWord,
+        GsiNewYearWord,
+        GsiSoftwareVersionWord
+    )
 }
 
 
