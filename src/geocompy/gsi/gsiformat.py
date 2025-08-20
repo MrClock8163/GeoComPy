@@ -326,8 +326,8 @@ class GsiAngleWord(GsiValueWord):
     def __init__(
         self,
         angle: Angle,
-        index: GsiIndexMode | None,
-        source: GsiInputMode | None
+        index: GsiIndexMode | None = None,
+        source: GsiInputMode | None = None
     ):
         self.value: Angle
         super().__init__(angle)
@@ -428,7 +428,7 @@ class GsiDistanceWord(GsiValueWord):
     def __init__(
         self,
         value: float,
-        source: GsiInputMode | None
+        source: GsiInputMode | None = None
     ):
         self.value: float
         super().__init__(value)
