@@ -139,8 +139,11 @@ class GsiUnknownWord(GsiWord):
         self.negative = negative
 
     @classmethod
-    def wi(self) -> int:
+    def wi(cls) -> int:
         return 0
+
+    def actual_wi(self) -> int:
+        return self._wi
 
     @classmethod
     def parse(cls, value: str) -> GsiUnknownWord:
@@ -1194,6 +1197,36 @@ _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
 }
 
 
+def parse_gsi_word(
+    value: str,
+    dna: bool = False,
+    strict: bool = False
+) -> GsiWord:
+    value = value.strip("*")
+
+    wi = int(value[:3].rstrip("."))
+    if dna:
+        wordtype = _WI_TO_TYPE_DNA.get(wi)
+    else:
+        wordtype = _WI_TO_TYPE.get(wi)
+
+    if wordtype is None:
+        if strict:
+            raise ValueError(f"Unknown wordindex '{wi:d}'")
+
+        wordtype = GsiUnknownWord
+
+    try:
+        word = wordtype.parse(value)
+    except Exception as e:
+        if strict:
+            raise e
+
+        word = GsiUnknownWord.parse(value)
+
+    return word
+
+
 class GsiBlock:
     _TYPE_TO_WI = {
         "measurement": 11,
@@ -1249,6 +1282,7 @@ class GsiBlock:
             )
 
         wi = int(data[:2])
+        indices: set[int] = set()
         match wi:
             case 11:
                 try:
@@ -1260,6 +1294,7 @@ class GsiBlock:
                         "First word in measurement block must be point name"
                     )
                 type = "measurement"
+                indices.add(11)
             case 41:
                 try:
                     header = GsiCodeWord.parse(data[:wordsize])
@@ -1268,6 +1303,7 @@ class GsiBlock:
                         "First word in code block must be code word"
                     )
                 type = "code"
+                indices.add(41)
             case _:
                 raise ValueError(
                     f"Unsupported block header word type: '{wi:d}'"
@@ -1277,32 +1313,23 @@ class GsiBlock:
         if data[2:6].isdigit():
             address = int(data[2:6])
 
-        mapping = _WI_TO_TYPE
-        if dna:
-            mapping = _WI_TO_TYPE_DNA
-
         output = cls(header.value, type, address)
-        indices: set[int] = {11}
         for i in range(wordsize, len(data), wordsize):
-            word = data[i:i+wordsize]
+            wordstring = data[i:i+wordsize]
+            word = parse_gsi_word(wordstring, dna, False)
+            if isinstance(word, GsiUnknownWord):
+                if not keep_unknowns:
+                    continue
 
-            wi = int(word[:3].rstrip("."))
+                wi = word.actual_wi()
+            else:
+                wi = word.wi()
+
             if wi in indices:
                 raise ValueError(f"Duplicate word type in block: '{wi:d}'")
 
             indices.add(wi)
-            wordtype = mapping.get(wi)
-            if wordtype is None:
-                if keep_unknowns:
-                    wordtype = GsiUnknownWord
-                else:
-                    continue
-
-            try:
-                output.words.append(wordtype.parse(word))
-            except Exception:
-                if keep_unknowns:
-                    output.words.append(GsiUnknownWord.parse(word))
+            output.words.append(word)
 
         return output
 
