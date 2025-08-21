@@ -7,6 +7,19 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+### Added
+
+- Added Leica GSI format module
+  - Container types for words
+  - Container type for blocks
+  - Parsing
+  - Serialization
+
+### Changed
+
+- GSI Online DNA commands now use the new GSI format module for GSI parsing
+  and serialization
+
 ### Fixed
 
 - Fixed DMS angle formatting where leading zeroes were missing from seconds
