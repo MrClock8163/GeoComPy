@@ -46,7 +46,7 @@ class DummyGsiOnlineConnection(Connection):
             elif cmd != "GET/I/WI0":
                 wi = int(cmd.split("/")[-1].removeprefix("WI"))
 
-                return gsi.GsiWord.format(
+                return gsi.format_gsi_word(
                     wi,
                     "1",
                     gsi16=self._gsi16
