@@ -66,7 +66,6 @@ class GsiValueType(Enum):
 
 class GsiUnit(Enum):
     """Unit of measurement-like value."""
-    NONE = -1
     MILLI = 0
     """0.001m or 0.001 scaler factor"""
     MILLIFEET = 1
@@ -130,8 +129,8 @@ class GsiWord(ABC):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         raise NotImplementedError()
 
@@ -272,8 +271,8 @@ class GsiUnknownWord(GsiWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         """
         Serialize data to GSI word text.
@@ -282,10 +281,10 @@ class GsiUnknownWord(GsiWord):
         ----------
         gsi16 : bool, optional
             Create GSI16 word instead of GSI8, by default False
-        angleunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
-        distunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
+        angleunit : GsiUnit | None, optional
+            Unused, by default None
+        distunit : GsiUnit | None, optional
+            Unused, by None
 
         Returns
         -------
@@ -336,8 +335,8 @@ class GsiValueWord(GsiWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         """
         Serialize data to GSI word text.
@@ -346,10 +345,10 @@ class GsiValueWord(GsiWord):
         ----------
         gsi16 : bool, optional
             Create GSI16 word instead of GSI8, by default False
-        angleunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
-        distunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
+        angleunit : GsiUnit | None, optional
+            Unused, by default None
+        distunit : GsiUnit | None, optional
+            Unused, by default None
 
         Returns
         -------
@@ -473,8 +472,8 @@ class GsiDateWord(GsiValueWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         """
         Serialize data to GSI word text.
@@ -483,10 +482,10 @@ class GsiDateWord(GsiValueWord):
         ----------
         gsi16 : bool, optional
             Create GSI16 word instead of GSI8, by default False
-        angleunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
-        distunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
+        angleunit : GsiUnit | None, optional
+            Unused, by default None
+        distunit : GsiUnit | None, optional
+            Unused, by default None
 
         Returns
         -------
@@ -547,8 +546,8 @@ class GsiTimeWord(GsiValueWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         """
         Serialize data to GSI word text.
@@ -557,10 +556,10 @@ class GsiTimeWord(GsiValueWord):
         ----------
         gsi16 : bool, optional
             Create GSI16 word instead of GSI8, by default False
-        angleunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
-        distunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
+        angleunit : GsiUnit | None, optional
+            Unused, by default None
+        distunit : GsiUnit | None, optional
+            Unused, by default None
 
         Returns
         -------
@@ -657,8 +656,8 @@ class GsiAngleWord(GsiValueWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.DEG,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = GsiUnit.DEG,
+        distunit: GsiUnit | None = None
     ) -> str:
         """
         Serialize data to GSI word text.
@@ -667,10 +666,10 @@ class GsiAngleWord(GsiValueWord):
         ----------
         gsi16 : bool, optional
             Create GSI16 word instead of GSI8, by default False
-        angleunit : GsiUnit, optional
-            Angle unit to serialize as, by default GsiUnit.NONE
-        distunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
+        angleunit : GsiUnit | None, optional
+            Angle unit to serialize as, by default GsiUnit.DEG
+        distunit : GsiUnit | None, optional
+            Unused, by default None
 
         Returns
         -------
@@ -799,8 +798,8 @@ class GsiDistanceWord(GsiValueWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         """
         Serialize data to GSI word text.
@@ -809,11 +808,11 @@ class GsiDistanceWord(GsiValueWord):
         ----------
         gsi16 : bool, optional
             Create GSI16 word instead of GSI8, by default False
-        angleunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
-        distunit : GsiUnit, optional
+        angleunit : GsiUnit | None, optional
+            Unused, by default None
+        distunit : GsiUnit | None, optional
             Distance unit (or scaler unit for generic values),
-            by default GsiUnit.NONE
+            by default None
 
         Returns
         -------
@@ -1014,8 +1013,8 @@ class GsiPPMPrismConstantWord(GsiValueWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         """
         Serialize data to GSI word text.
@@ -1024,10 +1023,10 @@ class GsiPPMPrismConstantWord(GsiValueWord):
         ----------
         gsi16 : bool, optional
             Create GSI16 word instead of GSI8, by default False
-        angleunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
-        distunit : GsiUnit, optional
-            Unused, by default GsiUnit.NONE
+        angleunit : GsiUnit | None, optional
+            Unused, by default None
+        distunit : GsiUnit | None, optional
+            Unused, by default None
 
         Returns
         -------
@@ -1305,8 +1304,8 @@ class GsiNewTimeWord(GsiValueWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         return self.format(
             self.wi(),
@@ -1362,8 +1361,8 @@ class GsiNewDateWord(GsiValueWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         return self.format(
             self.wi(),
@@ -1419,8 +1418,8 @@ class GsiNewYearWord(GsiValueWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         return self.format(
             self.wi(),
@@ -1549,8 +1548,8 @@ class GsiAppVersionWord(GsiValueWord):
     def serialize(
         self,
         gsi16: bool = False,
-        angleunit: GsiUnit = GsiUnit.NONE,
-        distunit: GsiUnit = GsiUnit.NONE
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
     ) -> str:
         if self.value > 9999:
             raise ValueError(
@@ -1935,8 +1934,8 @@ class GsiBlock:
         self,
         gsi16: bool = False,
         endl: bool = True,
-        angleunit: GsiUnit = GsiUnit.DEG,
-        distunit: GsiUnit = GsiUnit.DECIMILLI
+        angleunit: GsiUnit | None = GsiUnit.DEG,
+        distunit: GsiUnit | None = GsiUnit.DECIMILLI
     ) -> str:
         """
         Serializes the block to a list of GSI words.
@@ -1948,9 +1947,9 @@ class GsiBlock:
         endl : bool, optional
             Add newline to end of block (recommended for file writing),
             by default True
-        angleunit : GsiUnit, optional
+        angleunit : GsiUnit | None, optional
             Angular unit to serialize angles as, by default GsiUnit.DEG
-        distunit : GsiUnit, optional
+        distunit : GsiUnit | None, optional
             Distance/Scaler unit for lengths and measurement-like scaled
             values, by default GsiUnit.DECIMILLI
 
