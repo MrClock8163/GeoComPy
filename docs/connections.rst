@@ -255,3 +255,46 @@ If the whole process was successful, the device will be accessible on the
     The RFCOMM bindings on Linux only exist while the system is running.
     They have to be recreated after every restart either manually, or with
     a startup script.
+
+Simulators
+----------
+
+For testing and development purposes it is possible to make a connection to
+the Leica Captivate TS simulator (and possibly other older official instrument
+simulators). The simulators are available with an existing Captivate license,
+or individual request from Leica or a Leica dealer.
+
+.. tip::
+
+    The simulator can be used to generate test data, or test a range of
+    commands. It responds to GeoCom requests with some exceptions.
+
+To communicate with the simulator, a virtual serial port pair needs to be set
+up on the computer. An open source solution is to use
+`com0com <https://sourceforge.net/projects/com0com/>`_.
+
+.. image:: com0com.png
+
+It installs virtual serial port emulator drivers to simulate connections.
+The communication is channeled through the presistent virtual devices.
+
+.. image:: virtual_ports.png
+
+In the settings of the simulator, the cable connection can be set to one end
+of the virtual port pair (COM3 in this example), the other end can be used to
+connect to the simulator (COM13 here).
+
+.. image:: captivate_ports.png
+
+The interface settings have to be set accordingly in the simulator itself,
+just like on a real instrument.
+
+.. image:: captivate_interface.png
+
+.. warning::
+
+    While purely software related GeoCom commands are executed fine, the
+    simulator might freeze up (serial communication wise) when trying to call
+    closely hardware related functions (e.g. motorization). In these cases the
+    GeoCom commands start to time out. To solve it, the simulator has to be
+    restarted.
