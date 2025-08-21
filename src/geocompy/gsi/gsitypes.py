@@ -2,7 +2,7 @@
 Description
 ===========
 
-Module: ``geocompy.gis.gsitypes``
+Module: ``geocompy.gsi.gsitypes``
 
 The GSI Online types module provides type definitions and general
 constants, that are relevant to the GSI Online protocol.

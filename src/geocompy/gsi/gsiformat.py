@@ -2,7 +2,7 @@
 Description
 ===========
 
-Module: ``geocompy.gis.gsiformat``
+Module: ``geocompy.gsi.gsiformat``
 
 The GSI format module provides data types and utility functions to read and
 write abritrary Leica GSI8 and GSI16 files.
