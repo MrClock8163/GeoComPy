@@ -128,6 +128,12 @@ class TestAngle:
         with pytest.raises(TypeError):
             a1 / "str"  # type: ignore
 
+    def test_dms(self) -> None:
+        a1 = Angle.from_dms("-180-00-00.5")
+        assert a1.asunit('deg') == approx(-180)
+        assert a1.to_dms() == "-180-00-00"
+        assert a1.to_dms(1) == "-180-00-00.5"
+
 
 class TestByte:
     def test_init(self) -> None:
