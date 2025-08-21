@@ -4,6 +4,7 @@ Format
 ======
 
 .. automodule:: geocompy.gsi.gsiformat
+    :inherited-members:
 
     Definitions
     -----------

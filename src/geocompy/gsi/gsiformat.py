@@ -110,6 +110,60 @@ def _regex_note(wi: int | None = None) -> Pattern[str]:
     return compile(rf"^{idx}[\d\.]{{3}}\+[\w\.\?\-\+]{{8,16}} $")
 
 
+def format_gsi_word(
+    wordindex: int,
+    data: str,
+    meta: str = "",
+    negative: bool = False,
+    gsi16: bool = False
+) -> str:
+    """
+    Format data into a GSI8 or GSI16 word.
+
+    Parameters
+    ----------
+    wordindex : int
+        Word index of the word type.
+    data : str
+        Preformatted data block.
+    meta : str, optional
+        Preformatted meta flags for measurement-like values, by default ""
+    negative : bool, optional
+        Negative sign, by default False
+    gsi16 : bool, optional
+        Construct GSI16 word, by default False
+
+    Returns
+    -------
+    str
+        Formatted GSI word
+
+    Raises
+    ------
+    ValueError
+        If wordindex is not in valid range [0;999] or meta flags are
+        incorrectly formatted.
+    """
+    if wordindex >= 1000 or wordindex < 0:
+        raise ValueError(f"GSI word index out of range ({wordindex})")
+
+    if meta != "" and (not meta.isdigit() or len(meta) > 3):
+        raise ValueError(f"GSI word meta data is invalid ({meta})")
+
+    wi = str(wordindex)
+    filler = "." * (6 - len(wi) - len(meta))
+
+    header = f"{wi}{filler}{meta}"
+    sign = "-" if negative else "+"
+
+    if gsi16:
+        data = f"{data[-16:]:>.16s}".zfill(16)
+    else:
+        data = f"{data[-8:]:>.8s}".zfill(8)
+
+    return f"{header:6.6s}{sign}{data} "
+
+
 class GsiWord(ABC):
     """Interface for all GSI word types."""
     _GSI = compile(r"^[\d\.]{6}(?:\+|-)[a-zA-Z0-9\.\?]{8,16} $")
@@ -136,60 +190,6 @@ class GsiWord(ABC):
 
     def __str__(self) -> str:
         return self.serialize(True)
-
-    @staticmethod
-    def format(
-        wordindex: int,
-        data: str,
-        meta: str = "",
-        negative: bool = False,
-        gsi16: bool = False
-    ) -> str:
-        """
-        Format data into a GSI8 or GSI16 word.
-
-        Parameters
-        ----------
-        wordindex : int
-            Word index of the word type.
-        data : str
-            Preformatted data block.
-        meta : str, optional
-            Preformatted meta flags for measurement-like values, by default ""
-        negative : bool, optional
-            Negative sign, by default False
-        gsi16 : bool, optional
-            Construct GSI16 word, by default False
-
-        Returns
-        -------
-        str
-            Formatted GSI word
-
-        Raises
-        ------
-        ValueError
-            If wordindex is not in valid range [0;999] or meta flags are
-            incorrectly formatted.
-        """
-        if wordindex >= 1000 or wordindex < 0:
-            raise ValueError(f"GSI word index out of range ({wordindex})")
-
-        if meta != "" and (not meta.isdigit() or len(meta) > 3):
-            raise ValueError(f"GSI word meta data is invalid ({meta})")
-
-        wi = str(wordindex)
-        filler = "." * (6 - len(wi) - len(meta))
-
-        header = f"{wi}{filler}{meta}"
-        sign = "-" if negative else "+"
-
-        if gsi16:
-            data = f"{data[-16:]:>.16s}".zfill(16)
-        else:
-            data = f"{data[-8:]:>.8s}".zfill(8)
-
-        return f"{header:6.6s}{sign}{data} "
 
     @classmethod
     def _check_format(cls, value: str) -> None:
@@ -290,7 +290,7 @@ class GsiUnknownWord(GsiWord):
         -------
         str
         """
-        return self.format(
+        return format_gsi_word(
             self._wi,
             self.data,
             self.info,
@@ -354,7 +354,7 @@ class GsiValueWord(GsiWord):
         -------
         str
         """
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             str(self.value),
             gsi16=gsi16
@@ -491,7 +491,7 @@ class GsiDateWord(GsiValueWord):
         -------
         str
         """
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             self.value.strftime("%d%m%Y"),
             gsi16=gsi16
@@ -565,7 +565,7 @@ class GsiTimeWord(GsiValueWord):
         -------
         str
         """
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             self.value.strftime("%m%d%H%M"),
             gsi16=gsi16
@@ -699,7 +699,7 @@ class GsiAngleWord(GsiValueWord):
 
         index = str(self.indexmode.value) if self.indexmode is not None else ""
         source = str(self.source.value) if self.source is not None else ""
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             data,
             f"{index}{source}{angleunit.value:d}",
@@ -838,7 +838,7 @@ class GsiDistanceWord(GsiValueWord):
                 raise ValueError(f"Unknown distance unit: '{distunit}'")
 
         source = f"{self.source.value:d}" if self.source is not None else ""
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             f"{abs(value):.0f}",
             f"{source}{distunit.value:d}",
@@ -1049,7 +1049,7 @@ class GsiPPMPrismConstantWord(GsiValueWord):
             ("+" if constant >= 0 else "-")
             + str(abs(constant)).zfill(3)
         )
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             f"{abs(ppm):d}{constant_str}",
             negative=ppm < 0,
@@ -1307,7 +1307,7 @@ class GsiNewTimeWord(GsiValueWord):
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
     ) -> str:
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             self.value.strftime("%H%M%S"),
             "6",
@@ -1364,7 +1364,7 @@ class GsiNewDateWord(GsiValueWord):
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
     ) -> str:
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             self.value.strftime("%m%d00"),
             "6",
@@ -1421,7 +1421,7 @@ class GsiNewYearWord(GsiValueWord):
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
     ) -> str:
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             self.value.strftime("%Y"),
             gsi16=gsi16
@@ -1556,7 +1556,7 @@ class GsiAppVersionWord(GsiValueWord):
                 f"Cannot serialize version larger than 9999 ({self.value:.4f})"
             )
 
-        return self.format(
+        return format_gsi_word(
             self.wi(),
             f"{self.value * 1e4:.0f}",
             "6",
