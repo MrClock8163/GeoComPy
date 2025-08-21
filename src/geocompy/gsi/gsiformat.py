@@ -1,3 +1,21 @@
+"""
+Description
+===========
+
+Module: ``geocompy.gis.gsiformat``
+
+The GSI format module provides data types and utility functions to read and
+write abritrary Leica GSI8 and GSI16 files.
+
+Container types are implemented for all supported GSI words types and block
+types. The types can handle parsing, as well as serialization of themselves.
+
+Angular value parsing and serialization unit conversion is done automatically.
+
+Length values are stored in meter units internally. Conversion is handled
+during parsing. Storage of other decimal values can be done with using
+scaler "units" (no feet, no angle).
+"""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -9,32 +27,64 @@ from typing import Self, Any
 from ..data import Angle
 
 
-class GsiIndexMode(Enum):
+class GsiCorrection(Enum):
+    """Index correction state in angular measurements."""
     OFF = 0
-    OPERATING1 = 1
-    OPERATING3 = 3
+    ON1 = 1
+    ON3 = 3
 
 
-class GsiInputMode(Enum):
-    TPS_TRANSFERRED_DNA_MEASURED_CURVCORR_OFF = 0
-    TPS_MANUAL_DNA_MANUAL_CURVCORR_OFF = 1
-    TPS_MEASURED_HZCORR_ON_DNA_MEASURED_CURVCORR_ON = 2
-    TPS_MEASURED_HZCORR_OFF = 3
-    TPS_COMPUTED = 4
-    DNA_MANUAL_CURVCORR_ON = 5
+class GsiValueType(Enum):
+    """Source of measurement-like value."""
+    TYPE0 = 0
+    """
+    TPS: measurement transferred from instrument
+
+    DNA: measured without curvature correction
+    """
+    TYPE1 = 1
+    """
+    TPS: manual input
+
+    DNA: manual input without curvature correction
+    """
+    TYPE2 = 2
+    """
+    TPS: measured with horizontal angle correction
+
+    DNA: measured with curvature correction
+    """
+    TYPE3 = 3
+    """
+    TPS: measured without horizontal angle correction
+    """
+    TYPE4 = 4
+    """TPS: computed"""
+    TYPE5 = 5
+    """DNA: manual input with curvature correction"""
 
 
 class GsiUnit(Enum):
+    """Unit of measurement-like value."""
     NONE = -1
-    MILLI = 0  # 0.001(m)
-    MILLIFEET = 1  # 0.001ft
-    GON = 2  # 400gon/360deg
+    MILLI = 0
+    """0.001m or 0.001 scaler factor"""
+    MILLIFEET = 1
+    """0.001ft"""
+    GON = 2
+    """Gradian/Gon (400gon / 360deg)"""
     DEG = 3
+    """Deciaml degrees"""
     DMS = 4
-    MIL = 5  # 6400mil/360deg
-    DECIMILLI = 6  # 0.0001(m)
-    DECIMILLIFEET = 7  # 0.0001ft
-    CENTIMILLI = 8  # 0.00001(m)
+    """Sexagesimal degrees (DDD-MM-SS.S)"""
+    MIL = 5
+    """NATO milliradians (6400mils / 360deg)"""
+    DECIMILLI = 6
+    """0.0001m or 0.0001 scaler factor"""
+    DECIMILLIFEET = 7
+    """0.0001ft"""
+    CENTIMILLI = 8
+    """0.00001m or 0.00001 scaler factor"""
 
 
 def _regex_measurement(wi: int | None = None) -> Pattern[str]:
@@ -62,6 +112,7 @@ def _regex_note(wi: int | None = None) -> Pattern[str]:
 
 
 class GsiWord(ABC):
+    """Interface for all GSI word types."""
     _GSI = compile(r"^[\d\.]{6}(?:\+|-)[a-zA-Z0-9\.\?]{8,16} $")
 
     @classmethod
@@ -72,6 +123,7 @@ class GsiWord(ABC):
     @classmethod
     @abstractmethod
     def wi(cls) -> int:
+        """Word index."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -94,6 +146,33 @@ class GsiWord(ABC):
         negative: bool = False,
         gsi16: bool = False
     ) -> str:
+        """
+        Format data into a GSI8 or GSI16 word.
+
+        Parameters
+        ----------
+        wordindex : int
+            Word index of the word type.
+        data : str
+            Preformatted data block.
+        meta : str, optional
+            Preformatted meta flags for measurement-like values, by default ""
+        negative : bool, optional
+            Negative sign, by default False
+        gsi16 : bool, optional
+            Construct GSI16 word, by default False
+
+        Returns
+        -------
+        str
+            Formatted GSI word
+
+        Raises
+        ------
+        ValueError
+            If wordindex is not in valid range [0;999] or meta flags are
+            incorrectly formatted.
+        """
         if wordindex >= 1000 or wordindex < 0:
             raise ValueError(f"GSI word index out of range ({wordindex})")
 
@@ -126,6 +205,8 @@ class GsiWord(ABC):
 
 
 class GsiUnknownWord(GsiWord):
+    """Generic word type to hold unrecognized data for later processing."""
+
     def __init__(
         self,
         wordindex: int,
@@ -133,6 +214,18 @@ class GsiUnknownWord(GsiWord):
         meta: str = "",
         negative: bool = False,
     ):
+        """
+        Parameters
+        ----------
+        wordindex : int
+            GSI word index.
+        data : str, optional
+            Data block, by default ""
+        meta : str, optional
+            Meta flags for measurement-like values, by default ""
+        negative : bool, optional
+            Negative sign, by default False
+        """
         self._wi = wordindex
         self.info = meta
         self.data = data
@@ -140,13 +233,29 @@ class GsiUnknownWord(GsiWord):
 
     @classmethod
     def wi(cls) -> int:
+        """Always returns 0 to indicate the unknown status of the data."""
         return 0
 
     def actual_wi(self) -> int:
+        """Returns the actually set word index."""
         return self._wi
 
     @classmethod
     def parse(cls, value: str) -> GsiUnknownWord:
+        """
+        Parses unknown word from a serialized value.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        GsiUnknownWord
+            Retains all information its raw form to allow further manual
+            processing and error correction.
+        """
         cls._check_format(value)
         wi = int(value[:3].rstrip("."))
         data = value[7:-1]
@@ -166,6 +275,22 @@ class GsiUnknownWord(GsiWord):
         angleunit: GsiUnit = GsiUnit.NONE,
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+        distunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+
+        Returns
+        -------
+        str
+        """
         return self.format(
             self._wi,
             self.data,
@@ -176,13 +301,32 @@ class GsiUnknownWord(GsiWord):
 
 
 class GsiValueWord(GsiWord):
+    """Base type for GSI words with simple values and no meta flags."""
     _GSI = _regex_note()
 
     def __init__(self, value: Any):
+        """
+        Parameters
+        ----------
+        value : Any
+            Arbitrary value to represent.
+        """
         self.value: Any = value
 
     @classmethod
     def parse(cls, value: str) -> Self:
+        """
+        Parses a word from a serialized value.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
         cls._check_format(value)
 
         return cls(
@@ -195,6 +339,22 @@ class GsiValueWord(GsiWord):
         angleunit: GsiUnit = GsiUnit.NONE,
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+        distunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+
+        Returns
+        -------
+        str
+        """
         return self.format(
             self.wi(),
             str(self.value),
@@ -203,6 +363,7 @@ class GsiValueWord(GsiWord):
 
 
 class GsiPointNameWord(GsiValueWord):
+    """``WI11`` Point name (first word in measurement block)."""
     _GSI = _regex_note(11)
 
     @classmethod
@@ -210,11 +371,18 @@ class GsiPointNameWord(GsiValueWord):
         return 11
 
     def __init__(self, name: str):
+        """
+        Parameters
+        ----------
+        name : str
+            Point name.
+        """
         self.value: str
         super().__init__(name)
 
 
 class GsiSerialnumberWord(GsiValueWord):
+    """``WI12`` Instrument serial number."""
     _GSI = compile(r"^12[\d\.]{4}\+[0-9]{8,16} $")
 
     @classmethod
@@ -222,11 +390,18 @@ class GsiSerialnumberWord(GsiValueWord):
         return 12
 
     def __init__(self, serialnumber: str):
+        """
+        Parameters
+        ----------
+        serialnumber : str
+            Serial number as string (as it might sometimes contain letters).
+        """
         self.value: str
         super().__init__(serialnumber)
 
 
 class GsiInstrumentTypeWord(GsiValueWord):
+    """``WI13`` Instrument type name."""
     _GSI = _regex_note(13)
 
     @classmethod
@@ -234,11 +409,18 @@ class GsiInstrumentTypeWord(GsiValueWord):
         return 13
 
     def __init__(self, name: str):
+        """
+        Parameters
+        ----------
+        name : str
+            Instrument type.
+        """
         self.value: str
         super().__init__(name)
 
 
 class GsiStationNameWord(GsiPointNameWord):
+    """``WI16`` Station point name."""
     _GSI = _regex_note(16)
 
     @classmethod
@@ -247,6 +429,7 @@ class GsiStationNameWord(GsiPointNameWord):
 
 
 class GsiDateWord(GsiValueWord):
+    """``WI17`` Full date."""
     _GSI = compile(r"^17[\d\.]{4}\+[0-9]{8,16} $")
 
     @classmethod
@@ -254,11 +437,29 @@ class GsiDateWord(GsiValueWord):
         return 17
 
     def __init__(self, date: datetime):
+        """
+        Parameters
+        ----------
+        date : datetime
+            Full year-month-day date.
+        """
         self.value: datetime
         super().__init__(date)
 
     @classmethod
     def parse(cls, value: str) -> Self:
+        """
+        Parses a full date from a serialized GSI word.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
         cls._check_format(value)
 
         return cls(
@@ -275,6 +476,22 @@ class GsiDateWord(GsiValueWord):
         angleunit: GsiUnit = GsiUnit.NONE,
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+        distunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+
+        Returns
+        -------
+        str
+        """
         return self.format(
             self.wi(),
             self.value.strftime("%d%m%Y"),
@@ -283,6 +500,7 @@ class GsiDateWord(GsiValueWord):
 
 
 class GsiTimeWord(GsiValueWord):
+    """``WI19`` Partial date and time (month-day-hours-minutes)."""
     _GSI = compile(r"^19[\d\.]{4}\+[0-9]{8,16} $")
 
     @classmethod
@@ -290,11 +508,30 @@ class GsiTimeWord(GsiValueWord):
         return 19
 
     def __init__(self, time: datetime):
+        """
+        Parameters
+        ----------
+        time : datetime
+            Date and time, where the year and seconds are ignored.
+        """
         self.value: datetime
         super().__init__(time)
 
     @classmethod
     def parse(cls, value: str) -> Self:
+        """
+        Parses a partial date-time from a serialized GSI word
+        (year is set to 1).
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
         cls._check_format(value)
 
         return cls(
@@ -313,6 +550,22 @@ class GsiTimeWord(GsiValueWord):
         angleunit: GsiUnit = GsiUnit.NONE,
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+        distunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+
+        Returns
+        -------
+        str
+        """
         return self.format(
             self.wi(),
             self.value.strftime("%m%d%H%M"),
@@ -321,30 +574,58 @@ class GsiTimeWord(GsiValueWord):
 
 
 class GsiAngleWord(GsiValueWord):
+    """Base type for angular measurement words."""
     _GSI = _regex_measurement()
 
     def __init__(
         self,
         angle: Angle,
-        index: GsiIndexMode | None = None,
-        source: GsiInputMode | None = None
+        index: GsiCorrection | None = None,
+        source: GsiValueType | None = None
     ):
+        """
+        Parameters
+        ----------
+        angle : Angle
+            Measurement value.
+        index : GsiCorrection | None, optional
+            State of vertical index correction, by default None
+        source : GsiValueType | None, optional
+            Value input source, by default None
+        """
         self.value: Angle
         super().__init__(angle)
-        self.indexmode: GsiIndexMode | None = index
-        self.source: GsiInputMode | None = source
+        self.indexmode: GsiCorrection | None = index
+        self.source: GsiValueType | None = source
 
     @classmethod
     def parse(cls, value: str) -> Self:
+        """
+        Parses an angular measurement value from a serialized GSI word.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+
+        Raises
+        ------
+        ValueError
+            If incorrect unit was found in value.
+        """
         cls._check_format(value)
 
         index = (
-            GsiIndexMode(int(value[3]))
+            GsiCorrection(int(value[3]))
             if value[3] != "."
             else None
         )
         source = (
-            GsiInputMode(int(value[4]))
+            GsiValueType(int(value[4]))
             if value[4] != "."
             else None
         )
@@ -379,6 +660,27 @@ class GsiAngleWord(GsiValueWord):
         angleunit: GsiUnit = GsiUnit.DEG,
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit, optional
+            Angle unit to serialize as, by default GsiUnit.NONE
+        distunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+
+        Returns
+        -------
+        str
+
+        Raises
+        ------
+        ValueError
+            If invalid angular unit was given.
+        """
         match angleunit:
             case GsiUnit.DEG | GsiUnit.GON:
                 value = self.value.normalized().asunit('deg')
@@ -407,6 +709,7 @@ class GsiAngleWord(GsiValueWord):
 
 
 class GsiHorizontalAngleWord(GsiAngleWord):
+    """``WI21`` Horizontal angle."""
     _GSI = _regex_measurement(21)
 
     @classmethod
@@ -415,6 +718,7 @@ class GsiHorizontalAngleWord(GsiAngleWord):
 
 
 class GsiVerticalAngleWord(GsiAngleWord):
+    """``WI22`` Vertical angle."""
     _GSI = _regex_measurement(22)
 
     @classmethod
@@ -423,23 +727,51 @@ class GsiVerticalAngleWord(GsiAngleWord):
 
 
 class GsiDistanceWord(GsiValueWord):
+    """Base type for distance measurement and general scaled value words."""
     _GSI = _regex_measurement()
 
     def __init__(
         self,
         value: float,
-        source: GsiInputMode | None = None
+        source: GsiValueType | None = None
     ):
+        """
+        Parameters
+        ----------
+        value : float
+            Measurement value (in meters distance value)
+        source : GsiValueType | None, optional
+            Source of measurement-like value, by default None
+        """
         self.value: float
         super().__init__(value)
         self.source = source
 
     @classmethod
     def parse(cls, value: str) -> Self:
+        """
+        Parses a distance measurement or measurement-like scaled value from a
+        serialized GSI word.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+
+        Raises
+        ------
+        ValueError
+            If incorrect unit was found in value.
+        """
+
         cls._check_format(value)
 
         source = (
-            GsiInputMode(int(value[4]))
+            GsiValueType(int(value[4]))
             if value[4] != "."
             else None
         )
@@ -470,6 +802,28 @@ class GsiDistanceWord(GsiValueWord):
         angleunit: GsiUnit = GsiUnit.NONE,
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+        distunit : GsiUnit, optional
+            Distance unit (or scaler unit for generic values),
+            by default GsiUnit.NONE
+
+        Returns
+        -------
+        str
+
+        Raises
+        ------
+        ValueError
+            If invalid distance/scaler unit was given.
+        """
         match distunit:
             case GsiUnit.MILLI:
                 value = self.value * 1e3
@@ -495,6 +849,7 @@ class GsiDistanceWord(GsiValueWord):
 
 
 class GsiSlopeDistanceWord(GsiDistanceWord):
+    """``WI31`` Slope distance."""
     _GSI = _regex_measurement(31)
 
     @classmethod
@@ -503,6 +858,7 @@ class GsiSlopeDistanceWord(GsiDistanceWord):
 
 
 class GsiHorizontalDistanceWord(GsiDistanceWord):
+    """``WI32`` Horizontal distance."""
     _GSI = _regex_measurement(32)
 
     @classmethod
@@ -511,6 +867,7 @@ class GsiHorizontalDistanceWord(GsiDistanceWord):
 
 
 class GsiVerticalDistanceWord(GsiDistanceWord):
+    """``WI33`` Vertical distance (height difference)."""
     _GSI = _regex_measurement(33)
 
     @classmethod
@@ -519,6 +876,7 @@ class GsiVerticalDistanceWord(GsiDistanceWord):
 
 
 class GsiCodeWord(GsiValueWord):
+    """``WI41`` Operation code (first word of code blocks)."""
     _GSI = _regex_note(41)
 
     @classmethod
@@ -526,11 +884,18 @@ class GsiCodeWord(GsiValueWord):
         return 41
 
     def __init__(self, value: str):
+        """
+        Parameters
+        ----------
+        value : str
+            Code value.
+        """
         self.value: str
         super().__init__(value)
 
 
 class GsiInfo1Word(GsiCodeWord):
+    """``WI42`` Information 1."""
     _GSI = _regex_note(42)
 
     @classmethod
@@ -539,6 +904,7 @@ class GsiInfo1Word(GsiCodeWord):
 
 
 class GsiInfo2Word(GsiCodeWord):
+    """``WI43`` Information 2."""
     _GSI = _regex_note(43)
 
     @classmethod
@@ -547,6 +913,7 @@ class GsiInfo2Word(GsiCodeWord):
 
 
 class GsiInfo3Word(GsiCodeWord):
+    """``WI44`` Information 3."""
     _GSI = _regex_note(44)
 
     @classmethod
@@ -555,6 +922,7 @@ class GsiInfo3Word(GsiCodeWord):
 
 
 class GsiInfo4Word(GsiCodeWord):
+    """``WI45`` Information 4."""
     _GSI = _regex_note(45)
 
     @classmethod
@@ -563,6 +931,7 @@ class GsiInfo4Word(GsiCodeWord):
 
 
 class GsiInfo5Word(GsiCodeWord):
+    """``WI46`` Information 5."""
     _GSI = _regex_note(46)
 
     @classmethod
@@ -571,6 +940,7 @@ class GsiInfo5Word(GsiCodeWord):
 
 
 class GsiInfo6Word(GsiCodeWord):
+    """``WI47`` Information 6."""
     _GSI = _regex_note(47)
 
     @classmethod
@@ -579,6 +949,7 @@ class GsiInfo6Word(GsiCodeWord):
 
 
 class GsiInfo7Word(GsiCodeWord):
+    """``WI48`` Information 7."""
     _GSI = _regex_note(48)
 
     @classmethod
@@ -587,6 +958,7 @@ class GsiInfo7Word(GsiCodeWord):
 
 
 class GsiInfo8Word(GsiCodeWord):
+    """``WI49`` Information 8."""
     _GSI = _regex_note(49)
 
     @classmethod
@@ -595,6 +967,7 @@ class GsiInfo8Word(GsiCodeWord):
 
 
 class GsiPPMPrismConstantWord(GsiValueWord):
+    """``WI51`` PPM correction and prism constant."""
     _GSI = compile(r"^51[\d\.]{3}$")
 
     @classmethod
@@ -602,6 +975,14 @@ class GsiPPMPrismConstantWord(GsiValueWord):
         return 51
 
     def __init__(self, ppm: int, constant: int):
+        """
+        Parameters
+        ----------
+        ppm : int
+            Corretion factor.
+        constant : int
+            Prism constant in millimeters.
+        """
         self.value: tuple[int, int]
         super().__init__((ppm, constant))
 
@@ -610,6 +991,18 @@ class GsiPPMPrismConstantWord(GsiValueWord):
         cls,
         value: str
     ) -> Self:
+        """
+        Parses PPM factor and prism constant from a serialized GSI word.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
         ppm = int(value[6:-5])
         constant = int(value[-5:-1])
 
@@ -624,6 +1017,28 @@ class GsiPPMPrismConstantWord(GsiValueWord):
         angleunit: GsiUnit = GsiUnit.NONE,
         distunit: GsiUnit = GsiUnit.NONE
     ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+        distunit : GsiUnit, optional
+            Unused, by default GsiUnit.NONE
+
+        Returns
+        -------
+        str
+
+        Raises
+        ------
+        ValueError
+            If values are out of their valid range, [0;9999] and [0;999]
+            respectively.
+        """
         ppm, constant = self.value
         if (ppm > 9999 or ppm < 0) or (constant > 999 or constant < 0):
             raise ValueError(
@@ -644,6 +1059,7 @@ class GsiPPMPrismConstantWord(GsiValueWord):
 
 
 class GsiPrismConstantWord(GsiDistanceWord):
+    """``WI58`` Prism constant."""
     _GSI = _regex_measurement(58)
 
     @classmethod
@@ -652,6 +1068,7 @@ class GsiPrismConstantWord(GsiDistanceWord):
 
 
 class GsiPPMWord(GsiDistanceWord):
+    """``WI59`` PPM correction factor."""
     _GSI = _regex_measurement(59)
 
     @classmethod
@@ -660,6 +1077,7 @@ class GsiPPMWord(GsiDistanceWord):
 
 
 class GsiRemark1Word(GsiCodeWord):
+    """``WI71`` Note/Attribute 1."""
     _GSI = _regex_note(71)
 
     @classmethod
@@ -668,6 +1086,7 @@ class GsiRemark1Word(GsiCodeWord):
 
 
 class GsiRemark2Word(GsiRemark1Word):
+    """``WI72`` Note/Attribute 2."""
     _GSI = _regex_note(72)
 
     @classmethod
@@ -676,6 +1095,7 @@ class GsiRemark2Word(GsiRemark1Word):
 
 
 class GsiRemark3Word(GsiRemark1Word):
+    """``WI73`` Note/Attribute 3."""
     _GSI = _regex_note(73)
 
     @classmethod
@@ -684,6 +1104,7 @@ class GsiRemark3Word(GsiRemark1Word):
 
 
 class GsiRemark4Word(GsiRemark1Word):
+    """``WI74`` Note/Attribute 4."""
     _GSI = _regex_note(74)
 
     @classmethod
@@ -692,6 +1113,7 @@ class GsiRemark4Word(GsiRemark1Word):
 
 
 class GsiRemark5Word(GsiRemark1Word):
+    """``WI75`` Note/Attribute 5."""
     _GSI = _regex_note(75)
 
     @classmethod
@@ -700,6 +1122,7 @@ class GsiRemark5Word(GsiRemark1Word):
 
 
 class GsiRemark6Word(GsiRemark1Word):
+    """``WI76`` Note/Attribute 6."""
     _GSI = _regex_note(76)
 
     @classmethod
@@ -708,6 +1131,7 @@ class GsiRemark6Word(GsiRemark1Word):
 
 
 class GsiRemark7Word(GsiRemark1Word):
+    """``WI77`` Note/Attribute 7."""
     _GSI = _regex_note(77)
 
     @classmethod
@@ -716,6 +1140,7 @@ class GsiRemark7Word(GsiRemark1Word):
 
 
 class GsiRemark8Word(GsiRemark1Word):
+    """``WI78`` Note/Attribute 8."""
     _GSI = _regex_note(78)
 
     @classmethod
@@ -724,6 +1149,7 @@ class GsiRemark8Word(GsiRemark1Word):
 
 
 class GsiRemark9Word(GsiRemark1Word):
+    """``WI79`` Note/Attribute 9."""
     _GSI = _regex_note(79)
 
     @classmethod
@@ -732,6 +1158,7 @@ class GsiRemark9Word(GsiRemark1Word):
 
 
 class GsiEastingWord(GsiDistanceWord):
+    """``WI81`` Coordinate easting component."""
     _GSI = _regex_measurement(81)
 
     @classmethod
@@ -740,6 +1167,7 @@ class GsiEastingWord(GsiDistanceWord):
 
 
 class GsiNorthingWord(GsiDistanceWord):
+    """``WI82`` Coordinate northing component."""
     _GSI = _regex_measurement(82)
 
     @classmethod
@@ -748,6 +1176,7 @@ class GsiNorthingWord(GsiDistanceWord):
 
 
 class GsiHeightWord(GsiDistanceWord):
+    """``WI83`` Coordinate height component."""
     _GSI = _regex_measurement(83)
 
     @classmethod
@@ -756,6 +1185,7 @@ class GsiHeightWord(GsiDistanceWord):
 
 
 class GsiStationEastingWord(GsiDistanceWord):
+    """``WI84`` Station coordinate easting component."""
     _GSI = _regex_measurement(84)
 
     @classmethod
@@ -764,6 +1194,7 @@ class GsiStationEastingWord(GsiDistanceWord):
 
 
 class GsiStationNorthingWord(GsiDistanceWord):
+    """``WI85`` Station coordinate northing component."""
     _GSI = _regex_measurement(85)
 
     @classmethod
@@ -772,6 +1203,7 @@ class GsiStationNorthingWord(GsiDistanceWord):
 
 
 class GsiStationHeightWord(GsiDistanceWord):
+    """``WI86`` Station coordinate height component."""
     _GSI = _regex_measurement(86)
 
     @classmethod
@@ -780,6 +1212,7 @@ class GsiStationHeightWord(GsiDistanceWord):
 
 
 class GsiTargetHeightWord(GsiDistanceWord):
+    """``WI87`` Reflector/Target height."""
     _GSI = _regex_measurement(87)
 
     @classmethod
@@ -788,6 +1221,7 @@ class GsiTargetHeightWord(GsiDistanceWord):
 
 
 class GsiInstrumentHeightWord(GsiDistanceWord):
+    """``WI88`` Instrument height."""
     _GSI = _regex_measurement(88)
 
     @classmethod
@@ -796,6 +1230,7 @@ class GsiInstrumentHeightWord(GsiDistanceWord):
 
 
 class GsiTemperatureWord(GsiDistanceWord):
+    """``WI95`` Temperature."""
     _GSI = _regex_measurement(95)
 
     @classmethod
@@ -804,6 +1239,7 @@ class GsiTemperatureWord(GsiDistanceWord):
 
 
 class GsiPressureWord(GsiDistanceWord):
+    """``WI531`` Atmospheric pressure."""
     _GSI = _regex_measurement(531)
 
     @classmethod
@@ -812,6 +1248,7 @@ class GsiPressureWord(GsiDistanceWord):
 
 
 class GsiRefractionCoefWord(GsiDistanceWord):
+    """``WI538`` Refraction coefficient."""
     _GSI = _regex_measurement(538)
 
     @classmethod
@@ -820,6 +1257,7 @@ class GsiRefractionCoefWord(GsiDistanceWord):
 
 
 class GsiNewTimeWord(GsiValueWord):
+    """``WI560`` Full time (hours-minutes-seconds)."""
     _GSI = compile(r"^560\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
@@ -827,11 +1265,30 @@ class GsiNewTimeWord(GsiValueWord):
         return 560
 
     def __init__(self, time: datetime):
+        """
+        Parameters
+        ----------
+        time : datetime
+            Full time.
+        """
         self.value: datetime
         super().__init__(time)
 
     @classmethod
     def parse(cls, value: str) -> Self:
+        """
+        Parses a full time from a serialized GSI word
+        (year, month and day are set to 1).
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
         cls._check_format(value)
 
         return cls(
@@ -860,6 +1317,7 @@ class GsiNewTimeWord(GsiValueWord):
 
 
 class GsiNewDateWord(GsiValueWord):
+    """``WI561`` Partial date (month-day)."""
     _GSI = compile(r"^561\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
@@ -867,11 +1325,30 @@ class GsiNewDateWord(GsiValueWord):
         return 561
 
     def __init__(self, time: datetime):
+        """
+        Parameters
+        ----------
+        time : datetime
+            Partial date (month-day)
+        """
         self.value: datetime
         super().__init__(time)
 
     @classmethod
     def parse(cls, value: str) -> Self:
+        """
+        Parses a partial date from a serialized GSI word
+        (year is set to 1).
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
         cls._check_format(value)
 
         return cls(
@@ -897,18 +1374,38 @@ class GsiNewDateWord(GsiValueWord):
 
 
 class GsiNewYearWord(GsiValueWord):
+    """``WI562`` Year."""
     _GSI = compile(r"^562\.{3}\+[0-9]{8,16} $")
 
     @classmethod
     def wi(cls) -> int:
         return 562
 
-    def __init__(self, time: datetime):
+    def __init__(self, year: datetime):
+        """
+        Parameters
+        ----------
+        year : datetime
+            Year.
+        """
         self.value: datetime
-        super().__init__(time)
+        super().__init__(year)
 
     @classmethod
     def parse(cls, value: str) -> Self:
+        """
+        Parses a year from a serialized GSI word
+        (month and day are set to 1).
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
         cls._check_format(value)
 
         return cls(
@@ -933,6 +1430,7 @@ class GsiNewYearWord(GsiValueWord):
 
 
 class GsiStaffDistanceWord(GsiDistanceWord):
+    """``WI32`` Levelling staff distance."""
     _GSI = _regex_measurement(32)
 
     @classmethod
@@ -941,6 +1439,7 @@ class GsiStaffDistanceWord(GsiDistanceWord):
 
 
 class GsiBenchmarkHeightWord(GsiDistanceWord):
+    """``WI83`` Benchmark or running ground height."""
     _GSI = _regex_measurement(83)
 
     @classmethod
@@ -949,6 +1448,7 @@ class GsiBenchmarkHeightWord(GsiDistanceWord):
 
 
 class GsiSimpleStaffReadingWord(GsiDistanceWord):
+    """``WI330`` Staff reading in measure-only mode."""
     _GSI = _regex_measurement(330)
 
     @classmethod
@@ -957,6 +1457,7 @@ class GsiSimpleStaffReadingWord(GsiDistanceWord):
 
 
 class GsiB1StaffReadingWord(GsiDistanceWord):
+    """``WI331`` Backsight staff reading."""
     _GSI = _regex_measurement(331)
 
     @classmethod
@@ -965,6 +1466,7 @@ class GsiB1StaffReadingWord(GsiDistanceWord):
 
 
 class GsiF1StaffReadingWord(GsiDistanceWord):
+    """``WI332`` Foresight staff reading."""
     _GSI = _regex_measurement(332)
 
     @classmethod
@@ -973,6 +1475,7 @@ class GsiF1StaffReadingWord(GsiDistanceWord):
 
 
 class GsiIntermediateStaffReadingWord(GsiDistanceWord):
+    """``WI332`` Intermediate staff reading."""
     _GSI = _regex_measurement(333)
 
     @classmethod
@@ -981,6 +1484,7 @@ class GsiIntermediateStaffReadingWord(GsiDistanceWord):
 
 
 class GsiStakeoutStaffReadingWord(GsiDistanceWord):
+    """``WI334`` Setting out staff reading."""
     _GSI = _regex_measurement(334)
 
     @classmethod
@@ -989,6 +1493,7 @@ class GsiStakeoutStaffReadingWord(GsiDistanceWord):
 
 
 class GsiB2StaffReadingWord(GsiDistanceWord):
+    """``WI335`` 2nd backsight staff reading in BFFB mode."""
     _GSI = _regex_measurement(335)
 
     @classmethod
@@ -997,6 +1502,7 @@ class GsiB2StaffReadingWord(GsiDistanceWord):
 
 
 class GsiF2StaffReadingWord(GsiDistanceWord):
+    """``WI336`` 2nd foresight staff reading in BFFB mode."""
     _GSI = _regex_measurement(336)
 
     @classmethod
@@ -1005,6 +1511,7 @@ class GsiF2StaffReadingWord(GsiDistanceWord):
 
 
 class GsiAppVersionWord(GsiValueWord):
+    """``WI590`` Application version."""
     _GSI = compile(r"^590\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
@@ -1012,11 +1519,29 @@ class GsiAppVersionWord(GsiValueWord):
         return 590
 
     def __init__(self, version: float):
+        """
+        Parameters
+        ----------
+        version : float
+            Version number (major: integer part, minor: fractional part).
+        """
         self.value: float
         super().__init__(version)
 
     @classmethod
     def parse(cls, value: str) -> Self:
+        """
+        Parses a version number from serialized GSI word.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
         cls._check_format(value)
 
         return cls(float(value[7:-1]) * 1e-4)
@@ -1041,6 +1566,7 @@ class GsiAppVersionWord(GsiValueWord):
 
 
 class GsiOSVersionWord(GsiAppVersionWord):
+    """``WI591`` Operating system version."""
     _GSI = compile(r"^591\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
@@ -1049,6 +1575,7 @@ class GsiOSVersionWord(GsiAppVersionWord):
 
 
 class GsiOSInterfaceVersionWord(GsiAppVersionWord):
+    """``WI592`` OS interface version."""
     _GSI = compile(r"^592\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
@@ -1057,6 +1584,7 @@ class GsiOSInterfaceVersionWord(GsiAppVersionWord):
 
 
 class GsiGeoComVersionWord(GsiAppVersionWord):
+    """``WI593`` GeoCom version."""
     _GSI = compile(r"^593\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
@@ -1065,6 +1593,7 @@ class GsiGeoComVersionWord(GsiAppVersionWord):
 
 
 class GsiVersionWord(GsiAppVersionWord):
+    """``WI594`` GSI protocol version."""
     _GSI = compile(r"^594\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
@@ -1073,6 +1602,7 @@ class GsiVersionWord(GsiAppVersionWord):
 
 
 class GsiEDMVersionWord(GsiAppVersionWord):
+    """``WI595`` EDM device version."""
     _GSI = compile(r"^595\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
@@ -1081,6 +1611,7 @@ class GsiEDMVersionWord(GsiAppVersionWord):
 
 
 class GsiSoftwareVersionWord(GsiAppVersionWord):
+    """``WI599`` On-board software version (digital level)."""
     _GSI = compile(r"^599\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
@@ -1089,6 +1620,7 @@ class GsiSoftwareVersionWord(GsiAppVersionWord):
 
 
 class GsiJobWord(GsiRemark1Word):
+    """``WI913`` Job name."""
     _GSI = _regex_note(913)
 
     @classmethod
@@ -1097,6 +1629,7 @@ class GsiJobWord(GsiRemark1Word):
 
 
 class GsiOperatorWord(GsiRemark1Word):
+    """``WI914`` Operator name."""
     _GSI = _regex_note(914)
 
     @classmethod
@@ -1202,6 +1735,30 @@ def parse_gsi_word(
     dna: bool = False,
     strict: bool = False
 ) -> GsiWord:
+    """
+    Parses an arbitrary GSI word from a serialized value.
+
+    Parameters
+    ----------
+    value : str
+        Serialized GSI word.
+    dna : bool, optional
+        Use words applicable to digital levels, by default False
+    strict : bool, optional
+        Raise exception if word cannot be parsed (otherwise return
+        unknown type word), by default False
+
+    Returns
+    -------
+    GsiWord
+
+    Raises
+    ------
+    ValueError
+        If strict is enabled and word type cannot be parsed.
+    Exception
+        If strict is enabled and error occured during parsing.
+    """
     value = value.strip("*")
 
     wi = int(value[:3].rstrip("."))
@@ -1228,6 +1785,7 @@ def parse_gsi_word(
 
 
 class GsiBlock:
+    """Container type for GSI words."""
     _TYPE_TO_WI = {
         "measurement": 11,
         "code": 41
@@ -1240,6 +1798,21 @@ class GsiBlock:
         type: str,
         address: int | None = None
     ):
+        """
+        Parameters
+        ----------
+        name : str
+            Point name or code value (depending on block type).
+        type : str
+            Block type ("measurement" or "code")
+        address : int | None, optional
+            Block record address, by default None
+
+        Raises
+        ------
+        ValueError
+            If an unknown block type was specified.
+        """
         if type not in self._TYPE_TO_WI:
             raise ValueError(f"Unknown GSI block type: '{type}'")
 
@@ -1264,6 +1837,31 @@ class GsiBlock:
         dna: bool = False,
         keep_unknowns: bool = False
     ) -> Self:
+        """
+        Parses a GSI block from a serialized value.
+
+        The block cannot have the same GSI word type multiple times.
+
+        Parameters
+        ----------
+        data : str
+            Serialized GSI block.
+        dna : bool, optional
+            Use words applicable to digital levels, by default False
+        keep_unknowns : bool, optional
+            Keep words that could not be parsed to known types (otherwise
+            discard them), by default False
+
+        Returns
+        -------
+        Self
+            Measurement or code type block.
+
+        Raises
+        ------
+        ValueError
+            If an error was found in the serialized value.
+        """
         wordsize = 16
         if data[0] == "*":
             wordsize = 24
@@ -1340,6 +1938,31 @@ class GsiBlock:
         angleunit: GsiUnit = GsiUnit.DEG,
         distunit: GsiUnit = GsiUnit.DECIMILLI
     ) -> str:
+        """
+        Serializes the block to a list of GSI words.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 words isntead of GSI8, by default False
+        endl : bool, optional
+            Add newline to end of block (recommended for file writing),
+            by default True
+        angleunit : GsiUnit, optional
+            Angular unit to serialize angles as, by default GsiUnit.DEG
+        distunit : GsiUnit, optional
+            Distance/Scaler unit for lengths and measurement-like scaled
+            values, by default GsiUnit.DECIMILLI
+
+        Returns
+        -------
+        str
+
+        Raises
+        ------
+        ValueError
+            If block has unknown type.
+        """
         match self.type:
             case "measurement":
                 header = GsiPointNameWord(self.name).serialize(gsi16)
@@ -1361,12 +1984,22 @@ class GsiBlock:
         return output + ("\n" if endl else "")
 
     def drop_unknowns(self) -> None:
+        """
+        Discard unknown type words from the list of words.
+        """
         keep = [w for w in self.words if not isinstance(w, GsiUnknownWord)]
         self.words.clear()
         for w in keep:
             self.words.append(w)
 
     def words_map(self) -> dict[int, GsiWord]:
+        """
+        Return word index-word mapping for the words contained in the block.
+
+        Returns
+        -------
+        dict
+        """
         mapping: dict[int, GsiWord] = {}
         match self.type:
             case "measurement":
