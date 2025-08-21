@@ -231,7 +231,18 @@ return response wrapper objects. If an error occured it is indicated by the
 error code in the response object and/or the lack of parsed parameters. These
 errors have to be explicitly handled in the application.
 
-The simplest solution is to check if the error code is simple ``OK``:
+.. caution::
+    :class: warning
+
+    The error codes have descriptive names, that usually give some clue
+    about the nature of the issue. One caveat is, that the response parser
+    returns the ``UNDEFINED`` code not just when that was actually received,
+    but also when an unknown error code was received. One example of this is
+    error code ``30``, which can be seen in the wild, but is not documented
+    anywhere. The response wrapper will contain ``UNDEFINED`` in cases like
+    this.
+
+The simplest solution is to check if the error code is simply ``OK``:
 
 .. code-block:: python
 
@@ -239,17 +250,17 @@ The simplest solution is to check if the error code is simple ``OK``:
     if response.error != GeoComCode.OK:
         # handle error
 
-When static type checkers are involved, it might be necessary check for both
+When static type checkers are involved, it might be necessary to check for both
 the error code and the existence of the parsed parameters.
 
 .. code-block:: python
 
     response = tps.ftr.setup_listing()
-    if response.error != GeoComCode.OK and response.params is not None:
+    if response.error != GeoComCode.OK or response.params is not None:
         # handle error
 
 Different commands return different errors signaling the various issues.
-Some errors might be recoverable, some might not.
+Some errors might be recoverable, others might not be.
 
 .. code-block:: python
 
