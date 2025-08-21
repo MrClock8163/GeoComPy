@@ -317,9 +317,12 @@ class Angle:
         secs = abs(angle) * RO
         mi, sec = divmod(secs, 60)
         deg, mi = divmod(int(mi), 60)
-        deg = int(deg)
-        fmt = f"{{:02.{precision}f}}"
-        return f"{signum:s}{deg:d}-{mi:02d}-{fmt.format(sec)}"
+        secstr = f"{{:.{precision}f}}".format(sec).zfill(
+            precision + 3
+            if precision > 0
+            else 2
+        )
+        return f"{signum:s}{deg:d}-{mi:02d}-{secstr}"
 
     @staticmethod
     def normalize_rad(angle: float, positive: bool = False) -> float:
