@@ -12,6 +12,8 @@ from geocompy.gsi.gsiformat import (
     GsiSlopeDistanceWord,
     GsiPPMPrismConstantWord,
     GsiAppVersionWord,
+    GsiBenchmarkHeightWord,
+    GsiInfo1Word,
     parse_gsi_word
 )
 
@@ -123,3 +125,18 @@ class TestGsiBlock:
     def test_parsing(self) -> None:
         self.run_parsing_test(file_tps_mixed, 8)
         self.run_parsing_test(file_dna_mixed, 7, True)
+
+    def test_serialization(self) -> None:
+        b1 = GsiBlock("P1", "measurement", 1)
+        b1.words.append(
+            GsiBenchmarkHeightWord(123.456)
+        )
+        text = b1.serialize(distunit=GsiUnit.CENTIMILLI, endl=False)
+        assert text == "110001+000000P1 83...8+12345600 "
+
+        b2 = GsiBlock("?..............2", "code", 2)
+        b2.words.append(
+            GsiInfo1Word("STN")
+        )
+        text = b2.serialize(True, endl=False)
+        assert text == "*410002+?..............2 42....+0000000000000STN "
