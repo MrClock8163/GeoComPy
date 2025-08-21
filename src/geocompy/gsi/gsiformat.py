@@ -110,6 +110,18 @@ def _regex_note(wi: int | None = None) -> Pattern[str]:
     return compile(rf"^{idx}[\d\.]{{3}}\+[\w\.\?\-\+]{{8,16}} $")
 
 
+def _regex_integer(wi: int | None = None) -> Pattern[str]:
+    if wi is not None and (wi > 999 or wi < 0):
+        raise ValueError("Invalid wordindex")
+
+    if wi is None:
+        idx = r"\d{2}[\d\.]"
+    else:
+        idx = str(wi).ljust(3, ".")
+
+    return compile(rf"^{idx}[\d\.]{{3}}[\+\-]\d{{8,16}} $")
+
+
 def format_gsi_word(
     wordindex: int,
     data: str,
@@ -357,6 +369,71 @@ class GsiValueWord(GsiWord):
         return format_gsi_word(
             self.wi(),
             str(self.value),
+            gsi16=gsi16
+        )
+
+
+class GsiIntegerValueWord(GsiWord):
+    """
+    Base type for GSI words with simple interger values and no meta flags.
+    """
+    _GSI = _regex_integer()
+
+    def __init__(self, value: int):
+        """
+        Parameters
+        ----------
+        value : int
+            Value to represent.
+        """
+        self.value: int = value
+
+    @classmethod
+    def parse(cls, value: str) -> Self:
+        """
+        Parses a word from a serialized value.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
+        cls._check_format(value)
+
+        return cls(
+            int(value[6:-1])
+        )
+
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
+    ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit | None, optional
+            Unused, by default None
+        distunit : GsiUnit | None, optional
+            Unused, by default None
+
+        Returns
+        -------
+        str
+        """
+        return format_gsi_word(
+            self.wi(),
+            str(self.value),
+            negative=self.value < 0,
             gsi16=gsi16
         )
 
@@ -799,7 +876,7 @@ class GsiDistanceWord(GsiValueWord):
         self,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
-        distunit: GsiUnit | None = None
+        distunit: GsiUnit | None = GsiUnit.CENTIMILLI
     ) -> str:
         """
         Serialize data to GSI word text.
@@ -1035,11 +1112,11 @@ class GsiPPMPrismConstantWord(GsiValueWord):
         Raises
         ------
         ValueError
-            If values are out of their valid range, [0;9999] and [0;999]
+            If values are out of their valid range, [-9999;9999] and [-999;999]
             respectively.
         """
         ppm, constant = self.value
-        if (ppm > 9999 or ppm < 0) or (constant > 999 or constant < 0):
+        if (ppm > 9999 or ppm < -9999) or (constant > 999 or constant < -999):
             raise ValueError(
                 "Cannot serialize GSI word because ppm or constant are out "
                 f"of range ({ppm:d}, {constant:d})"
@@ -1636,6 +1713,79 @@ class GsiOperatorWord(GsiRemark1Word):
         return 914
 
 
+class GsiReadingCountWord(GsiIntegerValueWord):
+    """``WI390`` Reading count."""
+    _GSI = compile(r"^390[\d\.]{3}\+[0-9]{8,16} $")
+
+    @classmethod
+    def wi(cls) -> int:
+        return 390
+
+    def __init__(self, count: int):
+        """
+        Parameters
+        ----------
+        count : int
+            Reading count.
+        """
+        self.value: int
+        super().__init__(count)
+
+
+class GsiReadingDeviationWord(GsiDistanceWord):
+    """``WI391`` Staff reading deviation (mean mode)."""
+    _GSI = _regex_measurement(391)
+
+    @classmethod
+    def wi(cls) -> int:
+        return 391
+
+
+class GsiReadingSpreadWord(GsiDistanceWord):
+    """``WI392`` Staff reading spread (median mode)."""
+    _GSI = _regex_measurement(392)
+
+    @classmethod
+    def wi(cls) -> int:
+        return 392
+
+
+class GsiBFFBStationDifferenceWord(GsiDistanceWord):
+    """``WI571`` Difference between B1-F1 and B2-F2 height differences."""
+    _GSI = _regex_measurement(571)
+
+    @classmethod
+    def wi(cls) -> int:
+        return 571
+
+
+class GsiRunningBFFBStationDifferenceWord(GsiDistanceWord):
+    """``WI572`` Running station difference in BFFB mode."""
+    _GSI = _regex_measurement(572)
+
+    @classmethod
+    def wi(cls) -> int:
+        return 572
+
+
+class GsiDistanceBalanceWord(GsiDistanceWord):
+    """``WI573`` Instrument-staff distance balance."""
+    _GSI = _regex_measurement(573)
+
+    @classmethod
+    def wi(cls) -> int:
+        return 573
+
+
+class GsiRunningDistanceWord(GsiDistanceWord):
+    """``WI574`` Total level line length."""
+    _GSI = _regex_measurement(574)
+
+    @classmethod
+    def wi(cls) -> int:
+        return 574
+
+
 _WI_TO_TYPE: dict[int, type[GsiWord]] = {
     t.wi(): t for t in (
         GsiPointNameWord,
@@ -1724,7 +1874,14 @@ _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
         GsiNewTimeWord,
         GsiNewDateWord,
         GsiNewYearWord,
-        GsiSoftwareVersionWord
+        GsiSoftwareVersionWord,
+        GsiReadingCountWord,
+        GsiReadingDeviationWord,
+        GsiReadingSpreadWord,
+        GsiBFFBStationDifferenceWord,
+        GsiRunningBFFBStationDifferenceWord,
+        GsiDistanceBalanceWord,
+        GsiRunningDistanceWord
     )
 }
 
