@@ -954,10 +954,92 @@ class GsiVerticalDistanceWord(GsiDistanceWord):
 class GsiCodeWord(GsiValueWord):
     """``WI41`` Operation code (first word of code blocks)."""
     _GSI = _regex_note(41)
+    _SPECIAL = compile(r"^41[\d\.]{4}\+\?\.+\d+ $")
 
     @classmethod
     def wi(cls) -> int:
         return 41
+
+    def __init__(self, value: str, special: bool = False):
+        """
+        Parameters
+        ----------
+        value : tuple[str, bool]
+            Code value and whether it is a special program code
+            (applicable to digital levels).
+        special : bool
+            Code is special code (used in DNA output).
+        """
+        self.value: tuple[str, bool]
+        super().__init__((value, special))
+
+    @classmethod
+    def parse(cls, value: str) -> Self:
+        """
+        Parses a word from a serialized value.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
+        cls._check_format(value)
+        if cls._SPECIAL.match(value):
+            special = True
+            value = value[8:-1].lstrip(".")
+        else:
+            special = False
+            value = value[7:-1].lstrip("0")
+
+        return cls(
+            value,
+            special
+        )
+
+    def serialize(
+        self,
+        gsi16: bool = False,
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
+    ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit | None, optional
+            Unused, by default None
+        distunit : GsiUnit | None, optional
+            Unused, by default None
+
+        Returns
+        -------
+        str
+        """
+        data, special = self.value
+        if special:
+            data = "?" + data.rjust(15 if gsi16 else 7, ".")
+
+        return format_gsi_word(
+            self.wi(),
+            data,
+            gsi16=gsi16
+        )
+
+
+class GsiInfo1Word(GsiValueWord):
+    """``WI42`` Information 1."""
+    _GSI = _regex_note(42)
+
+    @classmethod
+    def wi(cls) -> int:
+        return 42
 
     def __init__(self, value: str):
         """
@@ -970,16 +1052,7 @@ class GsiCodeWord(GsiValueWord):
         super().__init__(value)
 
 
-class GsiInfo1Word(GsiCodeWord):
-    """``WI42`` Information 1."""
-    _GSI = _regex_note(42)
-
-    @classmethod
-    def wi(cls) -> int:
-        return 42
-
-
-class GsiInfo2Word(GsiCodeWord):
+class GsiInfo2Word(GsiInfo1Word):
     """``WI43`` Information 2."""
     _GSI = _regex_note(43)
 
@@ -988,7 +1061,7 @@ class GsiInfo2Word(GsiCodeWord):
         return 43
 
 
-class GsiInfo3Word(GsiCodeWord):
+class GsiInfo3Word(GsiInfo1Word):
     """``WI44`` Information 3."""
     _GSI = _regex_note(44)
 
@@ -997,7 +1070,7 @@ class GsiInfo3Word(GsiCodeWord):
         return 44
 
 
-class GsiInfo4Word(GsiCodeWord):
+class GsiInfo4Word(GsiInfo1Word):
     """``WI45`` Information 4."""
     _GSI = _regex_note(45)
 
@@ -1006,7 +1079,7 @@ class GsiInfo4Word(GsiCodeWord):
         return 45
 
 
-class GsiInfo5Word(GsiCodeWord):
+class GsiInfo5Word(GsiInfo1Word):
     """``WI46`` Information 5."""
     _GSI = _regex_note(46)
 
@@ -1015,7 +1088,7 @@ class GsiInfo5Word(GsiCodeWord):
         return 46
 
 
-class GsiInfo6Word(GsiCodeWord):
+class GsiInfo6Word(GsiInfo1Word):
     """``WI47`` Information 6."""
     _GSI = _regex_note(47)
 
@@ -1024,7 +1097,7 @@ class GsiInfo6Word(GsiCodeWord):
         return 47
 
 
-class GsiInfo7Word(GsiCodeWord):
+class GsiInfo7Word(GsiInfo1Word):
     """``WI48`` Information 7."""
     _GSI = _regex_note(48)
 
@@ -1033,7 +1106,7 @@ class GsiInfo7Word(GsiCodeWord):
         return 48
 
 
-class GsiInfo8Word(GsiCodeWord):
+class GsiInfo8Word(GsiInfo1Word):
     """``WI49`` Information 8."""
     _GSI = _regex_note(49)
 
@@ -1152,7 +1225,7 @@ class GsiPPMWord(GsiDistanceWord):
         return 59
 
 
-class GsiRemark1Word(GsiCodeWord):
+class GsiRemark1Word(GsiInfo1Word):
     """``WI71`` Note/Attribute 1."""
     _GSI = _regex_note(71)
 

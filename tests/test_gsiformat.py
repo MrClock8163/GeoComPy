@@ -8,6 +8,7 @@ from geocompy.gsi.gsiformat import (
     GsiUnknownWord,
     GsiUnit,
     GsiPointNameWord,
+    GsiCodeWord,
     GsiHorizontalAngleWord,
     GsiSlopeDistanceWord,
     GsiPPMPrismConstantWord,
@@ -33,6 +34,22 @@ word_table: list[
     ]
 ] = [
     (GsiPointNameWord, "P1", "11....+000000P1 ", None, None, False),
+    (
+        GsiCodeWord,
+        ("2", True),
+        "41....+?......2 ",
+        None,
+        None,
+        False
+    ),
+    (
+        GsiCodeWord,
+        ("2", False),
+        "41....+00000002 ",
+        None,
+        None,
+        False
+    ),
     (
         GsiHorizontalAngleWord,
         Angle(180, 'deg'),
