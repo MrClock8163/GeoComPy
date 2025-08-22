@@ -14,7 +14,8 @@ from geocompy.gsi.gsiformat import (
     GsiAppVersionWord,
     GsiBenchmarkHeightWord,
     GsiInfo1Word,
-    parse_gsi_word
+    parse_gsi_word,
+    parse_gsi_blocks_from_file
 )
 
 
@@ -128,12 +129,8 @@ class TestGsiBlock:
         count: int,
         dna: bool = False
     ) -> None:
-        blocks: list[GsiBlock] = []
         with open(filepath, "rt", encoding="utf8") as file:
-            for line in file:
-                block = GsiBlock.parse(line.strip("\n"), dna, True)
-
-                blocks.append(block)
+            blocks = parse_gsi_blocks_from_file(file, dna, True)
 
         assert len(blocks) == count
 

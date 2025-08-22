@@ -22,7 +22,7 @@ from abc import ABC, abstractmethod
 from re import compile, Pattern
 from datetime import datetime
 from enum import Enum
-from typing import Self, Any, Iterator, TypeVar, cast
+from typing import Self, Any, Iterator, TypeVar, cast, TextIO
 
 from ..data import Angle
 
@@ -2299,3 +2299,42 @@ class GsiBlock:
             *words,
             address=self.address
         )
+
+
+def parse_gsi_blocks_from_file(
+    file: TextIO,
+    dna: bool = False,
+    keep_unknowns: bool = False,
+    strict: bool = False
+) -> list[GsiBlock]:
+    """
+    Parser GSI blocks from text file.
+
+    Parameters
+    ----------
+    file : TextIO
+        GSI file.
+    dna : bool, optional
+        Use words applicable to digital levels, by default False
+    keep_unknowns : bool, optional
+        Retain unknown word types, by default False
+    strict : bool, optional
+        Raise errors during parsing, by default False
+
+    Returns
+    -------
+    list
+    """
+    blocks: list[GsiBlock] = []
+    for line in file:
+        if not line.strip():
+            continue
+        try:
+            block = GsiBlock.parse(line.strip("\n"), dna, keep_unknowns)
+        except Exception as e:
+            if strict:
+                raise e
+
+        blocks.append(block)
+
+    return blocks
