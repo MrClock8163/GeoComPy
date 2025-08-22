@@ -306,7 +306,7 @@ class GsiOnlineDNA(GsiOnlineType):
             comment = "INSTRUMENT"
 
         response = GsiOnlineResponse(
-            word_descriptions.get(word.wi(), ""),
+            word_descriptions.get(word.wi, ""),
             cmd,
             answer,
             value,
@@ -337,7 +337,7 @@ class GsiOnlineDNA(GsiOnlineType):
         GsiOnlineResponse
             Parsed value.
         """
-        cmd = f"GET/{mode:s}/WI{wordtype.wi():d}"
+        cmd = f"GET/{mode:s}/WI{wordtype.WI():d}"
         comment = ""
         try:
             answer = self._conn.exchange(cmd)
@@ -357,7 +357,7 @@ class GsiOnlineDNA(GsiOnlineType):
             comment = "INSTRUMENT"
 
         response = GsiOnlineResponse(
-            word_descriptions.get(wordtype.wi(), ""),
+            word_descriptions.get(wordtype.WI(), ""),
             cmd,
             answer,
             value,

@@ -22,7 +22,7 @@ from abc import ABC, abstractmethod
 from re import compile, Pattern
 from datetime import datetime
 from enum import Enum
-from typing import Self, Any
+from typing import Self, Any, Iterator, TypeVar, cast
 
 from ..data import Angle
 
@@ -187,9 +187,14 @@ class GsiWord(ABC):
 
     @classmethod
     @abstractmethod
-    def wi(cls) -> int:
-        """Word index."""
+    def WI(cls) -> int:
+        """Class word index (might be different from final runtime value)."""
         raise NotImplementedError()
+
+    @property
+    def wi(self) -> int:
+        """Word index."""
+        return self.WI()
 
     @abstractmethod
     def serialize(
@@ -203,6 +208,12 @@ class GsiWord(ABC):
     def __str__(self) -> str:
         return self.serialize(True)
 
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, GsiWord):
+            return False
+
+        return self.wi == other.wi
+
     @classmethod
     def _check_format(cls, value: str) -> None:
         if len(value) not in (16, 24):
@@ -213,6 +224,9 @@ class GsiWord(ABC):
                 f"'{value}' is not a valid serialized representation of "
                 f"'{cls.__name__}'"
             )
+
+
+_T = TypeVar("_T", bound=GsiWord)
 
 
 class GsiUnknownWord(GsiWord):
@@ -243,12 +257,12 @@ class GsiUnknownWord(GsiWord):
         self.negative = negative
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         """Always returns 0 to indicate the unknown status of the data."""
         return 0
 
-    def actual_wi(self) -> int:
-        """Returns the actually set word index."""
+    @property
+    def wi(self) -> int:
         return self._wi
 
     @classmethod
@@ -367,7 +381,7 @@ class GsiValueWord(GsiWord):
         str
         """
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             str(self.value),
             gsi16=gsi16
         )
@@ -431,7 +445,7 @@ class GsiIntegerValueWord(GsiWord):
         str
         """
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             str(self.value),
             negative=self.value < 0,
             gsi16=gsi16
@@ -443,7 +457,7 @@ class GsiPointNameWord(GsiValueWord):
     _GSI = _regex_note(11)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 11
 
     def __init__(self, name: str):
@@ -462,7 +476,7 @@ class GsiSerialnumberWord(GsiValueWord):
     _GSI = compile(r"^12[\d\.]{4}\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 12
 
     def __init__(self, serialnumber: str):
@@ -481,7 +495,7 @@ class GsiInstrumentTypeWord(GsiValueWord):
     _GSI = _regex_note(13)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 13
 
     def __init__(self, name: str):
@@ -500,7 +514,7 @@ class GsiStationNameWord(GsiPointNameWord):
     _GSI = _regex_note(16)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 16
 
 
@@ -509,7 +523,7 @@ class GsiDateWord(GsiValueWord):
     _GSI = compile(r"^17[\d\.]{4}\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 17
 
     def __init__(self, date: datetime):
@@ -569,7 +583,7 @@ class GsiDateWord(GsiValueWord):
         str
         """
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             self.value.strftime("%d%m%Y"),
             gsi16=gsi16
         )
@@ -580,7 +594,7 @@ class GsiTimeWord(GsiValueWord):
     _GSI = compile(r"^19[\d\.]{4}\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 19
 
     def __init__(self, time: datetime):
@@ -643,7 +657,7 @@ class GsiTimeWord(GsiValueWord):
         str
         """
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             self.value.strftime("%m%d%H%M"),
             gsi16=gsi16
         )
@@ -777,7 +791,7 @@ class GsiAngleWord(GsiValueWord):
         index = str(self.indexmode.value) if self.indexmode is not None else ""
         source = str(self.source.value) if self.source is not None else ""
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             data,
             f"{index}{source}{angleunit.value:d}",
             gsi16=gsi16
@@ -789,7 +803,7 @@ class GsiHorizontalAngleWord(GsiAngleWord):
     _GSI = _regex_measurement(21)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 21
 
 
@@ -798,7 +812,7 @@ class GsiVerticalAngleWord(GsiAngleWord):
     _GSI = _regex_measurement(22)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 22
 
 
@@ -916,7 +930,7 @@ class GsiDistanceWord(GsiValueWord):
 
         source = f"{self.source.value:d}" if self.source is not None else ""
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             f"{abs(value):.0f}",
             f"{source}{distunit.value:d}",
             self.value < 0,
@@ -929,7 +943,7 @@ class GsiSlopeDistanceWord(GsiDistanceWord):
     _GSI = _regex_measurement(31)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 31
 
 
@@ -938,7 +952,7 @@ class GsiHorizontalDistanceWord(GsiDistanceWord):
     _GSI = _regex_measurement(32)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 32
 
 
@@ -947,7 +961,7 @@ class GsiVerticalDistanceWord(GsiDistanceWord):
     _GSI = _regex_measurement(33)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 33
 
 
@@ -957,7 +971,7 @@ class GsiCodeWord(GsiValueWord):
     _SPECIAL = compile(r"^41[\d\.]{4}\+\?\.+\d+ $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 41
 
     def __init__(self, value: str, special: bool = False):
@@ -1027,7 +1041,7 @@ class GsiCodeWord(GsiValueWord):
             data = "?" + data.rjust(15 if gsi16 else 7, ".")
 
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             data,
             gsi16=gsi16
         )
@@ -1038,7 +1052,7 @@ class GsiInfo1Word(GsiValueWord):
     _GSI = _regex_note(42)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 42
 
     def __init__(self, value: str):
@@ -1057,7 +1071,7 @@ class GsiInfo2Word(GsiInfo1Word):
     _GSI = _regex_note(43)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 43
 
 
@@ -1066,7 +1080,7 @@ class GsiInfo3Word(GsiInfo1Word):
     _GSI = _regex_note(44)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 44
 
 
@@ -1075,7 +1089,7 @@ class GsiInfo4Word(GsiInfo1Word):
     _GSI = _regex_note(45)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 45
 
 
@@ -1084,7 +1098,7 @@ class GsiInfo5Word(GsiInfo1Word):
     _GSI = _regex_note(46)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 46
 
 
@@ -1093,7 +1107,7 @@ class GsiInfo6Word(GsiInfo1Word):
     _GSI = _regex_note(47)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 47
 
 
@@ -1102,7 +1116,7 @@ class GsiInfo7Word(GsiInfo1Word):
     _GSI = _regex_note(48)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 48
 
 
@@ -1111,7 +1125,7 @@ class GsiInfo8Word(GsiInfo1Word):
     _GSI = _regex_note(49)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 49
 
 
@@ -1120,7 +1134,7 @@ class GsiPPMPrismConstantWord(GsiValueWord):
     _GSI = compile(r"^51[\d\.]{3}$")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 51
 
     def __init__(self, ppm: int, constant: int):
@@ -1200,7 +1214,7 @@ class GsiPPMPrismConstantWord(GsiValueWord):
             + str(abs(constant)).zfill(3)
         )
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             f"{abs(ppm):d}{constant_str}",
             negative=ppm < 0,
             gsi16=gsi16
@@ -1212,7 +1226,7 @@ class GsiPrismConstantWord(GsiDistanceWord):
     _GSI = _regex_measurement(58)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 58
 
 
@@ -1221,7 +1235,7 @@ class GsiPPMWord(GsiDistanceWord):
     _GSI = _regex_measurement(59)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 59
 
 
@@ -1230,7 +1244,7 @@ class GsiRemark1Word(GsiInfo1Word):
     _GSI = _regex_note(71)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 71
 
 
@@ -1239,7 +1253,7 @@ class GsiRemark2Word(GsiRemark1Word):
     _GSI = _regex_note(72)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 72
 
 
@@ -1248,7 +1262,7 @@ class GsiRemark3Word(GsiRemark1Word):
     _GSI = _regex_note(73)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 73
 
 
@@ -1257,7 +1271,7 @@ class GsiRemark4Word(GsiRemark1Word):
     _GSI = _regex_note(74)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 74
 
 
@@ -1266,7 +1280,7 @@ class GsiRemark5Word(GsiRemark1Word):
     _GSI = _regex_note(75)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 75
 
 
@@ -1275,7 +1289,7 @@ class GsiRemark6Word(GsiRemark1Word):
     _GSI = _regex_note(76)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 76
 
 
@@ -1284,7 +1298,7 @@ class GsiRemark7Word(GsiRemark1Word):
     _GSI = _regex_note(77)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 77
 
 
@@ -1293,7 +1307,7 @@ class GsiRemark8Word(GsiRemark1Word):
     _GSI = _regex_note(78)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 78
 
 
@@ -1302,7 +1316,7 @@ class GsiRemark9Word(GsiRemark1Word):
     _GSI = _regex_note(79)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 79
 
 
@@ -1311,7 +1325,7 @@ class GsiEastingWord(GsiDistanceWord):
     _GSI = _regex_measurement(81)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 81
 
 
@@ -1320,7 +1334,7 @@ class GsiNorthingWord(GsiDistanceWord):
     _GSI = _regex_measurement(82)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 82
 
 
@@ -1329,7 +1343,7 @@ class GsiHeightWord(GsiDistanceWord):
     _GSI = _regex_measurement(83)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 83
 
 
@@ -1338,7 +1352,7 @@ class GsiStationEastingWord(GsiDistanceWord):
     _GSI = _regex_measurement(84)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 84
 
 
@@ -1347,7 +1361,7 @@ class GsiStationNorthingWord(GsiDistanceWord):
     _GSI = _regex_measurement(85)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 85
 
 
@@ -1356,7 +1370,7 @@ class GsiStationHeightWord(GsiDistanceWord):
     _GSI = _regex_measurement(86)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 86
 
 
@@ -1365,7 +1379,7 @@ class GsiTargetHeightWord(GsiDistanceWord):
     _GSI = _regex_measurement(87)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 87
 
 
@@ -1374,7 +1388,7 @@ class GsiInstrumentHeightWord(GsiDistanceWord):
     _GSI = _regex_measurement(88)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 88
 
 
@@ -1383,7 +1397,7 @@ class GsiTemperatureWord(GsiDistanceWord):
     _GSI = _regex_measurement(95)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 95
 
 
@@ -1392,7 +1406,7 @@ class GsiPressureWord(GsiDistanceWord):
     _GSI = _regex_measurement(531)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 531
 
 
@@ -1401,7 +1415,7 @@ class GsiRefractionCoefWord(GsiDistanceWord):
     _GSI = _regex_measurement(538)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 538
 
 
@@ -1410,7 +1424,7 @@ class GsiNewTimeWord(GsiValueWord):
     _GSI = compile(r"^560\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 560
 
     def __init__(self, time: datetime):
@@ -1458,7 +1472,7 @@ class GsiNewTimeWord(GsiValueWord):
         distunit: GsiUnit | None = None
     ) -> str:
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             self.value.strftime("%H%M%S"),
             "6",
             gsi16=gsi16
@@ -1470,7 +1484,7 @@ class GsiNewDateWord(GsiValueWord):
     _GSI = compile(r"^561\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 561
 
     def __init__(self, time: datetime):
@@ -1515,7 +1529,7 @@ class GsiNewDateWord(GsiValueWord):
         distunit: GsiUnit | None = None
     ) -> str:
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             self.value.strftime("%m%d00"),
             "6",
             gsi16=gsi16
@@ -1527,7 +1541,7 @@ class GsiNewYearWord(GsiValueWord):
     _GSI = compile(r"^562\.{3}\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 562
 
     def __init__(self, year: datetime):
@@ -1572,7 +1586,7 @@ class GsiNewYearWord(GsiValueWord):
         distunit: GsiUnit | None = None
     ) -> str:
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             self.value.strftime("%Y"),
             gsi16=gsi16
         )
@@ -1583,7 +1597,7 @@ class GsiStaffDistanceWord(GsiDistanceWord):
     _GSI = _regex_measurement(32)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 32
 
 
@@ -1592,7 +1606,7 @@ class GsiBenchmarkHeightWord(GsiDistanceWord):
     _GSI = _regex_measurement(83)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 83
 
 
@@ -1601,7 +1615,7 @@ class GsiSimpleStaffReadingWord(GsiDistanceWord):
     _GSI = _regex_measurement(330)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 330
 
 
@@ -1610,7 +1624,7 @@ class GsiB1StaffReadingWord(GsiDistanceWord):
     _GSI = _regex_measurement(331)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 331
 
 
@@ -1619,7 +1633,7 @@ class GsiF1StaffReadingWord(GsiDistanceWord):
     _GSI = _regex_measurement(332)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 332
 
 
@@ -1628,7 +1642,7 @@ class GsiIntermediateStaffReadingWord(GsiDistanceWord):
     _GSI = _regex_measurement(333)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 333
 
 
@@ -1637,7 +1651,7 @@ class GsiStakeoutStaffReadingWord(GsiDistanceWord):
     _GSI = _regex_measurement(334)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 334
 
 
@@ -1646,7 +1660,7 @@ class GsiB2StaffReadingWord(GsiDistanceWord):
     _GSI = _regex_measurement(335)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 335
 
 
@@ -1655,7 +1669,7 @@ class GsiF2StaffReadingWord(GsiDistanceWord):
     _GSI = _regex_measurement(336)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 336
 
 
@@ -1664,7 +1678,7 @@ class GsiAppVersionWord(GsiValueWord):
     _GSI = compile(r"^590\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 590
 
     def __init__(self, version: float):
@@ -1707,7 +1721,7 @@ class GsiAppVersionWord(GsiValueWord):
             )
 
         return format_gsi_word(
-            self.wi(),
+            self.wi,
             f"{self.value * 1e4:.0f}",
             "6",
             gsi16=gsi16
@@ -1719,7 +1733,7 @@ class GsiOSVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^591\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 591
 
 
@@ -1728,7 +1742,7 @@ class GsiOSInterfaceVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^592\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 592
 
 
@@ -1737,7 +1751,7 @@ class GsiGeoComVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^593\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 593
 
 
@@ -1746,7 +1760,7 @@ class GsiVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^594\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 594
 
 
@@ -1755,7 +1769,7 @@ class GsiEDMVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^595\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 595
 
 
@@ -1764,7 +1778,7 @@ class GsiSoftwareVersionWord(GsiAppVersionWord):
     _GSI = compile(r"^599\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 599
 
 
@@ -1773,7 +1787,7 @@ class GsiJobWord(GsiRemark1Word):
     _GSI = _regex_note(913)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 913
 
 
@@ -1782,7 +1796,7 @@ class GsiOperatorWord(GsiRemark1Word):
     _GSI = _regex_note(914)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 914
 
 
@@ -1791,7 +1805,7 @@ class GsiReadingCountWord(GsiIntegerValueWord):
     _GSI = compile(r"^390[\d\.]{3}\+[0-9]{8,16} $")
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 390
 
     def __init__(self, count: int):
@@ -1810,7 +1824,7 @@ class GsiReadingDeviationWord(GsiDistanceWord):
     _GSI = _regex_measurement(391)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 391
 
 
@@ -1819,7 +1833,7 @@ class GsiReadingSpreadWord(GsiDistanceWord):
     _GSI = _regex_measurement(392)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 392
 
 
@@ -1828,7 +1842,7 @@ class GsiBFFBStationDifferenceWord(GsiDistanceWord):
     _GSI = _regex_measurement(571)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 571
 
 
@@ -1837,7 +1851,7 @@ class GsiRunningBFFBStationDifferenceWord(GsiDistanceWord):
     _GSI = _regex_measurement(572)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 572
 
 
@@ -1846,7 +1860,7 @@ class GsiDistanceBalanceWord(GsiDistanceWord):
     _GSI = _regex_measurement(573)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 573
 
 
@@ -1855,12 +1869,12 @@ class GsiRunningDistanceWord(GsiDistanceWord):
     _GSI = _regex_measurement(574)
 
     @classmethod
-    def wi(cls) -> int:
+    def WI(cls) -> int:
         return 574
 
 
 _WI_TO_TYPE: dict[int, type[GsiWord]] = {
-    t.wi(): t for t in (
+    t.WI(): t for t in (
         GsiPointNameWord,
         GsiSerialnumberWord,
         GsiInstrumentTypeWord,
@@ -1918,7 +1932,7 @@ _WI_TO_TYPE: dict[int, type[GsiWord]] = {
 }
 
 _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
-    t.wi(): t for t in (
+    t.WI(): t for t in (
         GsiPointNameWord,
         GsiSerialnumberWord,
         GsiInstrumentTypeWord,
@@ -2017,47 +2031,80 @@ class GsiBlock:
     """Container type for GSI words."""
     _TYPE_TO_WI = {
         "measurement": 11,
+        "specialcode": 41,
         "code": 41
     }
-    _WI_TO_TYPE = {v: k for k, v in _TYPE_TO_WI.items()}
 
     def __init__(
         self,
-        name: str,
+        value: str,
         type: str,
+        *words: GsiWord,
         address: int | None = None
     ):
         """
         Parameters
         ----------
-        name : str
+        value : str
             Point name or code value (depending on block type).
         type : str
-            Block type ("measurement" or "code")
+            Block type ("measurement", "code" or "specialcode)
+        *words : GsiWord
+            Words to wrap into the block.
         address : int | None, optional
             Block record address, by default None
 
         Raises
         ------
         ValueError
-            If an unknown block type was specified.
+            If an unknown block type was specified, or the list of words
+            contains an item that cannot be added.
         """
         if type not in self._TYPE_TO_WI:
             raise ValueError(f"Unknown GSI block type: '{type}'")
 
-        self.name = name
-        self.type = type
-        self.address: int | None = address
-        self.words: list[GsiWord] = []
+        self._value = value
+        self._type = type
+        self._address: int | None = address
+        self._words: dict[int, GsiWord] = {}
+
+        for w in words:
+            wi = w.wi
+            if wi == self._TYPE_TO_WI[self._type]:
+                raise ValueError(
+                    "Cannot add word identical to the block header word"
+                )
+
+            if wi in self._words:
+                raise ValueError(
+                    f"Cannot add duplicate word type 'WI{wi:d}' to GSI block"
+                )
+
+            self._words[wi] = w
 
     def __str__(self) -> str:
         return (
-            f"GSI {self.type} block '{self.name}': "
-            f"{len(self.words)} word(s)"
+            f"GSI {self.blocktype} block '{self.value}': "
+            f"{len(self._words)} word(s)"
         )
 
     def __repr__(self) -> str:
         return str(self)
+
+    @property
+    def value(self) -> str:
+        """Block header value (point name or code value)."""
+        return self._value
+
+    @property
+    def blocktype(self) -> str:
+        """Block type ("measurement", "code", "specialcode")"""
+        return self._type
+
+    @property
+    def address(self) -> int | None:
+        """Line address."""
+        return self._address
 
     @classmethod
     def parse(
@@ -2109,7 +2156,6 @@ class GsiBlock:
             )
 
         wi = int(data[:2])
-        indices: set[int] = set()
         match wi:
             case 11:
                 try:
@@ -2120,8 +2166,8 @@ class GsiBlock:
                     raise ValueError(
                         "First word in measurement block must be point name"
                     )
+                value = header.value
                 type = "measurement"
-                indices.add(11)
             case 41:
                 try:
                     header = GsiCodeWord.parse(data[:wordsize])
@@ -2129,8 +2175,8 @@ class GsiBlock:
                     raise ValueError(
                         "First word in code block must be code word"
                     )
-                type = "code"
-                indices.add(41)
+                value, special = header.value
+                type = "specialcode" if special else "code"
             case _:
                 raise ValueError(
                     f"Unsupported block header word type: '{wi:d}'"
@@ -2140,25 +2186,44 @@ class GsiBlock:
         if data[2:6].isdigit():
             address = int(data[2:6])
 
-        output = cls(header.value, type, address)
+        words: list[GsiWord] = []
         for i in range(wordsize, len(data), wordsize):
             wordstring = data[i:i+wordsize]
             word = parse_gsi_word(wordstring, dna, False)
-            if isinstance(word, GsiUnknownWord):
-                if not keep_unknowns:
-                    continue
+            if isinstance(word, GsiUnknownWord) and not keep_unknowns:
+                continue
 
-                wi = word.actual_wi()
-            else:
-                wi = word.wi()
+            words.append(word)
 
-            if wi in indices:
-                raise ValueError(f"Duplicate word type in block: '{wi:d}'")
+        return cls(
+            value,
+            type,
+            *words,
+            address=address
+        )
 
-            indices.add(wi)
-            output.words.append(word)
+    def __iter__(self) -> Iterator[GsiWord]:
+        return iter(self._words.values())
 
-        return output
+    def __len__(self) -> int:
+        return len(self._words)
+
+    def get_word(self, wordtype: type[_T]) -> _T | None:
+        """
+        Get a word of a specific type from the block.
+
+        Parameters
+        ----------
+        wordtype : type[_T]
+            Word type to get.
+
+        Returns
+        -------
+        GsiWord
+            Return None if the block does not contain a word of the requested
+            type.
+        """
+        return cast(_T, self._words.get(wordtype.WI()))
 
     def serialize(
         self,
@@ -2192,19 +2257,24 @@ class GsiBlock:
         ValueError
             If block has unknown type.
         """
-        match self.type:
+        match self.blocktype:
             case "measurement":
-                header = GsiPointNameWord(self.name).serialize(gsi16)
+                header = GsiPointNameWord(self.value).serialize(gsi16)
             case "code":
-                header = GsiCodeWord(self.name).serialize(gsi16)
+                header = GsiCodeWord(self.value, False).serialize(gsi16)
+            case "specialcode":
+                header = GsiCodeWord(self.value, True).serialize(gsi16)
             case _:
-                raise ValueError(f"Unknown block type: '{self.type}'")
+                raise ValueError(f"Unknown block type: '{self.blocktype}'")
 
         if self.address is not None:
             header = f"{header[:2]}{self.address % 10000:04d}{header[6:]}"
 
         output = header + "".join(
-            [w.serialize(gsi16, angleunit, distunit) for w in self.words]
+            [
+                w.serialize(gsi16, angleunit, distunit)
+                for w in self
+            ]
         )
 
         if gsi16:
@@ -2212,31 +2282,20 @@ class GsiBlock:
 
         return output + ("\n" if endl else "")
 
-    def drop_unknowns(self) -> None:
+    def without_unknowns(self) -> Self:
         """
-        Discard unknown type words from the list of words.
-        """
-        keep = [w for w in self.words if not isinstance(w, GsiUnknownWord)]
-        self.words.clear()
-        for w in keep:
-            self.words.append(w)
-
-    def words_map(self) -> dict[int, GsiWord]:
-        """
-        Return word index-word mapping for the words contained in the block.
+        Returns a shallow copy of the block with the unknown words dropped.
 
         Returns
         -------
-        dict
+        Self
         """
-        mapping: dict[int, GsiWord] = {}
-        match self.type:
-            case "measurement":
-                mapping[11] = GsiPointNameWord(self.name)
-            case "code":
-                mapping[41] = GsiCodeWord(self.name)
+        unknown = GsiUnknownWord.WI()
+        words = [w for w in self if w.WI() != unknown]
 
-        for word in self.words:
-            mapping[word.wi()] = word
-
-        return mapping
+        return type(self)(
+            self.value,
+            self.blocktype,
+            *words,
+            address=self.address
+        )
