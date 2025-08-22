@@ -22,7 +22,16 @@ from abc import ABC, abstractmethod
 from re import compile, Pattern
 from datetime import datetime
 from enum import Enum
-from typing import Self, Any, Iterator, TypeVar, cast, TextIO
+from typing import (
+    cast,
+    Any,
+    Self,
+    TypeVar,
+    TextIO,
+    Iterator,
+    Iterable,
+    Generator
+)
 
 from ..data import Angle
 
@@ -2227,6 +2236,7 @@ class GsiBlock:
 
     def serialize(
         self,
+        address: int | None = None,
         gsi16: bool = False,
         endl: bool = True,
         angleunit: GsiUnit | None = GsiUnit.DEG,
@@ -2237,6 +2247,9 @@ class GsiBlock:
 
         Parameters
         ----------
+        address : int, optional
+            Address override value (negative value disables addressing
+            alltogether), by default None
         gsi16 : bool, optional
             Create GSI16 words isntead of GSI8, by default False
         endl : bool, optional
@@ -2267,8 +2280,11 @@ class GsiBlock:
             case _:
                 raise ValueError(f"Unknown block type: '{self.blocktype}'")
 
-        if self.address is not None:
-            header = f"{header[:2]}{self.address % 10000:04d}{header[6:]}"
+        if address is None:
+            address = self.address
+
+        if address is not None and address >= 0:
+            header = f"{header[:2]}{address % 10000:04d}{header[6:]}"
 
         output = header + "".join(
             [
@@ -2338,3 +2354,58 @@ def parse_gsi_blocks_from_file(
         blocks.append(block)
 
     return blocks
+
+
+def write_gsi_blocks_to_file(
+    blocks: Iterable[GsiBlock],
+    file: TextIO,
+    gsi16: bool = False,
+    angleunit: GsiUnit = GsiUnit.DEG,
+    distunit: GsiUnit = GsiUnit.MILLI,
+    address: int | None = 1
+) -> None:
+    """
+    Write GSI blocks to file, with sequential addresses.
+
+    Parameters
+    ----------
+    blocks : Iterable[GsiBlock]
+        Blocks to write to file.
+    file : TextIO
+        Output file.
+    gsi16 : bool, optional
+        Use GSI16 instead of GSI8, by default False
+    angleunit : GsiUnit | None, optional
+        Angular unit to serialize angles as, by default GsiUnit.DEG
+    distunit : GsiUnit | None, optional
+        Distance/Scaler unit for lengths and measurement-like scaled
+        values, by default GsiUnit.MILLI
+    address : int | None, optional
+        Starting point of the sequential addresses (not setting it preserves
+        the address information in the blocks, negative value disables
+        addressing alltogether), by default None
+    """
+
+    def get_addresser(
+        address: int | None
+    ) -> Generator[int | None, None, None]:
+        if address is None or address < 0:
+            while True:
+                yield address
+        else:
+            while True:
+                yield address
+                address += 1
+
+    addresser = get_addresser(address)
+
+    for block in blocks:
+        file.write(
+            block.serialize(
+                next(addresser),
+                gsi16,
+                True,
+                angleunit,
+                distunit
+            )
+        )

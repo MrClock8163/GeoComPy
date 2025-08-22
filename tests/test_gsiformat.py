@@ -150,9 +150,9 @@ class TestGsiBlock:
             "P1",
             "measurement",
             GsiBenchmarkHeightWord(123.456),
-            address=1
+            address=0
         )
-        text = b1.serialize(distunit=GsiUnit.CENTIMILLI, endl=False)
+        text = b1.serialize(1, distunit=GsiUnit.CENTIMILLI, endl=False)
         assert text == "110001+000000P1 83...8+12345600 "
 
         b2 = GsiBlock(
@@ -161,7 +161,7 @@ class TestGsiBlock:
             GsiInfo1Word("STN"),
             address=2
         )
-        text = b2.serialize(True, endl=False)
+        text = b2.serialize(None, True, endl=False)
         assert text == "*410002+?..............2 42....+0000000000000STN "
 
         b3 = GsiBlock(
@@ -170,5 +170,5 @@ class TestGsiBlock:
             GsiInfo1Word("STN"),
             address=3
         )
-        text = b3.serialize(True, endl=False)
+        text = b3.serialize(None, True, endl=False)
         assert text == "*410003+0000000000000002 42....+0000000000000STN "
