@@ -32,21 +32,13 @@ jobs:
         run: |
           sudo apt install socat
           socat pty,raw,echo=0,link=$GEOCOMPY_TEST_PORT_CLIENT pty,raw,echo=0,link=$GEOCOMPY_TEST_PORT_SERVER &
-          export GEOCOMPY_TEST_PTY=$!
-
           python tests/com_echo_server.py &
-          export GEOCOMPY_TEST_ECHOSERVER=$!
 
       - name: Test with pytest
         run: |
           python -m pip install --upgrade pip
           python -m pip install --group testing
           python -m pytest
-      
-      - name: Kill echo echo server
-        run: |
-          kill $GEOCOMPY_TEST_ECHOSERVER
-          kill $GEOCOMPY_TEST_PTY
   
   linting:
     name: Linting
