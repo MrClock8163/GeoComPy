@@ -15,6 +15,13 @@ if portname == "":  # pragma: no coverage
         "'GEOCOMPY_TEST_PORT_CLIENT' environment variable"
     )
 
+faultyportname = environ.get("GEOCOMPY_TEST_PORT_FAULTY", "")
+if faultyportname == "":  # pragma: no coverage
+    raise ValueError(
+        "Echo server serial port name must be set in "
+        "'GEOCOMPY_TEST_PORT_FAULTY' environment variable"
+    )
+
 
 class TestDummyLogger:
     def test_get_dummy_logger(self) -> None:
@@ -38,8 +45,8 @@ class TestSerialConnection:
         with open_serial(portname) as com:
             assert com.is_open()
 
-            with pytest.raises(Exception):
-                open_serial(portname, timeout=1)
+        with pytest.raises(Exception):
+            open_serial(faultyportname, timeout=1)
 
     def test_messaging(self) -> None:
         with open_serial(portname) as com:
@@ -60,7 +67,7 @@ class TestSerialConnection:
             com.receive()
 
         with open_serial(
-            "COM13",
+            portname,
             sync_after_timeout=True
         ) as com:
             com.send("msg1")

@@ -7,6 +7,7 @@ env:
   MYPY_FORCE_COLOR: 1
   GEOCOMPY_TEST_PORT_CLIENT: /tmp/geocompy_pty_client
   GEOCOMPY_TEST_PORT_SERVER: /tmp/geocompy_pty_server
+  GEOCOMPY_TEST_PORT_FAULTY: /tmp/geocompy_pty_faulty
 
 jobs:
   testing:
