@@ -1,5 +1,6 @@
 dev*
 _version.py
+.coveragerc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
