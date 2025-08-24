@@ -56,7 +56,7 @@ def get_dummy_logger(name: str = "geocompy.dummy") -> logging.Logger:
         Dummy logger.
     """
     logger = logging.getLogger(name)
-    if len(logger.handlers) < 0:
+    if len(logger.handlers) == 0:
         logger.addHandler(logging.NullHandler())
 
     logger.propagate = False
