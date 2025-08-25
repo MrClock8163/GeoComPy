@@ -1,8 +1,8 @@
 import re
 
 from geocompy.communication import Connection
-from geocompy.data import gsiword
 from geocompy.gsi.gsitypes import GsiOnlineType
+from geocompy.gsi import gsiformat as gsi
 
 from helpers import faulty_parser
 
@@ -40,15 +40,17 @@ class DummyGsiOnlineConnection(Connection):
             return f"{cmd.split('/')[1].zfill(4)}/0000"
         elif self._SET.match(cmd) and cmd != "SET/0/0":
             return "?"
-        elif self._GET.match(cmd) and cmd != "GET/I/WI0":
-            wi = int(cmd.split("/")[-1].removeprefix("WI"))
-            word = gsiword(
-                wi,
-                "1",
-                gsi16=self._gsi16
-            )
+        elif self._GET.match(cmd):
+            if cmd == "GET/I/WI71":
+                return gsi.GsiRemark2Word("1").serialize(self._gsi16)
+            elif cmd != "GET/I/WI0":
+                wi = int(cmd.split("/")[-1].removeprefix("WI"))
 
-            return word
+                return gsi.format_gsi_word(
+                    wi,
+                    "1",
+                    gsi16=self._gsi16
+                )
         elif self._PUT.match(cmd) and cmd != "PUT/0.....+00000000 ":
             return "?"
         elif cmd in ("a", "b", "c", "BEEP/0", "BEEP/1", "BEEP/2"):
@@ -102,23 +104,24 @@ class GsiOnlineTester:
 
     @staticmethod
     def test_putrequest(instrument: GsiOnlineType) -> None:
-        response = instrument.putrequest(0, "0.....+00000000 ")
+        response = instrument.putrequest(gsi.GsiUnknownWord(0))
         assert not response.value
         assert response.comment == "INSTRUMENT"
         assert response.response == "@W427"
 
-        response = instrument.putrequest(1, "1.....+00000001 ")
+        response = instrument.putrequest(gsi.GsiPointNameWord("1"))
         assert response.value
 
     @staticmethod
     def test_getrequest(instrument: GsiOnlineType) -> None:
-        response = instrument.getrequest("I", 0, int)
-        assert response.value is None
-        assert response.response == "@W427"
+        response1 = instrument.getrequest("I", gsi.GsiUnknownWord)
+        assert response1.value is None
+        assert response1.comment == "INSTRUMENT"
+        assert response1.response == "@W427"
 
-        response = instrument.getrequest("I", 1, faulty_parser)
-        assert response.value is None
-        assert response.comment == "PARSE"
+        response2 = instrument.getrequest("I", gsi.GsiRemark1Word)
+        assert response2.value is None
+        assert response2.comment == "PARSE"
 
-        response = instrument.getrequest("I", 1, gsiparser)
-        assert response.value == 1
+        response3 = instrument.getrequest("I", gsi.GsiPointNameWord)
+        assert response3.value

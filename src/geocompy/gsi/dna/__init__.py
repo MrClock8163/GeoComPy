@@ -37,11 +37,13 @@ from ...communication import Connection, DUMMYLOGGER
 from ...data import (
     toenum
 )
+from ..gsiformat import GsiWord
 from .settings import GsiOnlineDNASettings
 from .measurements import GsiOnlineDNAMeasurements
 
 
 _T = TypeVar("_T")
+_G = TypeVar("_G", bound=GsiWord)
 _UNKNOWNERROR = "@E0"
 
 
@@ -145,7 +147,7 @@ class GsiOnlineDNA(GsiOnlineType):
         if logger is None:
             logger = DUMMYLOGGER
         self._logger: Logger = logger
-        self.is_client_gsi16 = False
+        self._is_client_gsi16 = False
 
         self.settings: GsiOnlineDNASettings = GsiOnlineDNASettings(self)
         """Instrument settings subsystem."""
@@ -173,11 +175,11 @@ class GsiOnlineDNA(GsiOnlineType):
 
     @property
     def is_client_gsi16(self) -> bool:
-        return True
+        return self._is_client_gsi16
 
     @is_client_gsi16.setter
     def is_client_gsi16(self, value: bool) -> None:
-        pass
+        self._is_client_gsi16 = value
 
     def setrequest(
         self,
@@ -274,8 +276,7 @@ class GsiOnlineDNA(GsiOnlineType):
 
     def putrequest(
         self,
-        wordindex: int,
-        word: str
+        word: GsiWord
     ) -> GsiOnlineResponse[bool]:
         """
         Executes a GSI Online PUT command and returns the success
@@ -283,17 +284,16 @@ class GsiOnlineDNA(GsiOnlineType):
 
         Parameters
         ----------
-        wordindex : int
-            Index of the GSI word to set.
-        word : str
-            Complete GSI word to set.
+        word : GsiWord
+            GSI word to send.
 
         Returns
         -------
         GsiOnlineResponse
             Success of the change.
         """
-        cmd = f"PUT/{word:s}"
+        asterisk = "*" if self.is_client_gsi16 else ""
+        cmd = f"PUT/{asterisk}{word.serialize(self.is_client_gsi16):s}"
         comment = ""
         try:
             answer = self._conn.exchange(cmd)
@@ -306,7 +306,7 @@ class GsiOnlineDNA(GsiOnlineType):
             comment = "INSTRUMENT"
 
         response = GsiOnlineResponse(
-            word_descriptions.get(wordindex, ""),
+            word_descriptions.get(word.wi, ""),
             cmd,
             answer,
             value,
@@ -318,9 +318,8 @@ class GsiOnlineDNA(GsiOnlineType):
     def getrequest(
         self,
         mode: str,
-        wordindex: int,
-        parser: Callable[[str], _T]
-    ) -> GsiOnlineResponse[_T]:
+        wordtype: type[_G]
+    ) -> GsiOnlineResponse[_G]:
         """
         Executes a GSI Online GET command and returns the parsed result
         of the GSI word query.
@@ -330,17 +329,15 @@ class GsiOnlineDNA(GsiOnlineType):
         mode : Literal['I', 'M', 'C']
             Request mode. ``I``: internal/instant, ``M``: measure,
             ``C``: continuous.
-        wordindex : int
-            Index of the GSI word to get.
-        parser
-            Parser function to process the result of the query.
+        wordtype : type[GsiWord]
+            GsiWord type to request.
 
         Returns
         -------
         GsiOnlineResponse
             Parsed value.
         """
-        cmd = f"GET/{mode:s}/WI{wordindex:d}"
+        cmd = f"GET/{mode:s}/WI{wordtype.WI():d}"
         comment = ""
         try:
             answer = self._conn.exchange(cmd)
@@ -350,17 +347,17 @@ class GsiOnlineDNA(GsiOnlineType):
             comment = "EXCHANGE"
 
         success = bool(self._GSIPAT.match(answer))
-        value = None
+        value: _G | None = None
         if success:
             try:
-                value = parser(answer)
+                value = wordtype.parse(answer.lstrip("*"))
             except Exception:
                 comment = "PARSE"
         else:
             comment = "INSTRUMENT"
 
         response = GsiOnlineResponse(
-            word_descriptions.get(wordindex, ""),
+            word_descriptions.get(wordtype.WI(), ""),
             cmd,
             answer,
             value,

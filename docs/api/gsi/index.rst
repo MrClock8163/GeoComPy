@@ -15,3 +15,4 @@ GSI Online
 
     gsitypes
     gsidata
+    gsiformat
