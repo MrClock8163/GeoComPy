@@ -4,7 +4,7 @@ LABEL maintainer="MrClock"
 LABEL name="GeoComPy Python 3.11 testing container"
 LABEL description="Python 3.11 testing container for the GeoComPy package"
 
-RUN apt-get update & apt-get install socat -y
+RUN apt-get update && apt-get install socat -y
 
 WORKDIR /usr/src/build
 
