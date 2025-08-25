@@ -18,7 +18,7 @@ jobs:
       matrix:
         python-version: ["python311", "python312", "python313"]
 
-    container: mrclock8163/geocompy:tests_${{matrix.python-version}}
+    container: mrclock8163/geocompy:tests-${{matrix.python-version}}
 
     steps:
       - uses: actions/checkout@v4
