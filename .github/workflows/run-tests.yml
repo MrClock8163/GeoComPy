@@ -5,6 +5,9 @@ on: push
 env:
   FORCE_COLOR: 1
   MYPY_FORCE_COLOR: 1
+  GEOCOMPY_TEST_PORT_CLIENT: /tmp/geocompy_pty_client
+  GEOCOMPY_TEST_PORT_SERVER: /tmp/geocompy_pty_server
+  GEOCOMPY_TEST_PORT_FAULTY: /tmp/geocompy_pty_faulty
 
 jobs:
   testing:
@@ -24,6 +27,12 @@ jobs:
         
       - name: Build and install package
         run: python -m pip install .
+      
+      - name: Setup virtual serial port
+        run: |
+          sudo apt install socat
+          socat pty,raw,echo=0,link=$GEOCOMPY_TEST_PORT_CLIENT pty,raw,echo=0,link=$GEOCOMPY_TEST_PORT_SERVER &
+          python tests/com_echo_server.py &
 
       - name: Test with pytest
         run: |

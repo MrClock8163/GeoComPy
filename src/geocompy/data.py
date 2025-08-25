@@ -284,9 +284,11 @@ class Angle:
         if not re.search(r"^-?[0-9]{1,3}(-[0-9]{1,2}){0,2}(\.\d+)?$", dms):
             raise ValueError("Angle invalid argument", dms)
 
-        sign = -1 if dms.startswith("-") else 1
-        if sign < 0:
+        if dms.startswith("-"):
+            sign = -1
             dms = dms[1:]
+        else:
+            sign = 1
 
         items = [float(item) for item in dms.split("-")]
         div = 1
