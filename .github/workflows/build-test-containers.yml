@@ -6,6 +6,10 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["python311", "python312", "python313"]
     steps:
       -
         name: Login to Docker Hub
@@ -24,5 +28,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          file: ./tests/docker/test_python311.dockerfile
-          tags: mrclock8163/geocompy:tests-python311
+          file: ./tests/docker/test_${{matrix.python-version}}.dockerfile
+          tags: mrclock8163/geocompy:tests-${{matrix.python-version}}
