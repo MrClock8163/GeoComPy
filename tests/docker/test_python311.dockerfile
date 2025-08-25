@@ -10,6 +10,7 @@ WORKDIR /usr/src/build
 
 COPY ./pyproject.toml ./pyproject.toml
 
+RUN python -m pip install --upgrade pip
 RUN python -m pip install pip-tools
 RUN python -m piptools compile -o tests/requirements.txt pyproject.toml --pip-args "--group testing"
 RUN python -m pip install -r test/requirements.txt
