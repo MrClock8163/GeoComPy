@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
         
       - name: Build and install package
-        run: sudo -H python -m pip install .
+        run: python -m pip install . --root-user-action=ignore
       
       - name: Setup virtual serial port
         run: |
@@ -33,7 +33,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          python -m pip install --group testing
+          python -m pip install --group testing --root-user-action=ignore
           python -m pytest
   
   linting:
@@ -49,10 +49,10 @@ jobs:
       - uses: actions/checkout@v4
         
       - name: Build and install package
-        run: sudo -H python -m pip install .
+        run: python -m pip install . --root-user-action=ignore
 
       - name: Running ${{ matrix.tool }}
         run: |
-          python -m pip install --group linting
+          python -m pip install --group linting --root-user-action=ignore
           python -c "print('=========== ${{ matrix.tool }} ===========')"
           python -m ${{ matrix.tool }} src/ tests/
