@@ -24,5 +24,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          file: ./tests/test_python311.dockerfile
+          file: ./tests/docker/test_python311.dockerfile
           tags: mrclock8163/geocompy:tests-python311
