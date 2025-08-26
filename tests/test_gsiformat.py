@@ -83,6 +83,14 @@ word_table: list[
         True
     ),
     (
+        GsiSlopeDistanceWord,
+        -123123.456,
+        "31...8-0000012312345600 ",
+        None,
+        GsiUnit.CENTIMILLI,
+        True
+    ),
+    (
         GsiPPMPrismConstantWord,
         (11, -17),
         "51....+0011-017 ",

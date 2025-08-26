@@ -134,7 +134,9 @@ def _regex_integer(wi: int | None = None) -> Pattern[str]:
 def format_gsi_word(
     wordindex: int,
     data: str,
-    meta: str = "",
+    indexcorr: GsiCorrection | None = None,
+    inputtype: GsiValueType | None = None,
+    unit: GsiUnit | None = None,
     negative: bool = False,
     gsi16: bool = False
 ) -> str:
@@ -147,8 +149,12 @@ def format_gsi_word(
         Word index of the word type.
     data : str
         Preformatted data block.
-    meta : str, optional
-        Preformatted meta flags for measurement-like values, by default ""
+    indexcorr : GsiCorrection | None, optional
+        Status of the autmatic vertical index correction, by default None
+    inputtype : GsiValueType | None, optional
+        Source/input method of the value, by default None
+    unit : GsiUnit | None, optional
+        Unit/scaler coefficient of the stored numerical value, by default None
     negative : bool, optional
         Negative sign, by default False
     gsi16 : bool, optional
@@ -162,27 +168,22 @@ def format_gsi_word(
     Raises
     ------
     ValueError
-        If wordindex is not in valid range [0;999] or meta flags are
-        incorrectly formatted.
+        If wordindex is not in valid range [0;999].
     """
     if wordindex >= 1000 or wordindex < 0:
         raise ValueError(f"GSI word index out of range ({wordindex})")
 
-    if meta != "" and (not meta.isdigit() or len(meta) > 3):
-        raise ValueError(f"GSI word meta data is invalid ({meta})")
-
-    wi = str(wordindex)
-    filler = "." * (6 - len(wi) - len(meta))
-
-    header = f"{wi}{filler}{meta}"
+    meta = (
+        (str(indexcorr.value) if indexcorr is not None else ".")
+        + (str(inputtype.value) if inputtype is not None else ".")
+        + (str(unit.value) if unit is not None else ".")
+    )
+    wi = str(wordindex).ljust(3, ".")
     sign = "-" if negative else "+"
+    datalength = 16 if gsi16 else 8
+    data = data[-datalength:].zfill(datalength)
 
-    if gsi16:
-        data = f"{data[-16:]:>.16s}".zfill(16)
-    else:
-        data = f"{data[-8:]:>.8s}".zfill(8)
-
-    return f"{header:6.6s}{sign}{data} "
+    return wi + meta + sign + data + " "
 
 
 class GsiWord(ABC):
@@ -245,7 +246,9 @@ class GsiUnknownWord(GsiWord):
         self,
         wordindex: int,
         data: str = "",
-        meta: str = "",
+        indexcorr: GsiCorrection | None = None,
+        inputtype: GsiValueType | None = None,
+        unit: GsiUnit | None = None,
         negative: bool = False,
     ):
         """
@@ -255,13 +258,20 @@ class GsiUnknownWord(GsiWord):
             GSI word index.
         data : str, optional
             Data block, by default ""
-        meta : str, optional
-            Meta flags for measurement-like values, by default ""
+        indexcorr : GsiCorrection | None, optional
+            Status of the autmatic vertical index correction, by default None
+        inputtype : GsiValueType | None, optional
+            Source/input method of the value, by default None
+        unit : GsiUnit | None, optional
+            Unit/scaler coefficient of the stored numerical value,
+            by default None
         negative : bool, optional
             Negative sign, by default False
         """
         self._wi = wordindex
-        self.info = meta
+        self.indexcorr = indexcorr
+        self.inputtype = inputtype
+        self.unit = unit
         self.data = data
         self.negative = negative
 
@@ -293,13 +303,27 @@ class GsiUnknownWord(GsiWord):
         cls._check_format(value)
         wi = int(value[:3].rstrip("."))
         data = value[7:-1]
-        meta = value[3:6].lstrip(".")
+        try:
+            indexcorr = GsiCorrection(int(value[3]))
+        except Exception:
+            indexcorr = None
+        try:
+            inputtype = GsiValueType(int(value[4]))
+        except Exception:
+            inputtype = None
+        try:
+            unit = GsiUnit(int(value[5]))
+        except Exception:
+            unit = None
+
         negative = value[6] == "-"
 
         return cls(
             wi,
             data,
-            meta,
+            indexcorr,
+            inputtype,
+            unit,
             negative
         )
 
@@ -328,7 +352,9 @@ class GsiUnknownWord(GsiWord):
         return format_gsi_word(
             self._wi,
             self.data,
-            self.info,
+            self.indexcorr,
+            self.inputtype,
+            self.unit,
             self.negative,
             gsi16
         )
@@ -679,23 +705,23 @@ class GsiAngleWord(GsiValueWord):
     def __init__(
         self,
         angle: Angle,
-        index: GsiCorrection | None = None,
-        source: GsiValueType | None = None
+        indexcorr: GsiCorrection | None = None,
+        inputtype: GsiValueType | None = None
     ):
         """
         Parameters
         ----------
         angle : Angle
             Measurement value.
-        index : GsiCorrection | None, optional
+        indexcorr : GsiCorrection | None, optional
             State of vertical index correction, by default None
-        source : GsiValueType | None, optional
+        inputtype : GsiValueType | None, optional
             Value input source, by default None
         """
         self.value: Angle
         super().__init__(angle)
-        self.indexmode: GsiCorrection | None = index
-        self.source: GsiValueType | None = source
+        self.indexcorr: GsiCorrection | None = indexcorr
+        self.inputtype: GsiValueType | None = inputtype
 
     @classmethod
     def parse(cls, value: str) -> Self:
@@ -797,12 +823,12 @@ class GsiAngleWord(GsiValueWord):
             case _:
                 raise ValueError(f"Invalid angle unit: '{angleunit}'")
 
-        index = str(self.indexmode.value) if self.indexmode is not None else ""
-        source = str(self.source.value) if self.source is not None else ""
         return format_gsi_word(
             self.wi,
             data,
-            f"{index}{source}{angleunit.value:d}",
+            self.indexcorr,
+            self.inputtype,
+            angleunit,
             gsi16=gsi16
         )
 
@@ -832,19 +858,19 @@ class GsiDistanceWord(GsiValueWord):
     def __init__(
         self,
         value: float,
-        source: GsiValueType | None = None
+        inputtype: GsiValueType | None = None
     ):
         """
         Parameters
         ----------
         value : float
             Measurement value (in meters distance value)
-        source : GsiValueType | None, optional
+        inputtype : GsiValueType | None, optional
             Source of measurement-like value, by default None
         """
         self.value: float
         super().__init__(value)
-        self.source = source
+        self.inputtype = inputtype
 
     @classmethod
     def parse(cls, value: str) -> Self:
@@ -937,11 +963,12 @@ class GsiDistanceWord(GsiValueWord):
             case _:
                 raise ValueError(f"Unknown distance unit: '{distunit}'")
 
-        source = f"{self.source.value:d}" if self.source is not None else ""
         return format_gsi_word(
             self.wi,
             f"{abs(value):.0f}",
-            f"{source}{distunit.value:d}",
+            None,
+            self.inputtype,
+            distunit,
             self.value < 0,
             gsi16
         )
@@ -1483,7 +1510,7 @@ class GsiNewTimeWord(GsiValueWord):
         return format_gsi_word(
             self.wi,
             self.value.strftime("%H%M%S"),
-            "6",
+            unit=GsiUnit.DECIMILLI,
             gsi16=gsi16
         )
 
@@ -1540,7 +1567,7 @@ class GsiNewDateWord(GsiValueWord):
         return format_gsi_word(
             self.wi,
             self.value.strftime("%m%d00"),
-            "6",
+            unit=GsiUnit.DECIMILLI,
             gsi16=gsi16
         )
 
@@ -1732,7 +1759,7 @@ class GsiAppVersionWord(GsiValueWord):
         return format_gsi_word(
             self.wi,
             f"{self.value * 1e4:.0f}",
-            "6",
+            unit=GsiUnit.DECIMILLI,
             gsi16=gsi16
         )
 
