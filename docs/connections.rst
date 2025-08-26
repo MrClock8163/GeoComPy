@@ -284,6 +284,13 @@ In the settings of the simulator, the cable connection can be set to one end
 of the virtual port pair (COM3 in this example), the other end can be used to
 connect to the simulator (COM13 here).
 
+.. tip::
+
+    Older instrument simulators are hardwired to use COM1, COM2 and COM3 for
+    cable, radio and bluetooth connections in this order. To connect to such
+    a simulator, the virtual port pair should be set up between COM1 and a
+    suitable second port COM4 or above.
+
 .. image:: captivate_ports.png
 
 The interface settings have to be set accordingly in the simulator itself,
