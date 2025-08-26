@@ -9,7 +9,6 @@ from geocompy.data import (
     enumparser,
     parsestr,
     parsebool,
-    gsiword,
     Angle,
     Byte,
     Coordinate,
@@ -49,21 +48,6 @@ class TestFunctions:
     def test_parsebool(self) -> None:
         assert parsebool("0") is False
         assert parsebool("1") is True
-
-    def test_gsiword(self) -> None:
-        assert gsiword(11, "1") == "11....+00000001 "
-        assert gsiword(11, "1", gsi16=True) == "*11....+0000000000000001 "
-        assert gsiword(
-            330,
-            "123",
-            negative=True,
-            info="08"
-        ) == "330.08-00000123 "
-        assert gsiword(
-            11,
-            "123",
-            info="0001"
-        ) == "110001+00000123 "
 
 
 class TestAngle:

@@ -24,6 +24,10 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Fixed DMS angle formatting where leading zeroes were missing from seconds
 
+### Removed
+
+- Removed the obsolete `gsiword` utility function from the `data` module
+
 ## v0.11.0 (2025-08-14)
 
 ### Added
