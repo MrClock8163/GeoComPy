@@ -704,13 +704,13 @@ class Vector:
         return coords[idx]
 
     def __eq__(self, other: Any) -> bool:
-        if type(other) is not type(self):
+        if not isinstance(other, Vector):
             return False
 
         return (
-            math.isclose(self.x, other.x)
-            and math.isclose(self.y, other.y)
-            and math.isclose(self.z, other.z)
+            self.x == other.x
+            and self.y == other.y
+            and self.z == other.z
         )
 
     def __pos__(self) -> Self:
@@ -727,61 +727,125 @@ class Vector:
             -self.z
         )
 
-    def __add__(self, other: Vector) -> Self:
-        if not isinstance(other, Vector):
-            raise TypeError(
-                f"unsupported operand type(s) for +: "
-                f"'{type(self).__name__}' and "
-                f"'{type(other).__name__}'"
+    def __add__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                self.x + v,
+                self.y + v,
+                self.z + v
+            )
+        elif isinstance(other, Vector):
+            return type(self)(
+                self.x + other.x,
+                self.y + other.y,
+                self.z + other.z
             )
 
-        return type(self)(
-            self.x + other.x,
-            self.y + other.y,
-            self.z + other.z
-        )
+        return NotImplemented
 
-    def __sub__(self, other: Vector) -> Self:
-        if not isinstance(other, Vector):
-            raise TypeError(
-                f"unsupported operand type(s) for -: "
-                f"'{type(self).__name__}' and "
-                f"'{type(other).__name__}'"
+    def __radd__(self, other: Vector | SupportsFloat) -> Self:
+        return self + other
+
+    def __iadd__(self, other: Vector | SupportsFloat) -> Self:
+        return self + other
+
+    def __sub__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                self.x - v,
+                self.y - v,
+                self.z - v
+            )
+        elif isinstance(other, Vector):
+            return type(self)(
+                self.x - other.x,
+                self.y - other.y,
+                self.z - other.z
             )
 
-        return type(self)(
-            self.x - other.x,
-            self.y - other.y,
-            self.z - other.z
-        )
+        return NotImplemented
 
-    def __mul__(self, other: int | float) -> Self:
-        if type(other) not in (int, float):
-            raise TypeError(
-                f"unsupported operand type(s) for *: "
-                f"'{type(self).__name__}' and "
-                f"'{type(other).__name__}'"
+    def __rsub__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                v - self.x,
+                v - self.y,
+                v - self.z
+            )
+        elif isinstance(other, Vector):
+            return type(self)(
+                other.x - self.x,
+                other.y - self.y,
+                other.z - self.z
             )
 
-        return type(self)(
-            self.x * other,
-            self.y * other,
-            self.z * other
-        )
+        return NotImplemented
 
-    def __truediv__(self, other: int | float) -> Self:
-        if type(other) not in (int, float):
-            raise TypeError(
-                f"unsupported operand type(s) for /: "
-                f"'{type(self).__name__}' and "
-                f"'{type(other).__name__}'"
+    def __isub__(self, other: Vector | SupportsFloat) -> Self:
+        return self - other
+
+    def __mul__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, Vector):
+            return type(self)(
+                self.x * other.x,
+                self.y * other.y,
+                self.z * other.z
+            )
+        elif isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                self.x * v,
+                self.y * v,
+                self.z * v
             )
 
-        return type(self)(
-            self.x / other,
-            self.y / other,
-            self.z / other
-        )
+        return NotImplemented
+
+    def __rmul__(self, other: Vector | SupportsFloat) -> Self:
+        return self * other
+
+    def __imul__(self, other: Vector | SupportsFloat) -> Self:
+        return self * other
+
+    def __truediv__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, Vector):
+            return type(self)(
+                self.x / other.x,
+                self.y / other.y,
+                self.z / other.z
+            )
+        elif isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                self.x / v,
+                self.y / v,
+                self.z / v
+            )
+
+        return NotImplemented
+
+    def __rtruediv__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, Vector):
+            return type(self)(
+                other.x / self.x,
+                other.y / self.y,
+                other.z / self.z
+            )
+        elif isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                v / self.x,
+                v / self.y,
+                v / self.z
+            )
+
+        return NotImplemented
+
+    def __itruediv__(self, other: Vector | SupportsFloat) -> Self:
+        return self / other
 
     def length(self) -> float:
         """

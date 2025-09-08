@@ -244,8 +244,10 @@ class TestVector:
 
         v4 = Vector(2, 2, 2)
 
-        assert (v1 * 2) == v4
+        assert (v1 * 2) == (2 * v1) == v4
         assert (v4 / 2) == v1
+
+        assert v2 / v1 == v2
 
         with pytest.raises(TypeError):
             v1 + "a"  # type: ignore[operator]
