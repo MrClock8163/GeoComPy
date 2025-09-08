@@ -367,11 +367,11 @@ class Angle:
     def __format__(self, format_spec: str) -> str:
         return format(self._value, format_spec)
 
-    def __eq__(self, other: object) -> bool:
-        if type(other) is not Angle:
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, SupportsFloat):
             return False
 
-        return math.isclose(self._value, other._value)
+        return self._value == float(other)
 
     def __gt__(self, other: SupportsFloat) -> bool:
         if not isinstance(other, SupportsFloat):
