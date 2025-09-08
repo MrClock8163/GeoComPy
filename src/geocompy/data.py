@@ -248,7 +248,7 @@ class Angle:
         """Converts radians to DDD-MM-SS.
         """
         signum = "-" if angle < 0 else ""
-        secs = abs(angle) * RO
+        secs = round(abs(angle) * RO, precision)
         mi, sec = divmod(secs, 60)
         deg, mi = divmod(int(mi), 60)
         secstr = f"{{:.{precision}f}}".format(sec).zfill(
