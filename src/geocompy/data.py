@@ -796,6 +796,62 @@ class Vector:
 
         return self / length
 
+    def dot(self, other: Vector) -> float:
+        """
+        Calculate the dot product of 2 vectors.
+
+        Parameters
+        ----------
+        other : Vector
+            Second operand.
+
+        Returns
+        -------
+        float
+
+        Raises
+        ------
+        TypeError
+            If other operand was not compatible.
+        """
+        if not isinstance(other, Vector):
+            raise TypeError(
+                "unsupported types for dot product: "
+                f"'{type(self).__name__}' and '{type(other).__name__}'"
+            )
+
+        return self.x * other.x + self.y * other.y + self.z * other.z
+
+    def cross(self, other: Vector) -> Self:
+        """
+        Calculate the cross product of 2 vectors.
+
+        Parameters
+        ----------
+        other : Vector
+            Second operand.
+
+        Returns
+        -------
+        Self
+
+        Raises
+        ------
+        TypeError
+            If other operand was not compatible.
+        """
+        if not isinstance(other, Vector):
+            raise TypeError(
+                "unsupported types for cross product: "
+                f"'{type(self).__name__}' and '{type(other).__name__}'"
+            )
+
+        return type(self)(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x
+        )
+
     def _swizzle_component(
         self,
         component: Literal['x', 'y', 'z', '0'],
