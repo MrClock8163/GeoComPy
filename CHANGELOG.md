@@ -5,6 +5,17 @@ file.
 
 The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Added `dot` product to `Vector`
+- Added `cross` product to `Vector`
+
+### Fixed
+
+- GeoCom ING `set_telescopic_configuration` was missing the `prefix` parameter
+
 ## v0.12.0 (2025-08-26)
 
 ### Added
