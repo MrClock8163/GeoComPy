@@ -355,6 +355,9 @@ class Angle:
         """
         return Angle(cls.dms2rad(value))
 
+    def __float__(self) -> float:
+        return self._value
+
     def __str__(self) -> str:
         return f"{self.asunit('deg'):.4f} DEG"
 
@@ -372,87 +375,102 @@ class Angle:
 
     def __gt__(self, other: SupportsFloat) -> bool:
         if not isinstance(other, SupportsFloat):
-            raise TypeError(
-                f"unsupported operand type(s) for >: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+            return NotImplemented
 
         return float(self) > float(other)
 
     def __lt__(self, other: SupportsFloat) -> bool:
         if not isinstance(other, SupportsFloat):
-            raise TypeError(
-                f"unsupported operand type(s) for <: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+            return NotImplemented
 
         return float(self) < float(other)
 
     def __ge__(self, other: SupportsFloat) -> bool:
         if not isinstance(other, SupportsFloat):
-            raise TypeError(
-                f"unsupported operand type(s) for >=: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+            return NotImplemented
 
         return float(self) >= float(other)
 
     def __le__(self, other: SupportsFloat) -> bool:
         if not isinstance(other, SupportsFloat):
-            raise TypeError(
-                f"unsupported operand type(s) for <=: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+            return NotImplemented
 
         return float(self) <= float(other)
 
-    def __pos__(self) -> Angle:
-        return Angle(self._value)
+    def __pos__(self) -> Self:
+        return type(self)(self._value)
 
-    def __neg__(self) -> Angle:
-        return Angle(-self._value)
+    def __neg__(self) -> Self:
+        return type(self)(-self._value)
 
-    def __add__(self, other: Angle) -> Angle:
-        if type(other) is not Angle:
-            raise TypeError(
-                f"unsupported operand type(s) for +: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+    def __add__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
 
-        return Angle(self._value + other._value)
+        return type(self)(self._value + float(other))
 
-    def __sub__(self, other: Angle) -> Angle:
-        if type(other) is not Angle:
-            raise TypeError(
-                f"unsupported operand type(s) for -: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+    def __radd__(self, other: SupportsFloat) -> Self:
+        return self + other
 
-        return Angle(self._value - other._value)
+    def __iadd__(self, other: SupportsFloat) -> Self:
+        return self + other
 
-    def __mul__(self, other: int | float) -> Angle:
-        if type(other) not in (int, float):
-            raise TypeError(
-                f"unsupported operand type(s) for *: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+    def __sub__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
 
-        return Angle(self._value * other)
+        return type(self)(self._value - float(other))
 
-    def __truediv__(self, other: int | float) -> Angle:
-        if type(other) not in (int, float):
-            raise TypeError(
-                f"unsupported operand type(s) for /: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+    def __rsub__(self, other: SupportsFloat) -> Self:
+        return self - other
 
-        return Angle(self._value / other)
+    def __isub__(self, other: SupportsFloat) -> Self:
+        return self - other
+
+    def __mul__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return type(self)(self._value * float(other))
+
+    def __rmul__(self, other: SupportsFloat) -> Self:
+        return self * other
+
+    def __imul__(self, other: SupportsFloat) -> Self:
+        return self * other
+
+    def __truediv__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return type(self)(self._value / float(other))
+
+    def __rtruediv__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return type(self)(float(other) / self._value)
+
+    def __itruediv__(self, other: SupportsFloat) -> Self:
+        return self / other
+
+    def __floordiv__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return type(self)(self._value // float(other))
+
+    def __rfloordiv__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return type(self)(float(other) // self._value)
+
+    def __ifloordiv__(self, other: SupportsFloat) -> Self:
+        return self // other
 
     def __abs__(self) -> Angle:
         return self.normalized()
-
-    def __float__(self) -> float:
-        return self._value
 
     def to_dms(self, precision: int = 0) -> str:
         """
@@ -494,7 +512,7 @@ class Angle:
             case _:
                 raise ValueError(f"unknown target unit: '{unit}'")
 
-    def normalized(self, positive: bool = True) -> Angle:
+    def normalized(self, positive: bool = True) -> Self:
         """
         Returns a copy of the angle normalized to full angle.
 
@@ -508,9 +526,9 @@ class Angle:
         Angle
             New `Angle` with normalized value.
         """
-        return Angle(self._value, 'rad', True, positive)
+        return type(self)(self._value, 'rad', True, positive)
 
-    def relative_to(self, other: SupportsFloat) -> Angle:
+    def relative_to(self, other: SupportsFloat) -> Self:
         """
         Returns an angle relative to a reference angle in the [-180;+180] deg
         range.
@@ -532,11 +550,11 @@ class Angle:
 
         diff = float(self) - float(other)
         if diff > math.pi:
-            return Angle(diff - PI2)
+            return type(self)(diff - PI2)
         elif diff < -math.pi:
-            return Angle(diff + PI2)
+            return type(self)(diff + PI2)
 
-        return Angle(diff)
+        return type(self)(diff)
 
 
 class Byte:
@@ -706,8 +724,8 @@ class Vector:
             -self.z
         )
 
-    def __add__(self, other: Self) -> Self:
-        if type(other) is not type(self):
+    def __add__(self, other: Vector) -> Self:
+        if not isinstance(other, Vector):
             raise TypeError(
                 f"unsupported operand type(s) for +: "
                 f"'{type(self).__name__}' and "
@@ -720,8 +738,8 @@ class Vector:
             self.z + other.z
         )
 
-    def __sub__(self, other: Self) -> Self:
-        if type(other) is not type(self):
+    def __sub__(self, other: Vector) -> Self:
+        if not isinstance(other, Vector):
             raise TypeError(
                 f"unsupported operand type(s) for -: "
                 f"'{type(self).__name__}' and "
