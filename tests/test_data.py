@@ -146,7 +146,6 @@ class TestAngle:
             float(a1 - a2)
             == approx(float(Angle(0, 'deg')))
         )
-        assert a1 - a2 == a2 - a1
         assert (
             float(a1 * 2)
             == approx(float(Angle(180, 'deg')))

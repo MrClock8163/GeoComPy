@@ -422,7 +422,10 @@ class Angle:
         return type(self)(self._value - float(other))
 
     def __rsub__(self, other: SupportsFloat) -> Self:
-        return self - other
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return type(self)(float(other) - self._value)
 
     def __isub__(self, other: SupportsFloat) -> Self:
         return self - other
