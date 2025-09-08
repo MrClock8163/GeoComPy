@@ -91,6 +91,7 @@ class GeoComIMG(GeoComSubsystem):
         imgnumber: int,
         quality: int,
         functions: CameraFunctions | int,
+        prefix: str,
         saveto: Device | str = Device.CFCARD,
     ) -> GeoComResponse[None]:
         """
@@ -106,6 +107,8 @@ class GeoComIMG(GeoComSubsystem):
             JPEG compression quality [0; 100]%.
         functions : CameraFunctions | int
             Camera function combination.
+        prefix : str
+            File name prefix.
         saveto : Device | str, optional
             Memory device, by default CFCARD
 
@@ -128,7 +131,7 @@ class GeoComIMG(GeoComSubsystem):
             functions = functions.value
         return self._request(
             23401,
-            [_device.value, imgnumber, quality, functions]
+            [_device.value, imgnumber, quality, functions, prefix]
         )
 
     def take_telescopic_image(
