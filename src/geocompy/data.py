@@ -448,11 +448,11 @@ class Angle:
 
         return type(self)(self._value / float(other))
 
-    def __rtruediv__(self, other: SupportsFloat) -> Self:
+    def __rtruediv__(self, other: SupportsFloat) -> float:
         if not isinstance(other, SupportsFloat):
             return NotImplemented
 
-        return type(self)(float(other) / self._value)
+        return float(other) / self._value
 
     def __itruediv__(self, other: SupportsFloat) -> Self:
         return self / other
@@ -463,11 +463,11 @@ class Angle:
 
         return type(self)(self._value // float(other))
 
-    def __rfloordiv__(self, other: SupportsFloat) -> Self:
+    def __rfloordiv__(self, other: SupportsFloat) -> float:
         if not isinstance(other, SupportsFloat):
             return NotImplemented
 
-        return type(self)(float(other) // self._value)
+        return float(other) // self._value
 
     def __ifloordiv__(self, other: SupportsFloat) -> Self:
         return self // other
