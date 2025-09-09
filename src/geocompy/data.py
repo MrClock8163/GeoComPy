@@ -258,29 +258,6 @@ class Angle:
         )
         return f"{signum:s}{deg:d}-{mi:02d}-{secstr}"
 
-    @staticmethod
-    def normalize_rad(angle: float, positive: bool = False) -> float:
-        """Normalizes angle to [+2PI; -2PI] range.
-
-        Parameters
-        ----------
-        angle : float
-            Angular value in radians unit.
-        positive : bool, optional
-            Normalize to [0; +2PI] range, by default False
-
-        Returns
-        -------
-        float
-            Normalized angular value.
-        """
-        norm = angle % PI2
-
-        if not positive and angle < 0:
-            norm -= PI2
-
-        return norm
-
     @classmethod
     def parse(cls, string: str, unit: _AngleUnit = 'rad') -> Angle:
         """Parses string value to float and creates new `Angle`.
@@ -324,20 +301,23 @@ class Angle:
         ValueError
             If an unknown `unit` was passed.
         """
-        self._value: float = 0
-
         match unit:
             case 'deg':
-                self._value = self.deg2rad(value)
+                rad = self.deg2rad(value)
             case 'rad':
-                self._value = float(value)
+                rad = float(value)
             case 'gon':
-                self._value = self.gon2rad(value)
+                rad = self.gon2rad(value)
             case _:
                 raise ValueError(f"unknown source unit: '{unit}'")
 
         if normalize:
-            self._value = self.normalize_rad(self._value, positive)
+            exp, rad = divmod(rad, PI2)
+
+            if not positive and exp < 0:
+                rad -= PI2
+
+        self._value: float = rad
 
     @classmethod
     def from_dms(cls, value: str) -> Angle:
