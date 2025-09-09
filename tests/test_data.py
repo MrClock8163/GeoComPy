@@ -274,10 +274,12 @@ class TestVector:
         v2 = Vector(1, 2, 3)
 
         assert v1 + v2 == Vector(2, 3, 4)
+        assert v1 + 1 == Vector(2, 2, 2)
         assert v1 - v2 == Vector(0, -1, -2)
-        assert type(+v1) is Vector
-        v3 = +v1
-        assert v3 is not v1
+        assert v1 - 1 == Vector(0, 0, 0)
+        assert isinstance(+v1, Vector)
+
+        assert v1 is not +v1
         assert v1 != "a"
         assert v1 is not +v1
         assert v1 is not -v1
@@ -287,7 +289,20 @@ class TestVector:
         assert (v1 * 2) == (2 * v1) == v4
         assert (v4 / 2) == v1
 
+        assert v1 * v2 == v2
         assert v2 / v1 == v2
+
+        v2 *= v1
+        assert v2 == Vector(1, 2, 3)
+
+        v2 /= v1
+        assert v2 == Vector(1, 2, 3)
+
+        v1 += 1
+        assert v1 == v4
+
+        v1 -= 1
+        assert v1 == Vector(1, 1, 1)
 
         with pytest.raises(TypeError):
             v1 + "a"  # type: ignore[operator]
@@ -301,9 +316,19 @@ class TestVector:
         with pytest.raises(TypeError):
             v1 / "a"  # type: ignore[operator]
 
-        assert v1.length() == approx(math.sqrt(3))
-        assert v1.normalized().length() == approx(1)
+        v5 = Vector(1, 1, 1)
+        assert v5.length() == approx(math.sqrt(3))
+        assert v5.normalized().length() == approx(1)
         assert Vector(0, 0, 0).normalized().length() == approx(0)
+
+        with pytest.raises(TypeError):
+            v1.dot(2)  # type: ignore[arg-type]
+
+        assert Vector(1, 1, 0).cross(Vector(-1, -1, 0)) == Vector(0, 0, 0)
+        assert Vector(1, 1, 0).dot(Vector(1, 1, 0)) == 2
+
+        with pytest.raises(TypeError):
+            v1.cross(2)  # type: ignore[arg-type]
 
     def test_properties(self) -> None:
         v1 = Vector(1, 2, 3)
