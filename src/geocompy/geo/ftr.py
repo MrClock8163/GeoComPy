@@ -83,7 +83,7 @@ class GeoComFTR(GeoComSubsystem):
         _filetype = get_enum(File, filetype)
         return self._request(
             23306,
-            [_device.value, _filetype.value, path]
+            [_device, _filetype, path]
         )
 
     def list(
@@ -230,7 +230,7 @@ class GeoComFTR(GeoComSubsystem):
         _filetype = get_enum(File, filetype)
         return self._request(
             23303,
-            [_device.value, _filetype.value, filename, blocksize],
+            [_device, _filetype, filename, blocksize],
             int
         )
 
@@ -334,13 +334,13 @@ class GeoComFTR(GeoComSubsystem):
         _filetype = get_enum(File, filetype)
         if time is None:
             params = [
-                _device.value, _filetype.value,
+                _device, _filetype,
                 Byte(0), Byte(0), Byte(0),
                 filename
             ]
         else:
             params = [
-                _device.value, _filetype.value,
+                _device, _filetype,
                 Byte(time.day), Byte(time.month), Byte(time.year - 2000),
                 filename
             ]
@@ -394,13 +394,13 @@ class GeoComFTR(GeoComSubsystem):
 
         if time is None:
             params = [
-                _device.value, _filetype.value,
+                _device, _filetype,
                 Byte(0), Byte(0), Byte(0),
                 dirname
             ]
         else:
             params = [
-                _device.value, _filetype.value,
+                _device, _filetype,
                 Byte(time.day), Byte(time.month), Byte(time.year - 2000),
                 dirname
             ]
@@ -460,7 +460,7 @@ class GeoComFTR(GeoComSubsystem):
         _filetype = get_enum(File, filetype)
         return self._request(
             23313,
-            [_device.value, _filetype.value, filename, blocksize],
+            [_device, _filetype, filename, blocksize],
             int
         )
 

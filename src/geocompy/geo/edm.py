@@ -219,7 +219,7 @@ class GeoComEDM(GeoComSubsystem):
         _intensity = get_enum(Tracklight, intensity)
         return self._request(
             1032,
-            [_intensity.value]
+            [_intensity]
         )
 
     def get_tracklight_status(self) -> GeoComResponse[bool]:
@@ -324,7 +324,7 @@ class GeoComEDM(GeoComSubsystem):
         _intesity = get_enum(Guidelight, intensity)
         return self._request(
             1059,
-            [_intesity.value]
+            [_intesity]
         )
 
     def is_continuous_measurement(
@@ -354,7 +354,7 @@ class GeoComEDM(GeoComSubsystem):
         _mode = get_enum(MeasurementType, mode)
         return self._request(
             1070,
-            [_mode.value],
+            [_mode],
             parse_bool
         )
 

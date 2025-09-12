@@ -373,7 +373,7 @@ class GeoComAUT(GeoComSubsystem):
         _atrmode = get_enum(ATR, atrmode)
         return self._request(
             9027,
-            [float(hz), float(v), _posmode.value, _atrmode.value, 0]
+            [float(hz), float(v), _posmode, _atrmode, 0]
         )
 
     def change_face(
@@ -432,7 +432,7 @@ class GeoComAUT(GeoComSubsystem):
         _atrmode = get_enum(ATR, atrmode)
         return self._request(
             9028,
-            [_posmode.value, _atrmode.value, 0]
+            [_posmode, _atrmode, 0]
         )
 
     def fine_adjust(
@@ -580,7 +580,7 @@ class GeoComAUT(GeoComSubsystem):
         _mode = get_enum(Adjust, mode)
         return self._request(
             9031,
-            [_mode.value]
+            [_mode]
         )
 
     def lock_in(self) -> GeoComResponse[None]:
@@ -884,7 +884,7 @@ class GeoComAUT(GeoComSubsystem):
         _direction = get_enum(Turn, direction)
         return self._request(
             9051,
-            [_direction.value, swing]
+            [_direction, swing]
         )
 
     def switch_lock_onthefly(
@@ -973,5 +973,5 @@ class GeoComAUT(GeoComSubsystem):
         _camera = get_enum(Camera, camera)
         return self._request(
             9081,
-            [_camera.value, x, y]
+            [_camera, x, y]
         )

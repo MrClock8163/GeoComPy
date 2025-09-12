@@ -181,7 +181,7 @@ class GeoComCOM(GeoComSubsystem):
         _mode = get_enum(Startup, mode)
         return self._request(
             111,
-            [_mode.value]
+            [_mode]
         )
 
     def switch_off(
@@ -209,7 +209,7 @@ class GeoComCOM(GeoComSubsystem):
         _mode = get_enum(Shutdown, mode)
         return self._request(
             112,
-            [_mode.value]
+            [_mode]
         )
 
     def nullprocess(self) -> GeoComResponse[None]:

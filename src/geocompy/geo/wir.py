@@ -73,5 +73,5 @@ class GeoComWIR(GeoComSubsystem):
         _format = get_enum(Format, format)
         return self._request(
             8012,
-            [_format.value]
+            [_format]
         )

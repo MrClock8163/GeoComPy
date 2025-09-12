@@ -153,7 +153,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(Inclination, mode)
         response = self._request(
             2082,
-            [int(wait * 1000), _mode.value],
+            [int(wait * 1000), _mode],
             (
                 float,
                 float,
@@ -232,7 +232,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(Inclination, mode)
         return self._request(
             2108,
-            [int(wait * 1000), _mode.value],
+            [int(wait * 1000), _mode],
             (
                 Angle.parse,
                 Angle.parse,
@@ -309,7 +309,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(Inclination, mode)
         return self._request(
             2003,
-            [_mode.value],
+            [_mode],
             (
                 Angle.parse,
                 Angle.parse,
@@ -379,7 +379,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(Inclination, mode)
         return self._request(
             2107,
-            [_mode.value],
+            [_mode],
             (
                 Angle.parse,
                 Angle.parse
@@ -514,7 +514,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(Inclination, mode)
         return self._request(
             2167,
-            [int(wait * 1000), _mode.value],
+            [int(wait * 1000), _mode],
             (
                 Angle.parse,
                 Angle.parse,
@@ -564,7 +564,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(Inclination, inclination)
         return self._request(
             2008,
-            [_cmd.value, _mode.value]
+            [_cmd, _mode]
         )
 
     def set_manual_distance(
@@ -625,7 +625,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(Inclination, inclination)
         return self._request(
             2019,
-            [distance, offset, _mode.value]
+            [distance, offset, _mode]
         )
 
     def get_target_height(self) -> GeoComResponse[float]:
@@ -1234,7 +1234,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(EDMModeV1, mode)
         return self._request(
             2020,
-            [_mode.value]
+            [_mode]
         )
 
     def get_edm_mode_v2(self) -> GeoComResponse[EDMModeV2]:
@@ -1289,7 +1289,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(EDMModeV2, mode)
         return self._request(
             2020,
-            [_mode.value]
+            [_mode]
         )
 
     def get_simple_coordinate(
@@ -1363,7 +1363,7 @@ class GeoComTMC(GeoComSubsystem):
         _mode = get_enum(Inclination, inclination)
         response = self._request(
             2116,
-            [int(wait * 1000), _mode.value],
+            [int(wait * 1000), _mode],
             parsers=(
                 float,
                 float,

@@ -141,7 +141,7 @@ class GeoComBAP(GeoComSubsystem):
         _mode = get_enum(Program, mode)
         return self._request(
             17017,
-            [_mode.value],
+            [_mode],
             (
                 Angle.parse,
                 Angle.parse,
@@ -204,7 +204,7 @@ class GeoComBAP(GeoComSubsystem):
         _target = get_enum(Target, target)
         return self._request(
             17021,
-            [_target.value]
+            [_target]
         )
 
     def get_prism_type(self) -> GeoComResponse[Prism]:
@@ -263,7 +263,7 @@ class GeoComBAP(GeoComSubsystem):
         _prism = get_enum(Prism, prism)
         return self._request(
             17008,
-            [_prism.value]
+            [_prism]
         )
 
     def get_prism_definition(
@@ -297,7 +297,7 @@ class GeoComBAP(GeoComSubsystem):
         _prism = get_enum(Prism, prism)
         return self._request(
             17023,
-            [_prism.value],
+            [_prism],
             (
                 parse_string,
                 float,
@@ -346,10 +346,10 @@ class GeoComBAP(GeoComSubsystem):
         return self._request(
             17024,
             [
-                _prism.value,
+                _prism,
                 name,
                 const,
-                _reflector.value
+                _reflector
             ]
         )
 
@@ -402,7 +402,7 @@ class GeoComBAP(GeoComSubsystem):
         _program = get_enum(UserProgram, program)
         return self._request(
             17019,
-            [_program.value]
+            [_program]
         )
 
     def search_target(self) -> GeoComResponse[None]:
@@ -495,7 +495,7 @@ class GeoComBAP(GeoComSubsystem):
         _prism = get_enum(Prism, prism)
         return self._request(
             17030,
-            [_prism.value, name]
+            [_prism, name]
         )
 
     def get_user_prism_definition(
@@ -583,7 +583,7 @@ class GeoComBAP(GeoComSubsystem):
         _reflector = get_enum(Reflector, reflector)
         return self._request(
             17032,
-            [name, const, _reflector.value, creator]
+            [name, const, _reflector, creator]
         )
 
     def get_atr_setting(self) -> GeoComResponse[ATRMode]:
@@ -632,7 +632,7 @@ class GeoComBAP(GeoComSubsystem):
         _mode = get_enum(ATRMode, mode)
         return self._request(
             17035,
-            [_mode.value]
+            [_mode]
         )
 
     def get_reduced_atr_fov_status(self) -> GeoComResponse[bool]:

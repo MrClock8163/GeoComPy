@@ -99,7 +99,7 @@ class GeoComSUP(GeoComSubsystem):
         _autopower = get_enum(AutoPower, autopower)
         return self._request(
             14002,
-            [lowtemp, _autopower.value, timeout]
+            [lowtemp, _autopower, timeout]
         )
 
     def switch_low_temperature_control(

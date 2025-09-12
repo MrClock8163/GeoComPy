@@ -315,7 +315,7 @@ class GeoComDNA(GeoComSubsystem):
         _staff = get_enum(StaffType, staff)
         return self._request(
             29127,
-            [_staff.value]
+            [_staff]
         )
 
     def get_staff_type(self) -> GeoComResponse[StaffType]:

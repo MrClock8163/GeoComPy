@@ -615,7 +615,7 @@ class GeoComCSV(GeoComSubsystem):
         _prop = get_enum(Property, property)
         return self._request(
             5139,
-            [_prop.value],
+            [_prop],
             parse_bool
         )
 
@@ -705,7 +705,7 @@ class GeoComCSV(GeoComSubsystem):
         _source = get_enum(PowerSource, source)
         return self._request(
             5163,
-            [_source.value]
+            [_source]
         )
 
     def get_preferred_powersource(self) -> GeoComResponse[PowerSource]:

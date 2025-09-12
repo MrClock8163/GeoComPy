@@ -77,7 +77,7 @@ class GeoComIMG(GeoComSubsystem):
         _device = get_enum(Device, at)
         return self._request(
             23400,
-            [_device.value],
+            [_device],
             parsers=(
                 int,
                 int,
@@ -131,7 +131,7 @@ class GeoComIMG(GeoComSubsystem):
             functions = functions.value
         return self._request(
             23401,
-            [_device.value, imgnumber, quality, functions, prefix]
+            [_device, imgnumber, quality, functions, prefix]
         )
 
     def take_telescopic_image(
@@ -169,7 +169,7 @@ class GeoComIMG(GeoComSubsystem):
         _device = get_enum(Device, device)
         return self._request(
             23402,
-            [_device.value],
+            [_device],
             int
         )
 

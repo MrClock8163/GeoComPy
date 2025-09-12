@@ -99,7 +99,7 @@ class GeoComMOT(GeoComSubsystem):
         _mode = get_enum(Controller, mode)
         return self._request(
             6001,
-            [_mode.value]
+            [_mode]
         )
 
     def stop_controller(
@@ -132,7 +132,7 @@ class GeoComMOT(GeoComSubsystem):
         _mode = get_enum(Stop, mode)
         return self._request(
             6002,
-            [_mode.value]
+            [_mode]
         )
 
     def set_velocity(
