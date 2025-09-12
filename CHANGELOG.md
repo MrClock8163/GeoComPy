@@ -12,9 +12,19 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added `dot` product to `Vector`
 - Added `cross` product to `Vector`
 
+### Changed
+
+- Reworked arithmetic operations supported by `Angle`
+- Reworked arithmetic operations supported by `Vector`
+
 ### Fixed
 
 - GeoCom ING `set_telescopic_configuration` was missing the `prefix` parameter
+- `Angle.to_dms` was sometimes returning incorrect value due to rounding
+
+### Removed
+
+- Removed `normalize_rad` classmethod from `Angle`
 
 ## v0.12.0 (2025-08-26)
 
