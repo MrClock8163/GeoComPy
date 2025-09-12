@@ -179,15 +179,9 @@ _AngleUnit = Literal['deg', 'rad', 'gon']
 
 class Angle:
     """
-    Utility type to represent an angular value.
+    Type to represent an angular value.
 
-    Supported arithmetic operations:
-        - \\+ `Angle`
-        - \\- `Angle`
-        - `Angle` + `Angle`
-        - `Angle` - `Angle`
-        - `Angle` * number (:class:`int` | :class:`float`)
-        - `Angle` / number (:class:`int` | :class:`float`)
+    Angles support typical arithmetic operations.
 
     Notes
     -----
@@ -248,7 +242,7 @@ class Angle:
         """Converts radians to DDD-MM-SS.
         """
         signum = "-" if angle < 0 else ""
-        secs = abs(angle) * RO
+        secs = round(abs(angle) * RO, precision)
         mi, sec = divmod(secs, 60)
         deg, mi = divmod(int(mi), 60)
         secstr = f"{{:.{precision}f}}".format(sec).zfill(
@@ -257,29 +251,6 @@ class Angle:
             else 2
         )
         return f"{signum:s}{deg:d}-{mi:02d}-{secstr}"
-
-    @staticmethod
-    def normalize_rad(angle: float, positive: bool = False) -> float:
-        """Normalizes angle to [+2PI; -2PI] range.
-
-        Parameters
-        ----------
-        angle : float
-            Angular value in radians unit.
-        positive : bool, optional
-            Normalize to [0; +2PI] range, by default False
-
-        Returns
-        -------
-        float
-            Normalized angular value.
-        """
-        norm = angle % PI2
-
-        if not positive and angle < 0:
-            norm -= PI2
-
-        return norm
 
     @classmethod
     def parse(cls, string: str, unit: _AngleUnit = 'rad') -> Angle:
@@ -324,20 +295,23 @@ class Angle:
         ValueError
             If an unknown `unit` was passed.
         """
-        self._value: float = 0
-
         match unit:
             case 'deg':
-                self._value = self.deg2rad(value)
+                rad = self.deg2rad(value)
             case 'rad':
-                self._value = float(value)
+                rad = float(value)
             case 'gon':
-                self._value = self.gon2rad(value)
+                rad = self.gon2rad(value)
             case _:
                 raise ValueError(f"unknown source unit: '{unit}'")
 
         if normalize:
-            self._value = self.normalize_rad(self._value, positive)
+            exp, rad = divmod(rad, PI2)
+
+            if not positive and exp < 0:
+                rad -= PI2
+
+        self._value: float = rad
 
     @classmethod
     def from_dms(cls, value: str) -> Angle:
@@ -355,6 +329,9 @@ class Angle:
         """
         return Angle(cls.dms2rad(value))
 
+    def __float__(self) -> float:
+        return self._value
+
     def __str__(self) -> str:
         return f"{self.asunit('deg'):.4f} DEG"
 
@@ -364,95 +341,113 @@ class Angle:
     def __format__(self, format_spec: str) -> str:
         return format(self._value, format_spec)
 
-    def __eq__(self, other: object) -> bool:
-        if type(other) is not Angle:
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, SupportsFloat):
             return False
 
-        return math.isclose(self._value, other._value)
+        return self._value == float(other)
 
     def __gt__(self, other: SupportsFloat) -> bool:
         if not isinstance(other, SupportsFloat):
-            raise TypeError(
-                f"unsupported operand type(s) for >: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+            return NotImplemented
 
         return float(self) > float(other)
 
     def __lt__(self, other: SupportsFloat) -> bool:
         if not isinstance(other, SupportsFloat):
-            raise TypeError(
-                f"unsupported operand type(s) for <: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+            return NotImplemented
 
         return float(self) < float(other)
 
     def __ge__(self, other: SupportsFloat) -> bool:
         if not isinstance(other, SupportsFloat):
-            raise TypeError(
-                f"unsupported operand type(s) for >=: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+            return NotImplemented
 
         return float(self) >= float(other)
 
     def __le__(self, other: SupportsFloat) -> bool:
         if not isinstance(other, SupportsFloat):
-            raise TypeError(
-                f"unsupported operand type(s) for <=: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+            return NotImplemented
 
         return float(self) <= float(other)
 
-    def __pos__(self) -> Angle:
-        return Angle(self._value)
+    def __pos__(self) -> Self:
+        return type(self)(self._value)
 
-    def __neg__(self) -> Angle:
-        return Angle(-self._value)
+    def __neg__(self) -> Self:
+        return type(self)(-self._value)
 
-    def __add__(self, other: Angle) -> Angle:
-        if type(other) is not Angle:
-            raise TypeError(
-                f"unsupported operand type(s) for +: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+    def __add__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
 
-        return Angle(self._value + other._value)
+        return type(self)(self._value + float(other))
 
-    def __sub__(self, other: Angle) -> Angle:
-        if type(other) is not Angle:
-            raise TypeError(
-                f"unsupported operand type(s) for -: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+    def __radd__(self, other: SupportsFloat) -> Self:
+        return self + other
 
-        return Angle(self._value - other._value)
+    def __iadd__(self, other: SupportsFloat) -> Self:
+        return self + other
 
-    def __mul__(self, other: int | float) -> Angle:
-        if type(other) not in (int, float):
-            raise TypeError(
-                f"unsupported operand type(s) for *: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+    def __sub__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
 
-        return Angle(self._value * other)
+        return type(self)(self._value - float(other))
 
-    def __truediv__(self, other: int | float) -> Angle:
-        if type(other) not in (int, float):
-            raise TypeError(
-                f"unsupported operand type(s) for /: 'Angle' and "
-                f"'{type(other).__name__}'"
-            )
+    def __rsub__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
 
-        return Angle(self._value / other)
+        return type(self)(float(other) - self._value)
+
+    def __isub__(self, other: SupportsFloat) -> Self:
+        return self - other
+
+    def __mul__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return type(self)(self._value * float(other))
+
+    def __rmul__(self, other: SupportsFloat) -> Self:
+        return self * other
+
+    def __imul__(self, other: SupportsFloat) -> Self:
+        return self * other
+
+    def __truediv__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return type(self)(self._value / float(other))
+
+    def __rtruediv__(self, other: SupportsFloat) -> float:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return float(other) / self._value
+
+    def __itruediv__(self, other: SupportsFloat) -> Self:
+        return self / other
+
+    def __floordiv__(self, other: SupportsFloat) -> Self:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return type(self)(self._value // float(other))
+
+    def __rfloordiv__(self, other: SupportsFloat) -> float:
+        if not isinstance(other, SupportsFloat):
+            return NotImplemented
+
+        return float(other) // self._value
+
+    def __ifloordiv__(self, other: SupportsFloat) -> Self:
+        return self // other
 
     def __abs__(self) -> Angle:
         return self.normalized()
-
-    def __float__(self) -> float:
-        return self._value
 
     def to_dms(self, precision: int = 0) -> str:
         """
@@ -494,7 +489,7 @@ class Angle:
             case _:
                 raise ValueError(f"unknown target unit: '{unit}'")
 
-    def normalized(self, positive: bool = True) -> Angle:
+    def normalized(self, positive: bool = True) -> Self:
         """
         Returns a copy of the angle normalized to full angle.
 
@@ -508,9 +503,9 @@ class Angle:
         Angle
             New `Angle` with normalized value.
         """
-        return Angle(self._value, 'rad', True, positive)
+        return type(self)(self._value, 'rad', True, positive)
 
-    def relative_to(self, other: SupportsFloat) -> Angle:
+    def relative_to(self, other: SupportsFloat) -> Self:
         """
         Returns an angle relative to a reference angle in the [-180;+180] deg
         range.
@@ -532,11 +527,11 @@ class Angle:
 
         diff = float(self) - float(other)
         if diff > math.pi:
-            return Angle(diff - PI2)
+            return type(self)(diff - PI2)
         elif diff < -math.pi:
-            return Angle(diff + PI2)
+            return type(self)(diff + PI2)
 
-        return Angle(diff)
+        return type(self)(diff)
 
 
 class Byte:
@@ -622,15 +617,9 @@ class Byte:
 
 class Vector:
     """
-    Utility type to represent a position with 3D cartesian coordinates.
+    Type to represent a position or direction with 3D cartesian coordinates.
 
-    Supported arithmetic operations:
-        - \\+ `Vector`
-        - \\- `Vector`
-        - `Vector` + `Vector`
-        - `Vector` - `Vector`
-        - `Vector` * number (`int` | `float`)
-        - `Vector` / number (`int` | `float`)
+    Vectors support typical arithmetic operations.
 
     Examples
     --------
@@ -683,13 +672,13 @@ class Vector:
         return coords[idx]
 
     def __eq__(self, other: Any) -> bool:
-        if type(other) is not type(self):
+        if not isinstance(other, Vector):
             return False
 
         return (
-            math.isclose(self.x, other.x)
-            and math.isclose(self.y, other.y)
-            and math.isclose(self.z, other.z)
+            self.x == other.x
+            and self.y == other.y
+            and self.z == other.z
         )
 
     def __pos__(self) -> Self:
@@ -706,61 +695,88 @@ class Vector:
             -self.z
         )
 
-    def __add__(self, other: Self) -> Self:
-        if type(other) is not type(self):
-            raise TypeError(
-                f"unsupported operand type(s) for +: "
-                f"'{type(self).__name__}' and "
-                f"'{type(other).__name__}'"
+    def __add__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                self.x + v,
+                self.y + v,
+                self.z + v
+            )
+        elif isinstance(other, Vector):
+            return type(self)(
+                self.x + other.x,
+                self.y + other.y,
+                self.z + other.z
             )
 
-        return type(self)(
-            self.x + other.x,
-            self.y + other.y,
-            self.z + other.z
-        )
+        return NotImplemented
 
-    def __sub__(self, other: Self) -> Self:
-        if type(other) is not type(self):
-            raise TypeError(
-                f"unsupported operand type(s) for -: "
-                f"'{type(self).__name__}' and "
-                f"'{type(other).__name__}'"
+    def __iadd__(self, other: Vector | SupportsFloat) -> Self:
+        return self + other
+
+    def __sub__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                self.x - v,
+                self.y - v,
+                self.z - v
+            )
+        elif isinstance(other, Vector):
+            return type(self)(
+                self.x - other.x,
+                self.y - other.y,
+                self.z - other.z
             )
 
-        return type(self)(
-            self.x - other.x,
-            self.y - other.y,
-            self.z - other.z
-        )
+        return NotImplemented
 
-    def __mul__(self, other: int | float) -> Self:
-        if type(other) not in (int, float):
-            raise TypeError(
-                f"unsupported operand type(s) for *: "
-                f"'{type(self).__name__}' and "
-                f"'{type(other).__name__}'"
+    def __isub__(self, other: Vector | SupportsFloat) -> Self:
+        return self - other
+
+    def __mul__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, Vector):
+            return type(self)(
+                self.x * other.x,
+                self.y * other.y,
+                self.z * other.z
+            )
+        elif isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                self.x * v,
+                self.y * v,
+                self.z * v
             )
 
-        return type(self)(
-            self.x * other,
-            self.y * other,
-            self.z * other
-        )
+        return NotImplemented
 
-    def __truediv__(self, other: int | float) -> Self:
-        if type(other) not in (int, float):
-            raise TypeError(
-                f"unsupported operand type(s) for /: "
-                f"'{type(self).__name__}' and "
-                f"'{type(other).__name__}'"
+    def __rmul__(self, other: Vector | SupportsFloat) -> Self:
+        return self * other
+
+    def __imul__(self, other: Vector | SupportsFloat) -> Self:
+        return self * other
+
+    def __truediv__(self, other: Vector | SupportsFloat) -> Self:
+        if isinstance(other, Vector):
+            return type(self)(
+                self.x / other.x,
+                self.y / other.y,
+                self.z / other.z
+            )
+        elif isinstance(other, SupportsFloat):
+            v = float(other)
+            return type(self)(
+                self.x / v,
+                self.y / v,
+                self.z / v
             )
 
-        return type(self)(
-            self.x / other,
-            self.y / other,
-            self.z / other
-        )
+        return NotImplemented
+
+    def __itruediv__(self, other: Vector | SupportsFloat) -> Self:
+        return self / other
 
     def length(self) -> float:
         """
@@ -944,15 +960,9 @@ class Vector:
 
 class Coordinate(Vector):
     """
-    Utility type to represent a position with 3D cartesian coordinates.
+    Type to represent a position with 3D cartesian coordinates.
 
-    Supported arithmetic operations:
-        - \\+ `Coordinate`
-        - \\- `Coordinate`
-        - `Coordinate` + `Coordinate`
-        - `Coordinate` - `Coordinate`
-        - `Coordinate` * number (`int` | `float`)
-        - `Coordinate` / number (`int` | `float`)
+    Coordinates support typical arithmetic operations.
 
     Examples
     --------

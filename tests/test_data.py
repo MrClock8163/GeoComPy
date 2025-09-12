@@ -141,6 +141,7 @@ class TestAngle:
             float(a1 + a2)
             == approx(float(Angle(180, 'deg')))
         )
+        assert a1 + a3 == a3 + a1
         assert (
             float(a1 - a2)
             == approx(float(Angle(0, 'deg')))
@@ -149,15 +150,32 @@ class TestAngle:
             float(a1 * 2)
             == approx(float(Angle(180, 'deg')))
         )
+        assert a1 * 2 == 2 * a1
         assert (
             float(a1 / 2)
             == approx(float(Angle(45, 'deg')))
         )
-        with pytest.raises(TypeError):
-            a1 * "str"  # type: ignore
+        a1 += math.pi
+        assert a1.asunit("deg") == 270
 
-        with pytest.raises(TypeError):
-            a1 / "str"  # type: ignore
+        a1 -= math.pi
+        assert float(a1) == approx(math.pi / 2)
+
+        a1 *= 2
+        assert float(a1) == approx(math.pi)
+
+        a1 /= 2
+        assert float(a1) == approx(math.pi / 2)
+
+        assert math.pi / a1 == approx(2)
+
+        assert (math.pi + a1).asunit("deg") == approx(270)
+        assert (math.pi - a1).asunit("deg") == approx(90)
+
+        assert float(a1 // 1) == approx(1)
+        assert 1 // a1 == approx(0)
+        a2 //= 1
+        assert float(a2) == approx(1)
 
         assert a1 == Angle(100, 'gon')
         assert a1 != "a"
@@ -174,7 +192,31 @@ class TestAngle:
             a1 + "a"  # type: ignore[operator]
 
         with pytest.raises(TypeError):
+            "a" + a1  # type: ignore[operator]
+
+        with pytest.raises(TypeError):
             a1 - "a"  # type: ignore[operator]
+
+        with pytest.raises(TypeError):
+            "a" - a1  # type: ignore[operator]
+
+        with pytest.raises(TypeError):
+            a1 * "a"  # type: ignore[operator]
+
+        with pytest.raises(TypeError):
+            "a" * a1  # type: ignore[operator]
+
+        with pytest.raises(TypeError):
+            a1 / "a"  # type: ignore[operator]
+
+        with pytest.raises(TypeError):
+            "a" / a1  # type: ignore[operator]
+
+        with pytest.raises(TypeError):
+            a1 // "a"  # type: ignore[operator]
+
+        with pytest.raises(TypeError):
+            "a" // a1  # type: ignore[operator]
 
         with pytest.raises(TypeError):
             a1 > "a"  # type: ignore[operator]
@@ -232,18 +274,35 @@ class TestVector:
         v2 = Vector(1, 2, 3)
 
         assert v1 + v2 == Vector(2, 3, 4)
+        assert v1 + 1 == Vector(2, 2, 2)
         assert v1 - v2 == Vector(0, -1, -2)
-        assert type(+v1) is Vector
-        v3 = +v1
-        assert v3 is not v1
+        assert v1 - 1 == Vector(0, 0, 0)
+        assert isinstance(+v1, Vector)
+
+        assert v1 is not +v1
         assert v1 != "a"
         assert v1 is not +v1
         assert v1 is not -v1
 
         v4 = Vector(2, 2, 2)
 
-        assert (v1 * 2) == v4
+        assert (v1 * 2) == (2 * v1) == v4
         assert (v4 / 2) == v1
+
+        assert v1 * v2 == v2
+        assert v2 / v1 == v2
+
+        v2 *= v1
+        assert v2 == Vector(1, 2, 3)
+
+        v2 /= v1
+        assert v2 == Vector(1, 2, 3)
+
+        v1 += 1
+        assert v1 == v4
+
+        v1 -= 1
+        assert v1 == Vector(1, 1, 1)
 
         with pytest.raises(TypeError):
             v1 + "a"  # type: ignore[operator]
@@ -257,9 +316,19 @@ class TestVector:
         with pytest.raises(TypeError):
             v1 / "a"  # type: ignore[operator]
 
-        assert v1.length() == approx(math.sqrt(3))
-        assert v1.normalized().length() == approx(1)
+        v5 = Vector(1, 1, 1)
+        assert v5.length() == approx(math.sqrt(3))
+        assert v5.normalized().length() == approx(1)
         assert Vector(0, 0, 0).normalized().length() == approx(0)
+
+        with pytest.raises(TypeError):
+            v1.dot(2)  # type: ignore[arg-type]
+
+        assert Vector(1, 1, 0).cross(Vector(-1, -1, 0)) == Vector(0, 0, 0)
+        assert Vector(1, 1, 0).dot(Vector(1, 1, 0)) == 2
+
+        with pytest.raises(TypeError):
+            v1.cross(2)  # type: ignore[arg-type]
 
     def test_properties(self) -> None:
         v1 = Vector(1, 2, 3)
