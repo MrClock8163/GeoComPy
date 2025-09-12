@@ -10,11 +10,10 @@ and deserializing data in the serial communication.
 Functions
 ---------
 
-- ``parsestr``
-- ``parsebool``
-- ``toenum``
-- ``enumparser``
-- ``gsiword``
+- ``parse_string``
+- ``parse_bool``
+- ``get_enum``
+- ``get_enum_parser``
 
 Types
 -----
@@ -49,7 +48,7 @@ PI2 = 2 * math.pi
 _E = TypeVar("_E", bound=Enum)
 
 
-def parsestr(value: str) -> str:
+def parse_string(value: str) -> str:
     """
     Returns a string value with the enclosing quote marks (``"..."``)
     removed.
@@ -77,7 +76,7 @@ def parsestr(value: str) -> str:
     return value
 
 
-def parsebool(value: str) -> bool:
+def parse_bool(value: str) -> bool:
     """
     Utility function to parse a serialized boolean value.
 
@@ -94,7 +93,7 @@ def parsebool(value: str) -> bool:
     return bool(int(value))
 
 
-def toenum(e: type[_E], value: _E | str) -> _E:
+def get_enum(e: type[_E], value: _E | str) -> _E:
     """
     Returns the member of an :class:`~enum.Enum` with the given name.
 
@@ -138,7 +137,7 @@ def toenum(e: type[_E], value: _E | str) -> _E:
     return value
 
 
-def enumparser(e: type[_E]) -> Callable[[str], _E]:
+def get_enum_parser(e: type[_E]) -> Callable[[str], _E]:
     """
     Returns a parser function that can parse the target enum from the
     serialized enum value.
@@ -168,10 +167,10 @@ def enumparser(e: type[_E]) -> Callable[[str], _E]:
     <MyEnum.ONE: 1>
 
     """
-    def parseenum(value: str) -> _E:
+    def parser(value: str) -> _E:
         return e(int(value))
 
-    return parseenum
+    return parser
 
 
 _AngleUnit = Literal['deg', 'rad', 'gon']

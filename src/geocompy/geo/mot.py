@@ -18,8 +18,8 @@ from math import pi
 from typing import SupportsFloat
 
 from ..data import (
-    toenum,
-    enumparser
+    get_enum,
+    get_enum_parser
 )
 from .gcdata import (
     ATRLock,
@@ -62,7 +62,7 @@ class GeoComMOT(GeoComSubsystem):
         """
         return self._request(
             6021,
-            parsers=enumparser(ATRLock)
+            parsers=get_enum_parser(ATRLock)
         )
 
     def start_controller(
@@ -96,7 +96,7 @@ class GeoComMOT(GeoComSubsystem):
         stop_controller
 
         """
-        _mode = toenum(Controller, mode)
+        _mode = get_enum(Controller, mode)
         return self._request(
             6001,
             [_mode.value]
@@ -129,7 +129,7 @@ class GeoComMOT(GeoComSubsystem):
         aus.switch_user_lock
 
         """
-        _mode = toenum(Stop, mode)
+        _mode = get_enum(Stop, mode)
         return self._request(
             6002,
             [_mode.value]

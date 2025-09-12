@@ -35,7 +35,7 @@ from ..gsitypes import (
 )
 from ...communication import Connection, DUMMYLOGGER
 from ...data import (
-    toenum
+    get_enum
 )
 from ..gsiformat import GsiWord
 from .settings import GsiOnlineDNASettings
@@ -422,7 +422,7 @@ class GsiOnlineDNA(GsiOnlineType):
         GsiOnlineResponse
             Success of the execution.
         """
-        _beeptype = toenum(self.BEEPTYPE, beeptype)
+        _beeptype = get_enum(self.BEEPTYPE, beeptype)
         cmd = f"BEEP/{_beeptype.value:d}"
         response = self.request(cmd, "Beep")
         return response

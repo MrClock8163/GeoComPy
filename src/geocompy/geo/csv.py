@@ -18,10 +18,10 @@ from datetime import datetime
 
 from ..data import (
     Byte,
-    parsestr,
-    parsebool,
-    enumparser,
-    toenum
+    parse_string,
+    parse_bool,
+    get_enum_parser,
+    get_enum
 )
 from .gcdata import (
     Capabilities,
@@ -78,7 +78,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         return self._request(
             5004,
-            parsers=parsestr
+            parsers=parse_string
         )
 
     def get_user_instrument_name(self) -> GeoComResponse[str]:
@@ -98,7 +98,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         return self._request(
             5006,
-            parsers=parsestr
+            parsers=parse_string
         )
 
     def set_user_instrument_name(
@@ -147,8 +147,8 @@ class GeoComCSV(GeoComSubsystem):
         return self._request(
             5035,
             parsers=(
-                enumparser(DeviceClass),
-                enumparser(Capabilities)
+                get_enum_parser(DeviceClass),
+                get_enum_parser(Capabilities)
             )
         )
 
@@ -373,8 +373,8 @@ class GeoComCSV(GeoComSubsystem):
             5039,
             parsers=(
                 int,
-                enumparser(PowerSource),
-                enumparser(PowerSource)
+                get_enum_parser(PowerSource),
+                get_enum_parser(PowerSource)
             )
         )
 
@@ -396,7 +396,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         return self._request(
             5100,
-            parsers=enumparser(Reflectorless)
+            parsers=get_enum_parser(Reflectorless)
         )
 
     def get_datetime_precise(self) -> GeoComResponse[datetime]:
@@ -494,7 +494,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         return self._request(
             5156,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_laserplummet(
@@ -540,7 +540,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         return self._request(
             5042,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def set_laserplummet_intensity(
@@ -612,11 +612,11 @@ class GeoComCSV(GeoComSubsystem):
                 - `bool`: License is available.
 
         """
-        _prop = toenum(Property, property)
+        _prop = get_enum(Property, property)
         return self._request(
             5139,
             [_prop.value],
-            parsebool
+            parse_bool
         )
 
     def get_voltage(self) -> GeoComResponse[int]:
@@ -682,7 +682,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         return self._request(
             5162,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def set_preferred_powersource(
@@ -702,7 +702,7 @@ class GeoComCSV(GeoComSubsystem):
             New preferred power source to set.
 
         """
-        _source = toenum(PowerSource, source)
+        _source = get_enum(PowerSource, source)
         return self._request(
             5163,
             [_source.value]
@@ -725,7 +725,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         return self._request(
             5164,  # Mistyped as 5163 in the GeoCom reference
-            parsers=enumparser(PowerSource)
+            parsers=get_enum_parser(PowerSource)
         )
 
     def get_datetime_new(self) -> GeoComResponse[datetime]:
@@ -858,11 +858,11 @@ class GeoComCSV(GeoComSubsystem):
         return self._request(
             5073,
             parsers=(
-                parsestr,
-                parsestr,
+                parse_string,
+                parse_string,
                 int,
                 int,
-                parsestr
+                parse_string
             )
         )
 

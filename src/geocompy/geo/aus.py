@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from ..data import parsebool
+from ..data import parse_bool
 from .gctypes import (
     GeoComSubsystem,
     GeoComResponse
@@ -57,7 +57,7 @@ class GeoComAUS(GeoComSubsystem):
         """
         return self._request(
             18006,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_user_atr(
@@ -117,7 +117,7 @@ class GeoComAUS(GeoComSubsystem):
         """
         return self._request(
             18008,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_user_lock(
@@ -178,7 +178,7 @@ class GeoComAUS(GeoComSubsystem):
         """
         return self._request(
             18008,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_rcs_search(

@@ -15,9 +15,9 @@ Types
 from __future__ import annotations
 
 from ..data import (
-    toenum,
-    enumparser,
-    parsebool
+    get_enum,
+    get_enum_parser,
+    parse_bool
 )
 from .gcdata import (
     Tracklight,
@@ -134,7 +134,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         return self._request(
             1044,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_boomerang_filter(
@@ -191,7 +191,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         return self._request(
             1041,
-            parsers=enumparser(Tracklight)
+            parsers=get_enum_parser(Tracklight)
         )
 
     def set_tracklight_brightness(
@@ -216,7 +216,7 @@ class GeoComEDM(GeoComSubsystem):
             Error codes:
                 - ``NOT_IMPL``: Tracklight is not available.
         """
-        _intensity = toenum(Tracklight, intensity)
+        _intensity = get_enum(Tracklight, intensity)
         return self._request(
             1032,
             [_intensity.value]
@@ -241,7 +241,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         return self._request(
             1040,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_tracklight(
@@ -294,7 +294,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         return self._request(
             1058,
-            parsers=enumparser(Guidelight)
+            parsers=get_enum_parser(Guidelight)
         )
 
     def set_guidelight_intensity(
@@ -321,7 +321,7 @@ class GeoComEDM(GeoComSubsystem):
                   EGL.
 
         """
-        _intesity = toenum(Guidelight, intensity)
+        _intesity = get_enum(Guidelight, intensity)
         return self._request(
             1059,
             [_intesity.value]
@@ -351,11 +351,11 @@ class GeoComEDM(GeoComSubsystem):
                 - `bool`: Continuous measurement is active.
 
         """
-        _mode = toenum(MeasurementType, mode)
+        _mode = get_enum(MeasurementType, mode)
         return self._request(
             1070,
             [_mode.value],
-            parsebool
+            parse_bool
         )
 
     def switch_boomerang_filter_new(

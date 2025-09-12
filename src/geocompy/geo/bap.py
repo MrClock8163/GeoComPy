@@ -16,10 +16,10 @@ from __future__ import annotations
 
 from ..data import (
     Angle,
-    toenum,
-    enumparser,
-    parsestr,
-    parsebool
+    get_enum,
+    get_enum_parser,
+    parse_string,
+    parse_bool
 )
 from .gcdata import (
     Program,
@@ -138,7 +138,7 @@ class GeoComBAP(GeoComSubsystem):
                 - ``SHUT_DOWN``: System stopped.
 
         """
-        _mode = toenum(Program, mode)
+        _mode = get_enum(Program, mode)
         return self._request(
             17017,
             [_mode.value],
@@ -146,7 +146,7 @@ class GeoComBAP(GeoComSubsystem):
                 Angle.parse,
                 Angle.parse,
                 float,
-                enumparser(Program)
+                get_enum_parser(Program)
             )
         )
 
@@ -170,7 +170,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         return self._request(
             17022,
-            parsers=enumparser(Target)
+            parsers=get_enum_parser(Target)
         )
 
     def set_target_type(
@@ -201,7 +201,7 @@ class GeoComBAP(GeoComSubsystem):
         get_target_type
         set_measurement_program
         """
-        _target = toenum(Target, target)
+        _target = get_enum(Target, target)
         return self._request(
             17021,
             [_target.value]
@@ -230,7 +230,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         return self._request(
             17009,
-            parsers=enumparser(Prism)
+            parsers=get_enum_parser(Prism)
         )
 
     def set_prism_type(
@@ -260,7 +260,7 @@ class GeoComBAP(GeoComSubsystem):
         --------
         get_prism_type
         """
-        _prism = toenum(Prism, prism)
+        _prism = get_enum(Prism, prism)
         return self._request(
             17008,
             [_prism.value]
@@ -294,14 +294,14 @@ class GeoComBAP(GeoComSubsystem):
                 - ``IVPARAM``: Invalid prism type.
 
         """
-        _prism = toenum(Prism, prism)
+        _prism = get_enum(Prism, prism)
         return self._request(
             17023,
             [_prism.value],
             (
-                parsestr,
+                parse_string,
                 float,
-                enumparser(Reflector)
+                get_enum_parser(Reflector)
             )
         )
 
@@ -340,8 +340,8 @@ class GeoComBAP(GeoComSubsystem):
                 - ``IVPARAM``: Invalid prism type.
 
         """
-        _prism = toenum(Prism, prism)
-        _reflector = toenum(Reflector, reflector)
+        _prism = get_enum(Prism, prism)
+        _reflector = get_enum(Reflector, reflector)
         name = f"{name:.16s}"
         return self._request(
             17024,
@@ -371,7 +371,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         return self._request(
             17018,
-            parsers=enumparser(UserProgram)
+            parsers=get_enum_parser(UserProgram)
         )
 
     def set_measurement_program(
@@ -399,7 +399,7 @@ class GeoComBAP(GeoComSubsystem):
         get_measurement_program
         set_target_type
         """
-        _program = toenum(UserProgram, program)
+        _program = get_enum(UserProgram, program)
         return self._request(
             17019,
             [_program.value]
@@ -458,7 +458,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         return self._request(
             17031,
-            parsers=(enumparser(Prism), parsestr)
+            parsers=(get_enum_parser(Prism), parse_string)
         )
 
     def set_prism_type_name(
@@ -492,7 +492,7 @@ class GeoComBAP(GeoComSubsystem):
         get_prism_type_name
         tmc.set_prism_correction
         """
-        _prism = toenum(Prism, prism)
+        _prism = get_enum(Prism, prism)
         return self._request(
             17030,
             [_prism.value, name]
@@ -537,8 +537,8 @@ class GeoComBAP(GeoComSubsystem):
             [name],
             (
                 float,
-                enumparser(Reflector),
-                parsestr
+                get_enum_parser(Reflector),
+                parse_string
             )
         )
 
@@ -580,7 +580,7 @@ class GeoComBAP(GeoComSubsystem):
         get_prism_definition
         set_user_prism_definition
         """
-        _reflector = toenum(Reflector, reflector)
+        _reflector = get_enum(Reflector, reflector)
         return self._request(
             17032,
             [name, const, _reflector.value, creator]
@@ -606,7 +606,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         return self._request(
             17034,
-            parsers=enumparser(ATRMode)
+            parsers=get_enum_parser(ATRMode)
         )
 
     def set_atr_setting(
@@ -629,7 +629,7 @@ class GeoComBAP(GeoComSubsystem):
         --------
         get_atr_setting
         """
-        _mode = toenum(ATRMode, mode)
+        _mode = get_enum(ATRMode, mode)
         return self._request(
             17035,
             [_mode.value]
@@ -655,7 +655,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         return self._request(
             17036,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_reduced_atr_fov(
@@ -703,7 +703,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         return self._request(
             17039,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_precise_atr(

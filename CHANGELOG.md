@@ -16,6 +16,10 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Reworked arithmetic operations supported by `Angle`
 - Reworked arithmetic operations supported by `Vector`
+- Renamed `parsestr` to `parse_string`
+- Renamed `parsebool` to `parse_bool`
+- Renamed `toenum` to `get_enum`
+- Renamed `enumparser` to `get_enum_parser`
 
 ### Fixed
 

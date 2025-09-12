@@ -5,10 +5,10 @@ import pytest
 from pytest import approx
 
 from geocompy.data import (
-    toenum,
-    enumparser,
-    parsestr,
-    parsebool,
+    get_enum,
+    get_enum_parser,
+    parse_string,
+    parse_bool,
     Angle,
     Byte,
     Coordinate,
@@ -26,28 +26,28 @@ class B(Enum):
 
 class TestFunctions:
     def test_toenum(self) -> None:
-        assert toenum(A, "MEMBER") is A.MEMBER
-        assert toenum(A, A.MEMBER) is A.MEMBER
+        assert get_enum(A, "MEMBER") is A.MEMBER
+        assert get_enum(A, A.MEMBER) is A.MEMBER
 
         with pytest.raises(KeyError):
-            toenum(A, "FAIL")
+            get_enum(A, "FAIL")
 
         with pytest.raises(ValueError):
-            toenum(A, B.MEMBER)
+            get_enum(A, B.MEMBER)
 
     def test_enumparser(self) -> None:
-        assert callable(enumparser(A))
-        assert enumparser(A)("1") is A.MEMBER
+        assert callable(get_enum_parser(A))
+        assert get_enum_parser(A)("1") is A.MEMBER
 
     def test_parsestr(self) -> None:
-        assert parsestr("value") == "value"
-        assert parsestr("\"value") == "\"value"
-        assert parsestr("value\"") == "value\""
-        assert parsestr("\"value\"") == "value"
+        assert parse_string("value") == "value"
+        assert parse_string("\"value") == "\"value"
+        assert parse_string("value\"") == "value\""
+        assert parse_string("\"value\"") == "value"
 
     def test_parsebool(self) -> None:
-        assert parsebool("0") is False
-        assert parsebool("1") is True
+        assert parse_bool("0") is False
+        assert parse_bool("1") is True
 
 
 class TestAngle:

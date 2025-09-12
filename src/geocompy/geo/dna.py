@@ -15,9 +15,9 @@ Types
 from __future__ import annotations
 
 from ..data import (
-    parsebool,
-    enumparser,
-    toenum,
+    parse_bool,
+    get_enum_parser,
+    get_enum,
     Angle
 )
 from .gcdata import StaffType
@@ -132,7 +132,7 @@ class GeoComDNA(GeoComSubsystem):
         """
         return self._request(
             29011,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def do_measurement(self) -> GeoComResponse[None]:
@@ -259,7 +259,7 @@ class GeoComDNA(GeoComSubsystem):
         """
         return self._request(
             29108,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def get_job_number(self) -> GeoComResponse[int]:
@@ -312,7 +312,7 @@ class GeoComDNA(GeoComSubsystem):
         GeoComResponse
 
         """
-        _staff = toenum(StaffType, staff)
+        _staff = get_enum(StaffType, staff)
         return self._request(
             29127,
             [_staff.value]
@@ -333,5 +333,5 @@ class GeoComDNA(GeoComSubsystem):
         """
         return self._request(
             29126,
-            parsers=enumparser(StaffType)
+            parsers=get_enum_parser(StaffType)
         )

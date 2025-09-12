@@ -18,9 +18,9 @@ from datetime import datetime
 
 from ..data import (
     Byte,
-    parsestr,
-    parsebool,
-    toenum
+    parse_string,
+    parse_bool,
+    get_enum
 )
 from .gcdata import (
     Device,
@@ -79,8 +79,8 @@ class GeoComFTR(GeoComSubsystem):
         abort_listing
 
         """
-        _device = toenum(Device, device)
-        _filetype = toenum(File, filetype)
+        _device = get_enum(Device, device)
+        _filetype = get_enum(File, filetype)
         return self._request(
             23306,
             [_device.value, _filetype.value, path]
@@ -150,8 +150,8 @@ class GeoComFTR(GeoComSubsystem):
             23307,
             [next],
             (
-                parsebool,
-                parsestr,
+                parse_bool,
+                parse_string,
                 int,
                 Byte.parse,
                 Byte.parse,
@@ -226,8 +226,8 @@ class GeoComFTR(GeoComSubsystem):
         abort_download
 
         """
-        _device = toenum(Device, device)
-        _filetype = toenum(File, filetype)
+        _device = get_enum(Device, device)
+        _filetype = get_enum(File, filetype)
         return self._request(
             23303,
             [_device.value, _filetype.value, filename, blocksize],
@@ -269,7 +269,7 @@ class GeoComFTR(GeoComSubsystem):
         return self._request(
             23304,
             [block],
-            parsestr
+            parse_string
         )
 
     def abort_download(self) -> GeoComResponse[None]:
@@ -330,8 +330,8 @@ class GeoComFTR(GeoComSubsystem):
         list
 
         """
-        _device = toenum(Device, device)
-        _filetype = toenum(File, filetype)
+        _device = get_enum(Device, device)
+        _filetype = get_enum(File, filetype)
         if time is None:
             params = [
                 _device.value, _filetype.value,
@@ -389,7 +389,7 @@ class GeoComFTR(GeoComSubsystem):
         list
 
         """
-        _device = toenum(Device, device)
+        _device = get_enum(Device, device)
         _filetype = File.DATABASE
 
         if time is None:
@@ -456,8 +456,8 @@ class GeoComFTR(GeoComSubsystem):
         abort_download
 
         """
-        _device = toenum(Device, device)
-        _filetype = toenum(File, filetype)
+        _device = get_enum(Device, device)
+        _filetype = get_enum(File, filetype)
         return self._request(
             23313,
             [_device.value, _filetype.value, filename, blocksize],
@@ -501,5 +501,5 @@ class GeoComFTR(GeoComSubsystem):
         return self._request(
             23314,
             [block],
-            parsestr
+            parse_string
         )
