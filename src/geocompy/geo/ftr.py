@@ -15,6 +15,7 @@ Types
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 
 from ..data import (
     Byte,
@@ -333,7 +334,7 @@ class GeoComFTR(GeoComSubsystem):
         _device = get_enum(Device, device)
         _filetype = get_enum(File, filetype)
         if time is None:
-            params = [
+            params: list[Enum | Byte | str] = [
                 _device, _filetype,
                 Byte(0), Byte(0), Byte(0),
                 filename
@@ -393,7 +394,7 @@ class GeoComFTR(GeoComSubsystem):
         _filetype = File.DATABASE
 
         if time is None:
-            params = [
+            params: list[Enum | Byte | str] = [
                 _device, _filetype,
                 Byte(0), Byte(0), Byte(0),
                 dirname
