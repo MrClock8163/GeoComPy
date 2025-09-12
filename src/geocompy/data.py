@@ -179,15 +179,9 @@ _AngleUnit = Literal['deg', 'rad', 'gon']
 
 class Angle:
     """
-    Utility type to represent an angular value.
+    Type to represent an angular value.
 
-    Supported arithmetic operations:
-        - \\+ `Angle`
-        - \\- `Angle`
-        - `Angle` + `Angle`
-        - `Angle` - `Angle`
-        - `Angle` * number (:class:`int` | :class:`float`)
-        - `Angle` / number (:class:`int` | :class:`float`)
+    Angles support typical arithmetic operations.
 
     Notes
     -----
@@ -623,15 +617,9 @@ class Byte:
 
 class Vector:
     """
-    Utility type to represent a position with 3D cartesian coordinates.
+    Type to represent a position or direction with 3D cartesian coordinates.
 
-    Supported arithmetic operations:
-        - \\+ `Vector`
-        - \\- `Vector`
-        - `Vector` + `Vector`
-        - `Vector` - `Vector`
-        - `Vector` * number (`int` | `float`)
-        - `Vector` / number (`int` | `float`)
+    Vectors support typical arithmetic operations.
 
     Examples
     --------
@@ -972,15 +960,9 @@ class Vector:
 
 class Coordinate(Vector):
     """
-    Utility type to represent a position with 3D cartesian coordinates.
+    Type to represent a position with 3D cartesian coordinates.
 
-    Supported arithmetic operations:
-        - \\+ `Coordinate`
-        - \\- `Coordinate`
-        - `Coordinate` + `Coordinate`
-        - `Coordinate` - `Coordinate`
-        - `Coordinate` * number (`int` | `float`)
-        - `Coordinate` / number (`int` | `float`)
+    Coordinates support typical arithmetic operations.
 
     Examples
     --------
