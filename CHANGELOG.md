@@ -23,7 +23,7 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- GeoCom ING `set_telescopic_configuration` was missing the `prefix` parameter
+- GeoCom IMG `set_telescopic_configuration` was missing the `prefix` parameter
 - `Angle.to_dms` was sometimes returning incorrect value due to rounding
 
 ### Removed
