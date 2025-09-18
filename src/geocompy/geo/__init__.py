@@ -40,6 +40,7 @@ import re
 from logging import Logger
 from traceback import format_exc
 from time import sleep
+from enum import Enum
 from typing import Any, Callable, Iterable, overload, TypeVar
 
 from serial import SerialException, SerialTimeoutException
@@ -279,7 +280,7 @@ class GeoCom(GeoComType):
     def request(
         self,
         rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        params: Iterable[int | float | bool | str | Angle | Byte | Enum] = (),
         parsers: Callable[[str], _T] | None = None
     ) -> GeoComResponse[_T]: ...
 
@@ -287,14 +288,14 @@ class GeoCom(GeoComType):
     def request(
         self,
         rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        params: Iterable[int | float | bool | str | Angle | Byte | Enum] = (),
         parsers: Iterable[Callable[[str], Any]] | None = None
     ) -> GeoComResponse[tuple[Any, ...]]: ...
 
     def request(
         self,
         rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        params: Iterable[int | float | bool | str | Angle | Byte | Enum] = (),
         parsers: (
             Iterable[Callable[[str], Any]]
             | Callable[[str], Any]
@@ -312,7 +313,7 @@ class GeoCom(GeoComType):
         ----------
         rpc: int
             Number of the RPC to execute.
-        params: Iterable[int | float | bool | str | Angle | Byte]
+        params: Iterable[int | float | bool | str | Angle | Byte | Enum]
             Parameters for the request, by default()
         parsers: Iterable[Callable[[str], Any]] \
                   | Callable[[str], Any] \
@@ -344,6 +345,8 @@ class GeoCom(GeoComType):
                     value = f"{item:d}"
                 case str():
                     value = f"\"{item}\""
+                case Enum():
+                    value = f"{item.value:d}"
                 case _:
                     raise TypeError(f"unexpected parameter type: {type(item)}")
 

@@ -14,7 +14,7 @@ Types
 """
 from __future__ import annotations
 
-from ..data import parsebool
+from ..data import parse_bool
 from .gctypes import (
     GeoComSubsystem,
     GeoComResponse
@@ -69,5 +69,5 @@ class GeoComKDM(GeoComSubsystem):
         """
         return self._request(
             23108,
-            parsers=parsebool
+            parsers=parse_bool
         )

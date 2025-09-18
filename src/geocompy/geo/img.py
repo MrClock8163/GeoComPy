@@ -15,8 +15,8 @@ Types
 from __future__ import annotations
 
 from ..data import (
-    toenum,
-    enumparser
+    get_enum,
+    get_enum_parser
 )
 from .gcdata import (
     CameraFunctions,
@@ -74,14 +74,14 @@ class GeoComIMG(GeoComSubsystem):
         set_telescopic_configuration
 
         """
-        _device = toenum(Device, at)
+        _device = get_enum(Device, at)
         return self._request(
             23400,
-            [_device.value],
+            [_device],
             parsers=(
                 int,
                 int,
-                enumparser(CameraFunctions),
+                get_enum_parser(CameraFunctions),
                 str
             )
         )
@@ -126,12 +126,12 @@ class GeoComIMG(GeoComSubsystem):
         take_telescopic_image
 
         """
-        _device = toenum(Device, saveto)
+        _device = get_enum(Device, saveto)
         if isinstance(functions, CameraFunctions):
             functions = functions.value
         return self._request(
             23401,
-            [_device.value, imgnumber, quality, functions, prefix]
+            [_device, imgnumber, quality, functions, prefix]
         )
 
     def take_telescopic_image(
@@ -166,10 +166,10 @@ class GeoComIMG(GeoComSubsystem):
         set_telescopic_configuration
 
         """
-        _device = toenum(Device, device)
+        _device = get_enum(Device, device)
         return self._request(
             23402,
-            [_device.value],
+            [_device],
             int
         )
 

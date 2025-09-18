@@ -19,9 +19,9 @@ from typing import SupportsFloat
 from ..data import (
     Angle,
     Coordinate,
-    toenum,
-    enumparser,
-    parsebool
+    get_enum,
+    get_enum_parser,
+    parse_bool
 )
 from .gcdata import (
     EDMModeV1,
@@ -150,10 +150,10 @@ class GeoComTMC(GeoComSubsystem):
                 params[7]
             )
 
-        _mode = toenum(Inclination, mode)
+        _mode = get_enum(Inclination, mode)
         response = self._request(
             2082,
-            [int(wait * 1000), _mode.value],
+            [int(wait * 1000), _mode],
             (
                 float,
                 float,
@@ -229,10 +229,10 @@ class GeoComTMC(GeoComSubsystem):
         get_angle
 
         """
-        _mode = toenum(Inclination, mode)
+        _mode = get_enum(Inclination, mode)
         return self._request(
             2108,
-            [int(wait * 1000), _mode.value],
+            [int(wait * 1000), _mode],
             (
                 Angle.parse,
                 Angle.parse,
@@ -306,10 +306,10 @@ class GeoComTMC(GeoComSubsystem):
         get_simple_measurement
 
         """
-        _mode = toenum(Inclination, mode)
+        _mode = get_enum(Inclination, mode)
         return self._request(
             2003,
-            [_mode.value],
+            [_mode],
             (
                 Angle.parse,
                 Angle.parse,
@@ -319,7 +319,7 @@ class GeoComTMC(GeoComSubsystem):
                 Angle.parse,
                 Angle.parse,
                 int,
-                enumparser(Face)
+                get_enum_parser(Face)
             )
         )
 
@@ -376,10 +376,10 @@ class GeoComTMC(GeoComSubsystem):
         get_simple_measurement
 
         """
-        _mode = toenum(Inclination, mode)
+        _mode = get_enum(Inclination, mode)
         return self._request(
             2107,
-            [_mode.value],
+            [_mode],
             (
                 Angle.parse,
                 Angle.parse
@@ -511,10 +511,10 @@ class GeoComTMC(GeoComSubsystem):
         get_angle
 
         """
-        _mode = toenum(Inclination, mode)
+        _mode = get_enum(Inclination, mode)
         return self._request(
             2167,
-            [int(wait * 1000), _mode.value],
+            [int(wait * 1000), _mode],
             (
                 Angle.parse,
                 Angle.parse,
@@ -560,11 +560,11 @@ class GeoComTMC(GeoComSubsystem):
         get_angle_inclination
 
         """
-        _cmd = toenum(Measurement, command)
-        _mode = toenum(Inclination, inclination)
+        _cmd = get_enum(Measurement, command)
+        _mode = get_enum(Inclination, inclination)
         return self._request(
             2008,
-            [_cmd.value, _mode.value]
+            [_cmd, _mode]
         )
 
     def set_manual_distance(
@@ -622,10 +622,10 @@ class GeoComTMC(GeoComSubsystem):
         was_not_inclination_corrected
 
         """
-        _mode = toenum(Inclination, inclination)
+        _mode = get_enum(Inclination, inclination)
         return self._request(
             2019,
-            [distance, offset, _mode.value]
+            [distance, offset, _mode]
         )
 
     def get_target_height(self) -> GeoComResponse[float]:
@@ -876,7 +876,7 @@ class GeoComTMC(GeoComSubsystem):
         return self._request(
             2031,
             parsers=(
-                parsebool,
+                parse_bool,
                 float,
                 float
             )
@@ -1064,7 +1064,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         return self._request(
             2026,
-            parsers=enumparser(Face)
+            parsers=get_enum_parser(Face)
         )
 
     def get_signal(self) -> GeoComResponse[tuple[float, int]]:
@@ -1125,10 +1125,10 @@ class GeoComTMC(GeoComSubsystem):
         return self._request(
             2014,
             parsers=(
-                parsebool,
-                parsebool,
-                parsebool,
-                parsebool
+                parse_bool,
+                parse_bool,
+                parse_bool,
+                parse_bool
             )
         )
 
@@ -1151,7 +1151,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         return self._request(
             2007,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_compensator(
@@ -1203,7 +1203,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         return self._request(
             2021,
-            parsers=enumparser(EDMModeV1)
+            parsers=get_enum_parser(EDMModeV1)
         )
 
     def set_edm_mode_v1(
@@ -1231,10 +1231,10 @@ class GeoComTMC(GeoComSubsystem):
         get_edm_mode_v1
 
         """
-        _mode = toenum(EDMModeV1, mode)
+        _mode = get_enum(EDMModeV1, mode)
         return self._request(
             2020,
-            [_mode.value]
+            [_mode]
         )
 
     def get_edm_mode_v2(self) -> GeoComResponse[EDMModeV2]:
@@ -1258,7 +1258,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         return self._request(
             2021,
-            parsers=enumparser(EDMModeV2)
+            parsers=get_enum_parser(EDMModeV2)
         )
 
     def set_edm_mode_v2(
@@ -1286,10 +1286,10 @@ class GeoComTMC(GeoComSubsystem):
         get_edm_mode_v2
 
         """
-        _mode = toenum(EDMModeV2, mode)
+        _mode = get_enum(EDMModeV2, mode)
         return self._request(
             2020,
-            [_mode.value]
+            [_mode]
         )
 
     def get_simple_coordinate(
@@ -1360,10 +1360,10 @@ class GeoComTMC(GeoComSubsystem):
                 params[2]
             )
 
-        _mode = toenum(Inclination, inclination)
+        _mode = get_enum(Inclination, inclination)
         response = self._request(
             2116,
-            [int(wait * 1000), _mode.value],
+            [int(wait * 1000), _mode],
             parsers=(
                 float,
                 float,
@@ -1393,7 +1393,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         return self._request(
             2114,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def was_not_inclination_corrected(self) -> GeoComResponse[bool]:
@@ -1416,7 +1416,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         return self._request(
             2115,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def set_angle_correction(
@@ -1589,7 +1589,7 @@ class GeoComTMC(GeoComSubsystem):
         return self._request(
             2154,
             parsers=(
-                parsebool,
+                parse_bool,
                 float,
                 float,
                 float,

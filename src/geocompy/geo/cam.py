@@ -18,9 +18,9 @@ from ..data import (
     Coordinate,
     Vector,
     Angle,
-    toenum,
-    enumparser,
-    parsebool
+    get_enum,
+    get_enum_parser,
+    parse_bool
 )
 from .gcdata import (
     Camera,
@@ -72,11 +72,11 @@ class GeoComCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _zoom = toenum(Zoom, zoom)
-        _camera = toenum(Camera, camera)
+        _zoom = get_enum(Zoom, zoom)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23608,
-            [_camera.value, _zoom.value]
+            [_camera, _zoom]
         )
 
     def get_zoom(
@@ -103,11 +103,11 @@ class GeoComCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23609,
-            [_camera.value],
-            enumparser(Zoom)
+            [_camera],
+            get_enum_parser(Zoom)
         )
 
     def get_camera_position(
@@ -151,10 +151,10 @@ class GeoComCAM(GeoComSubsystem):
                 params[2]
             )
 
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         response = self._request(
             23611,
-            [_camera.value],
+            [_camera],
             (
                 float,
                 float,
@@ -207,10 +207,10 @@ class GeoComCAM(GeoComSubsystem):
                 params[2]
             )
 
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         response = self._request(
             23613,
-            [_camera.value, dist],
+            [_camera, dist],
             (
                 float,
                 float,
@@ -249,11 +249,11 @@ class GeoComCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _camera = toenum(Camera, camera)
-        _zoom = toenum(Zoom, zoom)
+        _camera = get_enum(Camera, camera)
+        _zoom = get_enum(Zoom, zoom)
         return self._request(
             23619,
-            [_camera.value, _zoom.value],
+            [_camera, _zoom],
             (
                 Angle.parse,
                 Angle.parse
@@ -290,10 +290,10 @@ class GeoComCAM(GeoComSubsystem):
         --------
         take_image
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23622,
-            [_camera.value, name, number]
+            [_camera, name, number]
         )
 
     def take_image(
@@ -324,10 +324,10 @@ class GeoComCAM(GeoComSubsystem):
         set_camera_properties
         set_actual_image_name
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23623,
-            [_camera.value]
+            [_camera]
         )
 
     def get_overview_crosshair(self) -> GeoComResponse[tuple[float, float]]:
@@ -420,11 +420,11 @@ class GeoComCAM(GeoComSubsystem):
         --------
         take_image
         """
-        _wb = toenum(WhiteBalance, whitebalance)
-        _camera = toenum(Camera, camera)
+        _wb = get_enum(WhiteBalance, whitebalance)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23626,
-            [_camera.value, _wb.value]
+            [_camera, _wb]
         )
 
     def is_camera_ready(
@@ -455,10 +455,10 @@ class GeoComCAM(GeoComSubsystem):
         switch_camera_power
         wait_for_camera_ready
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23627,
-            [_camera.value]
+            [_camera]
         )
 
     def set_camera_properties(
@@ -496,13 +496,13 @@ class GeoComCAM(GeoComSubsystem):
         set_actual_image_name
         take_image
         """
-        _res = toenum(Resolution, resolution)
-        _comp = toenum(Compression, compression)
-        _qual = toenum(JPEGQuality, jpegquality)
-        _camera = toenum(Camera, camera)
+        _res = get_enum(Resolution, resolution)
+        _comp = get_enum(Compression, compression)
+        _qual = get_enum(JPEGQuality, jpegquality)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23633,
-            [_camera.value, _res.value, _comp.value, _qual.value]
+            [_camera, _res, _comp, _qual]
         )
 
     def get_camera_power_status(
@@ -534,11 +534,11 @@ class GeoComCAM(GeoComSubsystem):
         switch_camera_power
         wait_for_camera_ready
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23636,
-            [_camera.value],
-            parsebool
+            [_camera],
+            parse_bool
         )
 
     def switch_camera_power(
@@ -570,10 +570,10 @@ class GeoComCAM(GeoComSubsystem):
         get_camera_power_status
         wait_for_camera_ready
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23637,
-            [_camera.value, activate]
+            [_camera, activate]
         )
 
     def wait_for_camera_ready(
@@ -607,10 +607,10 @@ class GeoComCAM(GeoComSubsystem):
         get_camera_power_status
         switch_camera_power
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23638,
-            [_camera.value, int(wait * 1000)]
+            [_camera, int(wait * 1000)]
         )
 
     def set_autofocus_position(
@@ -799,10 +799,10 @@ class GeoComCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23668,
-            [_camera.value],
+            [_camera],
             (
                 float,
                 float
@@ -959,10 +959,10 @@ class GeoComCAM(GeoComSubsystem):
                 - ``NA``: Imaging license not found.
 
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             23675,
-            [_camera.value, fps, bitrate]
+            [_camera, fps, bitrate]
         )
 
     def stop_remote_video(self) -> GeoComResponse[None]:

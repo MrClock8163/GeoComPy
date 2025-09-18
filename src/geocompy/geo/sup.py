@@ -15,9 +15,9 @@ Types
 from __future__ import annotations
 
 from ..data import (
-    toenum,
-    enumparser,
-    parsebool
+    get_enum,
+    get_enum_parser,
+    parse_bool
 )
 from .gcdata import AutoPower
 from .gctypes import (
@@ -59,8 +59,8 @@ class GeoComSUP(GeoComSubsystem):
         return self._request(
             14001,
             parsers=(
-                parsebool,
-                enumparser(AutoPower),
+                parse_bool,
+                get_enum_parser(AutoPower),
                 int
             )
         )
@@ -96,10 +96,10 @@ class GeoComSUP(GeoComSubsystem):
         get_poweroff_configuration
 
         """
-        _autopower = toenum(AutoPower, autopower)
+        _autopower = get_enum(AutoPower, autopower)
         return self._request(
             14002,
-            [lowtemp, _autopower.value, timeout]
+            [lowtemp, _autopower, timeout]
         )
 
     def switch_low_temperature_control(

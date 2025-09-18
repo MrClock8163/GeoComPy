@@ -15,8 +15,8 @@ Types
 from __future__ import annotations
 
 from ..data import (
-    enumparser,
-    toenum
+    get_enum_parser,
+    get_enum
 )
 from .gcdata import Format
 from .gctypes import (
@@ -48,7 +48,7 @@ class GeoComWIR(GeoComSubsystem):
         """
         return self._request(
             8011,
-            parsers=enumparser(Format)
+            parsers=get_enum_parser(Format)
         )
 
     def set_recording_format(
@@ -70,8 +70,8 @@ class GeoComWIR(GeoComSubsystem):
         GeoComResponse
 
         """
-        _format = toenum(Format, format)
+        _format = get_enum(Format, format)
         return self._request(
             8012,
-            [_format.value]
+            [_format]
         )

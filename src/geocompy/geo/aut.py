@@ -18,9 +18,9 @@ from typing import SupportsFloat
 
 from ..data import (
     Angle,
-    toenum,
-    enumparser,
-    parsebool
+    get_enum,
+    get_enum_parser,
+    parse_bool
 )
 from .gcdata import (
     Adjust,
@@ -78,7 +78,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         return self._request(
             9019,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_atr(
@@ -152,7 +152,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         return self._request(
             9021,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def switch_lock(
@@ -369,11 +369,11 @@ class GeoComAUT(GeoComSubsystem):
         com.get_timeout
         com.set_timeout
         """
-        _posmode = toenum(Position, posmode)
-        _atrmode = toenum(ATR, atrmode)
+        _posmode = get_enum(Position, posmode)
+        _atrmode = get_enum(ATR, atrmode)
         return self._request(
             9027,
-            [float(hz), float(v), _posmode.value, _atrmode.value, 0]
+            [float(hz), float(v), _posmode, _atrmode, 0]
         )
 
     def change_face(
@@ -428,11 +428,11 @@ class GeoComAUT(GeoComSubsystem):
         com.set_timeout
         tmc.get_face
         """
-        _posmode = toenum(Position, posmode)
-        _atrmode = toenum(ATR, atrmode)
+        _posmode = get_enum(Position, posmode)
+        _atrmode = get_enum(ATR, atrmode)
         return self._request(
             9028,
-            [_posmode.value, _atrmode.value, 0]
+            [_posmode, _atrmode, 0]
         )
 
     def fine_adjust(
@@ -550,7 +550,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         return self._request(
             9030,
-            parsers=enumparser(Adjust)
+            parsers=get_enum_parser(Adjust)
         )
 
     def set_fine_adjust_mode(
@@ -577,10 +577,10 @@ class GeoComAUT(GeoComSubsystem):
         --------
         get_fine_adjust_mode
         """
-        _mode = toenum(Adjust, mode)
+        _mode = get_enum(Adjust, mode)
         return self._request(
             9031,
-            [_mode.value]
+            [_mode]
         )
 
     def lock_in(self) -> GeoComResponse[None]:
@@ -645,7 +645,7 @@ class GeoComAUT(GeoComSubsystem):
                 Angle.parse,
                 Angle.parse,
                 Angle.parse,
-                parsebool
+                parse_bool
             )
         )
 
@@ -881,10 +881,10 @@ class GeoComAUT(GeoComSubsystem):
         switch_powersearch_range
         powersearch_window
         """
-        _direction = toenum(Turn, direction)
+        _direction = get_enum(Turn, direction)
         return self._request(
             9051,
-            [_direction.value, swing]
+            [_direction, swing]
         )
 
     def switch_lock_onthefly(
@@ -936,7 +936,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         return self._request(
             9102,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def aim_at_pixel(
@@ -970,8 +970,8 @@ class GeoComAUT(GeoComSubsystem):
                 - ``AUT_SIDECOVER_ERR``: Sidecover is open.
 
         """
-        _camera = toenum(Camera, camera)
+        _camera = get_enum(Camera, camera)
         return self._request(
             9081,
-            [_camera.value, x, y]
+            [_camera, x, y]
         )

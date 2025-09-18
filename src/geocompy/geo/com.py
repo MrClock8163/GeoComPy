@@ -15,8 +15,8 @@ Types
 from __future__ import annotations
 
 from ..data import (
-    toenum,
-    parsebool
+    get_enum,
+    parse_bool
 )
 from .gcdata import (
     Shutdown,
@@ -178,10 +178,10 @@ class GeoComCOM(GeoComSubsystem):
         --------
         switch_off
         """
-        _mode = toenum(Startup, mode)
+        _mode = get_enum(Startup, mode)
         return self._request(
             111,
-            [_mode.value]
+            [_mode]
         )
 
     def switch_off(
@@ -206,10 +206,10 @@ class GeoComCOM(GeoComSubsystem):
         --------
         switch_on
         """
-        _mode = toenum(Shutdown, mode)
+        _mode = get_enum(Shutdown, mode)
         return self._request(
             112,
-            [_mode.value]
+            [_mode]
         )
 
     def nullprocess(self) -> GeoComResponse[None]:
@@ -265,7 +265,7 @@ class GeoComCOM(GeoComSubsystem):
         """
         return self._request(
             113,
-            parsers=parsebool
+            parsers=parse_bool
         )
 
     def set_binary_available(

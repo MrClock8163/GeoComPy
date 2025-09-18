@@ -17,7 +17,7 @@ Types
 """
 from __future__ import annotations
 
-from enum import IntEnum
+from enum import IntEnum, Enum
 from typing import TypeVar, Any, Generic, Callable, Iterable, overload
 from abc import ABC, abstractmethod
 
@@ -1219,7 +1219,7 @@ class GeoComType(ABC):
     def request(
         self,
         rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        params: Iterable[int | float | bool | str | Angle | Byte | Enum] = (),
         parsers: Callable[[str], _T] | None = None
     ) -> GeoComResponse[_T]: ...
 
@@ -1228,7 +1228,7 @@ class GeoComType(ABC):
     def request(
         self,
         rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        params: Iterable[int | float | bool | str | Angle | Byte | Enum] = (),
         parsers: Iterable[Callable[[str], Any]] | None = None
     ) -> GeoComResponse[tuple[Any, ...]]: ...
 
@@ -1236,7 +1236,7 @@ class GeoComType(ABC):
     def request(
         self,
         rpc: int,
-        params: Iterable[int | float | bool | str | Angle | Byte] = (),
+        params: Iterable[int | float | bool | str | Angle | Byte | Enum] = (),
         parsers: (
             Iterable[Callable[[str], Any]]
             | Callable[[str], Any]
