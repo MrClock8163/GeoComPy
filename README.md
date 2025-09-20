@@ -78,9 +78,9 @@ from geocompy import (
 )
 
 
-with open_serial("COM1") as comm:
-    tps = GeoCom(comm)
-    tps.aut.turn_to(Angle(0), Angle(90, 'DEG'))
+with open_serial("COM1") as com:
+    tps = GeoCom(com)
+    tps.aut.turn_to(Angle(0), Angle(90, 'deg'))
 ```
 
 ## License
