@@ -852,10 +852,10 @@ class GeoComCAM(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `float`: Horizontal position of principal point.
-                - `float`: Vertical position of principal point.
-                - `float`: Focus length.
-                - `float`: Pixel size.
+                - `float`: Horizontal position of principal point [px].
+                - `float`: Vertical position of principal point [px].
+                - `float`: Focus length [m].
+                - `float`: Pixel size [m/px].
 
             Error codes:
                 - ``NA``: Imaging license not found.
@@ -890,10 +890,10 @@ class GeoComCAM(GeoComSubsystem):
         -------
         GeoComResponse
             Params:
-                - `Coordinate`: Camera coordinates.
-                - `Angle`: Azimut angle.
-                - `Angle`: Zenith angle.
-                - `Angle`: Tilt angle.
+                - `Coordinate`: Camera offset coordinates.
+                - `Angle`: Yaw deviation.
+                - `Angle`: Pitch deviation.
+                - `Angle`: Roll deviation.
 
             Error codes:
                 - ``NA``: Imaging license not found.
