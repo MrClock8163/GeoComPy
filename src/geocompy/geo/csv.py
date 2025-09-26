@@ -311,7 +311,7 @@ class GeoComCSV(GeoComSubsystem):
 
     def get_voltage_memory(self) -> GeoComResponse[float]:
         """
-        RPC 5009, ``CSV_GetVMem``
+        RPC 5010, ``CSV_GetVMem``
 
         .. versionremoved:: GeoCom-TPS1200
 
@@ -327,7 +327,7 @@ class GeoComCSV(GeoComSubsystem):
 
         """
         return self._request(
-            5009,
+            5010,
             parsers=float
         )
 
