@@ -207,12 +207,12 @@ class GeoComAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            Error codes:
-                - ``NA``: GeoCOM Robotic license not found.
-
             Params:
                 - `Angle`: Horizontal tolerance.
                 - `Angle`: Vertical tolerance.
+
+            Error codes:
+                - ``NA``: GeoCOM Robotic license not found.
 
         See Also
         --------
@@ -263,12 +263,12 @@ class GeoComAUT(GeoComSubsystem):
         Returns
         -------
         GeoComResponse
-            Error codes:
-                - ``NA``: GeoCOM Robotic license not found.
-
             Params:
                 - `float`: Horizontal timeout [sec].
                 - `float`: Vertical timeout [sec].
+
+            Error codes:
+                - ``NA``: GeoCOM Robotic license not found.
 
         See Also
         --------

@@ -95,6 +95,7 @@ class GeoComTMC(GeoComSubsystem):
                   coordinate.
                 - `int`: Time of the coordinate
                   acquisition.
+
             Warning codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy is not guaranteed,
                   because the measurement contains data with unverified
@@ -102,6 +103,7 @@ class GeoComTMC(GeoComSubsystem):
                 - ``TMC_NO_FULL_CORRECTION``: Results are not corrected by
                   all sensors. Coordinates are available. Run check
                   commands to determine the missing correction.
+
             Error codes:
                 - ``TMC_ANGLE_OK``: Angles are measured, but no valid
                   distance was found.
@@ -606,6 +608,7 @@ class GeoComTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
+
             Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
@@ -784,6 +787,7 @@ class GeoComTMC(GeoComSubsystem):
                   distance was found.
                 - ``TMC_ANGLE_NO_ACC_GUARANTY``: Only angle measurement
                   is valid, but the accuracy cannot be guaranteed.
+
             Error codes:
                 - ``TMC_DIST_ERROR``: Error is distance measurement,
                   target not found. Repeat sighting and measurement!
@@ -1327,6 +1331,7 @@ class GeoComTMC(GeoComSubsystem):
                 - ``TMC_NO_FULL_CORRECTION``: Results are not corrected by
                   all sensors. Coordinates are available. Run check
                   commands to determine the missing correction.
+
             Error codes:
                 - ``TMC_ANGLE_OK``: Angles are measured, but no valid
                   distance was found.

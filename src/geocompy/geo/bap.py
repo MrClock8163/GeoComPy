@@ -100,16 +100,19 @@ class GeoComBAP(GeoComSubsystem):
                 - `Angle`: Vertical angle.
                 - `float`: Slope distance.
                 - `MEASUREPRG`: Actual distance mode.
+
             Info codes:
                 - ``TMC_ACCURACY_GUARANTEE``: Accuracy cannot be guaranteed.
                 - ``TMC_ANGLE_ACCURACY_GUARANTEE``: Only angle measurement
                   valid, accuracy cannot be guaranteed.
+
             Warning codes:
                 - ``TMC_ANGLE_NO_FULL_CORRECTION``: Only angle measurement
                   valid, accuracy cannot be guaranteed.
                 - ``TMC_ANGLE_OK``: Only angle measurement valid.
                 - ``TMC_NO_FULL_CORRECTION``: Measurement without full
                   correction.
+
             Error codes:
                 - ``AUT_ANGLE_ERROR``: Angle measurement error.
                 - ``AUT_BAD_ENVIRONMENT``: Bad environmental conditions.

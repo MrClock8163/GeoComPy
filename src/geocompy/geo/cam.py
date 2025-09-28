@@ -131,6 +131,7 @@ class GeoComCAM(GeoComSubsystem):
             Params:
                 - `Coordinate`: Relative coordinates of the
                   camera.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 
@@ -345,6 +346,7 @@ class GeoComCAM(GeoComSubsystem):
                   image.
                 - `float`: Vertical position of corsshair on
                   image.
+
             Error codes:
                 - ``NA``: Imaging license not found.
 
