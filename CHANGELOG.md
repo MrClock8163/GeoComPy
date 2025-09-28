@@ -21,6 +21,8 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Renamed `parsebool` to `parse_bool`
 - Renamed `toenum` to `get_enum`
 - Renamed `enumparser` to `get_enum_parser`
+- Updated GeoCOM FTR `download` to return `bytes` instead of `str`
+- Updated GeoCOM FTR `download_large` to return `bytes` instead of `str`
 
 ### Fixed
 

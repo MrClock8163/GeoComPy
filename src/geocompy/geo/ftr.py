@@ -238,7 +238,7 @@ class GeoComFTR(GeoComSubsystem):
     def download(
         self,
         block: int
-    ) -> GeoComResponse[str]:
+    ) -> GeoComResponse[bytes]:
         """
         RPC 23304, ``FTR_Download``
 
@@ -248,13 +248,13 @@ class GeoComFTR(GeoComSubsystem):
         Parameters
         ----------
         block : int
-            Number of data block to download.
+            Index of data block to download.
 
         Returns
         -------
         GeoComResponse
             Params:
-                - `str`: Data block as hexadecimal byte string.
+                - `bytes`: Data block.
 
             Error codes:
                 - ``FTR_MISSINGSETUP``: No active download setup.
@@ -270,7 +270,7 @@ class GeoComFTR(GeoComSubsystem):
         return self._request(
             23304,
             [block],
-            parse_string
+            lambda data: bytes.fromhex(parse_string(data))
         )
 
     def abort_download(self) -> GeoComResponse[None]:
@@ -468,7 +468,7 @@ class GeoComFTR(GeoComSubsystem):
     def download_large(
         self,
         block: int
-    ) -> GeoComResponse[str]:
+    ) -> GeoComResponse[bytes]:
         """
         RPC 23314, ``FTR_DownloadXL``
 
@@ -480,13 +480,13 @@ class GeoComFTR(GeoComSubsystem):
         Parameters
         ----------
         block : int
-            Number of data block to download.
+            Index of data block to download.
 
         Returns
         -------
         GeoComResponse
             Params:
-                - `str`: Data block as hexadecimal byte string.
+                - `bytes`: Data block.
 
             Error codes:
                 - ``FTR_MISSINGSETUP``: No active download setup.
@@ -502,5 +502,5 @@ class GeoComFTR(GeoComSubsystem):
         return self._request(
             23314,
             [block],
-            parse_string
+            lambda data: bytes.fromhex(parse_string(data))
         )
