@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.mot``
 
-Definitions for the GeoCom Motorization subsystem.
+Definitions for the GeoCOM Motorization subsystem.
 
 Types
 -----
@@ -34,7 +34,7 @@ from .gctypes import (
 
 class GeoComMOT(GeoComSubsystem):
     """
-    Motorization subsystem of the GeoCom protocol.
+    Motorization subsystem of the GeoCOM protocol.
 
     This subsystem provides access to motoriztaion parameters and control.
 

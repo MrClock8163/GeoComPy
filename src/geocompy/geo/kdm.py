@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.kdm``
 
-Definitions for the GeoCom Keyboard display unit subsystem.
+Definitions for the GeoCOM Keyboard display unit subsystem.
 
 Types
 -----
@@ -23,7 +23,7 @@ from .gctypes import (
 
 class GeoComKDM(GeoComSubsystem):
     """
-    Keyboard display unit subsystem of the GeoCom protocol.
+    Keyboard display unit subsystem of the GeoCOM protocol.
 
     This subsystem controls the keyboard and display functions.
 

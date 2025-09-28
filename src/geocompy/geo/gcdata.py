@@ -4,8 +4,8 @@ Description
 
 Module: ``geocompy.geo.gcdata``
 
-The GeoCom data module provides utility types, that are specific to
-GeoCom protocol.
+The GeoCOM data module provides utility types, that are specific to
+GeoCOM protocol.
 
 
 Enums
@@ -143,7 +143,7 @@ class ATRMode(Enum):
     """
     ATR visibility modes.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
 
     ``BAP_ATRSETTING``
     """
@@ -163,7 +163,7 @@ class ATRMode(Enum):
 class Prism(Enum):
     """
     Reflector prism type.
-        .. versionadded:: GeoCom-TPS1100
+        .. versionadded:: GeoCOM-TPS1100
 
     ``BAP_PRISMTYPE``
     """
@@ -182,37 +182,37 @@ class Prism(Enum):
     """
     Leica Mini 360° Prism.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     MINIZERO = 8
     """
     Leica Mini Zero Prism.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     USER = 9
     """
     User defined prism.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     NDSTAPE = 10
     """
     Leica HDS Target.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     GRZ121 = 11
     """
     Leica GRZ121 360° Prism.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     MPR122 = 12
     """
     Leica MPR122 360° Prism.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
 
 
@@ -231,12 +231,12 @@ class Program(Enum):
     TRACK = 3
     """Tracking distance measurement.
 
-    .. versionremoved:: GeoCom-TPS1100
+    .. versionremoved:: GeoCOM-TPS1100
     """
     RAPIDTRACK = 4
     """Rapid tracking distance measurement.
 
-    .. versionremoved:: GeoCom-TPS1100
+    .. versionremoved:: GeoCOM-TPS1100
     """
     CLEAR = 5
     """Clear distances."""
@@ -263,7 +263,7 @@ class UserProgram(Enum):
     """
     Distance measurement programs.
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
 
     ``BAP_USER_MEASPRG``
     """
@@ -291,20 +291,20 @@ class UserProgram(Enum):
     """
     Synchro tracking with reflector.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     SINGLE_REF_PRECISE = 11
     """
     Precise measurement with reflector (TS/TM30).
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
 
 
 class Target(Enum):
     """
     Target type.
-        .. versionadded:: GeoCom-TPS1100
+        .. versionadded:: GeoCOM-TPS1100
 
     ``BAP_TARGET_TYPE``
     """
@@ -323,7 +323,7 @@ class Camera(Enum):
     """
     Camera types.
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
 
     ``CAM_ID_TYPE``
     """
@@ -349,7 +349,7 @@ class Compression(Enum):
     """
     Image compression.
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
 
     ``CAM_COMPRESSION_TYPE``
     """
@@ -361,7 +361,7 @@ class JPEGQuality(Enum):
     """
     JPEG image quality.
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
 
     ``CAM_JPEG_COMPR_QUALITY_TYPE``
     """
@@ -374,7 +374,7 @@ class Resolution(Enum):
     """
     Image resolutions.
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
 
     ``CAM_RESOLUTION_TYPE``
     """
@@ -388,7 +388,7 @@ class Zoom(Enum):
     """
     Camera zoom levels.
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
 
     ``CAM_ZOOM_FACTOR_TYPE``
     """
@@ -402,7 +402,7 @@ class WhiteBalance(Enum):
     """
     Camera whitebalance settings.
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
 
     ``CAM_COMPRESSION_TYPE``
     """
@@ -428,7 +428,7 @@ class Shutdown(Enum):
     """
     Close onboard software.
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
 
 
@@ -442,15 +442,15 @@ class Startup(Enum):
     """
     Manual mode.
 
-    .. deprecated:: GeoCom-VivaTPS
+    .. deprecated:: GeoCOM-VivaTPS
     """
     REMOTE = 1
-    """GeoCom mode."""
+    """GeoCOM mode."""
     GUI = 2
     """
     Start onboard software.
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
 
 
@@ -486,25 +486,25 @@ class Capabilities(Flag):
     """
     Autocollimation lamp
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     POINTER = 0x00200
     """
     Laserpointer
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     REFLECTORLESS = 0x00400
     """
     Reflectorless EDM
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     POWERSEARCH = 0x00800
     """
     PowerSearch
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
 
 
@@ -531,169 +531,169 @@ class DeviceClass(Enum):
     """
     TPS2000
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     CLASS_5005 = 7
     """
     TPS5000
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     CLASS_5100 = 8
     """
     TPS5000
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     CLASS_1102 = 100
     """
     TPS1100 2\"
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     CLASS_1103 = 101
     """
     TPS1100 3\"
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     CLASS_1105 = 102
     """
     TPS1100 5\"
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     CLASS_1101 = 103
     """
     TPS1100 1\"
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     CLASS_1202 = 200
     """
     TPS1200 2"
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     CLASS_1203 = 201
     """
     TPS1200 3"
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     CLASS_1205 = 202
     """
     TPS1200 5"
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     CLASS_1201 = 203
     """
     TPS1200 1"
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     CLASS_Tx30 = 300
     """
     TS30, MS30 0.5"
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     CLASS_Tx31 = 301
     """
     TS30, MS30 1"
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     CLASS_TDRA = 350
     """
     TDRA 0.5"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS01 = 500
     """
     1"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS02 = 501
     """
     2"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS03 = 502
     """
     3"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS05 = 503
     """
     5"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS06 = 504
     """
     6"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS07 = 505
     """
     7"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS10 = 506
     """
     10"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS1X_1 = 600
     """
     Viva 1"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS1X_2 = 601
     """
     Viva 2"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS1X_3 = 602
     """
     Viva 3"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS1X_4 = 603
     """
     Viva 4"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS1X_5 = 604
     """
     Viva 5"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS50_05 = 650
     """
     TPS1300 TS50/TM50 0.5"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
     CLASS_TS50_1 = 651
     """
     TPS1300 TS50/TM50 1"
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
 
 
@@ -701,7 +701,7 @@ class PowerSource(Enum):
     """
     Instrument power supply.
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
 
     ``CSV_POWER_PATH``
     """
@@ -755,7 +755,7 @@ class Reflectorless(Enum):
     """
     Reflectorless EDM class.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
 
     ``TPS_REFLESS_CLASS``
     """
@@ -776,7 +776,7 @@ class StaffType(Enum):
     """
     Digital invar levelling staff type.
 
-    .. versionadded:: GeoCom-LS
+    .. versionadded:: GeoCOM-LS
     """
     AUTO = 0
     GPCL2 = 3
@@ -802,7 +802,7 @@ class EDMModeV1(EDMMode):
     """
     Distance measurement modes for ``TPS1000``.
 
-    .. deprecated:: GeoCom-TPS1100
+    .. deprecated:: GeoCOM-TPS1100
         Superseded by `EDMMODEV2`.
 
     ``EDM_MODE``
@@ -827,7 +827,7 @@ class EDMModeV2(EDMMode):
     """
     Distance measurement modes for ``TPS1100`` and onwards.
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
         These settings replace the `EDMMODEV1` options.
 
     ``EDM_MODE``
@@ -862,13 +862,13 @@ class EDMModeV2(EDMMode):
     """
     IR precise (TS30, MS30).
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
     PRECISE_TAPE = 14
     """
     IR precise with reflector tape (TS30, MS30).
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
 
 
@@ -876,7 +876,7 @@ class Guidelight(Enum):
     """
     Guide light intensity.
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
 
     ``EDM_EGLINTENSITY_TYPE``
     """
@@ -902,7 +902,7 @@ class Tracklight(Enum):
     """
     Tracking light brightness
 
-    .. deprecated:: GeoCom-TPS1100
+    .. deprecated:: GeoCOM-TPS1100
         Superseded by `GUIDELIGHT`.
 
     ``EDM_TRKLIGHT_BRIGHTNESS``
@@ -921,7 +921,7 @@ class Device(Enum):
     """
     Data recording device.
 
-    .. versionadded:: GeoCom-TPS1200-v1.50
+    .. versionadded:: GeoCOM-TPS1200-v1.50
 
     ``FTR_DEVICETYPE``
     """
@@ -943,7 +943,7 @@ class File(Enum):
     """
     File type.
 
-    .. versionadded:: GeoCom-TPS1200-v1.50
+    .. versionadded:: GeoCOM-TPS1200-v1.50
 
     ``FTR_FILETYPE``
     """
@@ -1080,7 +1080,7 @@ class Measurement(Enum):
     """
     Track distance.
 
-    .. versionremoved:: GeoCom-TPS1200
+    .. versionremoved:: GeoCOM-TPS1200
     """
     CLEAR = 3
     """Clear current measurement data."""
@@ -1090,7 +1090,7 @@ class Measurement(Enum):
     """
     Start/Restart measurement.
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     RAPIDTRACK = 8
     """Rapid track distance."""
@@ -1098,13 +1098,13 @@ class Measurement(Enum):
     """
     Reflectorless tracking.
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
     FREQUENCY = 11
     """
     Frequency measurement.
 
-    .. versionadded:: GeoCom-TPS1100
+    .. versionadded:: GeoCOM-TPS1100
     """
 
 

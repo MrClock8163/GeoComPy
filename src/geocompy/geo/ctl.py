@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.ctl``
 
-Definitions for the GeoCom Control task subsystem.
+Definitions for the GeoCOM Control task subsystem.
 
 Types
 -----
@@ -22,9 +22,9 @@ from .gctypes import (
 
 class GeoComCTL(GeoComSubsystem):
     """
-    Control task subsystem of the GeoCom protocol.
+    Control task subsystem of the GeoCOM protocol.
 
-    .. versionremoved:: GeoCom-TPS1200
+    .. versionremoved:: GeoCOM-TPS1200
     """
 
     def get_wakeup_counter(self) -> GeoComResponse[tuple[int, int]]:

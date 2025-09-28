@@ -29,7 +29,7 @@ Below is a list of what each of them indicate.
 
 - Protocols
 
-  - :si-icon:`protocol_geocom` GeoCom
+  - :si-icon:`protocol_geocom` GeoCOM
   - :si-icon:`protocol_gsionline` GSI Online
 
 - Definitions

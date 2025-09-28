@@ -23,7 +23,7 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- GeoCom IMG `set_telescopic_configuration` was missing the `prefix` parameter
+- GeoCOM IMG `set_telescopic_configuration` was missing the `prefix` parameter
 - `Angle.to_dms` was sometimes returning incorrect value due to rounding
 
 ### Removed
@@ -57,18 +57,18 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Added discovered GeoCom RPC 5074 (unknown true function name, implemented as
+- Added discovered GeoCOM RPC 5074 (unknown true function name, implemented as
   `abort_listing` in CSV subsystem)
 - Added `logger` optional parameter to `open_serial`
 - Added `logger` optional parameter to `SerialConnection`
 
 ### Changed
 
-- Renamed GeoCom FTR `abort_list` to `abort_listing`
+- Renamed GeoCOM FTR `abort_list` to `abort_listing`
 
 ### Fixed
 
-- GeoCom CSV `list` command did not properly parse returned string parameters
+- GeoCOM CSV `list` command did not properly parse returned string parameters
 
 ### Removed
 
@@ -83,7 +83,7 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Renamed GeoCom TMC `set_orientation` to `set_azimuth` to make its purpose more
+- Renamed GeoCOM TMC `set_orientation` to `set_azimuth` to make its purpose more
   obvious
 - Changed input parameter type of `set_azimuth` to be more permissive
 
@@ -95,11 +95,11 @@ developments are still to come.
 
 ### Changed
 
-- GeoCom CSV `get_laserlot_status` was renamed to `get_laserplummet_status`
-- GeoCom CSV `switch_laserlot` was renamed to `switch_laserplummet`
-- GeoCom CSV `get_laserlot_intensity` was renamed to
+- GeoCOM CSV `get_laserlot_status` was renamed to `get_laserplummet_status`
+- GeoCOM CSV `switch_laserlot` was renamed to `switch_laserplummet`
+- GeoCOM CSV `get_laserlot_intensity` was renamed to
 `get_laserplummet_intensity`
-- GeoCom CSV `set_laserlot_intensity` was renamed to
+- GeoCOM CSV `set_laserlot_intensity` was renamed to
 `set_laserplummet_intensity`
 
 ## v0.8.1 (2025-07-30)
@@ -110,21 +110,21 @@ developments are still to come.
   - `send_binary`
   - `receive_binary`
   - `exchange_binary`
-- `precision` property for the GeoCom definition
+- `precision` property for the GeoCOM definition
 
 ### Changed
 
-- GeoCom TMC `get_angle_correction_status` was renamed to
+- GeoCOM TMC `get_angle_correction_status` was renamed to
   `get_angle_correction`
-- GeoCom TMC `switch_angle_correction` was renamed to `set_angle_correction`
-- GeoCom `get_double_precision` was moved to COM
-- GeoCom `set_double_precision` was moved to COM
+- GeoCOM TMC `switch_angle_correction` was renamed to `set_angle_correction`
+- GeoCOM `get_double_precision` was moved to COM
+- GeoCOM `set_double_precision` was moved to COM
 
 ### Fixed
 
 - method docstrings were rendered wrong in some cases due to missing new lines
 - GSI Online DNA settings commands were parsing boolean value incorrectly
-- GeoCom AUT `set_search_area` command would not execute due to incorrect
+- GeoCOM AUT `set_search_area` command would not execute due to incorrect
   parameter serialization when sending the request to the instrument
 
 ## v0.8.0 (2025-07-24)
@@ -155,9 +155,9 @@ development happens there.
 
 ### Added
 
-- GeoCom
+- GeoCOM
   - Digital Level
-    - LS10/15 GeoCom support through new `dna` subsytem (LS10/15 also responds
+    - LS10/15 GeoCOM support through new `dna` subsytem (LS10/15 also responds
       to GSI Online DNA commands)
   - Central Services
     - `get_firmware_creation_date` command (RPC 5038)
@@ -171,21 +171,21 @@ development happens there.
 ### Fixed
 
 - `morse.py` example script was not using the most up-to-date methods
-- GeoCom File Transfer subsystem commmands were missing from the command name
+- GeoCOM File Transfer subsystem commmands were missing from the command name
   lookup table
 
 ## v0.5.1 (2025-05-16)
 
 ### Added
 
-- Missing GeoCom `abort` command
-- Discovered GeoCom RPC 11009 (unknown true function name, implemented as
+- Missing GeoCOM `abort` command
+- Discovered GeoCOM RPC 11009 (unknown true function name, implemented as
   `switch_display`)
 
 ### Fixed
 
-- GeoCom `get_internal_temperature` returned `int` instead of `float`
-- GeoCom `get_user_prism_definition` had incorrect return param parsers
+- GeoCOM `get_internal_temperature` returned `int` instead of `float`
+- GeoCOM `get_user_prism_definition` had incorrect return param parsers
 
 ## v0.5.0 (2025-05-15)
 
@@ -195,6 +195,6 @@ Notable features:
 
 - Serial communication handler
 - Utility data types
-- GeoCom commands from TPS1000, 1100, 1200 and VivaTPS instruments
+- GeoCOM commands from TPS1000, 1100, 1200 and VivaTPS instruments
   (and any other with overlapping command set)
 - GSI Online commands for DNA instruments

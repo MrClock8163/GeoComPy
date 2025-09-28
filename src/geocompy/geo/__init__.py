@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo``
 
-The ``geo`` package provides wrapper methods for all GeoCom RPC functions
+The ``geo`` package provides wrapper methods for all GeoCOM RPC functions
 available on supported instruments running various versions of the TPS
 system software, or software based on the TPS system.
 
@@ -78,7 +78,7 @@ _MAX_TRANSACTION = 2**15
 
 class GeoCom(GeoComType):
     """
-    GeoCom protocol handler.
+    GeoCOM protocol handler.
 
     The individual commands are available through their respective
     subsystems.
@@ -166,7 +166,7 @@ class GeoCom(GeoComType):
         """
         Alt User subsystem.
 
-        .. versionadded:: GeoCom-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100-1.04
         """
         self.aut: GeoComAUT = GeoComAUT(self)
         """Automation subsystem."""
@@ -178,7 +178,7 @@ class GeoCom(GeoComType):
         """
         Camera subsystem.
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
         """
         self.com: GeoComCOM = GeoComCOM(self)
         """Communications subsystem."""
@@ -188,13 +188,13 @@ class GeoCom(GeoComType):
         """
         Control task subsystem.
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
         """
         self.dna: GeoComDNA = GeoComDNA(self)
         """
         Digital level subsystem.
 
-        .. versionadded:: GeoCom-LS
+        .. versionadded:: GeoCOM-LS
         """
         self.edm: GeoComEDM = GeoComEDM(self)
         """Electronic distance measurement subsystem."""
@@ -202,19 +202,19 @@ class GeoCom(GeoComType):
         """
         File transfer subsystem.
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
         """
         self.img: GeoComIMG = GeoComIMG(self)
         """
         Image processing subsystem.
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
         """
         self.kdm: GeoComKDM = GeoComKDM(self)
         """
         Keyboard display unit subsystem.
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
         """
         self.mot: GeoComMOT = GeoComMOT(self)
         """Motorization subsytem."""
@@ -226,7 +226,7 @@ class GeoCom(GeoComType):
         """
         Word Index registration subsystem.
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
         """
 
         for i in range(retry):
@@ -303,7 +303,7 @@ class GeoCom(GeoComType):
         ) = None
     ) -> GeoComResponse[Any]:
         """
-        Executes an RPC request and returns the parsed GeoCom response.
+        Executes an RPC request and returns the parsed GeoCOM response.
 
         Constructs a request(from the given RPC code and parameters),
         writes it to the serial line, then reads the response. The
@@ -533,7 +533,7 @@ class GeoCom(GeoComType):
 
         Note
         ----
-        The abort command does not actually use the GeoCom syntax, but the
+        The abort command does not actually use the GeoCOM syntax, but the
         function returns a `GeoComResponse` anyway, in order to maintain
         the uniformity with the rest of the commands.
         """

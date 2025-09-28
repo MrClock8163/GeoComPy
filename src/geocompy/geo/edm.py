@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.edm``
 
-Definitions for the GeoCom EDM subsystem.
+Definitions for the GeoCOM EDM subsystem.
 
 Types
 -----
@@ -32,7 +32,7 @@ from .gctypes import (
 
 class GeoComEDM(GeoComSubsystem):
     """
-    Electronic distance measurement subsystem of the GeoCom
+    Electronic distance measurement subsystem of the GeoCOM
     protocol.
 
     This subsystem provides access to control some of the EDM module
@@ -81,7 +81,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1010, ``EDM_On``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Activates or deactivates the EDM module.
 
@@ -111,7 +111,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1044, ``EDM_GetBumerang``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Gets the current status of the boomerang filter.
 
@@ -144,7 +144,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1007, ``EDM_SetBumerang``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Sets the status of the boomerang filter.
 
@@ -176,7 +176,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1041, ``EDM_GetTrkLightBrightness``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Gets the brightness of the tracklight.
 
@@ -201,7 +201,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1032, ``EDM_SetTrkLightBrightness``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Sets the brightness of the tracklight.
 
@@ -226,7 +226,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1040, ``EDM_GetTrkLightSwitch``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Gets if the track light is currently active.
 
@@ -251,7 +251,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1031, ``EDM_SetTrkLightSwitch``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Sets the status of the tracklight.
 
@@ -277,7 +277,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1058, ``EDM_GetEglIntensity``
 
-        .. versionadded:: GeoCom-TPS1100
+        .. versionadded:: GeoCOM-TPS1100
 
         Gets the current intensity setting of the electronic guide light.
 
@@ -304,7 +304,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1059, ``EDM_SetEglIntensity``
 
-        .. versionadded:: GeoCom-TPS1100
+        .. versionadded:: GeoCOM-TPS1100
 
         Sets the intensity setting of the electronic guide light.
 
@@ -334,7 +334,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1070, ``EDM_IsContMeasActive``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Checks if the continuous measurement is active in the specified
         mode.
@@ -365,7 +365,7 @@ class GeoComEDM(GeoComSubsystem):
         """
         RPC 1061, ``EDM_SetBoomerangFilter``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Enables or disables the boomerang filter.
 

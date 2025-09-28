@@ -4,7 +4,7 @@ Overview
 This package provides "low-level" (i.e. the primary implementations do not
 process data, only facilitate access to the raw commands) Python wrapper
 functions for controlling various surveying instruments. GeoComPy is
-primarily based on and uses the GeoCom ASCII command system (and
+primarily based on and uses the GeoCOM ASCII command system (and
 occasionally the GSI Online commands) of Leica products. Communication is
 typically through a serial port.
 

@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.ftr``
 
-Definitions for the GeoCom File transfer subsystem.
+Definitions for the GeoCOM File transfer subsystem.
 
 Types
 -----
@@ -35,12 +35,12 @@ from .gctypes import (
 
 class GeoComFTR(GeoComSubsystem):
     """
-    File transfer subsystem of the GeoCom protocol.
+    File transfer subsystem of the GeoCOM protocol.
 
     This subsystem provides access to the internal file system of the
     instrument, and provides methods to list or download files.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
 
     def setup_listing(
@@ -360,7 +360,7 @@ class GeoComFTR(GeoComSubsystem):
         """
         RPC 23315, ``FTR_DeleteDir``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Deletes one or more directories. Wildcards can be used to delete
         multiple items. If a date is given, only directories older than
@@ -421,7 +421,7 @@ class GeoComFTR(GeoComSubsystem):
         """
         RPC 23313, ``FTR_SetupDownloadLarge``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Prepares download of the specified large file of the specified
         type, on the selected memory device.
@@ -472,7 +472,7 @@ class GeoComFTR(GeoComSubsystem):
         """
         RPC 23314, ``FTR_DownloadXL``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Downloads a single data block of a previously defined large file
         download sequence.

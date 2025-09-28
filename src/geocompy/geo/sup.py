@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.sup``
 
-Definitions for the GeoCom Supervisor subsystem.
+Definitions for the GeoCOM Supervisor subsystem.
 
 Types
 -----
@@ -28,7 +28,7 @@ from .gctypes import (
 
 class GeoComSUP(GeoComSubsystem):
     """
-    Supervisor subsystem of the GeoCom protocol.
+    Supervisor subsystem of the GeoCOM protocol.
 
     This subsystem controls the continuous operation of the system, and it
     allows to automatically display status information.
@@ -109,7 +109,7 @@ class GeoComSUP(GeoComSubsystem):
         """
         RPC 14003, ``SUP_SwitchLowTempControl``
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Enables or disables the low temperature shutdown mechanism. When
         active, the mechanism will shut the instrument down, if the
@@ -142,7 +142,7 @@ class GeoComSUP(GeoComSubsystem):
         """
         RPC 14006, ``SUP_SetPowerFailAutoRestart``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Configure the instrument to automatically restard if power is
         restored after an irregular shutdown.

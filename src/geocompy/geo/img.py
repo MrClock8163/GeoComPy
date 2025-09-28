@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.img``
 
-Definitions for the GeoCom Imaging subsystem.
+Definitions for the GeoCOM Imaging subsystem.
 
 Types
 -----
@@ -30,12 +30,12 @@ from .gctypes import (
 
 class GeoComIMG(GeoComSubsystem):
     """
-    Imaging subsystem of the GeoCom protocol.
+    Imaging subsystem of the GeoCOM protocol.
 
     This subsystem provides access to the telescoping camera functions
     for instruments that possess such functionality.
 
-    .. versionadded:: GeoCom-TPS1200
+    .. versionadded:: GeoCOM-TPS1200
     """
 
     def get_telescopic_configuration(
@@ -180,7 +180,7 @@ class GeoComIMG(GeoComSubsystem):
         """
         RPC 23403, ``IMG_SetTCCExposureTime``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Sets the exposure time for the telescopic camera.
 

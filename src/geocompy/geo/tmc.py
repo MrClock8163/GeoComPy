@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.tmc``
 
-Definitions for the GeoCom Theodolite measurement and calculation
+Definitions for the GeoCOM Theodolite measurement and calculation
 subsystem.
 
 Types
@@ -38,7 +38,7 @@ from .gctypes import (
 
 class GeoComTMC(GeoComSubsystem):
     """
-    Theodolite measurement and calculation subsystem of the GeoCom
+    Theodolite measurement and calculation subsystem of the GeoCOM
     protocol.
 
     This subsystem is the central module of measurement, calculation and
@@ -451,7 +451,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2167, ``TMC_GetFullMeas``
 
-        .. versionadded:: GeoCom-TPS1200-1.50
+        .. versionadded:: GeoCOM-TPS1200-1.50
 
         Takes an angular measurement with the selected inclination
         correction mode, and returns measurements with a previously
@@ -1186,7 +1186,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2021, ``TMC_GetEdmMode``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Gets the current EDM measurement mode.
 
@@ -1213,7 +1213,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2020, ``TMC_SetEdmMode``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Sets the EDM measurement mode.
 
@@ -1241,7 +1241,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2021, ``TMC_GetEdmMode``
 
-        .. versionadded:: GeoCom-TPS1100
+        .. versionadded:: GeoCOM-TPS1100
 
         Gets the current EDM measurement mode.
 
@@ -1268,7 +1268,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2020, ``TMC_SetEdmMode``
 
-        .. versionadded:: GeoCom-TPS1100
+        .. versionadded:: GeoCOM-TPS1100
 
         Sets the EDM measurement mode.
 
@@ -1465,7 +1465,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2126, ``TMC_GetSlopDistCorr``
 
-        .. versionadded:: GeoCom-TPS1100
+        .. versionadded:: GeoCOM-TPS1100
 
         Gets the total correction (atmospheric + geometric) applied to the
         distance measurements, as well as the current prism constant.
@@ -1495,7 +1495,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2151, ``TMC_GetAtmPpm``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Gets the current atmospheric correction factor.
 
@@ -1526,7 +1526,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2148, ``TMC_SetAtmPpm``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Sets the atmospheric correction factor.
 
@@ -1559,7 +1559,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2154, ``TMC_GetGeoPpm``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Gets the current geometric correction factors.
 
@@ -1608,7 +1608,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2153, ``TMC_SetGeoPpm``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Sets the geometric correction factors.
 

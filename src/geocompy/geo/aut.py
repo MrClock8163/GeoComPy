@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.aut``
 
-Definitions for the GeoCom Automation subsystem.
+Definitions for the GeoCOM Automation subsystem.
 
 Types
 -----
@@ -37,7 +37,7 @@ from .gctypes import (
 
 class GeoComAUT(GeoComSubsystem):
     """
-    Automation subsystem of the GeoCom protocol.
+    Automation subsystem of the GeoCOM protocol.
 
     This subsystem controls most of the motorized functions of
     a total station, such as positioning of the axes, target search,
@@ -49,12 +49,12 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9019, ``AUT_GetATRStatus``
 
-        .. deprecated:: GeoCom-TPS1100-1.04
+        .. deprecated:: GeoCOM-TPS1100-1.04
             The command is still available, but should not be used with
             instruments that support the new `aus.get_user_atr_state`
             command.
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
 
         Gets whether or not the ATR mode is active.
@@ -88,12 +88,12 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9018, ``AUT_SetATRStatus``
 
-        .. deprecated:: GeoCom-TPS1100-1.04
+        .. deprecated:: GeoCOM-TPS1100-1.04
             The command is still available, but should not be used with
             instruments that support the new `aus.switch_user_atr`
             command.
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Activates or deactivates the ATR mode.
 
@@ -127,12 +127,12 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9021, ``AUT_GetLockStatus``
 
-        .. deprecated:: GeoCom-TPS1100-1.04
+        .. deprecated:: GeoCOM-TPS1100-1.04
             The command is still available, but should not be used with
             instruments that support the new `aus.get_user_lock_state`
             command.
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Gets whether or not the lock mode is active.
 
@@ -162,12 +162,12 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9020, ``AUT_SetLockStatus``
 
-        .. deprecated:: GeoCom-TPS1100-1.04
+        .. deprecated:: GeoCOM-TPS1100-1.04
             The command is still available, but should not be used with
             instruments that support the new `aus.switch_user_lock`
             command.
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Activates or deactivates the LOCK mode.
 
@@ -208,7 +208,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
 
             Params:
                 - `Angle`: Horizontal tolerance.
@@ -244,7 +244,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
                 - ``IVPARAM``: Tolerances are out of the valid range.
                 - ``MOT_UNREADY``: Instrument has no motorization.
 
@@ -264,7 +264,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
 
             Params:
                 - `float`: Horizontal timeout [sec].
@@ -300,7 +300,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
                 - ``IVPARAM``: Timeout values are not in the [7; 60] range.
 
         See Also
@@ -457,7 +457,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
                 - ``IVPARAM``: Invalid parameter
                 - ``AUT_TIMEOUT``: Positioning timed out.
                 - ``AUT_MOTOR_ERROR``: Instrument has no motorization.
@@ -570,7 +570,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
                 - ``IVPARAM``: Invalid mode
 
         See Also
@@ -616,7 +616,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9042, ``AUT_GetSearchArea``
 
-        .. versionadded:: GeoCom-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100-1.04
 
         Gets current position and size of the PowerSearch window.
 
@@ -631,7 +631,7 @@ class GeoComAUT(GeoComSubsystem):
                 - `bool`: If window is enabled.
 
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
 
         See Also
         --------
@@ -660,7 +660,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9043, ``AUT_SetSearchArea``
 
-        .. versionadded:: GeoCom-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100-1.04
 
         Sets position and size of the PowerSearch window.
 
@@ -681,7 +681,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
 
         See Also
         --------
@@ -697,7 +697,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9040, ``AUT_GetUserSpiral``
 
-        .. versionadded:: GeoCom-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100-1.04
 
         Gets the size of the PowerSearch window.
 
@@ -709,7 +709,7 @@ class GeoComAUT(GeoComSubsystem):
                 - `Angle`: Height of window.
 
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
 
         See Also
         --------
@@ -729,7 +729,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9041, ``AUT_SetUserSpiral``
 
-        .. versionadded:: GeoCom-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100-1.04
 
         Sets the size of the PowerSearch window.
 
@@ -744,7 +744,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
 
         See Also
         --------
@@ -775,7 +775,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
 
         See Also
         --------
@@ -795,7 +795,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9044, ``AUT_PS_SetRange``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Sets the PowerSearch range limits.
 
@@ -810,7 +810,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
                 - ``IVPARAM``: Invalid parameters.
 
         See Also
@@ -828,7 +828,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9052, ``AUT_PS_SearchWindow``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Executes PowerSearch in the predefined search window.
 
@@ -836,7 +836,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
                 - ``AUT_NO_WORKING_AREA``: Search window is not defined.
                 - ``AUT_NO_TARGET``: Target was not found.
 
@@ -857,7 +857,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9051, ``AUT_PS_SearchNext``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Executes 360° default PowerSearch to find the next target.
 
@@ -872,7 +872,7 @@ class GeoComAUT(GeoComSubsystem):
         -------
         GeoComResponse
             Error codes:
-                - ``NA``: GeoCom Robotic license not found.
+                - ``NA``: GeoCOM Robotic license not found.
                 - ``AUT_NO_TARGET``: Target was not found.
                 - ``IVPARAM``: Invalid parameters.
 
@@ -894,7 +894,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9103, ``AUT_SetLockFlyMode``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Sets the state of on-the-fly mode for the lock mode.
 
@@ -920,7 +920,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9102, ``AUT_GetLockFlyMode``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Gets the current state of the on-the-fly lock mode.
 
@@ -948,7 +948,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9081, ``AUT_CAM_PositToPixelCoord``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Turns the instrument to face the coordinates specified in the
         image coordinates.

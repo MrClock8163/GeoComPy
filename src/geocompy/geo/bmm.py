@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.bmm``
 
-Definitions for the GeoCom Basic man-machine interface subsystem.
+Definitions for the GeoCOM Basic man-machine interface subsystem.
 
 Types
 -----
@@ -21,7 +21,7 @@ from .gctypes import (
 
 class GeoComBMM(GeoComSubsystem):
     """
-    Basic man-machine interface subsystem of the GeoCom protocol.
+    Basic man-machine interface subsystem of the GeoCOM protocol.
 
     This subsystem contains functions related to the operation of the
     keyboard, character sets and singalling devices.
@@ -65,7 +65,7 @@ class GeoComBMM(GeoComSubsystem):
         """
         RPC 11001, ``BMM_BeepOn``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Starts a continuous beep signal with the specified volume and
         frequency.
@@ -92,7 +92,7 @@ class GeoComBMM(GeoComSubsystem):
         """
         RPC 11002, ``BMM_BeepOff``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Stops continuous beep signals.
 
@@ -111,7 +111,7 @@ class GeoComBMM(GeoComSubsystem):
         """
         RPC 20001, ``IOS_BeepOn``
 
-        .. versionadded:: GeoCom-TPS1100
+        .. versionadded:: GeoCOM-TPS1100
             Replaces the `beep_on` command.
 
         Starts a continuous beep signal with the specified intensity.
@@ -136,7 +136,7 @@ class GeoComBMM(GeoComSubsystem):
         """
         RPC 20000, ``IOS_BeepOff``
 
-        .. versionadded:: GeoCom-TPS1100
+        .. versionadded:: GeoCOM-TPS1100
             Replaces the `beep_off` command.
 
         Stops continuous beep signals.
@@ -170,7 +170,7 @@ class GeoComBMM(GeoComSubsystem):
         Note
         ----
         This command was not found in the reference manuals, but discovered
-        by accident while testing. Version or the corresponding GeoCom
+        by accident while testing. Version or the corresponding GeoCOM
         function name is not known. Use with caution!
         """
         return self._request(

@@ -97,7 +97,7 @@ Bluetooth Classic (SPP), that emulates a direct line serial connection.
 
 .. note::
 
-    In case of Leica instruments and GeoCom, the GeoCom interface on the
+    In case of Leica instruments and GeoCOM, the GeoCOM interface on the
     instrument might have to be manually switched to the bluetooth device,
     before initiating a connection. Make sure to sync the port parameters
     (e.g. speed, parity) between the instrument and the computer!
@@ -267,7 +267,7 @@ or individual request from Leica or a Leica dealer.
 .. tip::
 
     The simulator can be used to generate test data, or test a range of
-    commands. It responds to GeoCom requests with some exceptions.
+    commands. It responds to GeoCOM requests with some exceptions.
 
 To communicate with the simulator, a virtual serial port pair needs to be set
 up on the computer. An open source solution is to use
@@ -300,8 +300,8 @@ just like on a real instrument.
 
 .. warning::
 
-    While purely software related GeoCom commands are executed fine, the
+    While purely software related GeoCOM commands are executed fine, the
     simulator might freeze up (serial communication wise) when trying to call
     closely hardware related functions (e.g. motorization). In these cases the
-    GeoCom commands start to time out. To solve it, the simulator has to be
+    GeoCOM commands start to time out. To solve it, the simulator has to be
     restarted.

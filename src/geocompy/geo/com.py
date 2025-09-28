@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.com``
 
-Definitions for the GeoCom Communication subsystem.
+Definitions for the GeoCOM Communication subsystem.
 
 Types
 -----
@@ -30,7 +30,7 @@ from .gctypes import (
 
 class GeoComCOM(GeoComSubsystem):
     """
-    Communication subsystem of the GeoCom protocol.
+    Communication subsystem of the GeoCOM protocol.
 
     This subsystem contains functions relevant to the communication
     with the instrument.
@@ -91,7 +91,7 @@ class GeoComCOM(GeoComSubsystem):
         """
         RPC 110, ``COM_GetSWVersion``
 
-        Gets the version of the installed GeoCom release.
+        Gets the version of the installed GeoCOM release.
 
         Returns
         -------
@@ -117,7 +117,7 @@ class GeoComCOM(GeoComSubsystem):
         """
         RPC 109, ``COM_SetSendDelay``
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Sets response delay on the instrument.
 
@@ -228,7 +228,7 @@ class GeoComCOM(GeoComSubsystem):
         """
         RPC 115, ``COM_EnableSignOff``
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Enables or disables the signoff message upon operation mode
         changes.

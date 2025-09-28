@@ -37,39 +37,39 @@ Protocols
 ---------
 
 The GeoComPy package (as the name suggests) primarily built around the
-GeoCom command protocol. This was developed by Leica and is available on
+GeoCOM command protocol. This was developed by Leica and is available on
 a wide range of their products. For some older instrument types, that do
-not support GeoCom, older systems (like GSI Online) might be implemented
+not support GeoCOM, older systems (like GSI Online) might be implemented
 instead. All serial communication based protocols are fundamentally
 synchronous systems, consisting of request-response pairs.
 
 .. note::
 
-    Leica stopped selling GeoCom robotic licenses for their TPS1200 series
+    Leica stopped selling GeoCOM robotic licenses for their TPS1200 series
     instruments in 2019. Newer instruments have a more complicated
     licensing scheme.
 
-The primary goal is to provide methods to call all known GeoCom commands on the
+The primary goal is to provide methods to call all known GeoCOM commands on the
 supported instruments. These "low-level" commands can then be used to build
 more complex applications.
 
-GeoCom
+GeoCOM
 ^^^^^^
 
-GeoCom enabled instruments can communicate with the ASCII version of the
+GeoCOM enabled instruments can communicate with the ASCII version of the
 protocol through a stable connection. Each command is a serialized RPC
 (Remote Procedure Call) request, that specifies the code of the procedure
 to run, and supplies the necessary arguments. The reply is a serialized
 RPC response message, containing the return parameters.
 
 .. code-block::
-    :caption: GeoCom exchange example
+    :caption: GeoCOM exchange example
 
     %R1Q,9029:1,1,0 # RPC 9029, prism search in window
     %R1P,0,0:0      # Standard OK response
 
 All the supported instruments follow a similar API structure. The instrument
-object implements the generic request functions. The actual GeoCom commands
+object implements the generic request functions. The actual GeoCOM commands
 are available through their respective subsystems.
 
 The connection to an instrument can be easily set up through a serial
@@ -77,7 +77,7 @@ connection. The connection is tested during the initialization, and some
 communication parameters are syncronized.
 
 .. code-block:: python
-    :caption: Initializing instrument connection with GeoCom
+    :caption: Initializing instrument connection with GeoCOM
     :linenos:
 
     from geocompy import GeoCom, open_serial
@@ -90,7 +90,7 @@ communication parameters are syncronized.
 
     If the instrument is not turned on when the connection is initiated,
     the process will try to wake it up. Since some instruments must be
-    manually put into GeoCom mode, the initialization might not be successful
+    manually put into GeoCOM mode, the initialization might not be successful
     from a completely shutdown state.
 
 Once the connection is verified, the commands can be executed through the
@@ -103,7 +103,7 @@ various subsystems.
     resp = tps.csv.get_firmware_version()
     print(resp)  # GeoComResponse(CSV_GetSWVersion) com: OK, rpc: OK...
 
-All GeoCom commands return a :class:`~geocompy.geo.gctypes.GeoComResponse`
+All GeoCOM commands return a :class:`~geocompy.geo.gctypes.GeoComResponse`
 object, that encapsulates the return codes, as well as the optional
 returned paramters.
 
@@ -115,7 +115,7 @@ returned paramters.
 GSI Online
 ^^^^^^^^^^
 
-The GSI Online protocol is a command system that is older than GeoCom. Many
+The GSI Online protocol is a command system that is older than GeoCOM. Many
 older instruments only support this system. Some support both (e.g. 
 TPS1100 series).
 
@@ -153,7 +153,7 @@ The GSI Online based implementations mainly consist of 3 parts. The instrument
 object implements the basic request functions. The ``settings`` and the
 ``measurements`` subsystems provide the individual commands.
 
-The connection to an instrument is identical to the GeoCom versions. The
+The connection to an instrument is identical to the GeoCOM versions. The
 connection is tested during the initialization, and some communication
 parameters are syncronized.
 

@@ -1,6 +1,6 @@
 :icon: protocol_geocom
 
-GeoCom
+GeoCOM
 ======
 
 .. automodule:: geocompy.geo

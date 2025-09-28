@@ -4,8 +4,8 @@ Description
 
 Module: ``geocompy.geo.gctypes``
 
-The GeoCom types module provides type definitions and general constants,
-that are relevant to the GeoCom protocol.
+The GeoCOM types module provides type definitions and general constants,
+that are relevant to the GeoCOM protocol.
 
 Types
 -----
@@ -30,7 +30,7 @@ _P = TypeVar("_P", bound=Any)
 
 class GeoComCode(IntEnum):
     """
-    GeoCom return codes from all subsystems and protocol versions.
+    GeoCOM return codes from all subsystems and protocol versions.
     """
 
     def __bool__(self) -> bool:
@@ -1084,7 +1084,7 @@ class GeoComCode(IntEnum):
 
 class GeoComResponse(Generic[_P]):
     """
-    Container class for parsed GeoCom responses.
+    Container class for parsed GeoCOM responses.
 
     The response encapsulates the original command, that was sent, and the
     response received, as well as the codes and parameters extracted from
@@ -1118,7 +1118,7 @@ class GeoComResponse(Generic[_P]):
         Parameters
         ----------
         rpcname : str
-            Name of the GeoCom function, that corresponds to the RPC,
+            Name of the GeoCOM function, that corresponds to the RPC,
             that invoked this response.
         cmd : str
             Full, serialized request, that invoked this response.
@@ -1137,7 +1137,7 @@ class GeoComResponse(Generic[_P]):
             is dependent on the executed function. (default: None)
         """
         self.rpcname: str = rpcname
-        """Name of the GeoCom function, that correspondes to the RPC,
+        """Name of the GeoCOM function, that correspondes to the RPC,
             that invoked this response."""
         self.cmd: str = cmd
         """Full, serialized request, that invoked this response."""
@@ -1203,7 +1203,7 @@ class GeoComResponse(Generic[_P]):
 
 class GeoComType(ABC):
     """
-    Interface definition for the GeoCom protocol handler type.
+    Interface definition for the GeoCOM protocol handler type.
     """
 
     @property
@@ -1247,7 +1247,7 @@ class GeoComType(ABC):
 
 class GeoComSubsystem:
     """
-    Base class for GeoCom subsystems.
+    Base class for GeoCOM subsystems.
     """
 
     def __init__(self, parent: GeoComType):
@@ -1474,4 +1474,4 @@ rpcnames: dict[int, str] = {
     8011: "WIR_GetRecFormat",
     8012: "WIR_SetRecFormat",
 }
-"""Mapping of RPC numbers to GeoCom function names."""
+"""Mapping of RPC numbers to GeoCOM function names."""

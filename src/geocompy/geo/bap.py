@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.bap``
 
-Definitions for the GeoCom Basic applications subsystem.
+Definitions for the GeoCOM Basic applications subsystem.
 
 Types
 -----
@@ -37,7 +37,7 @@ from .gctypes import (
 
 class GeoComBAP(GeoComSubsystem):
     """
-    Basic applications subsystem of the GeoCom protocol.
+    Basic applications subsystem of the GeoCOM protocol.
 
     This subsystem contains high-level functions that are also accessible
     through the user interface. The commands combine several subcommands
@@ -49,7 +49,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17003, ``BAP_GetLastDisplayedError``
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Retrieves the number of the last displayed system error.
 
@@ -154,7 +154,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17022, ``BAP_GetTargetType``
 
-        .. versionadded:: GeoCom-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100-1.05
 
         Gets the current EDM target type.
 
@@ -180,7 +180,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17021, ``BAP_SetTargetType``
 
-        .. versionadded:: GeoCom-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100-1.05
 
         Sets the EDM target type. The last target type is remembered for
         all EDM modes.
@@ -211,7 +211,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17009, ``BAP_GetPrismType``
 
-        .. versionadded:: GeoCom-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100-1.05
 
         Gets the current prism type.
 
@@ -240,7 +240,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17008, ``BAP_SetPrismType``
 
-        .. versionadded:: GeoCom-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100-1.05
 
         Sets the prism type. Prism change also overwrites the current
         prism constant.
@@ -273,7 +273,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17023, ``BAP_GetPrismDef``
 
-        .. versionadded:: GeoCom-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100-1.05
 
         Gets the definition of the default prism.
 
@@ -315,9 +315,9 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17024, ``BAP_SetPrismDef``
 
-        .. versionadded:: GeoCom-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100-1.05
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Defines a user prism.
 
@@ -409,7 +409,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17020, ``BAP_SearchTarget``
 
-        .. versionadded:: GeoCom-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100-1.04
 
         Executes target search in the predefined window.
 
@@ -440,7 +440,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17031, ``BAP_GetPrismType2``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Gets the current prism type and name.
 
@@ -469,7 +469,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17030, ``BAP_SetPrismType2``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Sets the prism type and name.
 
@@ -505,7 +505,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17033, ``BAP_GetUserPrismDef``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Gets the definition of a user defined prism.
 
@@ -552,7 +552,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17032, ``BAP_SetUserPrismDef``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Defines a new user defined prism.
 
@@ -590,7 +590,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17034, ``BAP_GetATRSetting``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Gets the current ATR setting.
 
@@ -616,7 +616,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17035, ``BAP_SetATRSetting``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Sets the ATR setting.
 
@@ -639,7 +639,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17036, ``BAP_GetRedATRFov``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Gets the state of the reduced ATR field of view mode.
 
@@ -665,7 +665,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17037, ``BAP_SetRedATRFov``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Sets the state of the reduced ATR field of view mode.
 
@@ -687,7 +687,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17039, ``BAP_GetATRPrecise``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Gets the current state of the precise ATR mode.
 
@@ -713,7 +713,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17040, ``BAP_SetATRPrecise``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Sets the state of the precise ATR mode.
 

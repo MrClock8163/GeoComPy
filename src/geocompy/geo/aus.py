@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.aus``
 
-Definitions for the GeoCom Alt user subsystem.
+Definitions for the GeoCOM Alt user subsystem.
 
 Types
 -----
@@ -23,9 +23,9 @@ from .gctypes import (
 
 class GeoComAUS(GeoComSubsystem):
     """
-    Alt user subsystem of the GeoCom protocol.
+    Alt user subsystem of the GeoCOM protocol.
 
-    .. versionadded:: GeoCom-TPS1100-1.04
+    .. versionadded:: GeoCOM-TPS1100-1.04
 
     This subsystem can be used to set and query the ATR and LOCK
     automation modes.
@@ -160,9 +160,9 @@ class GeoComAUS(GeoComSubsystem):
         """
         RPC 18010, ``AUS_GetRcsSearchSwitch``
 
-        .. versionadded:: GeoCom-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100-1.05
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Gets the current state of the RCS search mode.
 
@@ -188,9 +188,9 @@ class GeoComAUS(GeoComSubsystem):
         """
         RPC 18009, ``AUS_SwitchRcsSearch``
 
-        .. versionadded:: GeoCom-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100-1.05
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Enables or disables the RCS searching mode.
 

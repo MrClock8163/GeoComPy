@@ -5,7 +5,7 @@ GeoComPy
 Python wrapper functions for communicating with surveying
 instruments over a serial connection.
 
-The implementations use the Leica GeoCom ASCII RPC procotol primarily.
+The implementations use the Leica GeoCOM ASCII RPC procotol primarily.
 For older instruments, that do not support it, the GSI Online commands
 are used instead.
 
@@ -31,7 +31,7 @@ Subpackages
 -----------
 
 ``geocompy.geo``
-    Communication through GeoCom protocol.
+    Communication through GeoCOM protocol.
 
 ``geocompy.gsi``
     Communication through GSI Online protocol.
@@ -67,13 +67,13 @@ Reexports
     GSI Online protocol response container.
 
 ``geocompy.geo.GeoCom``
-    GeoCom protocol handler.
+    GeoCOM protocol handler.
 
 ``geocompy.geo.gctypes.GeoComCode``
-    GeoCom return codes.
+    GeoCOM return codes.
 
 ``geocompy.geo.gctypes.GeoComResponse``
-    GeoCom protocol response container.
+    GeoCOM protocol response container.
 """
 try:
     from ._version import __version__ as __version__

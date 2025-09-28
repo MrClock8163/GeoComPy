@@ -12,9 +12,9 @@
 GeoComPy is a Python library providing wrapper functions for serial
 communication protocols of Leica surveying instruments.
 
-The package is mainly built around the GeoCom ASCII protocol, supported by
+The package is mainly built around the GeoCOM ASCII protocol, supported by
 a number of total stations and other instruments running TPS1000, 1100, 1200
-and other firmware. For some older instruments that do not support GeoCom,
+and other firmware. For some older instruments that do not support GeoCOM,
 the GSI Online command set is used for communication.
 
 - **Download:** https://pypi.org/project/geocompy/
@@ -33,7 +33,7 @@ the GSI Online command set is used for communication.
 - Support for type checkers
 - Primitives for relevant data
 - Command building and parsing through function calls
-- Multiple supported protocols (e.g. GeoCom, GSI Online)
+- Multiple supported protocols (e.g. GeoCOM, GSI Online)
 
 ## Requirements
 
@@ -65,7 +65,7 @@ python -m pip install .
 
 ## Short example
 
-The below example demonstrates how to connect to a GeoCom capable instrument
+The below example demonstrates how to connect to a GeoCOM capable instrument
 through a serial connection. Once the connection is up and running, the
 total station is instructed to turn to horizontal 0, and position the
 telescope parallel to the ground.

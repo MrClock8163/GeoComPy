@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.cam``
 
-Definitions for the GeoCom Camera subsystem.
+Definitions for the GeoCOM Camera subsystem.
 
 Types
 -----
@@ -38,14 +38,14 @@ from .gctypes import (
 
 class GeoComCAM(GeoComSubsystem):
     """
-    Camera subsystem of the GeoCom protocol.
+    Camera subsystem of the GeoCOM protocol.
 
     This subsystem performs tasks relating to the overview camera and
     (on Nova instruments) the telescope mounted camera
 
-    All functions require a valid GeoCom Imaging license.
+    All functions require a valid GeoCOM Imaging license.
 
-    .. versionadded:: GeoCom-VivaTPS
+    .. versionadded:: GeoCOM-VivaTPS
     """
 
     def set_zoom(

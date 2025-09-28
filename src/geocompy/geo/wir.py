@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.wir``
 
-Definitions for the GeoCom Word Index registration subsystem.
+Definitions for the GeoCOM Word Index registration subsystem.
 
 Types
 -----
@@ -27,10 +27,10 @@ from .gctypes import (
 
 class GeoComWIR(GeoComSubsystem):
     """
-    Word Index registration subsystem of the GeoCom protocol.
+    Word Index registration subsystem of the GeoCOM protocol.
     This subsystem is responsible for the GSI data recording operations.
 
-    .. versionremoved:: GeoCom-TPS1200
+    .. versionremoved:: GeoCOM-TPS1200
     """
 
     def get_recording_format(self) -> GeoComResponse[Format]:

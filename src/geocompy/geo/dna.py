@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.dna``
 
-Definitions for the GeoCom Digital level subsystem.
+Definitions for the GeoCOM Digital level subsystem.
 
 Types
 -----
@@ -29,9 +29,9 @@ from .gctypes import (
 
 class GeoComDNA(GeoComSubsystem):
     """
-    Digital level subsystem of the GeoCom protocol.
+    Digital level subsystem of the GeoCOM protocol.
 
-    .. versionadded:: GeoCom-LS
+    .. versionadded:: GeoCOM-LS
     """
 
     def get_reading(

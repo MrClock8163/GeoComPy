@@ -4,7 +4,7 @@ Description
 
 Module: ``geocompy.geo.csv``
 
-Definitions for the GeoCom Central services subsystem.
+Definitions for the GeoCOM Central services subsystem.
 
 Types
 -----
@@ -38,7 +38,7 @@ from .gctypes import (
 
 class GeoComCSV(GeoComSubsystem):
     """
-    Central services subsystem of the GeoCom protocol.
+    Central services subsystem of the GeoCOM protocol.
 
     This subsystem contains functions to maintain centralised data
     and configuration of the instruments.
@@ -85,7 +85,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5006, ``CSV_GetUserInstrumentName``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Gets the user defined name of the instrument.
 
@@ -108,7 +108,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5005, ``CSV_SetUserInstrumentName``
 
-        .. versionremoved:: GeoCom-TPS1100
+        .. versionremoved:: GeoCOM-TPS1100
 
         Parameters
         ----------
@@ -283,11 +283,11 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5009, ``CSV_GetVBat``
 
-        .. deprecated:: GeoCom-TPS1100-1.05
+        .. deprecated:: GeoCOM-TPS1100-1.05
             The command is still available, but should not be used with
             instruments that support the new `check_power` command.
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Gets the voltage of the power supply.
 
@@ -313,7 +313,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5010, ``CSV_GetVMem``
 
-        .. versionremoved:: GeoCom-TPS1200
+        .. versionremoved:: GeoCOM-TPS1200
 
         Gets the voltage of the memory backup power supply.
 
@@ -356,7 +356,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5039, ``CSV_CheckPower``
 
-        .. versionadded:: GeoCom-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100-1.05
 
         Gets the remaining capacity of the active power source.
 
@@ -382,7 +382,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5100, ``CSV_GetReflectorlessClass``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Gets the class of the reflectorless EDM module, if the instrument
         is equipped with one.
@@ -403,7 +403,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5117, ``CSV_GetDateTimeCentiSec``
 
-        .. versionadded:: GeoCom-TPS1200
+        .. versionadded:: GeoCOM-TPS1200
 
         Gets the current date and time set on the instrument in
         centiseconds resolution.
@@ -457,7 +457,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5155, ``CSV_SetStartupMessageMode``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Enables or disables the startup message mode on the instrument.
 
@@ -480,7 +480,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5156, ``CSV_GetStartupMessageMode``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Gets the current status of the startup message mode on the
         instrument.
@@ -504,7 +504,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5043, ``CSV_SwitchLaserlot``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Sets the state of the laser plummet.
 
@@ -527,7 +527,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5042, ``CSV_GetLaserlotStatus``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Gets the current state of the laser plummet.
 
@@ -550,7 +550,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5040, ``CSV_SetLaserlotIntens``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Sets the intensity of the laser plummet.
 
@@ -573,7 +573,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5041, ``CSV_GetLaserlotIntens``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Gets the current intensity of the laser plummet.
 
@@ -596,7 +596,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5039, ``CSV_CheckProperty``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Checks if a specific license is available on the instrument.
 
@@ -623,7 +623,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5165, ``CSV_GetVoltage``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Gets the instrument voltage.
 
@@ -646,7 +646,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5161, ``CSV_SetCharging``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Sets the state of the charger.
 
@@ -669,7 +669,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5162, ``CSV_GetCharging``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Gets the current state of the charger.
 
@@ -692,7 +692,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5163, ``CSV_SetPreferredPowersource``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Sets the preferred power source.
 
@@ -712,7 +712,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5164, ``CSV_GetPreferredPowersource``
 
-        .. versionadded:: GeoCom-VivaTPS
+        .. versionadded:: GeoCOM-VivaTPS
 
         Gets the current preferred power source.
 
@@ -724,7 +724,7 @@ class GeoComCSV(GeoComSubsystem):
 
         """
         return self._request(
-            5164,  # Mistyped as 5163 in the GeoCom reference
+            5164,  # Mistyped as 5163 in the GeoCOM reference
             parsers=get_enum_parser(PowerSource)
         )
 
@@ -884,7 +884,7 @@ class GeoComCSV(GeoComSubsystem):
         Note
         ----
         This command was not found in the reference manuals, but discovered
-        by accident while testing. Version or the corresponding GeoCom
+        by accident while testing. Version or the corresponding GeoCOM
         function name is not known. Use with caution!
 
         """

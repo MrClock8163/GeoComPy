@@ -1783,7 +1783,7 @@ class GsiOSInterfaceVersionWord(GsiAppVersionWord):
 
 
 class GsiGeoComVersionWord(GsiAppVersionWord):
-    """``WI593`` GeoCom version."""
+    """``WI593`` GeoCOM version."""
     _GSI = compile(r"^593\.{2}6\+[0-9]{8,16} $")
 
     @classmethod
