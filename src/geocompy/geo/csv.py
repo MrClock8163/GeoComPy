@@ -28,7 +28,8 @@ from .gcdata import (
     DeviceClass,
     PowerSource,
     Reflectorless,
-    Property
+    Property,
+    Device
 )
 from .gctypes import (
     GeoComSubsystem,
@@ -811,13 +812,21 @@ class GeoComCSV(GeoComSubsystem):
             ]
         )
 
-    def setup_listing(self) -> GeoComResponse[None]:
+    def setup_listing(
+        self,
+        device: Device | str = Device.INTERNAL
+    ) -> GeoComResponse[None]:
         """
         RPC 5072, ``CSV_SetupList``
 
         .. versionadded:: GeoComp-VivaTPS
 
         Prepares listing of the jobs in memory.
+
+        Parameters
+        ----------
+        device : Device | str, optional
+            Memory device, by default INTERNAL
 
         Returns
         -------
@@ -832,8 +841,10 @@ class GeoComCSV(GeoComSubsystem):
         abort_listing
 
         """
+        _device = get_enum(Device, device)
         return self._request(
-            5072
+            5072,
+            [_device]
         )
 
     def list(self) -> GeoComResponse[tuple[str, str, int, int, str]]:
