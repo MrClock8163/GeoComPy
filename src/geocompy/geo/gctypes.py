@@ -18,7 +18,8 @@ Types
 from __future__ import annotations
 
 from enum import IntEnum, Enum
-from typing import TypeVar, Any, Generic, Callable, Iterable, overload
+from typing import TypeVar, Any, Generic, overload
+from collections.abc import Callable, Iterable
 from abc import ABC, abstractmethod
 
 from ..data import Angle, Byte

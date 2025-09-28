@@ -22,7 +22,8 @@ from __future__ import annotations
 
 from enum import IntEnum
 import re
-from typing import Callable, TypeVar
+from typing import TypeVar
+from collections.abc import Callable
 from traceback import format_exc
 from logging import Logger
 from time import sleep

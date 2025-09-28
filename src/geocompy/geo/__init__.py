@@ -41,7 +41,8 @@ from logging import Logger
 from traceback import format_exc
 from time import sleep
 from enum import Enum
-from typing import Any, Callable, Iterable, overload, TypeVar
+from typing import Any, overload, TypeVar
+from collections.abc import Callable, Iterable
 
 from serial import SerialException, SerialTimeoutException
 

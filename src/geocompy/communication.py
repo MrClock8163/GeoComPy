@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import logging
 from types import TracebackType
-from typing import Generator
+from collections.abc import Generator
 from contextlib import contextmanager
 from abc import ABC, abstractmethod
 from time import sleep

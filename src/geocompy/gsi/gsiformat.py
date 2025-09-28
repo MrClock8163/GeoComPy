@@ -28,6 +28,8 @@ from typing import (
     Self,
     TypeVar,
     TextIO,
+)
+from collections.abc import (
     Iterator,
     Iterable,
     Generator
@@ -2259,7 +2261,7 @@ class GsiBlock:
             Return None if the block does not contain a word of the requested
             type.
         """
-        return cast(_T, self._words.get(wordtype.WI()))
+        return cast(_T | None, self._words.get(wordtype.WI()))
 
     def serialize(
         self,

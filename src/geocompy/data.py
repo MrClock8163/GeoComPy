@@ -30,12 +30,14 @@ import math
 from enum import Enum
 from typing import (
     Literal,
-    Callable,
-    Iterator,
     TypeVar,
     Self,
     Any,
     SupportsFloat
+)
+from collections.abc import (
+    Callable,
+    Iterator
 )
 
 

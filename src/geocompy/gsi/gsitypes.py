@@ -17,7 +17,8 @@ Types
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic, Callable, Literal
+from typing import TypeVar, Generic, Literal
+from collections.abc import Callable
 
 from .gsiformat import GsiWord
 
