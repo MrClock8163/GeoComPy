@@ -819,7 +819,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5072, ``CSV_SetupList``
 
-        .. versionadded:: GeoComp-VivaTPS
+        .. versionadded:: GeoCOM-TPS1200
 
         Prepares listing of the jobs in memory.
 
@@ -851,7 +851,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5073, ``CSV_List``
 
-        .. versionadded:: GeoComp-VivaTPS
+        .. versionadded:: GeoCOM-TPS1200
 
         Gets the next job listing entry.
 
