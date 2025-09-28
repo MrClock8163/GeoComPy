@@ -11,6 +11,7 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Added `dot` product to `Vector`
 - Added `cross` product to `Vector`
+- Added `device` option to GeoCOM CSV `setup_listing`
 
 ### Changed
 
@@ -24,7 +25,9 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - GeoCOM IMG `set_telescopic_configuration` was missing the `prefix` parameter
+- GeoCOM CSV `get_voltage_memory` was calling the wrong GeoCOM commmand
 - `Angle.to_dms` was sometimes returning incorrect value due to rounding
+- Package could not be installed from ZIP due to a missing version fallback
 
 ### Removed
 
