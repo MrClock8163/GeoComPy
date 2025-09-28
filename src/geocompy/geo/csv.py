@@ -815,6 +815,8 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5072, ``CSV_SetupList``
 
+        .. versionadded:: GeoComp-VivaTPS
+
         Prepares listing of the jobs in memory.
 
         Returns
@@ -837,6 +839,8 @@ class GeoComCSV(GeoComSubsystem):
     def list(self) -> GeoComResponse[tuple[str, str, int, int, str]]:
         """
         RPC 5073, ``CSV_List``
+
+        .. versionadded:: GeoComp-VivaTPS
 
         Gets the next job listing entry.
 
