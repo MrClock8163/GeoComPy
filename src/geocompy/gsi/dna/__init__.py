@@ -24,7 +24,6 @@ from enum import IntEnum
 import re
 from typing import TypeVar
 from collections.abc import Callable
-from traceback import format_exc
 from logging import Logger
 from time import sleep
 
@@ -208,7 +207,7 @@ class GsiOnlineDNA(GsiOnlineType):
         try:
             answer = self._conn.exchange(cmd)
         except Exception:
-            self._logger.error(format_exc())
+            self._logger.exception("Error occured during SET request")
             answer = _UNKNOWNERROR
             comment = "EXCHANGE"
         value = answer == "?"
@@ -251,7 +250,7 @@ class GsiOnlineDNA(GsiOnlineType):
         try:
             answer = self._conn.exchange(cmd)
         except Exception:
-            self._logger.error(format_exc())
+            self._logger.exception("Error occured during CONF request")
             answer = _UNKNOWNERROR
             comment = "EXCHANGE"
 
@@ -299,7 +298,7 @@ class GsiOnlineDNA(GsiOnlineType):
         try:
             answer = self._conn.exchange(cmd)
         except Exception:
-            self._logger.error(format_exc())
+            self._logger.exception("Error occured during PUT request")
             answer = _UNKNOWNERROR
             comment = "EXCHANGE"
         value = answer == "?"
@@ -343,7 +342,7 @@ class GsiOnlineDNA(GsiOnlineType):
         try:
             answer = self._conn.exchange(cmd)
         except Exception:
-            self._logger.error(format_exc())
+            self._logger.exception("Error occured during GET request")
             answer = _UNKNOWNERROR
             comment = "EXCHANGE"
 
@@ -392,7 +391,7 @@ class GsiOnlineDNA(GsiOnlineType):
         try:
             answer = self._conn.exchange(cmd)
         except Exception:
-            self._logger.error(format_exc())
+            self._logger.exception("Error occured during request")
             answer = _UNKNOWNERROR
             comment = "EXCHANGE"
 

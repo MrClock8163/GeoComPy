@@ -38,7 +38,6 @@ Submodules
 """
 import re
 from logging import Logger
-from traceback import format_exc
 from time import sleep
 from enum import Enum
 from typing import Any, overload, TypeVar
@@ -359,19 +358,19 @@ class GeoCom(GeoComType):
         try:
             answer = self._conn.exchange(cmd)
         except SerialTimeoutException:
-            self._logger.error(format_exc())
+            self._logger.exception("Connection timed out during request")
             answer = (
                 f"%R1P,{GeoComCode.COM_TIMEDOUT:d},"
                 f"{trid}:{GeoComCode.OK:d}"
             )
         except SerialException:
-            self._logger.error(format_exc())
+            self._logger.exception("Connection error occured during request")
             answer = (
                 f"%R1P,{GeoComCode.COM_CANT_SEND:d},"
                 f"{trid}:{GeoComCode.OK:d}"
             )
         except Exception:
-            self._logger.error(format_exc())
+            self._logger.exception("Unknown error occured during request")
             answer = (
                 f"%R1P,{GeoComCode.COM_FAILED:d},"
                 f"{trid}:{GeoComCode.OK:d}"
