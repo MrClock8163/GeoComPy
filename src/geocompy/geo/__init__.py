@@ -120,10 +120,10 @@ class GeoCom(GeoComType):
     """
     _R1P: re.Pattern[str] = re.compile(
         r"^%R1P,"
-        r"(?P<comrc>\d+),"
-        r"(?P<tr>\d+):"
-        r"(?P<rc>\d+)"
-        r"(?:,(?P<params>.*))?$"
+        r"(\d+),"  # COM code
+        r"(\d+):"  # Transaction ID
+        r"(\d+)"  # RPC code
+        r"(?:,(.*))?$"  # parameters
     )
 
     def __init__(
@@ -346,7 +346,7 @@ class GeoCom(GeoComType):
                     value = f"{item:d}"
                 case str():
                     value = f"\"{item}\""
-                case Enum():
+                case Enum() if isinstance(item.value, int):
                     value = f"{item.value:d}"
                 case _:
                     raise TypeError(f"unexpected parameter type: {type(item)}")
@@ -433,9 +433,8 @@ class GeoCom(GeoComType):
 
         """
         m = self._R1P.match(response)
-        rpc = int(cmd.split(":")[0].split(",")[1])
-        trid_expected = int(cmd.split(":")[0].split(",")[2])
-        rpcname = rpcnames.get(rpc, str(rpc))
+        _, rpc, trid_expected = cmd.split(":")[0].split(",")
+        rpcname = rpcnames.get(int(rpc), rpc)
         if not m:
             return GeoComResponse(
                 rpcname,
@@ -446,9 +445,9 @@ class GeoCom(GeoComType):
                 0
             )
 
-        groups = m.groupdict()
-        trid = int(groups.get("tr", "-1"))
-        if trid != trid_expected:
+        com_field, tr_field, rpc_field, values = m.groups()
+        trid = int(tr_field)
+        if trid != int(trid_expected):
             return GeoComResponse(
                 rpcname,
                 cmd,
@@ -459,16 +458,15 @@ class GeoCom(GeoComType):
             )
 
         try:
-            comrc = GeoComCode(int(groups["comrc"]))
+            comcode = GeoComCode(int(com_field))
         except Exception:
-            comrc = GeoComCode.UNDEFINED
+            comcode = GeoComCode.UNDEFINED
 
         try:
-            rc = GeoComCode(int(groups["rc"]))
+            rpccode = GeoComCode(int(rpc_field))
         except Exception:
-            rc = GeoComCode.UNDEFINED
+            rpccode = GeoComCode.UNDEFINED
 
-        values = groups.get("params", "")
         if values is None:
             values = ""
 
@@ -477,8 +475,8 @@ class GeoCom(GeoComType):
                 rpcname,
                 cmd,
                 response,
-                comrc,
-                rc,
+                comcode,
+                rpccode,
                 trid
             )
 
@@ -489,7 +487,7 @@ class GeoCom(GeoComType):
 
         params: list[Any] = []
         try:
-            for func, value in zip(parsers, values.split(",")):
+            for func, value in zip(parsers, values.split(","), strict=True):
                 params.append(func(value))
         except Exception:
             return GeoComResponse(
@@ -498,7 +496,7 @@ class GeoCom(GeoComType):
                 response,
                 GeoComCode.COM_CANT_DECODE,
                 GeoComCode.OK,
-                0
+                trid
             )
 
         match len(params):
@@ -513,9 +511,9 @@ class GeoCom(GeoComType):
             rpcname,
             cmd,
             response,
-            comrc,
-            rc,
-            int(groups["tr"]),
+            comcode,
+            rpccode,
+            trid,
             params_final
         )
 
