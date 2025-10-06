@@ -410,4 +410,4 @@ Otherwise an error occured during transmission.
     .. code-block:: python
 
         with open_serial("COM1") as com:
-            tps = GeoCom(com, crc=True)
+            tps = GeoCom(com, checksum=True)

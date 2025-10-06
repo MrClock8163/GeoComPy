@@ -135,7 +135,7 @@ class GeoCom(GeoComType):
         connection: Connection,
         logger: Logger | None = None,
         retry: int = 2,
-        crc: bool = False
+        checksum: bool = False
     ):
         """
         After the subsystems are initialized, the connection is tested by
@@ -152,8 +152,8 @@ class GeoCom(GeoComType):
             Logger to log all requests and responses, by default None
         retry : int, optional
             Number of tries at connection validation before giving up.
-        crc : bool, optional
-            Use and verify CRC checksums in requests.
+        checksum : bool, optional
+            Use and verify checksums in requests.
 
         Raises
         ------
@@ -237,7 +237,7 @@ class GeoCom(GeoComType):
         .. versionremoved:: GeoCOM-TPS1200
         """
 
-        self._crc: bool = crc
+        self._checksum: bool = checksum
 
         for i in range(retry):
             try:
@@ -366,7 +366,7 @@ class GeoCom(GeoComType):
         self.transaction_counter += 1
         cmd = f"%R1Q,{rpc},{trid}:{','.join(strparams)}"
 
-        if self._crc:
+        if self._checksum:
             crc = crc16(cmd)
             cmd = f"%R1Q,{rpc},{trid},{crc}:{','.join(strparams)}"
 
@@ -460,7 +460,7 @@ class GeoCom(GeoComType):
             )
 
         com_field, tr_field, crc_field, rpc_field, values = m.groups()
-        if crc_field is not None and self._crc:
+        if crc_field is not None and self._checksum:
             crc = int(crc_field)
             beg, end = m.regs[3]
             if crc != crc16(response[:beg-1] + response[end:]):
