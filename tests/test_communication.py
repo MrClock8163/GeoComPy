@@ -93,5 +93,11 @@ class TestSerialConnection:
 class TestCrc:
     def test_crc(self) -> None:
         # Verify CRC-16/ARC check value of "123456789" string
+        assert crc16_bitwise("") == 0
+        assert crc16_bitwise(b"") == 0
         assert crc16_bitwise("123456789") == 0xbb3d
+        assert crc16_bitwise("123456789".encode("ascii")) == 0xbb3d
+        assert crc16_bytewise("") == 0
+        assert crc16_bytewise(b"") == 0
         assert crc16_bytewise("123456789") == 0xbb3d
+        assert crc16_bytewise("123456789".encode("ascii")) == 0xbb3d
