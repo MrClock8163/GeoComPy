@@ -305,3 +305,109 @@ just like on a real instrument.
     closely hardware related functions (e.g. motorization). In these cases the
     GeoCOM commands start to time out. To solve it, the simulator has to be
     restarted.
+
+Realiability
+------------
+
+Some connections might not be as reliable as needed for stable operation.
+Interference can cause messages to get corrupted, or not arrive at all at the
+destination. For stable operation there must be a way to detect a missing or
+corrupt message.
+
+The GeoCOM protocol supports two mechanisms to detect faults in communication.
+The GSI Online system has no such support.
+
+Transactions
+^^^^^^^^^^^^
+
+The GeoCOM request and response messages can optionally have a transaction ID
+field.
+
+.. code-block::
+    :caption: Exchange without transactions (response always comes with ID: 0)
+
+    %R1Q,0:
+    %R1P,0,0:0
+
+.. code-block::
+    :caption: Request-response with matching transaction ID (ID: 1)
+
+    %R1Q,0,1:
+    %R1P,0,1:0
+
+When the ID is incremented for each request-response exchange, it can
+be used to detect if the two ques get misaligned due to a missing response.
+This can happen if the connection times out, but the instrument still sends
+a reply after the timeout period. This would leave an unread message in the
+receiver buffer, which would get confused with the response to the next
+request.
+
+.. code-block::
+    :caption: Misaligned request-response pair (sent ID: 3, read ID: 2)
+
+    %R1Q,0,3:
+    %R1P,0,2:0
+
+Transaction IDs must be in the positive range of a 16 bit signed integer
+(0 - 32767). After 32767, the ID must roll back to 0 (otherwise the instrument
+will respond with overflowed IDs -32768, -32767, etc.).
+
+.. note::
+
+    Transactions are automatically handled by GeoComPy. If a transaction
+    mismatch is detected, the appropriate response code indicating the fault
+    is returned.
+
+Checksums
+^^^^^^^^^
+
+While transactions can be used to detect out of sync request-response ques,
+they cannot detect partially corrupted messages (a corruption that leaves
+the message syntactically correct, but with altered meaning).
+
+To detect corrupted messages, GeoCOM requests and responses have an
+optional checksum field. The checksum is calculated with the CRC-16/ARC
+method.
+
+When sending a request, the checksum has to be first calculated for the
+message without the checksum field, then the checksum must be inserted before
+the message is sent.
+
+.. code-block:: python
+    :caption: Sending a request
+    
+    with open_serial("COM1") as com:
+        cmd = "%R1Q,0,11:"
+        checksum = crc16(cmd)
+        cmd = f"%R1Q,0,11,{checksum}:"
+        com.send(cmd)
+
+After receiving the response, the checksum must be first extracted from the
+message, then recomputed from the response without the checksum. If the
+received checksum and the computed checksum are equal, the message is intact.
+Otherwise an error occured during transmission.
+
+.. code-block:: python
+    :caption: Verifying a response
+
+    with open_serial("COM1") as com:
+        resp = com.receive() # example: resp = "%R1P,0,11,22896:0"
+        parts = resp.split(":")
+        header = parts[0].split(",")
+        checksum_rec = int(header[3])
+        checksum_calc = crc16(",".join(header[:3]) + ":" + parts[1])
+        if checksum_rec != checksum_calc:
+            raise ValueError("Checksum mismatch")
+
+.. tip::
+
+    Checksums are supported by GeoComPy, but the feature is by default
+    disabled as it adds some overhead to the communication that can cause
+    latency in high speed scenarios.
+    
+    Checksum calculation can be enabled on each `GeoCom` instance separately.
+
+    .. code-block:: python
+
+        with open_serial("COM1") as com:
+            tps = GeoCom(com, checksum=True)

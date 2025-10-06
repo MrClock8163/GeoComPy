@@ -4,7 +4,9 @@ from serial import Serial, SerialException, SerialTimeoutException
 from geocompy.communication import (
     get_dummy_logger,
     open_serial,
-    SerialConnection
+    SerialConnection,
+    crc16_bitwise,
+    crc16_bytewise
 )
 
 
@@ -86,3 +88,10 @@ class TestSerialConnection:
                     com.receive()
 
                 assert com._timeout_counter == 2
+
+
+class TestCrc:
+    def test_crc(self) -> None:
+        # Verify CRC-16/ARC check value of "123456789" string
+        assert crc16_bitwise("123456789") == 0xbb3d
+        assert crc16_bytewise("123456789") == 0xbb3d

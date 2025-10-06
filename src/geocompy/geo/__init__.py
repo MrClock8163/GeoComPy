@@ -46,7 +46,11 @@ from collections.abc import Callable, Iterable
 from serial import SerialException, SerialTimeoutException
 
 from geocompy.data import Angle, Byte
-from geocompy.communication import Connection, DUMMYLOGGER
+from geocompy.communication import (
+    Connection,
+    DUMMYLOGGER,
+    crc16_bytewise as crc16
+)
 from .gctypes import (
     GeoComCode,
     GeoComResponse,
@@ -120,8 +124,9 @@ class GeoCom(GeoComType):
     _R1P: re.Pattern[str] = re.compile(
         r"^%R1P,"
         r"(\d+),"  # COM code
-        r"(\d+):"  # Transaction ID
-        r"(\d+)"  # RPC code
+        r"(\d+)"  # Transaction ID
+        r"(?:,(\d+))?"  # CRC checksum
+        r":(\d+)"  # RPC code
         r"(?:,(.*))?$"  # parameters
     )
 
@@ -129,7 +134,8 @@ class GeoCom(GeoComType):
         self,
         connection: Connection,
         logger: Logger | None = None,
-        retry: int = 2
+        retry: int = 2,
+        checksum: bool = False
     ):
         """
         After the subsystems are initialized, the connection is tested by
@@ -145,7 +151,9 @@ class GeoCom(GeoComType):
         logger : Logger | None, optional
             Logger to log all requests and responses, by default None
         retry : int, optional
-            Number of retries at connection validation before giving up.
+            Number of tries at connection validation before giving up.
+        checksum : bool, optional
+            Use and verify checksums in requests.
 
         Raises
         ------
@@ -228,6 +236,8 @@ class GeoCom(GeoComType):
 
         .. versionremoved:: GeoCOM-TPS1200
         """
+
+        self._checksum: bool = checksum
 
         for i in range(retry):
             try:
@@ -355,6 +365,11 @@ class GeoCom(GeoComType):
         trid = self.transaction_counter % _MAX_TRANSACTION
         self.transaction_counter += 1
         cmd = f"%R1Q,{rpc},{trid}:{','.join(strparams)}"
+
+        if self._checksum:
+            crc = crc16(cmd)
+            cmd = f"%R1Q,{rpc},{trid},{crc}:{','.join(strparams)}"
+
         try:
             answer = self._conn.exchange(cmd)
         except SerialTimeoutException:
@@ -432,7 +447,7 @@ class GeoCom(GeoComType):
 
         """
         m = self._R1P.match(response)
-        _, rpc, trid_expected = cmd.split(":")[0].split(",")
+        rpc, trid_expected = cmd.split(":")[0].split(",")[1:3]
         rpcname = rpcnames.get(int(rpc), rpc)
         if not m:
             return GeoComResponse(
@@ -444,7 +459,20 @@ class GeoCom(GeoComType):
                 0
             )
 
-        com_field, tr_field, rpc_field, values = m.groups()
+        com_field, tr_field, crc_field, rpc_field, values = m.groups()
+        if crc_field is not None and self._checksum:
+            crc = int(crc_field)
+            beg, end = m.regs[3]
+            if crc != crc16(response[:beg-1] + response[end:]):
+                return GeoComResponse(
+                    rpcname,
+                    cmd,
+                    response,
+                    GeoComCode.COM_CLNT_RX_CHECKSUM_ERROR,
+                    GeoComCode.OK,
+                    0
+                )
+
         trid = int(tr_field)
         if trid != int(trid_expected):
             return GeoComResponse(
@@ -467,9 +495,6 @@ class GeoCom(GeoComType):
             rpccode = GeoComCode.UNDEFINED
 
         if values is None:
-            values = ""
-
-        if values == "":
             return GeoComResponse(
                 rpcname,
                 cmd,

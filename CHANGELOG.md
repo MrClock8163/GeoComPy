@@ -7,6 +7,10 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+### Added
+
+- Added support for checksums in GeoCOM transactions
+
 ## Changed
 
 - Updated GeoCOM response parsing to raise exception when the number of
