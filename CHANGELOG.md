@@ -5,6 +5,12 @@ file.
 
 The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Added support for checksums in GeoCOM transactions
+
 ## v0.13.0 (2025-09-29)
 
 ### Added
