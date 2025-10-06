@@ -324,9 +324,9 @@ The GeoCOM request and response messages can optionally have a transaction ID
 field.
 
 .. code-block::
-    :caption: Exchange without transactions (response comes with ID: 0)
+    :caption: Exchange without transactions (response always comes with ID: 0)
 
-    %R1Q,0,0:
+    %R1Q,0:
     %R1P,0,0:0
 
 .. code-block::
@@ -350,7 +350,7 @@ request.
 
 Transaction IDs must be in the positive range of a 16 bit signed integer
 (0 - 32767). After 32767, the ID must roll back to 0 (otherwise the instrument
-will respond with an overflowed ID of -1).
+will respond with overflowed IDs -32768, -32767, etc.).
 
 .. note::
 
