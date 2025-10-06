@@ -5,6 +5,13 @@ file.
 
 The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+## Changed
+
+- Updated GeoCOM response parsing to raise exception when the number of
+  received paramters does not match the number of parsers specified
+
 ## v0.13.0 (2025-09-29)
 
 ### Added
