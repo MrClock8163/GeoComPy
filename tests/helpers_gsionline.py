@@ -42,7 +42,7 @@ class DummyGsiOnlineConnection(Connection):
             return "?"
         elif self._GET.match(cmd):
             if cmd == "GET/I/WI71":
-                return gsi.GsiRemark2Word("1").serialize(self._gsi16)
+                return gsi.GsiRemark2Word("1").serialize(gsi16=self._gsi16)
             elif cmd != "GET/I/WI0":
                 wi = int(cmd.split("/")[-1].removeprefix("WI"))
 
