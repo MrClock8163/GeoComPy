@@ -98,17 +98,6 @@ class GsiOnlineDNA(GsiOnlineType):
         r"(?:[a-zA-Z0-9]{8}|[a-zA-Z0-9]{16}) $"
     )
 
-    REF_VERSION = (2008, 3)
-    """
-    Major and minor version of the reference manual, that this
-    implementation is based on.
-    """
-    REF_VERSION_STR = "2008.03"
-    """
-    Version string of the reference manual, that this implementation is
-    based on.
-    """
-
     class BEEPTYPE(IntEnum):
         SHORT = 0
         LONG = 1
