@@ -275,7 +275,7 @@ class Angle:
         self,
         value: float,
         unit: _AngleUnit = 'rad',
-        /,
+        *,
         normalize: bool = False,
         positive: bool = False
     ):
@@ -504,7 +504,12 @@ class Angle:
         Angle
             New `Angle` with normalized value.
         """
-        return type(self)(self._value, 'rad', True, positive)
+        return type(self)(
+            self._value,
+            'rad',
+            normalize=True,
+            positive=positive
+        )
 
     def relative_to(self, other: SupportsFloat) -> Self:
         """
@@ -872,6 +877,7 @@ class Vector:
     def _swizzle_component(
         self,
         component: Literal['x', 'y', 'z', '0'],
+        *,
         flip: bool = False
     ) -> float:
         """
@@ -953,9 +959,9 @@ class Vector:
 
         """
         return type(self)(
-            self._swizzle_component(x, flip_x),
-            self._swizzle_component(y, flip_y),
-            self._swizzle_component(z, flip_z)
+            self._swizzle_component(x, flip=flip_x),
+            self._swizzle_component(y, flip=flip_y),
+            self._swizzle_component(z, flip=flip_z)
         )
 
 
