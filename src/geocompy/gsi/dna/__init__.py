@@ -106,6 +106,7 @@ class GsiOnlineDNA(GsiOnlineType):
     def __init__(
         self,
         connection: Connection,
+        *,
         logger: Logger | None = None,
         retry: int = 2
     ):
