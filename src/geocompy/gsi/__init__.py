@@ -18,5 +18,6 @@ Submodules
 ----------
 
 - ``geocompy.gsi.gsidata``
+- ``geocompy.gsi.gsiformat``
 - ``geocompy.gsi.gsitypes``
 """

@@ -299,7 +299,7 @@ class SerialConnection(Connection):
 
     def __exit__(
         self,
-        exc_type: BaseException,
+        exc_type: type[BaseException],
         exc_value: BaseException,
         exc_tb: TracebackType
     ) -> None:
