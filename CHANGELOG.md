@@ -15,6 +15,15 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Updated GeoCOM response parsing to raise exception when the number of
   received paramters does not match the number of parsers specified
+- Updated `GeoCom` init signature to require keyword arguments
+- Updated `GsiOnlineDNA` init signature to require keyword arguments
+- Updated `Angle` init signature to require keyword arguments
+- Updated `GsiWord` and subclass init signatures to require keyword arguments
+- Updated `GsiBlock` `.parse` and `.serialize` signatures to require keyword
+  arguments
+- Updated `parse_gsi_word` signature to require keyword arguments
+- Updated `parse_gsi_blocks_from_file` signature to require keyword arguments
+- Updated `write_gsi_blocks_to_file` signature to require keyword arguments
 
 ## v0.13.0 (2025-09-29)
 
