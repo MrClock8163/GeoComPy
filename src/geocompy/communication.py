@@ -11,6 +11,8 @@ Functions
 
 - ``get_dummy_logger``
 - ``open_serial``
+- ``crc16_bitwise``
+- ``crc16_bytewise``
 
 Constants
 ---------
