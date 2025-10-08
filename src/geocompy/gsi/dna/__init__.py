@@ -108,14 +108,14 @@ class GsiOnlineDNA(GsiOnlineType):
         connection: Connection,
         *,
         logger: Logger | None = None,
-        retry: int = 2
+        attempts: int = 2
     ):
         """
         After all subsystems are initialized, the connection is tested /
-        initiated with a wake up command (this means the instruments does
+        initiated with a wake up command (this means the instrument does
         not have to be turned on manually before initiating the
         connection). If the test fails, it is retried with one second
-        delay. The test / wakeup is attempted `retry` amount of times.
+        delay (if multiple attempts are allowed).
 
         Parameters
         ----------
@@ -123,15 +123,15 @@ class GsiOnlineDNA(GsiOnlineType):
             Connection to the DNA instrument (usually a serial connection).
         logger : logging.Logger | None, optional
             Logger to log all requests and responses, by default None
-        retry : int, optional
-            Number of retries at connection validation before giving up,
+        attempts : int, optional
+            Number of tries at connection validation before raising exception,
             by default 2
 
         Raises
         ------
         ConnectionError
             If the connection could not be verified in the specified
-            number of retries.
+            number of attempts.
         """
         self._conn: Connection = connection
         if logger is None:
@@ -145,7 +145,7 @@ class GsiOnlineDNA(GsiOnlineType):
             self)
         """Measurements subsystem."""
 
-        for i in range(retry):
+        for _ in range(max(attempts, 1)):
             try:
                 reply = self.wakeup()
                 if reply.value:

@@ -19,7 +19,7 @@ class TestDNA:
     def test_init(self) -> None:
         conn_bad = FaultyConnection()
         with pytest.raises(ConnectionError):
-            GsiOnlineDNA(conn_bad, retry=1)
+            GsiOnlineDNA(conn_bad, attempts=1)
 
         conn_good = DummyGsiOnlineConnection(True)
         dna = GsiOnlineDNA(conn_good)

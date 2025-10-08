@@ -135,14 +135,14 @@ class GeoCom(GeoComType):
         connection: Connection,
         *,
         logger: Logger | None = None,
-        retry: int = 2,
+        attempts: int = 2,
         checksum: bool = False
     ):
         """
         After the subsystems are initialized, the connection is tested by
         sending an ``LF`` character to clear the receiver buffer, then the
         ``COM_NullProc`` is executed. If the test fails, it is retried with
-        one second delay. The test is attempted `retry` number of times.
+        one second delay (if multiple attempts are allowed).
 
         Parameters
         ----------
@@ -151,16 +151,17 @@ class GeoCom(GeoComType):
             (usually a serial connection).
         logger : Logger | None, optional
             Logger to log all requests and responses, by default None
-        retry : int, optional
-            Number of tries at connection validation before giving up.
+        attempts : int, optional
+            Number of tries at connection validation before raising exception,
+            by default 2
         checksum : bool, optional
-            Use and verify checksums in requests.
+            Use and verify checksums in requests, by default False
 
         Raises
         ------
         ConnectionError
             If the connection could not be verified in the specified
-            number of retries.
+            number of attempts.
         """
         self.transaction_counter = 0
         """Number of command transactions started during the current
@@ -240,7 +241,7 @@ class GeoCom(GeoComType):
 
         self._checksum: bool = checksum
 
-        for i in range(retry):
+        for _ in range(max(attempts, 1)):
             try:
                 self._conn.send("\n")
                 if self.com.nullprocess():

@@ -24,6 +24,9 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Updated `parse_gsi_word` signature to require keyword arguments
 - Updated `parse_gsi_blocks_from_file` signature to require keyword arguments
 - Updated `write_gsi_blocks_to_file` signature to require keyword arguments
+- Renamed `retry` option of `open_serial` to `attempts`
+- Renamed `retry` option of `GeoCom` to `attempts`
+- Renamed `retry` option of `GsiOnlineDNA` to `attempts`
 
 ## v0.13.0 (2025-09-29)
 

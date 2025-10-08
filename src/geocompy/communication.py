@@ -104,7 +104,7 @@ def open_serial(
     eom: str = "\r\n",
     eoa: str = "\r\n",
     sync_after_timeout: bool = False,
-    retry: int = 1,
+    attempts: int = 1,
     logger: logging.Logger | None = None
 ) -> SerialConnection:
     """
@@ -132,9 +132,8 @@ def open_serial(
     sync_after_timeout : bool, optional
         Attempt to re-sync the message-response que, if a timeout
         occured in the previous exchange, by default False
-    retry : int, optional
-        Number of retry attempts if the connection opening fails, by
-        default 1
+    attempts : int, optional
+        Number of attempts at opening the connection, by default 1
     logger : logging.Logger | None, optional
         Logger instance to use to log connection related events. Defaults
         to a dummy logger when not specified, by default None
@@ -169,12 +168,13 @@ def open_serial(
     logger.debug(
         f"Connection parameters: "
         f"baud={speed:d}, timeout={timeout:d}, "
-        f"sync_after_timeout={str(sync_after_timeout)}, tries={retry:d}, "
+        f"sync_after_timeout={str(sync_after_timeout)}, "
+        f"attempts={attempts:d}, "
         f"databits={databits:d}, stopbits={stopbits:d}, parity={parity}, "
         f"eom={eom.encode('ascii')!r}, eoa={eoa.encode('ascii')!r}"
     )
     exc: Exception = Exception()
-    for i in range(retry):
+    for i in range(max(attempts, 1)):
         try:
             serialport = Serial(
                 port, speed, databits, parity, stopbits, timeout
@@ -182,7 +182,7 @@ def open_serial(
             break
         except Exception as e:
             logger.error(
-                f"Failed to open connection, {retry-i} trie(s) remains..."
+                f"Failed to open connection, {attempts-i} trie(s) remains..."
             )
             exc = e
 
