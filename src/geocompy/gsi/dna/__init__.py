@@ -106,6 +106,7 @@ class GsiOnlineDNA(GsiOnlineType):
     def __init__(
         self,
         connection: Connection,
+        *,
         logger: Logger | None = None,
         retry: int = 2
     ):
@@ -282,7 +283,7 @@ class GsiOnlineDNA(GsiOnlineType):
             Success of the change.
         """
         asterisk = "*" if self.is_client_gsi16 else ""
-        cmd = f"PUT/{asterisk}{word.serialize(self.is_client_gsi16):s}"
+        cmd = f"PUT/{asterisk}{word.serialize(gsi16=self.is_client_gsi16):s}"
         comment = ""
         try:
             answer = self._conn.exchange(cmd)

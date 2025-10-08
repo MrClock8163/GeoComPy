@@ -211,6 +211,7 @@ class GsiWord(ABC):
     @abstractmethod
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -218,7 +219,7 @@ class GsiWord(ABC):
         raise NotImplementedError()
 
     def __str__(self) -> str:
-        return self.serialize(True)
+        return self.serialize(gsi16=True)
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, GsiWord):
@@ -331,6 +332,7 @@ class GsiUnknownWord(GsiWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -397,6 +399,7 @@ class GsiValueWord(GsiWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -461,6 +464,7 @@ class GsiIntegerValueWord(GsiWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -599,6 +603,7 @@ class GsiDateWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -673,6 +678,7 @@ class GsiTimeWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -783,6 +789,7 @@ class GsiAngleWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = GsiUnit.DEG,
         distunit: GsiUnit | None = None
@@ -925,6 +932,7 @@ class GsiDistanceWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = GsiUnit.CENTIMILLI
@@ -1054,6 +1062,7 @@ class GsiCodeWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -1214,6 +1223,7 @@ class GsiPPMPrismConstantWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -1505,6 +1515,7 @@ class GsiNewTimeWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -1562,6 +1573,7 @@ class GsiNewDateWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -1619,6 +1631,7 @@ class GsiNewYearWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -1749,6 +1762,7 @@ class GsiAppVersionWord(GsiValueWord):
 
     def serialize(
         self,
+        *,
         gsi16: bool = False,
         angleunit: GsiUnit | None = None,
         distunit: GsiUnit | None = None
@@ -2013,6 +2027,7 @@ _WI_TO_TYPE_DNA: dict[int, type[GsiWord]] = {
 
 def parse_gsi_word(
     value: str,
+    *,
     dna: bool = False,
     strict: bool = False
 ) -> GsiWord:
@@ -2148,6 +2163,7 @@ class GsiBlock:
     def parse(
         cls,
         data: str,
+        *,
         dna: bool = False,
         keep_unknowns: bool = False
     ) -> Self:
@@ -2227,7 +2243,11 @@ class GsiBlock:
         words: list[GsiWord] = []
         for i in range(wordsize, len(data), wordsize):
             wordstring = data[i:i+wordsize]
-            word = parse_gsi_word(wordstring, dna, False)
+            word = parse_gsi_word(
+                wordstring,
+                dna=dna,
+                strict=False
+            )
             if isinstance(word, GsiUnknownWord) and not keep_unknowns:
                 continue
 
@@ -2265,6 +2285,7 @@ class GsiBlock:
 
     def serialize(
         self,
+        *,
         address: int | None = None,
         gsi16: bool = False,
         endl: bool = True,
@@ -2301,11 +2322,11 @@ class GsiBlock:
         """
         match self.blocktype:
             case "measurement":
-                header = GsiPointNameWord(self.value).serialize(gsi16)
+                header = GsiPointNameWord(self.value).serialize(gsi16=gsi16)
             case "code":
-                header = GsiCodeWord(self.value, False).serialize(gsi16)
+                header = GsiCodeWord(self.value, False).serialize(gsi16=gsi16)
             case "specialcode":
-                header = GsiCodeWord(self.value, True).serialize(gsi16)
+                header = GsiCodeWord(self.value, True).serialize(gsi16=gsi16)
             case _:
                 raise ValueError(f"Unknown block type: '{self.blocktype}'")
 
@@ -2317,7 +2338,11 @@ class GsiBlock:
 
         output = header + "".join(
             [
-                w.serialize(gsi16, angleunit, distunit)
+                w.serialize(
+                    gsi16=gsi16,
+                    angleunit=angleunit,
+                    distunit=distunit
+                )
                 for w in self
             ]
         )
@@ -2348,6 +2373,7 @@ class GsiBlock:
 
 def parse_gsi_blocks_from_file(
     file: TextIO,
+    *,
     dna: bool = False,
     keep_unknowns: bool = False,
     strict: bool = False
@@ -2375,7 +2401,11 @@ def parse_gsi_blocks_from_file(
         if not line.strip():
             continue
         try:
-            block = GsiBlock.parse(line.strip("\n"), dna, keep_unknowns)
+            block = GsiBlock.parse(
+                line.strip("\n"),
+                dna=dna,
+                keep_unknowns=keep_unknowns
+            )
         except Exception as e:
             if strict:
                 raise e
@@ -2388,6 +2418,7 @@ def parse_gsi_blocks_from_file(
 def write_gsi_blocks_to_file(
     blocks: Iterable[GsiBlock],
     file: TextIO,
+    *,
     gsi16: bool = False,
     angleunit: GsiUnit = GsiUnit.DEG,
     distunit: GsiUnit = GsiUnit.MILLI,
@@ -2431,10 +2462,10 @@ def write_gsi_blocks_to_file(
     for block in blocks:
         file.write(
             block.serialize(
-                next(addresser),
-                gsi16,
-                True,
-                angleunit,
-                distunit
+                address=next(addresser),
+                gsi16=gsi16,
+                endl=True,
+                angleunit=angleunit,
+                distunit=distunit
             )
         )

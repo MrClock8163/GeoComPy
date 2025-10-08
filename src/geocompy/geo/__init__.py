@@ -133,6 +133,7 @@ class GeoCom(GeoComType):
     def __init__(
         self,
         connection: Connection,
+        *,
         logger: Logger | None = None,
         retry: int = 2,
         checksum: bool = False
