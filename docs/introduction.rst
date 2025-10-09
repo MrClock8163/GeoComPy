@@ -213,7 +213,7 @@ events.
     logger.addHandler(StreamHandler(stdout))
     logger.setLevel(DEBUG)
     with open_serial("COM1", timeout=15) as com:
-        level = GsiOnlineDNA(com, logger)
+        level = GsiOnlineDNA(com, logger=logger)
 
 Some examples of the information logged on various levels:
 

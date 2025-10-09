@@ -112,8 +112,8 @@ class GeoCom(GeoComType):
     >>> logger = getLogger("TPS")
     >>> logger.addHandler(StreamHandler(stdout))
     >>> logger.setLevel(DEBUG)
-    >>> with open_serial("COM1") as line:
-    ...     tps = GeoCom(line, logger)
+    >>> with open_serial("COM1") as com:
+    ...     tps = GeoCom(com, logger=logger)
     ...     tps.com.nullprocess()
     ...
     >>>

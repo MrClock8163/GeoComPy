@@ -79,8 +79,8 @@ class GsiOnlineDNA(GsiOnlineType):
     >>> logger = getLogger("TPS")
     >>> logger.addHandler(StreamHandler(stdout))
     >>> logger.setLevel(DEBUG)
-    >>> with open_serial("COM1") as line:
-    ...     dna = GsiOnlineDNA(line, logger)
+    >>> with open_serial("COM1") as com:
+    ...     dna = GsiOnlineDNA(com, logger=logger)
     ...     dna.beep('SHORT')
     ...
     >>>
