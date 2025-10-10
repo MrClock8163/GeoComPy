@@ -29,10 +29,20 @@ from __future__ import annotations
 
 import logging
 from types import TracebackType
+from typing import Self, Literal
 from collections.abc import Generator
 from contextlib import contextmanager
 from abc import ABC, abstractmethod
 from time import sleep
+from socket import (
+    socket,
+    SHUT_RDWR,
+    AF_BLUETOOTH,
+    AF_INET,
+    SOCK_STREAM,
+    BTPROTO_RFCOMM,
+    IPPROTO_TCP
+)
 
 from serial import (
     Serial,
@@ -200,6 +210,163 @@ def open_serial(
     return wrapper
 
 
+def open_socket(
+    address: str,
+    port: int,
+    protocol: Literal['rfcomm', 'tcp'],
+    *,
+    timeout: int = 15,
+    eom: str = "\r\n",
+    eoa: str = "\r\n",
+    sync_after_timeout: bool = False,
+    attempts: int = 1,
+    logger: logging.Logger | None = None
+) -> SocketConnection:
+    logger = logger or DUMMYLOGGER
+    logger.info(
+        f"Opening socket connection to {address} on channel/port {port}"
+    )
+    match protocol:
+        case "rfcomm":
+            sock = socket(
+                AF_BLUETOOTH,
+                SOCK_STREAM,
+                BTPROTO_RFCOMM
+            )
+        case "tcp":
+            sock = socket(
+                AF_INET,
+                SOCK_STREAM,
+                IPPROTO_TCP
+            )
+        case _:
+            raise ValueError(f"Unknown protocol '{protocol}'")
+    sock.settimeout(timeout)
+    for i in range(max(attempts, 1)):
+        try:
+            sock.connect((address, port))
+            break
+        except Exception as e:
+            logger.exception(
+                f"Failed to open connection, {attempts-i} attempts remain..."
+            )
+            exc = e
+
+        sleep(5)
+    else:
+        raise exc
+
+    wrapper = SocketConnection(
+        sock,
+        eom=eom,
+        eoa=eoa,
+        sync_after_timeout=sync_after_timeout,
+        logger=logger
+    )
+    return wrapper
+
+
+class SocketConnection(Connection):
+    def __init__(
+        self,
+        sock: socket,
+        *,
+        eom: str = "\r\n",
+        eoa: str = "\r\n",
+        sync_after_timeout: bool = False,
+        logger: logging.Logger | None = None
+    ):
+        self.socket = sock
+        self.eom: str = eom  # end of message
+        self.eombytes: bytes = eom.encode("ascii")
+        self.eoa: str = eoa  # end of answer
+        self.eoabytes: bytes = eoa.encode("ascii")
+        self._attempt_sync: bool = sync_after_timeout
+        self._timeout_counter: int = 0
+        self._logger: logging.Logger = logger or DUMMYLOGGER
+
+        self._receiver_buffer: bytes = b""
+        self._chunk = 1024
+
+    def __del__(self) -> None:
+        self.close()
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_tb: TracebackType
+    ) -> None:
+        self.close()
+
+    def is_open(self) -> bool:
+        return True
+
+    def send_binary(self, data: bytes) -> None:
+        if not data.endswith(self.eombytes):
+            data += self.eombytes
+
+        self.socket.send(data)
+
+    def send(self, message: str) -> None:
+        self.send_binary(message.encode("ascii", "ignore"))
+
+    def receive_binary(self) -> bytes:
+        while self.eoabytes not in self._receiver_buffer:
+            data = self.socket.recv(self._chunk)
+            if len(data) == 0:
+                pass
+
+            self._receiver_buffer += data
+
+        end = self._receiver_buffer.index(self.eoabytes)
+        data = self._receiver_buffer[:end]
+        self._receiver_buffer = self._receiver_buffer[
+            end + len(self.eoabytes):
+        ]
+        return data
+
+    def receive(self) -> str:
+        return self.receive_binary().decode("ascii")
+
+    def exchange_binary(self, data: bytes) -> bytes:
+        self.send_binary(data)
+        return self.receive_binary()
+
+    def exchange(self, cmd: str) -> str:
+        return self.exchange_binary(
+            cmd.encode("ascii", "ignore")
+        ).decode("ascii")
+
+    def close(self) -> None:
+        self.socket.shutdown(SHUT_RDWR)
+        self.socket.close()
+
+    def reset(self) -> None:
+        while self.socket.recv(self._chunk):
+            pass
+
+        self._receiver_buffer = b""
+
+    @contextmanager
+    def timeout_override(
+        self,
+        timeout: int | None
+    ) -> Generator[None, None, None]:
+        saved_timeout = self.socket.gettimeout()
+
+        try:
+            self.socket.settimeout(timeout)
+            self._logger.debug(f"Temporary timeout override to {timeout}")
+            yield
+        finally:
+            self.socket.settimeout(saved_timeout)
+            self._logger.debug(f"Restored timeout to {saved_timeout}")
+
+
 class SerialConnection(Connection):
     """
     Connection wrapping an open serial port.
@@ -296,7 +463,7 @@ class SerialConnection(Connection):
     def __del__(self) -> None:
         self._port.close()
 
-    def __enter__(self) -> SerialConnection:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(
