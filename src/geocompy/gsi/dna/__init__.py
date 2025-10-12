@@ -156,7 +156,7 @@ class GsiOnlineDNA(GsiOnlineType):
             sleep(1)
         else:
             raise ConnectionError(
-                "could not establish connection to instrument"
+                "Could not verify connection with instrument"
             )
 
         self.settings.get_format()  # Sync format setting

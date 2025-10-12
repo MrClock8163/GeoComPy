@@ -49,7 +49,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9019, ``AUT_GetATRStatus``
 
-        .. deprecated:: GeoCOM-TPS1100-1.04
+        .. deprecated:: GeoCOM-TPS1100
             The command is still available, but should not be used with
             instruments that support the new `aus.get_user_atr_state`
             command.
@@ -88,7 +88,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9018, ``AUT_SetATRStatus``
 
-        .. deprecated:: GeoCOM-TPS1100-1.04
+        .. deprecated:: GeoCOM-TPS1100
             The command is still available, but should not be used with
             instruments that support the new `aus.switch_user_atr`
             command.
@@ -127,7 +127,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9021, ``AUT_GetLockStatus``
 
-        .. deprecated:: GeoCOM-TPS1100-1.04
+        .. deprecated:: GeoCOM-TPS1100
             The command is still available, but should not be used with
             instruments that support the new `aus.get_user_lock_state`
             command.
@@ -162,7 +162,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9020, ``AUT_SetLockStatus``
 
-        .. deprecated:: GeoCOM-TPS1100-1.04
+        .. deprecated:: GeoCOM-TPS1100
             The command is still available, but should not be used with
             instruments that support the new `aus.switch_user_lock`
             command.
@@ -616,7 +616,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9042, ``AUT_GetSearchArea``
 
-        .. versionadded:: GeoCOM-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100
 
         Gets current position and size of the PowerSearch window.
 
@@ -660,7 +660,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9043, ``AUT_SetSearchArea``
 
-        .. versionadded:: GeoCOM-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100
 
         Sets position and size of the PowerSearch window.
 
@@ -697,7 +697,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9040, ``AUT_GetUserSpiral``
 
-        .. versionadded:: GeoCOM-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100
 
         Gets the size of the PowerSearch window.
 
@@ -729,7 +729,7 @@ class GeoComAUT(GeoComSubsystem):
         """
         RPC 9041, ``AUT_SetUserSpiral``
 
-        .. versionadded:: GeoCOM-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100
 
         Sets the size of the PowerSearch window.
 

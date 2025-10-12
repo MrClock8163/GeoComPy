@@ -165,16 +165,14 @@ class GeoCom(GeoComType):
         """Number of command transactions started during the current
         session."""
         self._conn: Connection = connection
-        if logger is None:
-            logger = DUMMYLOGGER
-        self._logger: Logger = logger
+        self._logger: Logger = logger or DUMMYLOGGER
         self.precision = 15
 
         self.aus: GeoComAUS = GeoComAUS(self)
         """
         Alt User subsystem.
 
-        .. versionadded:: GeoCOM-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100
         """
         self.aut: GeoComAUT = GeoComAUT(self)
         """Automation subsystem."""
@@ -247,11 +245,10 @@ class GeoCom(GeoComType):
                     break
             except Exception:
                 self._logger.exception("Exception during connection attempt")
-
             sleep(1)
         else:
             raise ConnectionError(
-                "could not establish connection to instrument"
+                "Could not verify connection with instrument"
             )
 
         resp = self.com.get_double_precision()

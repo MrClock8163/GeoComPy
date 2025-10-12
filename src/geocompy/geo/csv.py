@@ -284,7 +284,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5009, ``CSV_GetVBat``
 
-        .. deprecated:: GeoCOM-TPS1100-1.05
+        .. deprecated:: GeoCOM-TPS1100
             The command is still available, but should not be used with
             instruments that support the new `check_power` command.
 
@@ -357,7 +357,7 @@ class GeoComCSV(GeoComSubsystem):
         """
         RPC 5039, ``CSV_CheckPower``
 
-        .. versionadded:: GeoCOM-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100
 
         Gets the remaining capacity of the active power source.
 
