@@ -1,6 +1,6 @@
 from os import environ
 import pytest
-from serial import Serial, SerialException, SerialTimeoutException
+from serial import Serial
 from geocompy.communication import (
     get_dummy_logger,
     open_serial,
@@ -62,10 +62,10 @@ class TestSerialConnection:
 
             com.reset()
 
-        with pytest.raises(SerialException):
+        with pytest.raises(ConnectionError):
             com.send("closed")
 
-        with pytest.raises(SerialException):
+        with pytest.raises(ConnectionError):
             com.receive()
 
         with open_serial(
@@ -79,12 +79,12 @@ class TestSerialConnection:
             assert com.exchange("recovered") == "recovered"
 
             with com.timeout_override(1):
-                with pytest.raises(SerialTimeoutException):
+                with pytest.raises(TimeoutError):
                     com.receive()
 
                 assert com._timeout_counter == 1
 
-                with pytest.raises(SerialTimeoutException):
+                with pytest.raises(TimeoutError):
                     com.receive()
 
                 assert com._timeout_counter == 2
