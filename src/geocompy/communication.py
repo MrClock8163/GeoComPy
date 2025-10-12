@@ -1,3 +1,4 @@
+# mypy: disable-error-code="unused-ignore"
 """
 Description
 ===========
@@ -236,14 +237,13 @@ def open_socket(
     )
     match protocol:
         case "rfcomm":
+            # Bluetooth sockets and the RFCOMM protocol are not supported
+            # in Linux environments.
             try:
                 sock = socket.socket(
-                    # type: ignore[attr-defined,unused-ignore]
-                    socket.AF_BLUETOOTH,
-                    # type: ignore[attr-defined,unused-ignore]
+                    socket.AF_BLUETOOTH,  # type: ignore[attr-defined]
                     socket.SOCK_STREAM,
-                    # type: ignore[attr-defined,unused-ignore]
-                    socket.BTPROTO_RFCOMM
+                    socket.BTPROTO_RFCOMM  # type: ignore[attr-defined]
                 )
             except Exception as e:
                 raise OSError(
