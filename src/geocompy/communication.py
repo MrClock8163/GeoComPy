@@ -34,15 +34,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from abc import ABC, abstractmethod
 from time import sleep
-from socket import (
-    socket,
-    SHUT_RDWR,
-    AF_BLUETOOTH,
-    AF_INET,
-    SOCK_STREAM,
-    BTPROTO_RFCOMM,
-    IPPROTO_TCP
-)
+import socket
 
 from serial import (
     Serial,
@@ -244,16 +236,24 @@ def open_socket(
     )
     match protocol:
         case "rfcomm":
-            sock = socket(
-                AF_BLUETOOTH,
-                SOCK_STREAM,
-                BTPROTO_RFCOMM
-            )
+            try:
+                sock = socket.socket(
+                    # type: ignore[attr-defined,unused-ignore]
+                    socket.AF_BLUETOOTH,
+                    # type: ignore[attr-defined,unused-ignore]
+                    socket.SOCK_STREAM,
+                    # type: ignore[attr-defined,unused-ignore]
+                    socket.BTPROTO_RFCOMM
+                )
+            except Exception as e:
+                raise OSError(
+                    "RFCOMM sockets are not supported on this OS"
+                ) from e
         case "tcp":
-            sock = socket(
-                AF_INET,
-                SOCK_STREAM,
-                IPPROTO_TCP
+            sock = socket.socket(
+                socket.AF_INET,
+                socket.SOCK_STREAM,
+                socket.IPPROTO_TCP
             )
         case _:
             raise ValueError(f"Unknown protocol '{protocol}'")
@@ -283,7 +283,7 @@ def open_socket(
 class SocketConnection(Connection):
     def __init__(
         self,
-        sock: socket,
+        sock: socket.socket,
         *,
         eom: str = "\r\n",
         eoa: str = "\r\n",
@@ -393,7 +393,7 @@ class SocketConnection(Connection):
             address, port = self.socket.getpeername()
         except Exception:
             return
-        self.socket.shutdown(SHUT_RDWR)
+        self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
         self._logger.info(
             f"Closed connection to {address} on channel/port {port}"
@@ -401,7 +401,7 @@ class SocketConnection(Connection):
 
     def reset(self) -> None:
         address = self.socket.getpeername()
-        newsoc = socket(
+        newsoc = socket.socket(
             self.socket.family,
             self.socket.type,
             self.socket.proto
