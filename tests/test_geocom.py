@@ -32,11 +32,20 @@ class DummyGeoComConnection(Connection):
         r"(?:(?P<params>.*))?$"
     )
 
+    def send_binary(self, data: bytes) -> None:
+        return
+
     def send(self, message: str) -> None:
         return
 
+    def receive_binary(self) -> bytes:
+        return b""
+
     def receive(self) -> str:
         return ""
+
+    def exchange_binary(self, data: bytes) -> bytes:
+        return b""
 
     def exchange(self, cmd: str) -> str:
         if not self._CMD.match(cmd):

@@ -6,11 +6,20 @@ def faulty_parser(value: str) -> int:
 
 
 class FaultyConnection(Connection):
+    def send_binary(self, data: bytes) -> None:
+        pass
+
     def send(self, value: str) -> None:
         pass
 
+    def receive_binary(self) -> bytes:
+        return b""
+
     def receive(self) -> str:
         return ""
+
+    def exchange_binary(self, data: bytes) -> bytes:
+        return b""
 
     def exchange(self, value: str) -> str:
         return ""
