@@ -235,6 +235,13 @@ def open_socket(
     logger.info(
         f"Opening socket connection to {address} on channel/port {port}"
     )
+    logger.debug(
+        f"Connection parameters: "
+        f"timeout={timeout:d}, "
+        f"sync_after_timeout={str(sync_after_timeout)}, "
+        f"attempts={attempts:d}, "
+        f"eom={eom.encode('ascii')!r}, eoa={eoa.encode('ascii')!r}"
+    )
     match protocol:
         case "rfcomm":
             sock = socket(
@@ -250,29 +257,27 @@ def open_socket(
             )
         case _:
             raise ValueError(f"Unknown protocol '{protocol}'")
+
     sock.settimeout(timeout)
     for i in range(max(attempts, 1)):
         try:
             sock.connect((address, port))
             break
-        except Exception as e:
+        except Exception:
             logger.exception(
-                f"Failed to open connection, {attempts-i} attempts remain..."
+                f"Failed to open connection, {attempts - i} attempts remain"
             )
-            exc = e
-
-        sleep(5)
+        sleep(2)
     else:
-        raise exc
+        raise ConnectionError("Could not open connection")
 
-    wrapper = SocketConnection(
+    return SocketConnection(
         sock,
         eom=eom,
         eoa=eoa,
         sync_after_timeout=sync_after_timeout,
         logger=logger
     )
-    return wrapper
 
 
 class SocketConnection(Connection):
