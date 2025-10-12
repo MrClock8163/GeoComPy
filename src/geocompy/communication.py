@@ -297,9 +297,6 @@ class SocketConnection(Connection):
         self._receiver_buffer: bytes = b""
         self._chunk = 1024
 
-    def __del__(self) -> None:
-        self.close()
-
     def __enter__(self) -> Self:
         return self
 
@@ -312,23 +309,29 @@ class SocketConnection(Connection):
         self.close()
 
     def is_open(self) -> bool:
-        return True
+        try:
+            sent = self.socket.send(self.eombytes)
+            return sent == len(self.eombytes)
+        except Exception:
+            return False
 
     def send_binary(self, data: bytes) -> None:
         if not data.endswith(self.eombytes):
             data += self.eombytes
 
-        self.socket.send(data)
+        try:
+            self.socket.send(data)
+        except Exception as e:
+            raise ConnectionError(
+                "Cannot send data, socket most likely disconnected"
+            ) from e
 
     def send(self, message: str) -> None:
         self.send_binary(message.encode("ascii", "ignore"))
 
-    def receive_binary(self) -> bytes:
+    def _receive_chunked(self) -> bytes:
         while self.eoabytes not in self._receiver_buffer:
             data = self.socket.recv(self._chunk)
-            if len(data) == 0:
-                pass
-
             self._receiver_buffer += data
 
         end = self._receiver_buffer.index(self.eoabytes)
@@ -337,6 +340,24 @@ class SocketConnection(Connection):
             end + len(self.eoabytes):
         ]
         return data
+
+    def receive_binary(self) -> bytes:
+        if self._attempt_sync and self._timeout_counter > 0:
+            for _ in range(self._timeout_counter):
+                try:
+                    self._receive_chunked()
+                except TimeoutError as e:
+                    self._timeout_counter += 1
+                    raise TimeoutError(
+                        "Socket connection timed out while recovering from a "
+                        "previous timeout"
+                    ) from e
+
+        try:
+            return self._receive_chunked()
+        except TimeoutError as e:
+            self._timeout_counter += 1
+            raise TimeoutError("Socket connection timed out") from e
 
     def receive(self) -> str:
         return self.receive_binary().decode("ascii")
@@ -351,14 +372,29 @@ class SocketConnection(Connection):
         ).decode("ascii")
 
     def close(self) -> None:
+        address: str
+        port: int
+        address, port = self.socket.getpeername()
         self.socket.shutdown(SHUT_RDWR)
         self.socket.close()
+        self._logger.info(
+            f"Closed connection to {address} on channel/port {port}"
+        )
 
     def reset(self) -> None:
-        while self.socket.recv(self._chunk):
-            pass
-
+        address = self.socket.getpeername()
+        newsoc = socket(
+            self.socket.family,
+            self.socket.type,
+            self.socket.proto
+        )
+        newsoc.settimeout(self.socket.timeout)
+        self.socket.close()
+        self.socket = newsoc
+        self.socket.connect(address)
         self._receiver_buffer = b""
+        self._timeout_counter = 0
+        self._logger.debug("Reset connection")
 
     @contextmanager
     def timeout_override(
