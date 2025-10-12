@@ -379,7 +379,10 @@ class SocketConnection(Connection):
     def close(self) -> None:
         address: str
         port: int
-        address, port = self.socket.getpeername()
+        try:
+            address, port = self.socket.getpeername()
+        except Exception:
+            return
         self.socket.shutdown(SHUT_RDWR)
         self.socket.close()
         self._logger.info(
