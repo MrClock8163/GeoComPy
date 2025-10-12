@@ -161,6 +161,11 @@ def open_serial(
     -------
     SerialConnection
 
+    Raises
+    ------
+    ConnectionError
+        Serial port could not be opened.
+
     Warning
     -------
 
@@ -192,22 +197,19 @@ def open_serial(
         f"databits={databits:d}, stopbits={stopbits:d}, parity={parity}, "
         f"eom={eom.encode('ascii')!r}, eoa={eoa.encode('ascii')!r}"
     )
-    exc: Exception = Exception()
     for i in range(max(attempts, 1)):
         try:
             serialport = Serial(
                 port, speed, databits, parity, stopbits, timeout
             )
             break
-        except Exception as e:
+        except Exception:
             logger.error(
-                f"Failed to open connection, {attempts-i} trie(s) remains..."
+                f"Failed to open connection, {attempts - i} attempts remain"
             )
-            exc = e
-
-        sleep(5)
+        sleep(2)
     else:
-        raise exc
+        raise ConnectionError("Could not open connection")
 
     wrapper = SerialConnection(
         serialport,
