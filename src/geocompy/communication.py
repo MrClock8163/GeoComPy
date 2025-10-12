@@ -351,18 +351,28 @@ class SocketConnection(Connection):
             for _ in range(self._timeout_counter):
                 try:
                     self._receive_chunked()
-                except TimeoutError as e:
+                except TimeoutError as te:
                     self._timeout_counter += 1
                     raise TimeoutError(
                         "Socket connection timed out while recovering from a "
                         "previous timeout"
+                    ) from te
+                except Exception as e:
+                    raise ConnectionError(
+                        "Cannot receive data, socket most likely disconnected"
                     ) from e
+            else:
+                self._timeout_counter = 0
 
         try:
             return self._receive_chunked()
-        except TimeoutError as e:
+        except TimeoutError as te:
             self._timeout_counter += 1
-            raise TimeoutError("Socket connection timed out") from e
+            raise TimeoutError("Socket connection timed out") from te
+        except Exception as e:
+            raise ConnectionError(
+                "Cannot receive data, socket most likely disconnected"
+            ) from e
 
     def receive(self) -> str:
         return self.receive_binary().decode("ascii")
