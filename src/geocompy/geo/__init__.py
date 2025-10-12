@@ -43,8 +43,6 @@ from enum import Enum
 from typing import Any, overload, TypeVar
 from collections.abc import Callable, Iterable
 
-from serial import SerialException, SerialTimeoutException
-
 from geocompy.data import Angle, Byte
 from geocompy.communication import (
     Connection,
@@ -374,13 +372,13 @@ class GeoCom(GeoComType):
 
         try:
             answer = self._conn.exchange(cmd)
-        except SerialTimeoutException:
+        except TimeoutError:
             self._logger.exception("Connection timed out during request")
             answer = (
                 f"%R1P,{GeoComCode.COM_TIMEDOUT:d},"
                 f"{trid}:{GeoComCode.OK:d}"
             )
-        except SerialException:
+        except ConnectionError:
             self._logger.exception("Connection error occured during request")
             answer = (
                 f"%R1P,{GeoComCode.COM_CANT_SEND:d},"

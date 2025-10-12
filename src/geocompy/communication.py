@@ -46,8 +46,6 @@ from socket import (
 
 from serial import (
     Serial,
-    SerialException,
-    SerialTimeoutException,
     PARITY_NONE
 )
 
@@ -556,12 +554,12 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
 
         """
         if not self._port.is_open:
-            raise SerialException(
+            raise ConnectionError(
                 "serial port is not open"
             )
 
@@ -581,7 +579,7 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
 
         """
@@ -598,25 +596,25 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
-        ~serial.SerialTimeoutException
+        TimeoutError
             If the connection timed out before receiving the
             EndOfAnswer sequence.
 
         """
         if not self._port.is_open:
-            raise SerialException(
+            raise ConnectionError(
                 "serial port is not open"
             )
 
-        eoabytes = self.eoa.encode("ascii")
+        eoabytes = self.eoabytes
         if self._attempt_sync and self._timeout_counter > 0:
-            for i in range(self._timeout_counter):
+            for _ in range(self._timeout_counter):
                 excess = self._port.read_until(eoabytes)
                 if not excess.endswith(eoabytes):
                     self._timeout_counter += 1
-                    raise SerialTimeoutException(
+                    raise TimeoutError(
                         "Serial connection timed out on 'receive_binary' "
                         "during an attempt to recover from a previous timeout"
                     )
@@ -626,7 +624,7 @@ class SerialConnection(Connection):
         answer = self._port.read_until(eoabytes)
         if not answer.endswith(eoabytes):
             self._timeout_counter += 1
-            raise SerialTimeoutException(
+            raise TimeoutError(
                 "serial connection timed out on 'receive_binary'"
             )
 
@@ -643,9 +641,9 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
-        ~serial.SerialTimeoutException
+        TimeoutError
             If the connection timed out before receiving the
             EndOfAnswer sequence.
 
@@ -670,9 +668,9 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
-        ~serial.SerialTimeoutException
+        TimeoutError
             If the connection timed out before receiving the
             EndOfAnswer sequence for one of the responses.
 
@@ -697,9 +695,9 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
-        ~serial.SerialTimeoutException
+        TimeoutError
             If the connection timed out before receiving the
             EndOfAnswer sequence for one of the responses.
 
