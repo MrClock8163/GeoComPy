@@ -256,6 +256,37 @@ If the whole process was successful, the device will be accessible on the
     They have to be recreated after every restart either manually, or with
     a startup script.
 
+Internet
+--------
+
+The newest instruments (in addition to Bluetooth) also come with WLAN support.
+This enables connections through TCP/IP. 
+
+.. note::
+
+    In case of Leica instruments and GeoCOM, the GeoCOM interface on the
+    instrument might have to be manually switched to WLAN mode
+    before initiating a connection.
+
+To initiate a connection through internet sockets, the instrument and the
+controlling computer must be connected to the same WLAN.
+
+.. tip::
+
+    The IP address and TCP port number of the instrument can be checked in the
+    control menu of the connection settings on the instrument.
+
+.. code-block:: python
+    :caption: Connection through TCP/IP over WLAN
+    :linenos:
+
+    from geocompy import open_socket
+
+
+    with open_socket("192.168.0.1", 1212, "tcp") as soc:
+        soc.send("some message")
+
+
 Simulators
 ----------
 
