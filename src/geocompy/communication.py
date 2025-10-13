@@ -12,6 +12,7 @@ Functions
 
 - ``get_dummy_logger``
 - ``open_serial``
+- ``open_socket``
 - ``crc16_bitwise``
 - ``crc16_bytewise``
 
@@ -25,6 +26,7 @@ Types
 
 - ``Connection``
 - ``SerialConnection``
+- ``SocketConnection``
 """
 from __future__ import annotations
 
