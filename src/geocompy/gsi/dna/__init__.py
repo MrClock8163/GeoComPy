@@ -155,7 +155,7 @@ class GsiOnlineDNA(GsiOnlineType):
 
             sleep(1)
         else:
-            raise ConnectionError(
+            raise ConnectionRefusedError(
                 "Could not verify connection with instrument"
             )
 

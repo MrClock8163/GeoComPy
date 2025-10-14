@@ -202,7 +202,7 @@ def open_serial(
             )
         sleep(2)
     else:
-        raise ConnectionError("Could not open connection")
+        raise ConnectionRefusedError("Could not open connection")
 
     wrapper = SerialConnection(
         serialport,
@@ -328,7 +328,7 @@ def open_socket(
             )
         sleep(2)
     else:
-        raise ConnectionError("Could not open connection")
+        raise ConnectionRefusedError("Could not open connection")
 
     return SocketConnection(
         sock,

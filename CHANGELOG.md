@@ -17,11 +17,15 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Changed the `Connection` interface definition to require `send_binary`,
   `receive_binary` and `exchange_binary` methods
-- Changed `open_serial` to raise `ConnectionError` instead of the original
-  exception when the connection could not be opened
+- Changed `open_serial` to raise `ConnectionRefusedError` instead of the
+  original exception when the connection could not be opened
 - Changed all methods of `SerialConnection` to raise the general
   `ConnectionEror` and `TimeoutError` instead of serial specific
   `SerialException` and`SerialTimeoutException`
+- Changed `GeoCom` init to raise `ConnectionRefusedError` instead of
+  `ConnectionError` when the connection could not be verified
+- Changed `GsiOnlineDNA` init to raise `ConnectionRefusedError` instead of
+  `ConnectionError` when the connection could not be verified
 - Updated GeoCOM response parsing to raise exception when the number of
   received paramters does not match the number of parsers specified
 - Updated `GeoCom` init signature to require keyword arguments

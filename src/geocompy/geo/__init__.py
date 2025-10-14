@@ -247,7 +247,7 @@ class GeoCom(GeoComType):
                 self._logger.exception("Exception during connection attempt")
             sleep(1)
         else:
-            raise ConnectionError(
+            raise ConnectionRefusedError(
                 "Could not verify connection with instrument"
             )
 

@@ -78,7 +78,7 @@ class DummyGeoComConnection(Connection):
 class TestGeoCom:
     def test_init(self) -> None:
         conn_bad = FaultyConnection()
-        with pytest.raises(ConnectionError):
+        with pytest.raises(ConnectionRefusedError):
             GeoCom(conn_bad, attempts=1)
 
         conn_good = DummyGeoComConnection()
