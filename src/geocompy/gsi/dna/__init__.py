@@ -129,7 +129,7 @@ class GsiOnlineDNA(GsiOnlineType):
 
         Raises
         ------
-        ConnectionError
+        ConnectionRefusedError
             If the connection could not be verified in the specified
             number of attempts.
         """

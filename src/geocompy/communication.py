@@ -156,7 +156,7 @@ def open_serial(
 
     Raises
     ------
-    ConnectionError
+    ConnectionRefusedError
         Serial port could not be opened.
 
     Warning
@@ -259,7 +259,7 @@ def open_socket(
 
     Raises
     ------
-    ConnectionError
+    ConnectionRefusedError
         Socket could not be opened.
 
     Warning
