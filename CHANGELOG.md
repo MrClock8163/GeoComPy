@@ -5,11 +5,11 @@ file.
 
 The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## v0.14.0 (2025-10-18)
 
 ### Added
 
-- Added support for checksums in GeoCOM transactions
+- Added support for CRC16 checksums in GeoCOM transactions
 - Added `SocketConnection` to allow socket based communication
 - Added `open_socket` function to create TCP and RFCOMM socket connections
 
@@ -27,7 +27,7 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Changed `GsiOnlineDNA` init to raise `ConnectionRefusedError` instead of
   `ConnectionError` when the connection could not be verified
 - Updated GeoCOM response parsing to raise exception when the number of
-  received paramters does not match the number of parsers specified
+  received parameters does not match the number of parsers specified
 - Updated `GeoCom` init signature to require keyword arguments
 - Updated `GsiOnlineDNA` init signature to require keyword arguments
 - Updated `Angle` init signature to require keyword arguments
@@ -40,6 +40,11 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Renamed `retry` option of `open_serial` to `attempts`
 - Renamed `retry` option of `GeoCom` to `attempts`
 - Renamed `retry` option of `GsiOnlineDNA` to `attempts`
+
+### Removed
+
+- Removed `REF_VERSION` attribute from `GsiOnlineDNA`
+- Removed `REF_VERSION_STR` attribute from `GsiOnlineDNA`
 
 ## v0.13.0 (2025-09-29)
 
