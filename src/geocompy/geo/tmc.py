@@ -453,7 +453,7 @@ class GeoComTMC(GeoComSubsystem):
         """
         RPC 2167, ``TMC_GetFullMeas``
 
-        .. versionadded:: GeoCOM-TPS1200-1.50
+        .. versionadded:: GeoCOM-TPS1200
 
         Takes an angular measurement with the selected inclination
         correction mode, and returns measurements with a previously

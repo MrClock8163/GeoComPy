@@ -129,7 +129,7 @@ class GsiOnlineDNA(GsiOnlineType):
 
         Raises
         ------
-        ConnectionError
+        ConnectionRefusedError
             If the connection could not be verified in the specified
             number of attempts.
         """
@@ -155,8 +155,8 @@ class GsiOnlineDNA(GsiOnlineType):
 
             sleep(1)
         else:
-            raise ConnectionError(
-                "could not establish connection to instrument"
+            raise ConnectionRefusedError(
+                "Could not verify connection with instrument"
             )
 
         self.settings.get_format()  # Sync format setting

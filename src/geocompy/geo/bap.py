@@ -157,7 +157,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17022, ``BAP_GetTargetType``
 
-        .. versionadded:: GeoCOM-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100
 
         Gets the current EDM target type.
 
@@ -183,7 +183,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17021, ``BAP_SetTargetType``
 
-        .. versionadded:: GeoCOM-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100
 
         Sets the EDM target type. The last target type is remembered for
         all EDM modes.
@@ -214,7 +214,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17009, ``BAP_GetPrismType``
 
-        .. versionadded:: GeoCOM-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100
 
         Gets the current prism type.
 
@@ -243,7 +243,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17008, ``BAP_SetPrismType``
 
-        .. versionadded:: GeoCOM-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100
 
         Sets the prism type. Prism change also overwrites the current
         prism constant.
@@ -276,7 +276,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17023, ``BAP_GetPrismDef``
 
-        .. versionadded:: GeoCOM-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100
 
         Gets the definition of the default prism.
 
@@ -318,7 +318,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17024, ``BAP_SetPrismDef``
 
-        .. versionadded:: GeoCOM-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100
 
         .. versionremoved:: GeoCOM-TPS1200
 
@@ -412,7 +412,7 @@ class GeoComBAP(GeoComSubsystem):
         """
         RPC 17020, ``BAP_SearchTarget``
 
-        .. versionadded:: GeoCOM-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100
 
         Executes target search in the predefined window.
 

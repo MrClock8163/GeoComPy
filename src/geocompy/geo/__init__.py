@@ -43,8 +43,6 @@ from enum import Enum
 from typing import Any, overload, TypeVar
 from collections.abc import Callable, Iterable
 
-from serial import SerialException, SerialTimeoutException
-
 from geocompy.data import Angle, Byte
 from geocompy.communication import (
     Connection,
@@ -159,7 +157,7 @@ class GeoCom(GeoComType):
 
         Raises
         ------
-        ConnectionError
+        ConnectionRefusedError
             If the connection could not be verified in the specified
             number of attempts.
         """
@@ -167,16 +165,14 @@ class GeoCom(GeoComType):
         """Number of command transactions started during the current
         session."""
         self._conn: Connection = connection
-        if logger is None:
-            logger = DUMMYLOGGER
-        self._logger: Logger = logger
+        self._logger: Logger = logger or DUMMYLOGGER
         self.precision = 15
 
         self.aus: GeoComAUS = GeoComAUS(self)
         """
         Alt User subsystem.
 
-        .. versionadded:: GeoCOM-TPS1100-1.04
+        .. versionadded:: GeoCOM-TPS1100
         """
         self.aut: GeoComAUT = GeoComAUT(self)
         """Automation subsystem."""
@@ -249,11 +245,10 @@ class GeoCom(GeoComType):
                     break
             except Exception:
                 self._logger.exception("Exception during connection attempt")
-
             sleep(1)
         else:
-            raise ConnectionError(
-                "could not establish connection to instrument"
+            raise ConnectionRefusedError(
+                "Could not verify connection with instrument"
             )
 
         resp = self.com.get_double_precision()
@@ -374,13 +369,13 @@ class GeoCom(GeoComType):
 
         try:
             answer = self._conn.exchange(cmd)
-        except SerialTimeoutException:
+        except TimeoutError:
             self._logger.exception("Connection timed out during request")
             answer = (
                 f"%R1P,{GeoComCode.COM_TIMEDOUT:d},"
                 f"{trid}:{GeoComCode.OK:d}"
             )
-        except SerialException:
+        except ConnectionError:
             self._logger.exception("Connection error occured during request")
             answer = (
                 f"%R1P,{GeoComCode.COM_CANT_SEND:d},"

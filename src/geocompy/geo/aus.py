@@ -25,7 +25,7 @@ class GeoComAUS(GeoComSubsystem):
     """
     Alt user subsystem of the GeoCOM protocol.
 
-    .. versionadded:: GeoCOM-TPS1100-1.04
+    .. versionadded:: GeoCOM-TPS1100
 
     This subsystem can be used to set and query the ATR and LOCK
     automation modes.
@@ -160,7 +160,7 @@ class GeoComAUS(GeoComSubsystem):
         """
         RPC 18010, ``AUS_GetRcsSearchSwitch``
 
-        .. versionadded:: GeoCOM-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100
 
         .. versionremoved:: GeoCOM-TPS1200
 
@@ -188,7 +188,7 @@ class GeoComAUS(GeoComSubsystem):
         """
         RPC 18009, ``AUS_SwitchRcsSearch``
 
-        .. versionadded:: GeoCOM-TPS1100-1.05
+        .. versionadded:: GeoCOM-TPS1100
 
         .. versionremoved:: GeoCOM-TPS1200
 

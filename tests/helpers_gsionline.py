@@ -27,11 +27,20 @@ class DummyGsiOnlineConnection(Connection):
     def __init__(self, gsi16: bool = False):
         self._gsi16 = gsi16
 
+    def send_binary(self, data: bytes) -> None:
+        return
+
     def send(self, value: str) -> None:
         pass
 
+    def receive_binary(self) -> bytes:
+        return b""
+
     def receive(self) -> str:
         return ""
+
+    def exchange_binary(self, data: bytes) -> bytes:
+        return b""
 
     def exchange(self, cmd: str) -> str:
         if self._CONF.match(cmd) and cmd != "CONF/0":

@@ -1,3 +1,4 @@
+# mypy: disable-error-code="unused-ignore"
 """
 Description
 ===========
@@ -11,6 +12,7 @@ Functions
 
 - ``get_dummy_logger``
 - ``open_serial``
+- ``open_socket``
 - ``crc16_bitwise``
 - ``crc16_bytewise``
 
@@ -24,20 +26,21 @@ Types
 
 - ``Connection``
 - ``SerialConnection``
+- ``SocketConnection``
 """
 from __future__ import annotations
 
 import logging
 from types import TracebackType
+from typing import Self, Literal
 from collections.abc import Generator
 from contextlib import contextmanager
 from abc import ABC, abstractmethod
 from time import sleep
+import socket
 
 from serial import (
     Serial,
-    SerialException,
-    SerialTimeoutException,
     PARITY_NONE
 )
 
@@ -78,10 +81,19 @@ class Connection(ABC):
     def is_open(self) -> bool: ...
 
     @abstractmethod
+    def send_binary(self, data: bytes) -> None: ...
+
+    @abstractmethod
     def send(self, message: str) -> None: ...
 
     @abstractmethod
+    def receive_binary(self) -> bytes: ...
+
+    @abstractmethod
     def receive(self) -> str: ...
+
+    @abstractmethod
+    def exchange_binary(self, data: bytes) -> bytes: ...
 
     @abstractmethod
     def exchange(self, cmd: str) -> str: ...
@@ -142,6 +154,11 @@ def open_serial(
     -------
     SerialConnection
 
+    Raises
+    ------
+    ConnectionRefusedError
+        Serial port could not be opened.
+
     Warning
     -------
 
@@ -173,22 +190,19 @@ def open_serial(
         f"databits={databits:d}, stopbits={stopbits:d}, parity={parity}, "
         f"eom={eom.encode('ascii')!r}, eoa={eoa.encode('ascii')!r}"
     )
-    exc: Exception = Exception()
     for i in range(max(attempts, 1)):
         try:
             serialport = Serial(
                 port, speed, databits, parity, stopbits, timeout
             )
             break
-        except Exception as e:
+        except Exception:
             logger.error(
-                f"Failed to open connection, {attempts-i} trie(s) remains..."
+                f"Failed to open connection, {attempts - i} attempts remain"
             )
-            exc = e
-
-        sleep(5)
+        sleep(2)
     else:
-        raise exc
+        raise ConnectionRefusedError("Could not open connection")
 
     wrapper = SerialConnection(
         serialport,
@@ -198,6 +212,531 @@ def open_serial(
         logger=logger
     )
     return wrapper
+
+
+def open_socket(
+    address: str,
+    port: int,
+    protocol: Literal['rfcomm', 'tcp'],
+    *,
+    timeout: int = 15,
+    eom: str = "\r\n",
+    eoa: str = "\r\n",
+    sync_after_timeout: bool = False,
+    attempts: int = 1,
+    logger: logging.Logger | None = None
+) -> SocketConnection:
+    """
+    Constructs a SocketConnection with the given communication
+    parameters.
+
+    Parameters
+    ----------
+    address : str
+        Address of the target device (MAC for RFCOMM Bluetooth, IP for TCP)
+    port : int
+        Connection port/channel (RFCOMM channel or TCP port).
+    protocol : Literal['rfcomm', 'tcp']
+        Protocol to use for connection.
+    timeout : int, optional
+        Communication timeout threshold, by default 15
+    eom : str, optional
+        EndOfMessage sequence, by default ``"\\r\\n"``
+    eoa : str, optional
+        EndOfAnswer sequence, by default ``"\\r\\n"``
+    sync_after_timeout : bool, optional
+        Attempt to re-sync the message-response que, if a timeout
+        occured in the previous exchange, by default False
+    attempts : int, optional
+        Number of attempts at opening the connection, by default 1
+    logger : logging.Logger | None, optional
+        Logger instance to use to log connection related events. Defaults
+        to a dummy logger when not specified, by default None
+
+    Returns
+    -------
+    SocketConnection
+
+    Raises
+    ------
+    ConnectionRefusedError
+        Socket could not be opened.
+
+    Warning
+    -------
+
+    The syncing feature should be used with caution! See `SocketConnection`
+    for more information!
+
+    Examples
+    --------
+
+    Opening a socket connection through WLAN similar to a file:
+
+    >>> conn = open_socket("192.168.0.1", 1212, "tcp", timeout=5)
+    >>> # do operations
+    >>> conn.close()
+
+    Using as a context manager:
+
+    >>> with open_socket("192.168.0.1", 1212, "tcp", timeout=20) as conn:
+    ...     conn.send("test")
+
+    """
+    logger = logger or DUMMYLOGGER
+    logger.info(
+        f"Opening socket connection to {address} on channel/port {port}"
+    )
+    logger.debug(
+        f"Connection parameters: "
+        f"timeout={timeout:d}, "
+        f"sync_after_timeout={str(sync_after_timeout)}, "
+        f"attempts={attempts:d}, "
+        f"eom={eom.encode('ascii')!r}, eoa={eoa.encode('ascii')!r}"
+    )
+    match protocol:
+        case "rfcomm":
+            # Bluetooth sockets and the RFCOMM protocol are not supported
+            # in Linux environments.
+            try:
+                sock = socket.socket(
+                    socket.AF_BLUETOOTH,  # type: ignore[attr-defined]
+                    socket.SOCK_STREAM,
+                    socket.BTPROTO_RFCOMM  # type: ignore[attr-defined]
+                )
+            except Exception as e:
+                raise OSError(
+                    "RFCOMM sockets are not supported on this OS"
+                ) from e
+        case "tcp":
+            sock = socket.socket(
+                socket.AF_INET,
+                socket.SOCK_STREAM,
+                socket.IPPROTO_TCP
+            )
+        case _:
+            raise ValueError(f"Unknown protocol '{protocol}'")
+
+    sock.settimeout(timeout)
+    for i in range(max(attempts, 1)):
+        try:
+            sock.connect((address, port))
+            break
+        except Exception:
+            logger.exception(
+                f"Failed to open connection, {attempts - i} attempts remain"
+            )
+        sleep(2)
+    else:
+        raise ConnectionRefusedError("Could not open connection")
+
+    return SocketConnection(
+        sock,
+        eom=eom,
+        eoa=eoa,
+        sync_after_timeout=sync_after_timeout,
+        logger=logger
+    )
+
+
+class SocketConnection(Connection):
+    """
+    Connection wrapping an open socket connection.
+
+    The passed socket should be configured and opened in advance. The
+    socket can use any protocol, that the target instrument supports.
+    A suitable timeout for total stations might be 15 seconds.
+    (A too short timeout may result in unexpected errors when waiting for
+    a slower, motorized function.)
+
+    Examples
+    --------
+
+    Setting up a basic TCP connection:
+
+    >>> import socket
+    >>> soc = socket.socket(
+    >>>     socket.AF_INET,
+    >>>     socket.SOCK_STREAM,
+    >>>     socket.IPPROTO_TCP
+    >>> )
+    >>> soc.connect(("192.168.0.1", 1212))
+    >>> conn = SocketConnection(soc)
+    >>> # message exchanges
+    >>> conn.close()
+
+    Using as a context manager:
+
+    >>> import socket
+    >>> soc = socket.socket(
+    >>>     socket.AF_INET,
+    >>>     socket.SOCK_STREAM,
+    >>>     socket.IPPROTO_TCP
+    >>> )
+    >>> soc.connect(("192.168.0.1", 1212))
+    >>> with SocketConnection(soc) as conn:
+    ...     # message exchanges
+    >>>
+    >>> port.is_open()
+    False
+    >>> # port is automatically closed when the context is exited
+
+    """
+
+    def __init__(
+        self,
+        sock: socket.socket,
+        *,
+        eom: str = "\r\n",
+        eoa: str = "\r\n",
+        sync_after_timeout: bool = False,
+        logger: logging.Logger | None = None
+    ):
+        """
+        Parameters
+        ----------
+        sock : ~socket.socket
+            Socket communicate on.
+        eom : str, optional
+            EndOfMessage sequence, by default ``"\\r\\n"``
+        eoa : str, optional
+            EndOfAnswer sequence, by default ``"\\r\\n"``
+        sync_after_timeout : bool, optional
+            Attempt to re-sync the message-response que, if a timeout
+            occured in the previous exchange, by default False
+        logger : logging.Logger | None, optional
+            Logger instance to use to log connection related events. Defaults
+            to a dummy logger when not specified, by default None
+
+        Warning
+        -------
+
+        The que syncing is attempted by repeatedly reading from the
+        receiving buffer, as many times as a timeout was previously
+        detected. This can only solve issues, if the connection target
+        was just slow, and not completely unresponsive. If the target
+        became truly unresponsive, but came back online later, the sync
+        attempt can cause further problems. Use with caution!
+
+        (Timeouts should be avoided when possible, use a temporary override
+        on exchanges that are expected to finish in a longer time.)
+
+        """
+        self.socket = sock
+        self.eom: str = eom  # end of message
+        self.eombytes: bytes = eom.encode("ascii")
+        self.eoa: str = eoa  # end of answer
+        self.eoabytes: bytes = eoa.encode("ascii")
+        self._attempt_sync: bool = sync_after_timeout
+        self._timeout_counter: int = 0
+        self._logger: logging.Logger = logger or DUMMYLOGGER
+
+        self._receiver_buffer: bytes = b""
+        self._chunk = 1024
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_tb: TracebackType
+    ) -> None:
+        self.close()
+
+    def is_open(self) -> bool:
+        """
+        Checks if the socket currently open and connected.
+
+        Returns
+        -------
+        bool
+            State of the socket.
+
+        """
+        try:
+            sent = self.socket.send(self.eombytes)
+            return sent == len(self.eombytes)
+        except Exception:
+            return False
+
+    def send_binary(self, data: bytes) -> None:
+        """
+        Sends a single message through the socket.
+
+        Parameters
+        ----------
+        data : bytes
+            Data to send.
+
+        Raises
+        ------
+        ConnectionError
+            The socket is not connected or closed to writing.
+        """
+        if not data.endswith(self.eombytes):
+            data += self.eombytes
+
+        try:
+            self.socket.send(data)
+        except Exception as e:
+            raise ConnectionError(
+                "Cannot send data, socket most likely disconnected"
+            ) from e
+
+    def send(self, message: str) -> None:
+        """
+        Sends a single message through the socket.
+
+        Parameters
+        ----------
+        message : str
+            Message to send.
+
+        Raises
+        ------
+        ConnectionError
+            The socket is not connected or closed to writing.
+        """
+        self.send_binary(message.encode("ascii", "ignore"))
+
+    def _receive_chunked(self) -> bytes:
+        """
+        Receives a binary data block from the socket.
+
+        Handles the potential chunked reading of the data with an internal
+        receiver buffer.
+
+        Returns
+        -------
+        bytes
+            Received data.
+        """
+        while self.eoabytes not in self._receiver_buffer:
+            data = self.socket.recv(self._chunk)
+            self._receiver_buffer += data
+
+        end = self._receiver_buffer.index(self.eoabytes)
+        data = self._receiver_buffer[:end]
+        self._receiver_buffer = self._receiver_buffer[
+            end + len(self.eoabytes):
+        ]
+        return data
+
+    def receive_binary(self) -> bytes:
+        """
+        Receives a single binary data block from the socket.
+
+        Returns
+        -------
+        bytes
+            Received data.
+
+        Raises
+        ------
+        ConnectionError
+            The socket is not connected or closed to writing.
+        TimeoutError
+            Data was not received within the timeout period.
+
+        """
+        if self._attempt_sync and self._timeout_counter > 0:
+            for _ in range(self._timeout_counter):
+                try:
+                    self._receive_chunked()
+                except TimeoutError as te:
+                    self._timeout_counter += 1
+                    raise TimeoutError(
+                        "Socket connection timed out while recovering from a "
+                        "previous timeout"
+                    ) from te
+                except Exception as e:
+                    raise ConnectionError(
+                        "Cannot receive data, socket most likely disconnected"
+                    ) from e
+            else:
+                self._timeout_counter = 0
+
+        try:
+            return self._receive_chunked()
+        except TimeoutError as te:
+            self._timeout_counter += 1
+            raise TimeoutError("Socket connection timed out") from te
+        except Exception as e:
+            raise ConnectionError(
+                "Cannot receive data, socket most likely disconnected"
+            ) from e
+
+    def receive(self) -> str:
+        """
+        Receives a single message from the socket.
+
+        Returns
+        -------
+        str
+            Received message.
+
+        Raises
+        ------
+        ConnectionError
+            The socket is not connected or closed to writing.
+        TimeoutError
+            Data was not received within the timeout period.
+
+        """
+        return self.receive_binary().decode("ascii")
+
+    def exchange_binary(self, data: bytes) -> bytes:
+        """
+        Sends a block of data through the socket, and receives the
+        corresponding response.
+
+        Parameters
+        ----------
+        data : bytes
+            Message to send.
+
+        Returns
+        -------
+        bytes
+            Response to the sent data.
+
+        Raises
+        ------
+        ConnectionError
+            The socket is not connected or closed to writing or reading.
+        TimeoutError
+            Data was not received within the timeout period.
+
+        """
+        self.send_binary(data)
+        return self.receive_binary()
+
+    def exchange(self, cmd: str) -> str:
+        """
+        Sends message through the socket, and receives the
+        corresponding response.
+
+        Parameters
+        ----------
+        cmd : str
+            Message to send.
+
+        Returns
+        -------
+        str
+            Response to the sent message.
+
+        Raises
+        ------
+        ConnectionError
+            The socket is not connected or closed to writing or reading.
+        TimeoutError
+            Data was not received within the timeout period.
+
+        """
+        return self.exchange_binary(
+            cmd.encode("ascii", "ignore")
+        ).decode("ascii")
+
+    def close(self) -> None:
+        """
+        Shuts down and closes the socket.
+        """
+        address: str
+        port: int
+        try:
+            address, port = self.socket.getpeername()
+        except Exception:
+            return
+        self.socket.shutdown(socket.SHUT_RDWR)
+        self.socket.close()
+        self._logger.info(
+            f"Closed connection to {address} on channel/port {port}"
+        )
+
+    def reset(self) -> None:
+        """
+        Resets the connection by closing the socket and opening a new
+        one, and resetting the internal state. This could be used to
+        recover from a desync (possibly caused by a timeout).
+
+        Warning
+        -------
+
+        Trying to recover after repeated timeouts with a hard reset can
+        cause further issues, if the reset is attempted while responses
+        were finally being received. It is recommended to wait some time
+        after the last command was sent, before resetting.
+        """
+        address = self.socket.getpeername()
+        newsoc = socket.socket(
+            self.socket.family,
+            self.socket.type,
+            self.socket.proto
+        )
+        newsoc.settimeout(self.socket.timeout)
+        self.socket.close()
+        self.socket = newsoc
+        self.socket.connect(address)
+        self._receiver_buffer = b""
+        self._timeout_counter = 0
+        self._logger.debug("Reset connection")
+
+    @contextmanager
+    def timeout_override(
+        self,
+        timeout: int | None
+    ) -> Generator[None, None, None]:
+        """
+        Context manager that temporarily overrides connection parameters.
+
+        Parameters
+        ----------
+        timeout : int | None
+            Temporary timeout in seconds. Set to None to wait indefinitely.
+
+        Returns
+        -------
+        Generator
+            Context manager generator object.
+
+        Warning
+        -------
+        An indefinite timeout might leave the connection in a perpetual
+        waiting state, if the instrument became unresponsive in the
+        mean time (e.g. it powered off due to low battery charge).
+
+        Example
+        -------
+
+        >>> import socket
+        >>> soc = socket.socket(
+        >>>     socket.AF_INET,
+        >>>     socket.SOCK_STREAM,
+        >>>     socket.IPPROTO_TCP
+        >>> )
+        >>> soc.connect(("192.168.0.1", 1212))
+        >>> with SocketConnection(soc) as conn:
+        ...     # normal operation
+        ...
+        ...     # potentially long operation
+        ...     with conn.timeout_override(20):
+        ...         answer = conn.exchange("message")
+        ...
+        ...     # continue normal operation
+        ...
+        """
+        saved_timeout = self.socket.gettimeout()
+
+        try:
+            self.socket.settimeout(timeout)
+            self._logger.debug(f"Temporary timeout override to {timeout}")
+            yield
+        finally:
+            self.socket.settimeout(saved_timeout)
+            self._logger.debug(f"Restored timeout to {saved_timeout}")
 
 
 class SerialConnection(Connection):
@@ -229,7 +768,7 @@ class SerialConnection(Connection):
     >>> with gc.communication.SerialConnection(port) as conn:
     ...     # message exchanges
     >>>
-    >>> port.is_open
+    >>> port.is_open()
     False
     >>> # port is automatically closed when the context is exited
 
@@ -296,7 +835,7 @@ class SerialConnection(Connection):
     def __del__(self) -> None:
         self._port.close()
 
-    def __enter__(self) -> SerialConnection:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(
@@ -337,12 +876,12 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
 
         """
         if not self._port.is_open:
-            raise SerialException(
+            raise ConnectionError(
                 "serial port is not open"
             )
 
@@ -362,7 +901,7 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
 
         """
@@ -379,25 +918,25 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
-        ~serial.SerialTimeoutException
+        TimeoutError
             If the connection timed out before receiving the
             EndOfAnswer sequence.
 
         """
         if not self._port.is_open:
-            raise SerialException(
+            raise ConnectionError(
                 "serial port is not open"
             )
 
-        eoabytes = self.eoa.encode("ascii")
+        eoabytes = self.eoabytes
         if self._attempt_sync and self._timeout_counter > 0:
-            for i in range(self._timeout_counter):
+            for _ in range(self._timeout_counter):
                 excess = self._port.read_until(eoabytes)
                 if not excess.endswith(eoabytes):
                     self._timeout_counter += 1
-                    raise SerialTimeoutException(
+                    raise TimeoutError(
                         "Serial connection timed out on 'receive_binary' "
                         "during an attempt to recover from a previous timeout"
                     )
@@ -407,7 +946,7 @@ class SerialConnection(Connection):
         answer = self._port.read_until(eoabytes)
         if not answer.endswith(eoabytes):
             self._timeout_counter += 1
-            raise SerialTimeoutException(
+            raise TimeoutError(
                 "serial connection timed out on 'receive_binary'"
             )
 
@@ -424,9 +963,9 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
-        ~serial.SerialTimeoutException
+        TimeoutError
             If the connection timed out before receiving the
             EndOfAnswer sequence.
 
@@ -451,9 +990,9 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
-        ~serial.SerialTimeoutException
+        TimeoutError
             If the connection timed out before receiving the
             EndOfAnswer sequence for one of the responses.
 
@@ -478,9 +1017,9 @@ class SerialConnection(Connection):
 
         Raises
         ------
-        ~serial.SerialException
+        ConnectionError
             If the serial port is not open.
-        ~serial.SerialTimeoutException
+        TimeoutError
             If the connection timed out before receiving the
             EndOfAnswer sequence for one of the responses.
 
