@@ -5,6 +5,12 @@ file.
 
 The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Added testing for Python 3.14
+
 ## v0.14.0 (2025-10-18)
 
 ### Added

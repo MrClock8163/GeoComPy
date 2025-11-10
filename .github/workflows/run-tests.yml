@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["python311", "python312", "python313"]
+        python-version: ["python311", "python312", "python313", "python314"]
 
     container: mrclock8163/geocompy:tests-${{matrix.python-version}}
 
@@ -41,7 +41,7 @@ jobs:
   linting:
     name: Linting
     runs-on: ubuntu-latest
-    container: mrclock8163/geocompy:tests-python313
+    container: mrclock8163/geocompy:tests-python314
     strategy:
       fail-fast: false
       matrix:

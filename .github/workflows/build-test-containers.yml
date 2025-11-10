@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["python311", "python312", "python313"]
+        python-version: ["python311", "python312", "python313", "python314"]
     steps:
       -
         name: Login to Docker Hub
