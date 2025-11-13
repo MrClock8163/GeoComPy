@@ -10,6 +10,7 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added testing for Python 3.14
+- Added logging of the instrument serial number to GeoCOM connection
 
 ## v0.14.0 (2025-10-18)
 

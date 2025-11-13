@@ -263,11 +263,13 @@ class GeoCom(GeoComType):
 
         self._logger.info("Connection initialized")
         name = self.csv.get_instrument_name().params or "Unknown"
+        serial_number = self.csv.get_serial_number().params or 0
         geocom = self.com.get_geocom_version().params or (0, 0, 0)
         firmware = self.csv.get_firmware_version().params or (0, 0, 0)
         self._logger.info(
             f"Instrument: {name} "
-            f"(firmware: v{firmware[0]}.{firmware[1]}.{firmware[2]}, "
+            f"(serial: {serial_number:d}, "
+            f"firmware: v{firmware[0]}.{firmware[1]}.{firmware[2]}, "
             f"geocom: v{geocom[0]}.{geocom[1]}.{geocom[2]})"
         )
 
