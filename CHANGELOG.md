@@ -12,6 +12,12 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added testing for Python 3.14
 - Added logging of the instrument serial number to GeoCOM connection
 
+### Changed
+
+- Changed `GsiSerialnumberWord` to store value as `int` instead of `str`
+- Changed `get_serialnumber` measurement command on `GsiOnlineDNA` to return
+  `int` instead of `str` in the response object
+
 ## v0.14.0 (2025-10-18)
 
 ### Added

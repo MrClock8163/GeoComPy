@@ -277,7 +277,7 @@ class GsiOnlineDNAMeasurements(GsiOnlineSubsystem):
             gsi.GsiTemperatureWord
         ).map_value(_word_value)
 
-    def get_serialnumber(self) -> GsiOnlineResponse[str]:
+    def get_serialnumber(self) -> GsiOnlineResponse[int]:
         """
         ``GET 12``
 

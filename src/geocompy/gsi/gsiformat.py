@@ -520,15 +520,64 @@ class GsiSerialnumberWord(GsiValueWord):
     def WI(cls) -> int:
         return 12
 
-    def __init__(self, serialnumber: str):
+    def __init__(self, serialnumber: int):
         """
         Parameters
         ----------
-        serialnumber : str
-            Serial number as string (as it might sometimes contain letters).
+        serialnumber : int
+            Serial number.
         """
-        self.value: str
+        self.value: int
         super().__init__(serialnumber)
+
+    @classmethod
+    def parse(cls, value: str) -> Self:
+        """
+        Parses serial number from a serialized GSI word.
+
+        Parameters
+        ----------
+        value : str
+            Serialized GSI word.
+
+        Returns
+        -------
+        Self
+        """
+        cls._check_format(value)
+
+        return cls(
+            int(value[7:-1].lstrip("0"))
+        )
+
+    def serialize(
+        self,
+        *,
+        gsi16: bool = False,
+        angleunit: GsiUnit | None = None,
+        distunit: GsiUnit | None = None
+    ) -> str:
+        """
+        Serialize data to GSI word text.
+
+        Parameters
+        ----------
+        gsi16 : bool, optional
+            Create GSI16 word instead of GSI8, by default False
+        angleunit : GsiUnit | None, optional
+            Unused, by default None
+        distunit : GsiUnit | None, optional
+            Unused, by default None
+
+        Returns
+        -------
+        str
+        """
+        return format_gsi_word(
+            self.wi,
+            str(self.value),
+            gsi16=gsi16
+        )
 
 
 class GsiInstrumentTypeWord(GsiValueWord):
