@@ -162,6 +162,14 @@ class GsiOnlineDNA(GsiOnlineType):
         self.settings.get_format()  # Sync format setting
 
         self._logger.info("Connection initialized")
+        name = self.measurements.get_instrument_type().value or "Unknown"
+        serial_number = self.measurements.get_serialnumber().value or 0
+        version = self.measurements.get_software_version().value or 0.0
+        self._logger.info(
+            f"Instrument: {name} "
+            f"(serial: {serial_number:d}, "
+            f"firmware: v{version:.4f})"
+        )
 
     @property
     def is_client_gsi16(self) -> bool:
