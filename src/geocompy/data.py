@@ -122,9 +122,9 @@ def get_enum(e: type[_E], value: _E | str) -> _E:
     ...     ONE = 1
     ...     TWO = 2
     >>>
-    >>> gc.data.toenum(MyEnum, 'ONE')
+    >>> gc.data.get_enum(MyEnum, 'ONE')
     <MyEnum.ONE: 1>
-    >>> gc.data.toenum(MyEnum, MyEnum.TWO)
+    >>> gc.data.get_enum(MyEnum, MyEnum.TWO)
     <MyEnum.TWO: 2>
     """
     if isinstance(value, str):
@@ -164,7 +164,7 @@ def get_enum_parser(e: type[_E]) -> Callable[[str], _E]:
     ...     ONE = 1
     ...     TWO = 2
     >>>
-    >>> parser = gc.data.enumparser(MyEnum)
+    >>> parser = gc.data.get_enum_parser(MyEnum)
     >>> parser('1')
     <MyEnum.ONE: 1>
 
